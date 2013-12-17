@@ -1,4 +1,4 @@
-package structure;
+package structure.intf;
 
 /*
  * A QEA object is a specification

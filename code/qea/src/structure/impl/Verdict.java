@@ -1,4 +1,4 @@
-package structure;
+package structure.impl;
 
 public enum Verdict {
 	SUCCESS,
