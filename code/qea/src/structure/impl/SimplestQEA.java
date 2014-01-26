@@ -21,7 +21,7 @@ public class SimplestQEA implements QEA {
 
 	private int[][] delta;
 
-	private int initialState;
+	protected final int initialState;
 
 	public SimplestQEA(int numStates, int numEvents, int initialState) {
 		delta = new int[numStates + 1][numEvents + 1];
@@ -93,4 +93,33 @@ public class SimplestQEA implements QEA {
 		}
 		return a;
 	}
+	
+	/**
+	 * Returns the quantification list in order.
+	 * Variables are positive if universally quantified and negative if existentially quantifed.
+	 * 
+	 * @return Returns Lambda
+	 */		
+	public int[] getLambda(){
+		return new int[]{1};
+	}
+
+	/**
+	 * Checks if the QEA is deterministic
+	 * 
+	 * @return True if the QEA is deterministic, false otherwise
+	 */				
+	public boolean isDeterministic(){
+		return true;
+	}
+	
+	/**
+	 * Checks if the QEA uses free variables
+	 * 
+	 * @return True if the QEA is uses free variables, false otherwise
+	 */		
+	public boolean usesFreeVariables(){
+		return false;
+	}
+	
 }
