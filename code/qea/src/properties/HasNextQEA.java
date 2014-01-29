@@ -6,6 +6,16 @@ import structure.impl.SimplestQEA;
 /**
  * A QEA giving the canonical HasNext property
  * 
+ * This property is about the usage of java.util.Iterator and is used a lot as an example in monitoring
+ * 
+ * The behaviour is that if we call next then hasnext must have previously returned true since the 
+ * last call of next. I extend this so that if hasnext returns false then it cannot return true later.
+ * 
+ * This is described further here - http://en.wikipedia.org/wiki/Runtime_verification#HasNext
+ * But I think this implementation of the property is more accurate
+ * 
+ * Note that the failure/error state is implicit 
+ * 
  * @author Giles Reger
  */
 
