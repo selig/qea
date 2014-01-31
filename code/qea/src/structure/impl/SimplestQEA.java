@@ -75,9 +75,10 @@ public class SimplestQEA implements QEA {
 	 *            State name
 	 */
 	public void setStatesAsFinal(int... states) {
-		for(int state : states) finalStates[state] = 1;
-	}	
-	
+		for (int state : states)
+			finalStates[state] = 1;
+	}
+
 	/**
 	 * Retrieves the set of states Q for this QEA
 	 * 
@@ -103,33 +104,46 @@ public class SimplestQEA implements QEA {
 		}
 		return a;
 	}
-	
+
 	/**
-	 * Returns the quantification list in order.
-	 * Variables are positive if universally quantified and negative if existentially quantifed.
+	 * Returns the quantification list in order. Variables are positive if
+	 * universally quantified and negative if existentially quantifed.
 	 * 
 	 * @return Returns Lambda
-	 */		
-	public int[] getLambda(){
-		return new int[]{1};
+	 */
+	public int[] getLambda() {
+		return new int[] { 1 };
 	}
 
 	/**
 	 * Checks if the QEA is deterministic
 	 * 
 	 * @return True if the QEA is deterministic, false otherwise
-	 */				
-	public boolean isDeterministic(){
+	 */
+	public boolean isDeterministic() {
 		return true;
 	}
-	
+
 	/**
 	 * Checks if the QEA uses free variables
 	 * 
 	 * @return True if the QEA is uses free variables, false otherwise
-	 */		
-	public boolean usesFreeVariables(){
+	 */
+	public boolean usesFreeVariables() {
 		return false;
 	}
-	
+
+	/**
+	 * Determines if the specified state is in the set of final states
+	 * 
+	 * @param state
+	 * @return true if the specified state is a final state. Otherwise, false
+	 */
+	public boolean isStateFinal(int state) {
+		if (finalStates[state] == 1) {
+			return true;
+		}
+		return false;
+	}
+
 }
