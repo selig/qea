@@ -42,17 +42,17 @@ public class UnoptSimplestSmallStepQEAMonitor extends SmallStepMonitor {
 
 			int nextState = simplestQEA.getNextState(bindings.get(param1),
 					eventName);
-			if (nextState != 0) {
+			//if (nextState != 0) {
 				bindings.put(param1, nextState);
-			}
+			//}
 		} else { // New binding
 			int nextState = simplestQEA.getNextState(1, eventName);
-			if (nextState != 0) {
+			//if (nextState != 0) {
 				bindings.put(param1, nextState);
-			} else {
+			//} else {
 				// TODO Assume initial state or retrieve it from the QEA?
-				bindings.put(param1, 1);
-			}
+			//	bindings.put(param1, 1);
+			//}
 		}
 
 		if (allBindingsInFinalState()) {
