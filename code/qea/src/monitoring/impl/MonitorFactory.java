@@ -26,7 +26,7 @@ public class MonitorFactory {
 	// If the QEA is deterministic, does not use free variables and only has one
 	// quantified variable then (currently) use UnoptSimplestSmallStepQEAMonitor
 		if(qea.isDeterministic() && !qea.usesFreeVariables() && qea.getLambda().length==1)
-			return new UnoptSimplestSmallStepQEAMonitor(qea);
+			return new SimplestSmallStepQEAMonitor(qea);
 		
 		return null;
 	}
