@@ -1,6 +1,6 @@
 package monitoring.impl;
 
-import monitoring.intf.Monitor;
+import structure.impl.SimplestQEA;
 import structure.impl.Verdict;
 import structure.intf.QEA;
 
@@ -10,14 +10,12 @@ import structure.intf.QEA;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class SmallStepQEANoQVMonitor extends Monitor {
+public class SmallStepPropositionalQEAMonitor extends SmallStepMonitor<SimplestQEA> {
 	
 	private int currentState;
 	
-	private QEA qea;
-	
-	public SmallStepQEANoQVMonitor(QEA qea) {
-		this.qea = qea;
+	public SmallStepPropositionalQEAMonitor(SimplestQEA qea) {
+		super(qea);
 	}
 
 	@Override

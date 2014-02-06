@@ -1,12 +1,18 @@
 package monitoring.intf;
 
 import structure.impl.Verdict;
+import structure.intf.QEA;
 
 /*
  * A monitor object takes an event consisting of a name and an array of arguments and produces a verdict
  */
-public abstract class Monitor {
+public abstract class Monitor<Q extends QEA> {
 
+	// for storing the property
+	protected final Q qea;
+	
+	public Monitor(Q q){qea=q;}
+	
 	public abstract Verdict step(int eventName, Object[] args);
 
 	public abstract Verdict step(int eventName);

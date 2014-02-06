@@ -1,6 +1,7 @@
 package monitoring.impl;
 
 import monitoring.intf.Monitor;
+import structure.impl.SimplestQEA;
 import structure.intf.QEA;
 
 /**
@@ -14,7 +15,7 @@ import structure.intf.QEA;
  */
 
 public class MonitorFactory {
-
+	
 	/**
 	 * Constructs a Monitor given a QEA
 	 * 
@@ -29,12 +30,14 @@ public class MonitorFactory {
 		// If the QEA is deterministic, does not use free variables and only has
 		// one quantified variable then (currently) use
 		// SimplestSmallStepQEAMonitor
-		if (qea.isDeterministic() && !qea.usesFreeVariables()
-				&& qea.getLambda().length == 1) {
-			return new SimplestSmallStepQEAMonitor(qea);
-		} else if (qea.isDeterministic() && !qea.usesFreeVariables()
-				&& qea.getLambda().length == 0) {
-			return new SmallStepQEANoQVMonitor(qea); // TODO: Rename this
+		//if (qea.isDeterministic() && !qea.usesFreeVariables()
+		//		&& qea.getLambda().length == 1) {
+		if(qea instanceof SimplestQEA){
+			if(qea.getLambda().length==0) return new SimplestSmallStepQEAMonitor((SimplestQEA) qea);
+		//} else if (qea.isDeterministic() && !qea.usesFreeVariables()
+		//		&& qea.getLambda().length == 0) {
+			else return new SmallStepPropositionalQEAMonitor((SimplestQEA) qea);
+			
 		} else if (!qea.isDeterministic() && !qea.usesFreeVariables()
 				&& qea.getLambda().length == 1) {
 			// TODO: New monitor to be created

@@ -18,7 +18,7 @@ public class UseFilePropositionalQEA extends SimplestQEA {
 		// we use two states, three events and 0 as the initial state
 		super(2,3,1,true);
 		
-		//TODO add flag for unquantified
+		//TODO add flag for unquantified		
 		
 		// define the event names for convenience
 		int OPEN = 1;
