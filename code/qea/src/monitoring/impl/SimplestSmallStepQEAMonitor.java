@@ -1,6 +1,7 @@
 package monitoring.impl;
 
 import java.util.IdentityHashMap;
+import java.util.Map;
 
 import structure.impl.SimplestQEA;
 import structure.impl.Verdict;
@@ -98,6 +99,14 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 	}
 
 	@Override
+	public Verdict step(int eventName) {
+		for (Map.Entry<Object, Integer> entry : bindings.entrySet()) {
+			step(eventName, entry.getKey());
+		}
+		return null; // TODO: What is the verdict here?
+	}
+
+	@Override
 	public Verdict end() {
 
 		// According to the quantification of the variable, return verdict
@@ -141,4 +150,5 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 		}
 		return false;
 	}
+
 }
