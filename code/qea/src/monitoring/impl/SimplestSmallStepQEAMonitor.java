@@ -12,7 +12,6 @@ import structure.intf.QEA;
  * @author Giles Reger
  * @author Helena Cuenca
  */
-
 public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 
 	private IdentityHashMap<Object, Integer> bindings;
@@ -23,11 +22,20 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 
 	private int bindingsInNonFinalStateCount;
 
+	private int bindingsInFinalStateCount;
+
+	/**
+	 * Creates a SimplestSmallStepQEAMonitor for the specified QEA
+	 * 
+	 * @param qea
+	 *            QEA
+	 */
 	SimplestSmallStepQEAMonitor(QEA qea) {
-		bindings = new IdentityHashMap<>();
 		this.qea = qea;
-		simplestQEA = (SimplestQEA) qea; // TODO Change this!
+		bindings = new IdentityHashMap<>();
 		bindingsInNonFinalStateCount = 0;
+		bindingsInFinalStateCount = 0;
+		simplestQEA = (SimplestQEA) qea; // TODO Change this!
 	}
 
 	@Override
@@ -39,16 +47,18 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 	@Override
 	public Verdict step(int eventName, Object param1) {
 
-		boolean existingBindingInNonFinalState = false;
+		boolean existingBinding = false;
 		int startState;
 
 		// Determine if the value received corresponds to an existing binding
 		if (bindings.containsKey(param1)) { // Existing binding
 
+			// Get current state for the binding
 			startState = bindings.get(param1);
-			if (!simplestQEA.isStateFinal(startState)) {
-				existingBindingInNonFinalState = true;
-			}
+
+			// Assign flag for counters update
+			existingBinding = true;
+
 		} else { // New binding
 			startState = 1;
 		}
@@ -59,16 +69,29 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 		// Update/add state for the binding
 		bindings.put(param1, endState);
 
-		// If applicable, update count of non-final state bindings
-		if (existingBindingInNonFinalState
-				&& simplestQEA.isStateFinal(endState)) {
-			bindingsInNonFinalStateCount--;
-		} else if (!existingBindingInNonFinalState
-				&& !simplestQEA.isStateFinal(endState)) {
-			bindingsInNonFinalStateCount++;
+		// If applicable, update counters
+		if (existingBinding) {
+			if (qea.isStateFinal(startState) && !qea.isStateFinal(endState)) {
+				bindingsInNonFinalStateCount++;
+				bindingsInFinalStateCount--;
+			} else if (!qea.isStateFinal(startState)
+					&& qea.isStateFinal(endState)) {
+				bindingsInNonFinalStateCount--;
+				bindingsInFinalStateCount++;
+			}
+		} else {
+			if (qea.isStateFinal(endState)) {
+				bindingsInFinalStateCount++;
+			} else {
+				bindingsInNonFinalStateCount++;
+			}
 		}
 
-		if (allBindingsInFinalState()) {
+		// According to the quantification of the variable, return verdict
+		if (simplestQEA.isQuantificationUniversal()
+				&& allBindingsInFinalState()
+				|| !simplestQEA.isQuantificationUniversal()
+				&& existsOneBindingInFinalState()) {
 			return Verdict.WEAK_SUCCESS;
 		}
 		return Verdict.WEAK_FAILURE;
@@ -76,7 +99,12 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 
 	@Override
 	public Verdict end() {
-		if (allBindingsInFinalState()) {
+
+		// According to the quantification of the variable, return verdict
+		if (simplestQEA.isQuantificationUniversal()
+				&& allBindingsInFinalState()
+				|| !simplestQEA.isQuantificationUniversal()
+				&& existsOneBindingInFinalState()) {
 			return Verdict.SUCCESS;
 		}
 		return Verdict.FAILURE;
@@ -90,11 +118,25 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 	/**
 	 * Determines if all bindings for the current monitor are in a final state
 	 * 
-	 * @return true if all bindings for the current monitor are in a final
-	 *         state. Otherwise, false
+	 * @return <code>true</code> if all bindings for the current monitor are in
+	 *         a final state; <code>false</code> otherwise
 	 */
 	private boolean allBindingsInFinalState() {
 		if (bindingsInNonFinalStateCount == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Determines if there is at least one binding in a final state for the
+	 * current monitor
+	 * 
+	 * @return <code>true</code> if at least one binding is in final state;
+	 *         <code>false</code> otherwise
+	 */
+	private boolean existsOneBindingInFinalState() {
+		if (bindingsInFinalStateCount > 0) {
 			return true;
 		}
 		return false;
