@@ -24,7 +24,7 @@ public class HasNextQEA extends SimplestQEA {
 	
 	public HasNextQEA() {
 		// we use three states, three events and 0 as the initial state
-		super(3,3,1);
+		super(3,3,1,true);
 		
 		// define the event names for convenience
 		int NEXT = 1;
