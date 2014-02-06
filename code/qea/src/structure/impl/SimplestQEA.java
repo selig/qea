@@ -6,7 +6,7 @@ import structure.intf.QEA;
  * This class represents a simple Quantified Event Automaton (QEA) with the
  * following restrictions:
  * 
- * - There is only one variable and its quantification is all universal
+ * - There is only one variable
  * 
  * - State and event names are represented by integers starting in 1
  * 
@@ -14,6 +14,7 @@ import structure.intf.QEA;
  * and an end state, no guards or assigns are considered
  * 
  * @author Helena Cuenca
+ * @author Giles Reger
  */
 public class SimplestQEA implements QEA {
 
