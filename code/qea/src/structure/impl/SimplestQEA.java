@@ -23,10 +23,14 @@ public class SimplestQEA implements QEA {
 
 	protected final int initialState;
 
-	public SimplestQEA(int numStates, int numEvents, int initialState) {
+	private boolean quantificationUniversal;
+
+	public SimplestQEA(int numStates, int numEvents, int initialState,
+			boolean quantificationUniversal) {
 		delta = new int[numStates + 1][numEvents + 1];
 		finalStates = new int[numStates + 1];
 		this.initialState = initialState;
+		this.quantificationUniversal = quantificationUniversal;
 	}
 
 	/**
@@ -144,6 +148,14 @@ public class SimplestQEA implements QEA {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @return true if the quantification for the variable of this QEA is
+	 *         universal. false if it is existential
+	 */
+	public boolean isQuantificationUniversal() {
+		return quantificationUniversal;
 	}
 
 }
