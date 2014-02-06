@@ -26,6 +26,8 @@ public class HasNextQEA extends SimplestQEA {
 		// we use three states, three events and 0 as the initial state
 		super(3,3,1,true);
 		
+		//TODO add flag for quantified
+		
 		// define the event names for convenience
 		int NEXT = 1;
 		int HASNEXT_TRUE = 2;
