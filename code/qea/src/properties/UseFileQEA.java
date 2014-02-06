@@ -15,7 +15,7 @@ public class UseFileQEA extends SimplestQEA {
 	
 	public UseFileQEA() {
 		// we use two states, three events and 0 as the initial state
-		super(2,3,1);
+		super(2,3,1,true);
 		
 		// define the event names for convenience
 		int OPEN = 1;
