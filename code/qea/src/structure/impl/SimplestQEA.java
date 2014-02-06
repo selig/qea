@@ -76,8 +76,8 @@ public class SimplestQEA implements QEA {
 	/**
 	 * Adds the specified states to the set of final statess
 	 * 
-	 * @param state
-	 *            State name
+	 * @param states
+	 *            Names of states to add
 	 */
 	public void setStatesAsFinal(int... states) {
 		for (int state : states)

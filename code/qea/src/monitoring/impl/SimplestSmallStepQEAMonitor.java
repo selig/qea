@@ -13,13 +13,9 @@ import structure.intf.QEA;
  * @author Giles Reger
  * @author Helena Cuenca
  */
-public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
+public class SimplestSmallStepQEAMonitor extends SmallStepMonitor<SimplestQEA> {
 
 	private IdentityHashMap<Object, Integer> bindings;
-
-	private QEA qea;
-
-	private SimplestQEA simplestQEA;
 
 	private int bindingsInNonFinalStateCount;
 
@@ -31,12 +27,11 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 	 * @param qea
 	 *            QEA
 	 */
-	SimplestSmallStepQEAMonitor(QEA qea) {
-		this.qea = qea;
+	SimplestSmallStepQEAMonitor(SimplestQEA qea) {
+		super(qea);
 		bindings = new IdentityHashMap<>();
 		bindingsInNonFinalStateCount = 0;
 		bindingsInFinalStateCount = 0;
-		simplestQEA = (SimplestQEA) qea; // TODO Change this!
 	}
 
 	@Override
@@ -65,7 +60,7 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 		}
 
 		// Compute next state
-		int endState = simplestQEA.getNextState(startState, eventName);
+		int endState = qea.getNextState(startState, eventName);
 
 		// Update/add state for the binding
 		bindings.put(param1, endState);
@@ -89,9 +84,9 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 		}
 
 		// According to the quantification of the variable, return verdict
-		if (simplestQEA.isQuantificationUniversal()
+		if (qea.isQuantificationUniversal()
 				&& allBindingsInFinalState()
-				|| !simplestQEA.isQuantificationUniversal()
+				|| !qea.isQuantificationUniversal()
 				&& existsOneBindingInFinalState()) {
 			return Verdict.WEAK_SUCCESS;
 		}
@@ -110,9 +105,9 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor {
 	public Verdict end() {
 
 		// According to the quantification of the variable, return verdict
-		if (simplestQEA.isQuantificationUniversal()
+		if (qea.isQuantificationUniversal()
 				&& allBindingsInFinalState()
-				|| !simplestQEA.isQuantificationUniversal()
+				|| !qea.isQuantificationUniversal()
 				&& existsOneBindingInFinalState()) {
 			return Verdict.SUCCESS;
 		}

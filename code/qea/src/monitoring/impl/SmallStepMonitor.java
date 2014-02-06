@@ -1,6 +1,7 @@
 package monitoring.impl;
 
 import monitoring.intf.Monitor;
+import structure.intf.QEA;
 
 /**
  * All incremental monitors implement the trace method using the step method.
@@ -11,8 +12,10 @@ import monitoring.intf.Monitor;
  * @author Helena Cuenca
  */
 
-public abstract class SmallStepMonitor extends Monitor {
+public abstract class SmallStepMonitor<Q extends QEA> extends Monitor<Q> {
 
+	public SmallStepMonitor(Q q){super(q);}
+	
 	// public Verdict trace(List<Event> eventList) {
 	// // TODO Auto-generated method stub
 	// return null;
