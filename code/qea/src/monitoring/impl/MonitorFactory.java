@@ -24,6 +24,8 @@ public class MonitorFactory {
 	 */
 	public static Monitor create(QEA qea) {
 
+		//TODO add check for quantified flag
+		
 		// If the QEA is deterministic, does not use free variables and only has
 		// one quantified variable then (currently) use
 		// SimplestSmallStepQEAMonitor

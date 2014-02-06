@@ -5,19 +5,20 @@ import structure.impl.SimplestQEA;
 /**
  * A QEA giving the very simple UseFile property
  * 
- * This states that a file should be opened before being used and should eventually be closed.
+ * This is the propositional version - the only difference being a flag saying
+ * it has no quantified variables.
  * 
  * @author Giles Reger
  */
 
-public class UseFileQEA extends SimplestQEA {
+public class UseFilePropositionalQEA extends SimplestQEA {
 
 	
-	public UseFileQEA() {
+	public UseFilePropositionalQEA() {
 		// we use two states, three events and 0 as the initial state
 		super(2,3,1,true);
 		
-		//TODO add flag for quantified
+		//TODO add flag for unquantified
 		
 		// define the event names for convenience
 		int OPEN = 1;
