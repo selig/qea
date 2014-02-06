@@ -9,6 +9,8 @@ public abstract class Monitor {
 
 	public abstract Verdict step(int eventName, Object[] args);
 
+	public abstract Verdict step(int eventName);
+
 	public Verdict step(int eventName, Object param1) {
 		return step(eventName, new Object[] { param1 });
 	}
