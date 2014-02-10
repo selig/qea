@@ -5,7 +5,6 @@ import java.util.Map;
 
 import structure.impl.SimplestQEA;
 import structure.impl.Verdict;
-import structure.intf.QEA;
 
 /**
  * A small-step monitor for the Simplest QEA
@@ -84,8 +83,7 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor<SimplestQEA> {
 		}
 
 		// According to the quantification of the variable, return verdict
-		if (qea.isQuantificationUniversal()
-				&& allBindingsInFinalState()
+		if (qea.isQuantificationUniversal() && allBindingsInFinalState()
 				|| !qea.isQuantificationUniversal()
 				&& existsOneBindingInFinalState()) {
 			return Verdict.WEAK_SUCCESS;
@@ -105,19 +103,13 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor<SimplestQEA> {
 	public Verdict end() {
 
 		// According to the quantification of the variable, return verdict
-		if (qea.isQuantificationUniversal()
-				&& allBindingsInFinalState()
+		if (qea.isQuantificationUniversal() && allBindingsInFinalState()
 				|| !qea.isQuantificationUniversal()
 				&& existsOneBindingInFinalState()) {
 			return Verdict.SUCCESS;
 		}
 		return Verdict.FAILURE;
 	}
-
-	// public Verdict step(Event event) {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 	/**
 	 * Determines if all bindings for the current monitor are in a final state
