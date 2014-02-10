@@ -2,7 +2,6 @@ package monitoring.impl;
 
 import structure.impl.SimplestQEA;
 import structure.impl.Verdict;
-import structure.intf.QEA;
 
 /**
  * A small-step monitor for a simple QEA with no quantified variables
@@ -10,12 +9,14 @@ import structure.intf.QEA;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class SmallStepPropositionalQEAMonitor extends SmallStepMonitor<SimplestQEA> {
-	
+public class SmallStepPropositionalQEAMonitor extends
+		SmallStepMonitor<SimplestQEA> {
+
 	private int currentState;
-	
+
 	public SmallStepPropositionalQEAMonitor(SimplestQEA qea) {
 		super(qea);
+		currentState = 1; // Set initial state
 	}
 
 	@Override
@@ -26,14 +27,25 @@ public class SmallStepPropositionalQEAMonitor extends SmallStepMonitor<SimplestQ
 
 	@Override
 	public Verdict step(int eventName) {
-		// TODO Auto-generated method stub
-		return null;
+
+		// Update state
+		currentState = qea.getNextState(currentState, eventName);
+
+		// Determine verdict according to the state
+		if (qea.isStateFinal(currentState)) {
+			return Verdict.WEAK_SUCCESS;
+		}
+		return Verdict.WEAK_FAILURE;
 	}
 
 	@Override
 	public Verdict end() {
-		// TODO Auto-generated method stub
-		return null;
+
+		// Determine verdict according to the state
+		if (qea.isStateFinal(currentState)) {
+			return Verdict.SUCCESS;
+		}
+		return Verdict.FAILURE;
 	}
 
 }
