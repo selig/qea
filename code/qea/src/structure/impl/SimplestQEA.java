@@ -4,14 +4,13 @@ import structure.intf.QEA;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
- * following restrictions:
- * 
- * - There is only one variable
- * 
- * - State and event names are represented by integers starting in 1
- * 
- * - The transitions in the function delta consist of a start state, an event
+ * following characteristics:
+ * <ul>
+ * <li>There is at most one quantified variable
+ * <li>The transitions in the function delta consist of a start state, an event
  * and an end state, no guards or assigns are considered
+ * <li>The QEA is deterministic
+ * </ul>
  * 
  * @author Helena Cuenca
  * @author Giles Reger
@@ -117,7 +116,10 @@ public class SimplestQEA implements QEA {
 	 * @return Returns Lambda
 	 */
 	public int[] getLambda() {
-		return new int[] { 1 };
+		if (quantificationUniversal) {
+			return new int[] { 1 };
+		}
+		return new int[] { -1 };
 	}
 
 	/**
