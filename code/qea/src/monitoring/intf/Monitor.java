@@ -10,9 +10,18 @@ public abstract class Monitor<Q extends QEA> {
 
 	// for storing the property
 	protected final Q qea;
-	
-	public Monitor(Q q){qea=q;}
-	
+
+	/**
+	 * Class constructor specifying the QEA for which the monitor is to be
+	 * created
+	 * 
+	 * @param q
+	 *            QEA
+	 */
+	public Monitor(Q q) {
+		qea = q;
+	}
+
 	public abstract Verdict step(int eventName, Object[] args);
 
 	public abstract Verdict step(int eventName);
@@ -41,10 +50,27 @@ public abstract class Monitor<Q extends QEA> {
 				param5 });
 	}
 
+	/**
+	 * Computes the final verdict of the monitoring process
+	 * 
+	 * @return Final verdict of the monitoring process
+	 */
 	public abstract Verdict end();
 
-	// TODO: The trace method received before a list of Events, now we don't
-	// have 'Event'
-	// public abstract Verdict trace(List<Event> eventList);
+	/**
+	 * Processes a trace of events
+	 * 
+	 * @param eventNames
+	 *            Names of the events to be processed
+	 * @param args
+	 *            Arguments for each one of the events. The array
+	 *            <code>args[i]</code> contains the parameters for the event
+	 *            <code>eventNames[i]</code>. To indicate that an event has no
+	 *            arguments, it's corresponding array of arguments must be an
+	 *            array of size 0.
+	 * @return Partial verdict of the monitoring process after processing the
+	 *         specified trace of events
+	 */
+	public abstract Verdict trace(int[] eventNames, Object[][] args);
 
 }
