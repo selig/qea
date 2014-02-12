@@ -93,10 +93,11 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor<SimplestQEA> {
 
 	@Override
 	public Verdict step(int eventName) {
+		Verdict finalVerdict = null;
 		for (Map.Entry<Object, Integer> entry : bindings.entrySet()) {
-			step(eventName, entry.getKey());
+			finalVerdict = step(eventName, entry.getKey());
 		}
-		return null; // TODO: What is the verdict here?
+		return finalVerdict;
 	}
 
 	@Override
