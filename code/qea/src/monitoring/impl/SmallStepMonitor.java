@@ -20,6 +20,9 @@ public abstract class SmallStepMonitor<Q extends QEA> extends Monitor<Q> {
 
 	@Override
 	public Verdict trace(int[] eventNames, Object[][] args) {
+
+		Verdict finalVerdict = null;
+
 		for (int i = 0; i < eventNames.length; i++) {
 			switch (args[i].length) {
 			case 0:
@@ -48,7 +51,7 @@ public abstract class SmallStepMonitor<Q extends QEA> extends Monitor<Q> {
 			}
 			step(eventNames[i], args[i]);
 		}
-		return null; // TODO: What's the return value here?
+		return finalVerdict;
 	}
 
 }
