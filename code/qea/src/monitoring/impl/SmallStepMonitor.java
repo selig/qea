@@ -14,6 +14,10 @@ import structure.intf.QEA;
  */
 public abstract class SmallStepMonitor<Q extends QEA> extends Monitor<Q> {
 
+	protected int bindingsInNonFinalStateCount;
+
+	protected int bindingsInFinalStateCount;
+
 	public SmallStepMonitor(Q q) {
 		super(q);
 	}
@@ -52,6 +56,33 @@ public abstract class SmallStepMonitor<Q extends QEA> extends Monitor<Q> {
 			step(eventNames[i], args[i]);
 		}
 		return finalVerdict;
+	}
+
+	/**
+	 * Determines if all bindings for the current monitor are in a final state
+	 * 
+	 * @return <code>true</code> if all bindings for the current monitor are in
+	 *         a final state; <code>false</code> otherwise
+	 */
+	protected boolean allBindingsInFinalState() {
+		if (bindingsInNonFinalStateCount == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Determines if there is at least one binding in a final state for the
+	 * current monitor
+	 * 
+	 * @return <code>true</code> if at least one binding is in final state;
+	 *         <code>false</code> otherwise
+	 */
+	protected boolean existsOneBindingInFinalState() {
+		if (bindingsInFinalStateCount > 0) {
+			return true;
+		}
+		return false;
 	}
 
 }
