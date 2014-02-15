@@ -16,10 +16,6 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor<SimplestQEA> {
 
 	private IdentityHashMap<Object, Integer> bindings;
 
-	private int bindingsInNonFinalStateCount;
-
-	private int bindingsInFinalStateCount;
-
 	/**
 	 * Creates a SimplestSmallStepQEAMonitor for the specified QEA
 	 * 
@@ -110,33 +106,6 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor<SimplestQEA> {
 			return Verdict.SUCCESS;
 		}
 		return Verdict.FAILURE;
-	}
-
-	/**
-	 * Determines if all bindings for the current monitor are in a final state
-	 * 
-	 * @return <code>true</code> if all bindings for the current monitor are in
-	 *         a final state; <code>false</code> otherwise
-	 */
-	private boolean allBindingsInFinalState() {
-		if (bindingsInNonFinalStateCount == 0) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Determines if there is at least one binding in a final state for the
-	 * current monitor
-	 * 
-	 * @return <code>true</code> if at least one binding is in final state;
-	 *         <code>false</code> otherwise
-	 */
-	private boolean existsOneBindingInFinalState() {
-		if (bindingsInFinalStateCount > 0) {
-			return true;
-		}
-		return false;
 	}
 
 }
