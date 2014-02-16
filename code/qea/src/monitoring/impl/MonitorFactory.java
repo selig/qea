@@ -1,5 +1,7 @@
 package monitoring.impl;
 
+import java.util.Arrays;
+
 import monitoring.impl.monitors.*;
 import monitoring.intf.Monitor;
 import structure.impl.SimplestQEA;
@@ -27,8 +29,8 @@ public class MonitorFactory {
 	public static Monitor create(QEA qea) {
 		
 		if(qea instanceof SimplestQEA){
-			if(qea.getLambda().length==0) return new SimplestIncrementalQEAMonitor((SimplestQEA) qea);
-			else return new SmallStepPropositionalQEAMonitor((SimplestQEA) qea);
+			if(qea.getLambda().length==0) return new SmallStepPropositionalQEAMonitor((SimplestQEA) qea);
+			else return new SimplestIncrementalQEAMonitor((SimplestQEA) qea);
 			
 		} else if (!qea.isDeterministic() && !qea.usesFreeVariables()
 				&& qea.getLambda().length == 1) {

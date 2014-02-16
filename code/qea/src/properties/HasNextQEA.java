@@ -1,6 +1,7 @@
 package properties;
 
 import structure.impl.SimplestQEA;
+import static structure.impl.Quantification.*;
 
 
 /**
@@ -24,7 +25,7 @@ public class HasNextQEA extends SimplestQEA {
 	
 	public HasNextQEA() {
 		// we use three states, three events and 0 as the initial state
-		super(3,3,1,true);
+		super(3,3,1,FORALL);
 		
 		//TODO add flag for quantified
 		
