@@ -1,10 +1,11 @@
 package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
+import java.util.Map;
 
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.NonDetConfig;
-import structure.impl.SimpleNonDeterministicQEA;
+import structure.impl.SimpleNonDetQEA;
 import structure.impl.Verdict;
 import exceptions.ShouldNotHappenException;
 
@@ -14,22 +15,14 @@ import exceptions.ShouldNotHappenException;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class IncrementalNonDetQEAMonitor extends
-		IncrementalMonitor<SimpleNonDeterministicQEA> {
+public class IncrementalSimpleNonDetQEAMonitor extends
+	IncrementalSimpleQEAMonitor<SimpleNonDetQEA> {
 
 	private IdentityHashMap<Object, NonDetConfig> bindings;
 
-	public IncrementalNonDetQEAMonitor(SimpleNonDeterministicQEA qea) {
+	public IncrementalSimpleNonDetQEAMonitor(SimpleNonDetQEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
-		bindingsInNonFinalStateCount = 0;
-		bindingsInFinalStateCount = 0;
-	}
-
-	@Override
-	public Verdict step(int eventName, Object[] args) {
-		if(args.length>1) throw new ShouldNotHappenException("Was only expecting one parameter");
-		return step(eventName,args[0]);
 	}
 
 	@Override
@@ -92,17 +85,13 @@ public class IncrementalNonDetQEAMonitor extends
 		}
 		return Verdict.WEAK_FAILURE;
 	}
-
 	@Override
 	public Verdict step(int eventName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Verdict end() {
-		// TODO Auto-generated method stub
-		return null;
+		Verdict finalVerdict = null;
+		for (Map.Entry<Object, NonDetConfig> entry : bindings.entrySet()) {
+			finalVerdict = step(eventName, entry.getKey());
+		}
+		return finalVerdict;
 	}
 
 	/*

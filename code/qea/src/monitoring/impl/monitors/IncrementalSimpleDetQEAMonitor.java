@@ -7,7 +7,7 @@ import exceptions.ShouldNotHappenException;
 
 import monitoring.impl.IncrementalMonitor;
 
-import structure.impl.SimplestQEA;
+import structure.impl.SimpleDetQEA;
 import structure.impl.Verdict;
 
 /**
@@ -16,7 +16,7 @@ import structure.impl.Verdict;
  * @author Giles Reger
  * @author Helena Cuenca
  */
-public class SimplestIncrementalQEAMonitor extends IncrementalMonitor<SimplestQEA> {
+public class IncrementalSimpleDetQEAMonitor extends IncrementalSimpleQEAMonitor<SimpleDetQEA> {
 
 	private IdentityHashMap<Object, Integer> bindings;
 
@@ -26,11 +26,9 @@ public class SimplestIncrementalQEAMonitor extends IncrementalMonitor<SimplestQE
 	 * @param qea
 	 *            QEA
 	 */
-	public SimplestIncrementalQEAMonitor(SimplestQEA qea) {
+	public IncrementalSimpleDetQEAMonitor(SimpleDetQEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
-		bindingsInNonFinalStateCount = 0;
-		bindingsInFinalStateCount = 0;
 	}
 
 	@Override
@@ -100,16 +98,5 @@ public class SimplestIncrementalQEAMonitor extends IncrementalMonitor<SimplestQE
 		return finalVerdict;
 	}
 
-	@Override
-	public Verdict end() {
-
-		// According to the quantification of the variable, return verdict
-		if (qea.isQuantificationUniversal() && allBindingsInFinalState()
-				|| !qea.isQuantificationUniversal()
-				&& existsOneBindingInFinalState()) {
-			return Verdict.SUCCESS;
-		}
-		return Verdict.FAILURE;
-	}
 
 }

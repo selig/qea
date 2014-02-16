@@ -31,7 +31,7 @@ public class SampleNonDetTest {
 	}
 	
 	private void printMonitor(){
-		System.out.println(((IncrementalNonDetQEAMonitor) monitor));
+		System.out.println(((IncrementalSimpleNonDetQEAMonitor) monitor));
 	}
 	
 	@Test

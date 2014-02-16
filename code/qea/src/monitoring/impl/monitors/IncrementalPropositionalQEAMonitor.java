@@ -2,7 +2,7 @@ package monitoring.impl.monitors;
 
 import exceptions.ShouldNotHappenException;
 import monitoring.impl.IncrementalMonitor;
-import structure.impl.SimplestQEA;
+import structure.impl.SimpleDetQEA;
 import structure.impl.Verdict;
 
 /**
@@ -11,12 +11,12 @@ import structure.impl.Verdict;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class SmallStepPropositionalQEAMonitor extends
-		IncrementalMonitor<SimplestQEA> {
+public class IncrementalPropositionalQEAMonitor extends
+		IncrementalMonitor<SimpleDetQEA> {
 
 	private int currentState;
 
-	public SmallStepPropositionalQEAMonitor(SimplestQEA qea) {
+	public IncrementalPropositionalQEAMonitor(SimpleDetQEA qea) {
 		super(qea);
 		currentState = 1; // Set initial state
 	}

@@ -1,6 +1,6 @@
 package properties;
 
-import structure.impl.SimplestQEA;
+import structure.impl.SimpleDetQEA;
 import static structure.impl.Quantification.*;
 
 /**
@@ -11,7 +11,7 @@ import static structure.impl.Quantification.*;
  * @author Giles Reger
  */
 
-public class UseFileQEA extends SimplestQEA {
+public class UseFileQEA extends SimpleDetQEA {
 
 	
 	public UseFileQEA() {
