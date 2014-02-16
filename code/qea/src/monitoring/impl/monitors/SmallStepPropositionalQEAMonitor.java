@@ -1,5 +1,7 @@
-package monitoring.impl;
+package monitoring.impl.monitors;
 
+import exceptions.ShouldNotHappenException;
+import monitoring.impl.IncrementalMonitor;
 import structure.impl.SimplestQEA;
 import structure.impl.Verdict;
 
@@ -10,7 +12,7 @@ import structure.impl.Verdict;
  * @author Giles Reger
  */
 public class SmallStepPropositionalQEAMonitor extends
-		SmallStepMonitor<SimplestQEA> {
+		IncrementalMonitor<SimplestQEA> {
 
 	private int currentState;
 
@@ -21,9 +23,9 @@ public class SmallStepPropositionalQEAMonitor extends
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new ShouldNotHappenException("Never call propositional QEA with arguments");
 	}
+
 
 	@Override
 	public Verdict step(int eventName) {

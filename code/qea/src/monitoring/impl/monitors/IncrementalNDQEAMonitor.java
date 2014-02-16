@@ -1,6 +1,9 @@
-package monitoring.impl;
+package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
+
+import monitoring.impl.IncrementalMonitor;
+import monitoring.impl.configs.NonDetConfig;
 
 import structure.impl.SimpleNonDeterministicQEA;
 import structure.impl.Verdict;
@@ -11,12 +14,12 @@ import structure.impl.Verdict;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class SmallStepNDQEAMonitor extends // TODO Check name
-		SmallStepMonitor<SimpleNonDeterministicQEA> {
+public class IncrementalNDQEAMonitor extends // TODO Check name
+		IncrementalMonitor<SimpleNonDeterministicQEA> {
 
 	private IdentityHashMap<Object, NonDetConfig> bindings;
 
-	public SmallStepNDQEAMonitor(SimpleNonDeterministicQEA qea) {
+	public IncrementalNDQEAMonitor(SimpleNonDeterministicQEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
 		bindingsInNonFinalStateCount = 0;
