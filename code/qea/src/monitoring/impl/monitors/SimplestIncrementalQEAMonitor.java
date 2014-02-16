@@ -1,7 +1,9 @@
-package monitoring.impl;
+package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+
+import monitoring.impl.IncrementalMonitor;
 
 import structure.impl.SimplestQEA;
 import structure.impl.Verdict;
@@ -12,7 +14,7 @@ import structure.impl.Verdict;
  * @author Giles Reger
  * @author Helena Cuenca
  */
-public class SimplestSmallStepQEAMonitor extends SmallStepMonitor<SimplestQEA> {
+public class SimplestIncrementalQEAMonitor extends IncrementalMonitor<SimplestQEA> {
 
 	private IdentityHashMap<Object, Integer> bindings;
 
@@ -22,7 +24,7 @@ public class SimplestSmallStepQEAMonitor extends SmallStepMonitor<SimplestQEA> {
 	 * @param qea
 	 *            QEA
 	 */
-	SimplestSmallStepQEAMonitor(SimplestQEA qea) {
+	public SimplestIncrementalQEAMonitor(SimplestQEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
 		bindingsInNonFinalStateCount = 0;

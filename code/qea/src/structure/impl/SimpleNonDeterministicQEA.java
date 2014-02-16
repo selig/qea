@@ -1,6 +1,6 @@
 package structure.impl;
 
-import monitoring.impl.NonDetConfig;
+import monitoring.impl.configs.NonDetConfig;
 import structure.intf.QEA;
 
 /**

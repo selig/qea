@@ -7,18 +7,17 @@ import structure.intf.QEA;
 /**
  * All incremental monitors implement the trace method using the step method.
  * 
- * TODO: Consider using "incremental" instead of "smallstep"
  * 
  * @author Giles Reger
  * @author Helena Cuenca
  */
-public abstract class SmallStepMonitor<Q extends QEA> extends Monitor<Q> {
+public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 
 	protected int bindingsInNonFinalStateCount;
 
 	protected int bindingsInFinalStateCount;
 
-	public SmallStepMonitor(Q q) {
+	public IncrementalMonitor(Q q) {
 		super(q);
 	}
 

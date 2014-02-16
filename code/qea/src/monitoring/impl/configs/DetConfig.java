@@ -1,4 +1,4 @@
-package monitoring.impl;
+package monitoring.impl.configs;
 
 import monitoring.intf.Configuration;
 import structure.intf.Binding;
