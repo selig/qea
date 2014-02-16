@@ -1,5 +1,7 @@
 package monitoring.impl.configs;
 
+import java.util.Arrays;
+
 import monitoring.intf.Configuration;
 import structure.intf.Binding;
 
@@ -34,4 +36,12 @@ public class NonDetConfig implements Configuration {
 		this.states = states;
 	}
 
+	/*
+	 * Override toString to print out config
+	 */
+	@Override
+	public String toString(){
+		// currently ignores bindings
+		return Arrays.toString(states);
+	}
 }

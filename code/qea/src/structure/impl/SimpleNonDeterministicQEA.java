@@ -1,7 +1,10 @@
 package structure.impl;
 
+import exceptions.ShouldNotHappenException;
 import monitoring.impl.configs.NonDetConfig;
 import structure.intf.QEA;
+import structure.impl.Quantification;
+import static structure.impl.Quantification.*;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
@@ -24,14 +27,20 @@ public class SimpleNonDeterministicQEA implements QEA {
 
 	protected final int initialState;
 
-	private boolean quantificationUniversal;
+	private final boolean quantificationUniversal;
+	private final boolean isPropositional;
 
 	public SimpleNonDeterministicQEA(int numStates, int numEvents,
-			int initialState, boolean quantificationUniversal) {
+			int initialState, Quantification quantification) {
 		delta = new int[numStates + 1][numEvents + 1][numStates + 1];
 		finalStates = new int[numStates + 1];
 		this.initialState = initialState;
-		this.quantificationUniversal = quantificationUniversal;
+		switch(quantification){
+		case FORALL : this.quantificationUniversal =true; this.isPropositional=false; break;
+		case EXISTS : this.quantificationUniversal =false; this.isPropositional=false; break;
+		case NONE : this.quantificationUniversal =false; this.isPropositional=true; break;
+		default : throw new ShouldNotHappenException("Unknown quantification "+quantification);
+	}
 	}
 
 	/**
@@ -82,13 +91,16 @@ public class SimpleNonDeterministicQEA implements QEA {
 
 				// Iterate over the intermediate arrays of end states
 				for (int j = 0; j < intermEndStates.length; j++) {
-					if (!endStatesBool[j]) {
-						endStatesBool[j] = true;
+					int newEndState = intermEndStates[j];
+					if (!endStatesBool[newEndState]) {
+						endStatesBool[newEndState] = true;
 						endStatesCount++;
 					}
 				}
 			}
 
+			//System.out.println("endStatesBool: "+java.util.Arrays.toString(endStatesBool));
+			
 			// Remove state 0 if there are other end states
 			if (endStatesBool[0] && endStatesCount > 1) {
 				endStatesBool[0] = false;
@@ -181,9 +193,8 @@ public class SimpleNonDeterministicQEA implements QEA {
 
 	@Override
 	public int[] getLambda() {
-		if (quantificationUniversal) {
-			return new int[] { 1 };
-		}
+		if(isPropositional) return new int[]{};
+		if (quantificationUniversal) return new int[] { 1 };
 		return new int[] { -1 };
 	}
 
