@@ -1,9 +1,9 @@
 package properties;
 
-import structure.impl.SimpleNonDeterministicQEA;
+import structure.impl.SimpleNonDetQEA;
 import static structure.impl.Quantification.*;
 
-public class SampleNonDetQEA extends SimpleNonDeterministicQEA{
+public class SampleNonDetQEA extends SimpleNonDetQEA{
 
 	
 	public SampleNonDetQEA() {

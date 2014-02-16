@@ -1,0 +1,95 @@
+package structure.impl;
+
+import exceptions.ShouldNotHappenException;
+import structure.intf.QEA;
+
+public abstract class SimpleQEA implements QEA{
+
+	protected int[] finalStates;
+	
+	protected final int initialState;
+
+	protected final boolean isPropositional;
+	protected final boolean quantificationUniversal;
+	
+	
+	public SimpleQEA(int numStates, int initialState,Quantification quantification) {
+		finalStates = new int[numStates + 1];
+		this.initialState = initialState;
+		switch(quantification){
+			case FORALL : this.quantificationUniversal =true; this.isPropositional=false; break;
+			case EXISTS : this.quantificationUniversal =false; this.isPropositional=false; break;
+			case NONE : this.quantificationUniversal =false; this.isPropositional=true; break;
+			default : throw new ShouldNotHappenException("Unknown quantification "+quantification);
+		}
+	}	
+	
+	/**
+	 * Adds the specified state to the set of final states
+	 * 
+	 * @param state
+	 *            State name
+	 */
+	public void setStateAsFinal(int state) {
+		finalStates[state] = 1;
+	}
+
+	/**
+	 * Adds the specified states to the set of final statess
+	 * 
+	 * @param states
+	 *            Names of states to add
+	 */
+	public void setStatesAsFinal(int... states) {
+		for (int state : states)
+			finalStates[state] = 1;
+	}
+
+	@Override
+	public int[] getStates() {
+		int[] q = new int[finalStates.length];
+		for (int i = 0; i < q.length; i++) {
+			q[i] = i + 1; // TODO Is this method returning one more state?
+		}
+		return q;
+	}	
+
+	/**
+	 * Returns the quantification list in order. Variables are positive if
+	 * universally quantified and negative if existentially quantifed.
+	 * 
+	 * @return Returns Lambda
+	 */
+	public int[] getLambda() {
+		if(isPropositional) return new int[]{};
+		if (quantificationUniversal) return new int[] { 1 };
+		return new int[] { -1 };
+	}	
+	
+	@Override
+	public boolean usesFreeVariables() {
+		return false;
+	}
+	
+	/**
+	 * Determines if the specified state is in the set of final states
+	 * 
+	 * @param state
+	 * @return true if the specified state is a final state. Otherwise, false
+	 */
+	public boolean isStateFinal(int state) {
+		if (finalStates[state] == 1) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @return true if the quantification for the variable of this QEA is
+	 *         universal. false if it is existential
+	 */
+	public boolean isQuantificationUniversal() {
+		return quantificationUniversal;
+	}	
+	
+}

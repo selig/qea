@@ -19,28 +19,17 @@ import static structure.impl.Quantification.*;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class SimpleNonDeterministicQEA implements QEA {
+public class SimpleNonDetQEA extends SimpleQEA {
 
-	private int[] finalStates;
 
 	private int[][][] delta;
 
-	protected final int initialState;
 
-	private final boolean quantificationUniversal;
-	private final boolean isPropositional;
-
-	public SimpleNonDeterministicQEA(int numStates, int numEvents,
+	public SimpleNonDetQEA(int numStates, int numEvents,
 			int initialState, Quantification quantification) {
+		super(numStates,initialState,quantification);
 		delta = new int[numStates + 1][numEvents + 1][numStates + 1];
-		finalStates = new int[numStates + 1];
-		this.initialState = initialState;
-		switch(quantification){
-		case FORALL : this.quantificationUniversal =true; this.isPropositional=false; break;
-		case EXISTS : this.quantificationUniversal =false; this.isPropositional=false; break;
-		case NONE : this.quantificationUniversal =false; this.isPropositional=true; break;
-		default : throw new ShouldNotHappenException("Unknown quantification "+quantification);
-	}
+
 	}
 
 	/**
@@ -102,6 +91,7 @@ public class SimpleNonDeterministicQEA implements QEA {
 			//System.out.println("endStatesBool: "+java.util.Arrays.toString(endStatesBool));
 			
 			// Remove state 0 if there are other end states
+			// Because state 0 is the failure state, and can be safely removed
 			if (endStatesBool[0] && endStatesCount > 1) {
 				endStatesBool[0] = false;
 				endStatesCount--;
@@ -152,35 +142,6 @@ public class SimpleNonDeterministicQEA implements QEA {
 		return false;
 	}
 
-	/**
-	 * Adds the specified state to the set of final states
-	 * 
-	 * @param state
-	 *            State name
-	 */
-	public void setStateAsFinal(int state) {
-		finalStates[state] = 1;
-	}
-
-	/**
-	 * Adds the specified states to the set of final statess
-	 * 
-	 * @param states
-	 *            Names of states to add
-	 */
-	public void setStatesAsFinal(int... states) {
-		for (int state : states)
-			finalStates[state] = 1;
-	}
-
-	@Override
-	public int[] getStates() {
-		int[] q = new int[delta.length];
-		for (int i = 0; i < q.length; i++) {
-			q[i] = i + 1; // TODO Is this method returning one more state?
-		}
-		return q;
-	}
 
 	@Override
 	public int[] getEventsAlphabet() {
@@ -191,33 +152,11 @@ public class SimpleNonDeterministicQEA implements QEA {
 		return a;
 	}
 
-	@Override
-	public int[] getLambda() {
-		if(isPropositional) return new int[]{};
-		if (quantificationUniversal) return new int[] { 1 };
-		return new int[] { -1 };
-	}
 
 	@Override
 	public boolean isDeterministic() {
 		return false;
 	}
-
-	@Override
-	public boolean usesFreeVariables() {
-		return false;
-	}
-
-	@Override
-	public boolean isStateFinal(int state) {
-		if (finalStates[state] == 1) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isQuantificationUniversal() {
-		return quantificationUniversal;
-	}
-
+	
+	
 }
