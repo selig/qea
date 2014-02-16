@@ -124,9 +124,7 @@ public class SimplestQEA implements QEA {
 	 */
 	public int[] getLambda() {
 		if(isPropositional) return new int[]{};
-		if (quantificationUniversal) {
-			return new int[] { 1 };
-		}
+		if (quantificationUniversal) return new int[] { 1 };
 		return new int[] { -1 };
 	}
 

@@ -54,6 +54,7 @@ public class IncrementalNonDetQEAMonitor extends
 			config = new NonDetConfig();
 		}
 
+		
 		// Flag needed to update counters later
 		boolean startConfigFinal = qea.containsFinalState(config);
 
@@ -104,4 +105,16 @@ public class IncrementalNonDetQEAMonitor extends
 		return null;
 	}
 
+	/*
+	 * Override toString to print current map to configurations
+	 */
+	@Override
+	public String toString(){
+		String ret = "Map:\n";
+		for(IdentityHashMap.Entry<Object,NonDetConfig> entry : bindings.entrySet()){
+			ret += entry.getKey()+"\t->\t"+entry.getValue()+"\n";
+		}
+		return ret;
+	}
+	
 }
