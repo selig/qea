@@ -4,9 +4,9 @@ import java.util.IdentityHashMap;
 
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.NonDetConfig;
-
 import structure.impl.SimpleNonDeterministicQEA;
 import structure.impl.Verdict;
+import exceptions.ShouldNotHappenException;
 
 /**
  * A small-step monitor for a non-deterministic simple QEA
@@ -14,12 +14,12 @@ import structure.impl.Verdict;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class IncrementalNDQEAMonitor extends // TODO Check name
+public class IncrementalNonDetQEAMonitor extends
 		IncrementalMonitor<SimpleNonDeterministicQEA> {
 
 	private IdentityHashMap<Object, NonDetConfig> bindings;
 
-	public IncrementalNDQEAMonitor(SimpleNonDeterministicQEA qea) {
+	public IncrementalNonDetQEAMonitor(SimpleNonDeterministicQEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
 		bindingsInNonFinalStateCount = 0;
@@ -28,8 +28,8 @@ public class IncrementalNDQEAMonitor extends // TODO Check name
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-		// TODO Auto-generated method stub
-		return null;
+		if(args.length>1) throw new ShouldNotHappenException("Was only expecting one parameter");
+		return step(eventName,args[0]);
 	}
 
 	@Override

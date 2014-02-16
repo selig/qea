@@ -47,7 +47,7 @@ public class UseFilePropositionalTest {
 		assertEquals(monitor.step(OPEN),WEAK_FAILURE);
 		assertEquals(monitor.step(USE),WEAK_FAILURE);
 		assertEquals(monitor.step(CLOSE),WEAK_FAILURE);
-		assertEquals(monitor.step(CLOSE),WEAK_SUCCESS);		
+		assertEquals(monitor.step(CLOSE),WEAK_FAILURE);		
 		assertEquals(monitor.step(OPEN),WEAK_FAILURE);
 		assertEquals(monitor.step(USE),WEAK_FAILURE);
 		assertEquals(monitor.step(CLOSE),WEAK_FAILURE);		

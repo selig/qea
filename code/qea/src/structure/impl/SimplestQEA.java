@@ -1,6 +1,7 @@
 package structure.impl;
 
 import structure.intf.QEA;
+import exceptions.ShouldNotHappenException;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
@@ -23,14 +24,20 @@ public class SimplestQEA implements QEA {
 
 	protected final int initialState;
 
-	private boolean quantificationUniversal;
+	private final boolean isPropositional;
+	private final boolean quantificationUniversal;
 
 	public SimplestQEA(int numStates, int numEvents, int initialState,
-			boolean quantificationUniversal) {
+			Quantification quantification) {
 		delta = new int[numStates + 1][numEvents + 1];
 		finalStates = new int[numStates + 1];
 		this.initialState = initialState;
-		this.quantificationUniversal = quantificationUniversal;
+		switch(quantification){
+			case FORALL : this.quantificationUniversal =true; this.isPropositional=false; break;
+			case EXISTS : this.quantificationUniversal =false; this.isPropositional=false; break;
+			case NONE : this.quantificationUniversal =false; this.isPropositional=true; break;
+			default : throw new ShouldNotHappenException("Unknown quantification "+quantification);
+		}
 	}
 
 	/**
@@ -116,6 +123,7 @@ public class SimplestQEA implements QEA {
 	 * @return Returns Lambda
 	 */
 	public int[] getLambda() {
+		if(isPropositional) return new int[]{};
 		if (quantificationUniversal) {
 			return new int[] { 1 };
 		}

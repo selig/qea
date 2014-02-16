@@ -1,6 +1,7 @@
 package properties;
 
 import structure.impl.SimplestQEA;
+import static structure.impl.Quantification.*;
 
 /**
  * A QEA giving the very simple UseFile property
@@ -16,7 +17,7 @@ public class UseFilePropositionalQEA extends SimplestQEA {
 	
 	public UseFilePropositionalQEA() {
 		// we use two states, three events and 0 as the initial state
-		super(2,3,1,true);
+		super(2,3,1,NONE);
 		
 		//TODO add flag for unquantified		
 		

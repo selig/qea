@@ -3,6 +3,8 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import exceptions.ShouldNotHappenException;
+
 import monitoring.impl.IncrementalMonitor;
 
 import structure.impl.SimplestQEA;
@@ -33,8 +35,8 @@ public class SimplestIncrementalQEAMonitor extends IncrementalMonitor<SimplestQE
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-		// TODO Auto-generated method stub
-		return null;
+		if(args.length>1) throw new ShouldNotHappenException("Was only expecting one parameter");
+		return step(eventName,args[0]);
 	}
 
 	@Override
