@@ -29,27 +29,28 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 		for (int i = 0; i < eventNames.length; i++) {
 			switch (args[i].length) {
 			case 0:
-				step(eventNames[i]);
+				finalVerdict = step(eventNames[i]);
 				break;
 			case 1:
-				step(eventNames[i], args[i][0]);
+				finalVerdict = step(eventNames[i], args[i][0]);
 				break;
 			case 2:
-				step(eventNames[i], args[i][0], args[i][1]);
+				finalVerdict = step(eventNames[i], args[i][0], args[i][1]);
 				break;
 			case 3:
-				step(eventNames[i], args[i][0], args[i][1], args[i][2]);
+				finalVerdict = step(eventNames[i], args[i][0], args[i][1],
+						args[i][2]);
 				break;
 			case 4:
-				step(eventNames[i], args[i][0], args[i][1], args[i][2],
-						args[i][3]);
+				finalVerdict = step(eventNames[i], args[i][0], args[i][1],
+						args[i][2], args[i][3]);
 				break;
 			case 5:
-				step(eventNames[i], args[i][0], args[i][1], args[i][2],
-						args[i][3], args[i][4]);
+				finalVerdict = step(eventNames[i], args[i][0], args[i][1],
+						args[i][2], args[i][3], args[i][4]);
 				break;
 			default:
-				step(eventNames[i], args[i]);
+				finalVerdict = step(eventNames[i], args[i]);
 				break;
 			}
 			step(eventNames[i], args[i]);
