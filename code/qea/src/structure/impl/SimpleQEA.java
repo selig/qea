@@ -1,29 +1,41 @@
 package structure.impl;
 
-import exceptions.ShouldNotHappenException;
 import structure.intf.QEA;
+import exceptions.ShouldNotHappenException;
 
-public abstract class SimpleQEA implements QEA{
+public abstract class SimpleQEA implements QEA {
 
 	protected int[] finalStates;
-	
+
 	protected final int initialState;
 
 	protected final boolean isPropositional;
+
 	protected final boolean quantificationUniversal;
-	
-	
-	public SimpleQEA(int numStates, int initialState,Quantification quantification) {
+
+	public SimpleQEA(int numStates, int initialState,
+			Quantification quantification) {
 		finalStates = new int[numStates + 1];
 		this.initialState = initialState;
-		switch(quantification){
-			case FORALL : this.quantificationUniversal =true; this.isPropositional=false; break;
-			case EXISTS : this.quantificationUniversal =false; this.isPropositional=false; break;
-			case NONE : this.quantificationUniversal =false; this.isPropositional=true; break;
-			default : throw new ShouldNotHappenException("Unknown quantification "+quantification);
+		switch (quantification) {
+		case FORALL:
+			this.quantificationUniversal = true;
+			this.isPropositional = false;
+			break;
+		case EXISTS:
+			this.quantificationUniversal = false;
+			this.isPropositional = false;
+			break;
+		case NONE:
+			this.quantificationUniversal = false;
+			this.isPropositional = true;
+			break;
+		default:
+			throw new ShouldNotHappenException("Unknown quantification "
+					+ quantification);
 		}
-	}	
-	
+	}
+
 	/**
 	 * Adds the specified state to the set of final states
 	 * 
@@ -52,7 +64,16 @@ public abstract class SimpleQEA implements QEA{
 			q[i] = i + 1; // TODO Is this method returning one more state?
 		}
 		return q;
-	}	
+	}
+
+	/**
+	 * Returns the initial state for this QEA
+	 * 
+	 * @return Initial state
+	 */
+	public int getInitialState() {
+		return initialState;
+	}
 
 	/**
 	 * Returns the quantification list in order. Variables are positive if
@@ -61,16 +82,18 @@ public abstract class SimpleQEA implements QEA{
 	 * @return Returns Lambda
 	 */
 	public int[] getLambda() {
-		if(isPropositional) return new int[]{};
-		if (quantificationUniversal) return new int[] { 1 };
+		if (isPropositional)
+			return new int[] {};
+		if (quantificationUniversal)
+			return new int[] { 1 };
 		return new int[] { -1 };
-	}	
-	
+	}
+
 	@Override
 	public boolean usesFreeVariables() {
 		return false;
 	}
-	
+
 	/**
 	 * Determines if the specified state is in the set of final states
 	 * 
@@ -90,6 +113,6 @@ public abstract class SimpleQEA implements QEA{
 	 */
 	public boolean isQuantificationUniversal() {
 		return quantificationUniversal;
-	}	
-	
+	}
+
 }
