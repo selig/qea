@@ -1,9 +1,9 @@
 package monitoring.impl.monitors;
 
-import exceptions.ShouldNotHappenException;
 import monitoring.impl.IncrementalMonitor;
 import structure.impl.SimpleDetQEA;
 import structure.impl.Verdict;
+import exceptions.ShouldNotHappenException;
 
 /**
  * A small-step monitor for a simple QEA with no quantified variables
@@ -18,14 +18,14 @@ public class IncrementalPropositionalQEAMonitor extends
 
 	public IncrementalPropositionalQEAMonitor(SimpleDetQEA qea) {
 		super(qea);
-		currentState = 1; // Set initial state
+		currentState = qea.getInitialState(); // Set initial state
 	}
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-		throw new ShouldNotHappenException("Never call propositional QEA with arguments");
+		throw new ShouldNotHappenException(
+				"Never call propositional QEA with arguments");
 	}
-
 
 	@Override
 	public Verdict step(int eventName) {
