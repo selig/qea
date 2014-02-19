@@ -17,11 +17,11 @@ public class NonDetConfig implements Configuration {
 	private Binding[] bindings;
 
 	/**
-	 * Creates a non-deterministic configuration with the default state
+	 * Creates a non-deterministic configuration with the initial state
 	 */
-	public NonDetConfig() {
+	public NonDetConfig(int initialState) {
 		states = new int[1];
-		states[0] = 1;
+		states[0] = initialState;
 	}
 
 	public int[] getStates() {
