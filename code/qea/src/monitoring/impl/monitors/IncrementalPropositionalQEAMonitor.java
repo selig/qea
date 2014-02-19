@@ -1,6 +1,7 @@
 package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
+import monitoring.impl.configs.DetConfig;
 import structure.impl.SimpleDetQEA;
 import structure.impl.Verdict;
 import exceptions.ShouldNotHappenException;
@@ -14,11 +15,14 @@ import exceptions.ShouldNotHappenException;
 public class IncrementalPropositionalQEAMonitor extends
 		IncrementalMonitor<SimpleDetQEA> {
 
-	private int currentState;
+	/**
+	 * Current configuration (state) for the monitor
+	 */
+	private DetConfig currentConfig;
 
 	public IncrementalPropositionalQEAMonitor(SimpleDetQEA qea) {
 		super(qea);
-		currentState = qea.getInitialState(); // Set initial state
+		currentConfig.setState(qea.getInitialState());
 	}
 
 	@Override
@@ -31,10 +35,11 @@ public class IncrementalPropositionalQEAMonitor extends
 	public Verdict step(int eventName) {
 
 		// Update state
-		currentState = qea.getNextState(currentState, eventName);
+		currentConfig.setState(qea.getNextState(currentConfig.getState(),
+				eventName));
 
 		// Determine verdict according to the state
-		if (qea.isStateFinal(currentState)) {
+		if (qea.isStateFinal(currentConfig.getState())) {
 			return Verdict.WEAK_SUCCESS;
 		}
 		return Verdict.WEAK_FAILURE;
@@ -44,7 +49,7 @@ public class IncrementalPropositionalQEAMonitor extends
 	public Verdict end() {
 
 		// Determine verdict according to the state
-		if (qea.isStateFinal(currentState)) {
+		if (qea.isStateFinal(currentConfig.getState())) {
 			return Verdict.SUCCESS;
 		}
 		return Verdict.FAILURE;
