@@ -19,7 +19,7 @@ public class IncrementalSimpleDetQEAMonitor extends
 	private IdentityHashMap<Object, Integer> bindings;
 
 	/**
-	 * Creates a SimplestSmallStepQEAMonitor for the specified QEA
+	 * Creates an IncrementalSimpleDetQEAMonitor for the specified QEA
 	 * 
 	 * @param qea
 	 *            QEA
