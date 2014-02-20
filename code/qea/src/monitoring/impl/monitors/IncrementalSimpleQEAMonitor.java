@@ -9,8 +9,6 @@ public abstract class IncrementalSimpleQEAMonitor<Q extends SimpleQEA> extends I
 
 	public IncrementalSimpleQEAMonitor(Q q) {
 		super(q);
-		bindingsInNonFinalStateCount = 0;
-		bindingsInFinalStateCount = 0;		
 	}
 
 	@Override
