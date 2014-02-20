@@ -1,5 +1,6 @@
 package structure.impl;
 
+import structure.intf.Binding;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
 
@@ -19,10 +20,13 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 
 	protected final boolean quantificationUniversal;
 
+	protected final int freeVariablesCount;
+
 	public NonSimpleQEA(int numStates, int initialState,
-			Quantification quantification) {
+			Quantification quantification, int freeVariablesCount) {
 		finalStates = new int[numStates + 1];
 		this.initialState = initialState;
+		this.freeVariablesCount = freeVariablesCount;
 		switch (quantification) {
 		case FORALL:
 			this.quantificationUniversal = true;
@@ -70,6 +74,15 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 			q[i] = i + 1;
 		}
 		return q;
+	}
+
+	/**
+	 * Creates a new binding of free variable for the current QEA
+	 * 
+	 * @return Binding
+	 */
+	public Binding newBinding() {
+		return new BindingImpl(freeVariablesCount);
 	}
 
 	/**
