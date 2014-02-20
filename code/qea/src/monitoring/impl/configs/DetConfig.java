@@ -26,4 +26,8 @@ public class DetConfig implements Configuration {
 		return binding;
 	}
 
+	public void setBinding(Binding binding) {
+		this.binding = binding;
+	}
+
 }
