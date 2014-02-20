@@ -65,7 +65,7 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 
 	@Override
 	public int[] getStates() {
-		int[] q = new int[finalStates.length - 1]; // TODO Check
+		int[] q = new int[finalStates.length - 1];
 		for (int i = 0; i < q.length; i++) {
 			q[i] = i + 1;
 		}
