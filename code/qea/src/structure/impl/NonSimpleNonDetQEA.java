@@ -42,8 +42,8 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 	 *            Quantification type
 	 */
 	public NonSimpleNonDetQEA(int numStates, int numEvents, int initialState,
-			Quantification quantification) {
-		super(numStates, initialState, quantification);
+			Quantification quantification, int freeVariablesCount) {
+		super(numStates, initialState, quantification, freeVariablesCount);
 		delta = new Transition[numStates + 1][numEvents + 1][];
 	}
 
