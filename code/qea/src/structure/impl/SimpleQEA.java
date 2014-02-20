@@ -59,9 +59,9 @@ public abstract class SimpleQEA implements QEA {
 
 	@Override
 	public int[] getStates() {
-		int[] q = new int[finalStates.length];
+		int[] q = new int[finalStates.length - 1];
 		for (int i = 0; i < q.length; i++) {
-			q[i] = i + 1; // TODO Is this method returning one more state?
+			q[i] = i + 1;
 		}
 		return q;
 	}
