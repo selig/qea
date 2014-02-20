@@ -43,8 +43,8 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 	 *            Quantification type
 	 */
 	public NonSimpleDetQEA(int numStates, int numEvents, int initialState,
-			Quantification quantification) {
-		super(numStates, initialState, quantification);
+			Quantification quantification, int freeVariablesCount) {
+		super(numStates, initialState, quantification, freeVariablesCount);
 		delta = new Transition[numStates + 1][numEvents + 1];
 	}
 
@@ -120,6 +120,37 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 
 		return config;
 
+	}
+
+	// TODO Check whether this method should be here or should be part of the
+	// monitor. Case not considered: The event is not defined for the start
+	// state specified in the configuration
+	public Object getQuantifiedVariableValue(DetConfig config, int event,
+			Object[] args) {
+
+		// TODO Remove cast
+		TransitionImpl transition = (TransitionImpl) delta[config.getState()][event];
+
+		// Check the number of arguments is equal to the number of variables of
+		// the event
+		if (args.length != transition.getVariableNames().length) {
+			throw new ShouldNotHappenException(
+					"The number of variables defined for this event doesn't match the number of arguments");
+		}
+
+		// Iterate over the arguments array
+		for (int i = 0; i < args.length; i++) {
+
+			// When the quantified variable is found in the parameters of the
+			// transition, return the object of the arguments in the same
+			// position
+			if (transition.getVariableNames()[i] < 0) {
+				return args[i];
+			}
+		}
+
+		// There's no quantified variable, all variables are free
+		return null;
 	}
 
 	@Override
