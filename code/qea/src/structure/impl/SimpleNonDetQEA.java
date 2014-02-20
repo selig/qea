@@ -1,10 +1,6 @@
 package structure.impl;
 
-import exceptions.ShouldNotHappenException;
 import monitoring.impl.configs.NonDetConfig;
-import structure.intf.QEA;
-import structure.impl.Quantification;
-import static structure.impl.Quantification.*;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
@@ -21,28 +17,40 @@ import static structure.impl.Quantification.*;
  */
 public class SimpleNonDetQEA extends SimpleQEA {
 
-
 	private int[][][] delta;
 
-
-	public SimpleNonDetQEA(int numStates, int numEvents,
-			int initialState, Quantification quantification) {
-		super(numStates,initialState,quantification);
-		delta = new int[numStates + 1][numEvents + 1][numStates + 1];
+	public SimpleNonDetQEA(int numStates, int numEvents, int initialState,
+			Quantification quantification) {
+		super(numStates, initialState, quantification);
+		delta = new int[numStates + 1][numEvents + 1][];
 
 	}
 
 	/**
-	 * Adds a transition for the transition function delta of this QEA
+	 * Adds a transition to the transition function delta of this QEA
 	 * 
 	 * @param startState
-	 *            Start state for this transition
+	 *            Start state for the transition
+	 * @param event
+	 *            Name of the event
+	 * @param endState
+	 *            End state for the transition
+	 */
+	public void addTransition(int startState, int event, int endState) {
+		delta[startState][event] = new int[] { endState };
+	}
+
+	/**
+	 * Adds a set of transitions to the transition function delta of this QEA
+	 * 
+	 * @param startState
+	 *            Start state for the transition
 	 * @param event
 	 *            Name of the event
 	 * @param endStates
-	 *            Array of end states for this transition
+	 *            Array of end states for the transition
 	 */
-	public void addTransition(int startState, int event, int[] endStates) {
+	public void addTransitions(int startState, int event, int[] endStates) {
 		delta[startState][event] = endStates;
 	}
 
@@ -88,8 +96,8 @@ public class SimpleNonDetQEA extends SimpleQEA {
 				}
 			}
 
-			//System.out.println("endStatesBool: "+java.util.Arrays.toString(endStatesBool));
-			
+			// System.out.println("endStatesBool: "+java.util.Arrays.toString(endStatesBool));
+
 			// Remove state 0 if there are other end states
 			// Because state 0 is the failure state, and can be safely removed
 			if (endStatesBool[0] && endStatesCount > 1) {
@@ -142,21 +150,18 @@ public class SimpleNonDetQEA extends SimpleQEA {
 		return false;
 	}
 
-
 	@Override
 	public int[] getEventsAlphabet() {
-		int[] a = new int[delta[0].length];
+		int[] a = new int[delta[0].length - 1];
 		for (int i = 0; i < a.length; i++) {
 			a[i] = i + 1;
 		}
 		return a;
 	}
 
-
 	@Override
 	public boolean isDeterministic() {
 		return false;
 	}
-	
-	
+
 }
