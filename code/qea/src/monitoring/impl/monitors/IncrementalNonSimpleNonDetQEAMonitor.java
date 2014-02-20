@@ -23,10 +23,4 @@ public class IncrementalNonSimpleNonDetQEAMonitor extends
 		return null;
 	}
 
-	@Override
-	public Verdict end() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
