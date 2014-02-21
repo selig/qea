@@ -14,12 +14,24 @@ public class DetConfig implements Configuration {
 
 	private Binding binding;
 
+	public DetConfig(int initialState) {
+		this.state = initialState;
+	}
+
+	public void setState(int state) {
+		this.state = state;
+	}
+
 	public int getState() {
 		return state;
 	}
 
 	public Binding getBinding() {
 		return binding;
+	}
+
+	public void setBinding(Binding binding) {
+		this.binding = binding;
 	}
 
 }

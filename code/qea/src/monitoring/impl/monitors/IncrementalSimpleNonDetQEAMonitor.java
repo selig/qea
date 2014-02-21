@@ -44,7 +44,7 @@ public class IncrementalSimpleNonDetQEAMonitor extends
 		} else { // New quantified variable binding
 
 			// Create configuration for the new binding
-			config = new NonDetConfig();
+			config = new NonDetConfig(qea.getInitialState());
 		}
 
 		
