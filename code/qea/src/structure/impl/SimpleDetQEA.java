@@ -5,7 +5,7 @@ package structure.impl;
  * This class represents a simple Quantified Event Automaton (QEA) with the
  * following characteristics:
  * <ul>
- * <li>There is at most one quantified variable
+ * <li>There is one quantified variable
  * <li>The transitions in the function delta consist of a start state, an event
  * and an end state, no guards or assigns are considered
  * <li>The QEA is deterministic
@@ -16,13 +16,11 @@ package structure.impl;
  */
 public class SimpleDetQEA extends SimpleQEA {
 
-
-
 	private int[][] delta;
 
 	public SimpleDetQEA(int numStates, int numEvents, int initialState,
 			Quantification quantification) {
-		super(numStates,initialState,quantification);
+		super(numStates, initialState, quantification);
 		delta = new int[numStates + 1][numEvents + 1];
 	}
 
@@ -55,21 +53,18 @@ public class SimpleDetQEA extends SimpleQEA {
 		return delta[previousState][event];
 	}
 
-
 	/**
 	 * Retrieves the alphabet of events A for this QEA
 	 * 
 	 * @return Array of integers with the names of the events
 	 */
 	public int[] getEventsAlphabet() {
-		int[] a = new int[delta[0].length];
+		int[] a = new int[delta[0].length - 1];
 		for (int i = 0; i < a.length; i++) {
 			a[i] = i + 1;
 		}
 		return a;
 	}
-
-
 
 	/**
 	 * Checks if the QEA is deterministic

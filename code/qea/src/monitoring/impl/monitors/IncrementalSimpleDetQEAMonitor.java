@@ -3,12 +3,9 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import exceptions.ShouldNotHappenException;
-
-import monitoring.impl.IncrementalMonitor;
-
 import structure.impl.SimpleDetQEA;
 import structure.impl.Verdict;
+import exceptions.ShouldNotHappenException;
 
 /**
  * A small-step monitor for the Simplest QEA
@@ -16,12 +13,13 @@ import structure.impl.Verdict;
  * @author Giles Reger
  * @author Helena Cuenca
  */
-public class IncrementalSimpleDetQEAMonitor extends IncrementalSimpleQEAMonitor<SimpleDetQEA> {
+public class IncrementalSimpleDetQEAMonitor extends
+		IncrementalSimpleQEAMonitor<SimpleDetQEA> {
 
 	private IdentityHashMap<Object, Integer> bindings;
 
 	/**
-	 * Creates a SimplestSmallStepQEAMonitor for the specified QEA
+	 * Creates an IncrementalSimpleDetQEAMonitor for the specified QEA
 	 * 
 	 * @param qea
 	 *            QEA
@@ -33,8 +31,10 @@ public class IncrementalSimpleDetQEAMonitor extends IncrementalSimpleQEAMonitor<
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-		if(args.length>1) throw new ShouldNotHappenException("Was only expecting one parameter");
-		return step(eventName,args[0]);
+		if (args.length > 1)
+			throw new ShouldNotHappenException(
+					"Was only expecting one parameter");
+		return step(eventName, args[0]);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class IncrementalSimpleDetQEAMonitor extends IncrementalSimpleQEAMonitor<
 			existingBinding = true;
 
 		} else { // New binding
-			startState = 1;
+			startState = qea.getInitialState();
 		}
 
 		// Compute next state
@@ -97,6 +97,5 @@ public class IncrementalSimpleDetQEAMonitor extends IncrementalSimpleQEAMonitor<
 		}
 		return finalVerdict;
 	}
-
 
 }

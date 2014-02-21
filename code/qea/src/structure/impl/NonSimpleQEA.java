@@ -1,9 +1,16 @@
 package structure.impl;
 
+import structure.intf.Binding;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
 
-public abstract class SimpleQEA implements QEA {
+/**
+ * A QEA with at most one quantified variable
+ * 
+ * @author Helena Cuenca
+ * @author Giles Reger
+ */
+public abstract class NonSimpleQEA implements QEA { // TODO Check name
 
 	protected int[] finalStates; // TODO Can we use a boolean array of here?
 
@@ -13,10 +20,13 @@ public abstract class SimpleQEA implements QEA {
 
 	protected final boolean quantificationUniversal;
 
-	public SimpleQEA(int numStates, int initialState,
-			Quantification quantification) {
+	protected final int freeVariablesCount;
+
+	public NonSimpleQEA(int numStates, int initialState,
+			Quantification quantification, int freeVariablesCount) {
 		finalStates = new int[numStates + 1];
 		this.initialState = initialState;
+		this.freeVariablesCount = freeVariablesCount;
 		switch (quantification) {
 		case FORALL:
 			this.quantificationUniversal = true;
@@ -67,6 +77,15 @@ public abstract class SimpleQEA implements QEA {
 	}
 
 	/**
+	 * Creates a new binding of free variable for the current QEA
+	 * 
+	 * @return Binding
+	 */
+	public Binding newBinding() {
+		return new BindingImpl(freeVariablesCount);
+	}
+
+	/**
 	 * Returns the initial state for this QEA
 	 * 
 	 * @return Initial state
@@ -75,12 +94,7 @@ public abstract class SimpleQEA implements QEA {
 		return initialState;
 	}
 
-	/**
-	 * Returns the quantification list in order. Variables are positive if
-	 * universally quantified and negative if existentially quantifed.
-	 * 
-	 * @return Returns Lambda
-	 */
+	@Override
 	public int[] getLambda() {
 		if (isPropositional)
 			return new int[] {};
@@ -91,15 +105,10 @@ public abstract class SimpleQEA implements QEA {
 
 	@Override
 	public boolean usesFreeVariables() {
-		return false;
+		return true;
 	}
 
-	/**
-	 * Determines if the specified state is in the set of final states
-	 * 
-	 * @param state
-	 * @return true if the specified state is a final state. Otherwise, false
-	 */
+	@Override
 	public boolean isStateFinal(int state) {
 		if (finalStates[state] == 1) {
 			return true;
@@ -108,8 +117,8 @@ public abstract class SimpleQEA implements QEA {
 	}
 
 	/**
-	 * @return true if the quantification for the variable of this QEA is
-	 *         universal. false if it is existential
+	 * @return <code>true</code> if the quantification for the variable of this
+	 *         QEA is universal; <code>false</code> if it is existential
 	 */
 	public boolean isQuantificationUniversal() {
 		return quantificationUniversal;
