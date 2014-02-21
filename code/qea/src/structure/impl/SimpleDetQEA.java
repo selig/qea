@@ -1,7 +1,5 @@
 package structure.impl;
 
-import structure.intf.QEA;
-import exceptions.ShouldNotHappenException;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
