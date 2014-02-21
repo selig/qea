@@ -1,10 +1,7 @@
 package structure.impl;
 
-import exceptions.ShouldNotHappenException;
 import monitoring.impl.configs.NonDetConfig;
-import structure.intf.QEA;
 import structure.impl.Quantification;
-import static structure.impl.Quantification.*;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
