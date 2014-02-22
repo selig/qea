@@ -39,6 +39,20 @@ public abstract class Guard {
 			}
 		};
 	}
+	/*
+	 * Produce a guard capturing binding(var0) != binding(var1)
+	 * 
+	 * @ returns a guard for this property
+	 */
+	public static Guard isNotEqual(final int var0, final int var1){
+		return new Guard("x_"+var0+" != x_"+var1){
+			public boolean check(Binding binding){
+				Object val0 = binding.getForced(var0);
+				Object val1 = binding.getForced(var1);													
+				return (val0 != val1);
+			}
+		};
+	}	
 	
 	/*
 	 * Produce a guard capturing binding(var0) equals binding(var1)
@@ -61,11 +75,26 @@ public abstract class Guard {
 	 * @ returns a guard for this property
 	 */
 	public static Guard isGreaterThan(final int var0, final int var1){
-		return new Guard("x_"+var0+" == x_"+var1){
+		return new Guard("x_"+var0+" > x_"+var1){
 			public boolean check(Binding binding){
 				Integer val0 = binding.getForcedAsInteger(var0);
 				Integer val1 = binding.getForcedAsInteger(var1);													
 				return (val0 > val1);
+			}
+		};
+	}
+
+	/*
+	 * Produce a guard capturing binding(var0) <= binding(var1)
+	 * 
+	 * @ returns a guard for this property
+	 */
+	public static Guard isLessThanOrEqualTo(final int var0, final int var1){
+		return new Guard("x_"+var0+" <= x_"+var1){
+			public boolean check(Binding binding){
+				Integer val0 = binding.getForcedAsInteger(var0);
+				Integer val1 = binding.getForcedAsInteger(var1);													
+				return (val0 <= val1);
 			}
 		};
 	}	
