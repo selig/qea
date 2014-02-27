@@ -52,7 +52,7 @@ public class IncrementalSimpleNonDetQEAMonitor extends
 		boolean startConfigFinal = qea.containsFinalState(config);
 
 		// Compute next configuration
-		config = qea.getNextStates(config, eventName);
+		config = qea.getNextConfig(config, eventName);
 
 		// Flag needed to update counters later
 		boolean endConfigFinal = qea.containsFinalState(config);
