@@ -2,7 +2,6 @@ package structure.impl;
 
 import monitoring.impl.configs.NonDetConfig;
 
-
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
  * following characteristics:
@@ -65,7 +64,7 @@ public class SimpleNonDetQEA extends SimpleQEA {
 	 *            Name of the event
 	 * @return End configuration containing the set of end states
 	 */
-	public NonDetConfig getNextStates(NonDetConfig config, int event) {
+	public NonDetConfig getNextConfig(NonDetConfig config, int event) {
 
 		if (config.getStates().length == 1) { // Only one state in the start
 												// configuration
@@ -76,7 +75,7 @@ public class SimpleNonDetQEA extends SimpleQEA {
 			// Get a reference to the start states
 			int[] startStates = config.getStates();
 
-			// Create a boolean array of size equalto the number of states
+			// Create a boolean array of size equal to the number of states
 			boolean[] endStatesBool = new boolean[delta.length];
 
 			// Initialise end states count
