@@ -87,70 +87,59 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 		// failing state
 		if (transition == null) {
 			config.setState(0); // Failing state
-			// TODO Is it OK to leave the binding as it is here?
+
+			// Set binding to empty
+			config.getBinding().setEmpty();
 			return config;
 		}
 
-		// Check the number of arguments is equal to the number of variables of
+		// Check the number of arguments is equal to the number of parameters of
 		// the event
 		if (args.length != transition.getVariableNames().length) {
 			throw new ShouldNotHappenException(
 					"The number of variables defined for this event doesn't match the number of arguments");
 		}
 
-		// Update binding with the values of the free variables
+		// Create array for previous binding. This is needed in case the guard
+		// is not satisfied and we have to "rollback"
+		Object[] prevBinding = new Object[args.length - 1];
+
+		// Get a reference to the binding
 		Binding binding = config.getBinding();
-		for (int i = 0; i < args.length; i++) {
+
+		// We assume that starting in the second position, all parameters are
+		// free variables
+		for (int i = 1; i < args.length; i++) {
+
+			// Save previous value
+			prevBinding[i - 1] = binding
+					.getValue(transition.getVariableNames()[i]);
 
 			// Set new value for the free variable
-			if (transition.getVariableNames()[i] >= 0) {
-				binding.setValue(transition.getVariableNames()[i], args[i]);
-			}
+			binding.setValue(transition.getVariableNames()[i], args[i]);
 		}
 
-		// If the guard is not satisfied, return the failing state
-		if (!transition.getGuard().check(config.getBinding())) {
+		// If there is a guard and is not satisfied, return the failing state
+		if (transition.getGuard() != null
+				&& !transition.getGuard().check(binding)) {
+
 			config.setState(0); // Failing state
-			// TODO Is it OK to leave the binding as it is here?
+
+			// Rollback the binding
+			for (int i = 0; i < prevBinding.length; i++) {
+				binding.setValue(transition.getVariableNames()[i + 1],
+						prevBinding[i]);
+			}
+
 			return config;
 		}
 
-		// Execute the assignment
-		config.setBinding(transition.getAssignment().apply(binding));
+		// If there is an assignment, execute it
+		if (transition.getAssignment() != null) {
+			config.setBinding(transition.getAssignment().apply(binding));
+		}
 
 		return config;
-
-	}
-
-	// TODO Check whether this method should be here or should be part of the
-	// monitor. Case not considered: The event is not defined for the start
-	// state specified in the configuration
-	public Object getQuantifiedVariableValue(DetConfig config, int event,
-			Object[] args) {
-
-		// TODO Remove cast
-		TransitionImpl transition = (TransitionImpl) delta[config.getState()][event];
-
-		// Check the number of arguments is equal to the number of variables of
-		// the event
-		if (args.length != transition.getVariableNames().length) {
-			throw new ShouldNotHappenException(
-					"The number of variables defined for this event doesn't match the number of arguments");
-		}
-
-		// Iterate over the arguments array
-		for (int i = 0; i < args.length; i++) {
-
-			// When the quantified variable is found in the parameters of the
-			// transition, return the object of the arguments in the same
-			// position
-			if (transition.getVariableNames()[i] < 0) {
-				return args[i];
-			}
-		}
-
-		// There's no quantified variable, all variables are free
-		return null;
 	}
 
 	@Override
