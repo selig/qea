@@ -53,7 +53,6 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 				finalVerdict = step(eventNames[i], args[i]);
 				break;
 			}
-			step(eventNames[i], args[i]);
 		}
 		return finalVerdict;
 	}
