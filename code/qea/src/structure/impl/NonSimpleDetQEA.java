@@ -3,7 +3,6 @@ package structure.impl;
 import monitoring.impl.configs.DetConfig;
 import structure.intf.Binding;
 import structure.intf.Transition;
-import exceptions.ShouldNotHappenException;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
@@ -84,52 +83,28 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 		TransitionImpl transition = (TransitionImpl) delta[config.getState()][event];
 
 		// If the event is not defined for the current start state, return the
-		// failing state
+		// failing state with an empty binding
 		if (transition == null) {
-			config.setState(0); // Failing state
-
-			// Set binding to empty
+			config.setState(0);
 			config.getBinding().setEmpty();
 			return config;
 		}
 
-		// Check the number of arguments is equal to the number of parameters of
-		// the event
-		if (args.length != transition.getVariableNames().length) {
-			throw new ShouldNotHappenException(
-					"The number of variables defined for this event doesn't match the number of arguments");
-		}
+		// Check number of arguments vs. number of parameters of the event
+		checkArgParamLength(args.length, transition.getVariableNames().length);
 
-		// Create array for previous binding. This is needed in case the guard
-		// is not satisfied and we have to "rollback"
-		Object[] prevBinding = new Object[args.length - 1];
-
-		// Get a reference to the binding
+		// Update binding for free variables
 		Binding binding = config.getBinding();
+		Object[] prevBinding = updateBinding(config.getBinding(), args,
+				transition);
 
-		// We assume that starting in the second position, all parameters are
-		// free variables
-		for (int i = 1; i < args.length; i++) {
-
-			// Save previous value
-			prevBinding[i - 1] = binding
-					.getValue(transition.getVariableNames()[i]);
-
-			// Set new value for the free variable
-			binding.setValue(transition.getVariableNames()[i], args[i]);
-		}
-
-		// If there is a guard and is not satisfied, return the failing state
+		// If there is a guard and is not satisfied, rollback the binding and
+		// return the failing state
 		if (transition.getGuard() != null
 				&& !transition.getGuard().check(binding)) {
 
 			config.setState(0); // Failing state
-
-			// Rollback the binding
-			for (int i = 0; i < prevBinding.length; i++) {
-				binding.setValue(transition.getVariableNames()[i + 1],
-						prevBinding[i]);
-			}
+			rollBackBinding(binding, transition, prevBinding);
 
 			return config;
 		}
@@ -138,6 +113,9 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 		if (transition.getAssignment() != null) {
 			config.setBinding(transition.getAssignment().apply(binding));
 		}
+
+		// Set the end state
+		config.setState(transition.getEndState());
 
 		return config;
 	}
