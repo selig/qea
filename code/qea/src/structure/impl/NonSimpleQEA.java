@@ -124,4 +124,74 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 		return quantificationUniversal;
 	}
 
+	/**
+	 * Checks if the specified numbers are equal. In case they are not, throws a
+	 * <code>ShouldNotHappenException</code> exception
+	 * 
+	 * @param argsSize
+	 *            Length of the arguments
+	 * @param paramSize
+	 *            Length of the parameters
+	 */
+	protected void checkArgParamLength(int argsLength, int paramLength) {
+		if (argsLength != paramLength) {
+			throw new ShouldNotHappenException(
+					"The number of variables defined for this event doesn't match the number of arguments");
+		}
+	}
+
+	/**
+	 * Updates the specified binding with the specified arguments, according to
+	 * the variable names in the specified transition and returns an array with
+	 * the values in the binding that were replaced
+	 * 
+	 * @param binding
+	 *            Binding to be updated
+	 * @param args
+	 *            Values for the variables
+	 * @param transition
+	 *            Transition containing the variable names to be matched with
+	 *            the arguments
+	 * @return Array with the values in the binding that were replaced
+	 */
+	protected Object[] updateBinding(Binding binding, Object[] args,
+			TransitionImpl transition) {
+
+		// Create an array for the previous binding
+		Object[] prevBinding = new Object[args.length - 1];
+
+		// Starting in the second position, all parameters are free variables
+		for (int i = 1; i < args.length; i++) {
+
+			// Save previous value
+			prevBinding[i - 1] = binding
+					.getValue(transition.getVariableNames()[i]);
+
+			// Set new value for the free variable
+			binding.setValue(transition.getVariableNames()[i], args[i]);
+		}
+
+		return prevBinding;
+	}
+
+	/**
+	 * Updates the specified binding with the values specified in prevBinding,
+	 * according to the variable names in the specified transition
+	 * 
+	 * @param binding
+	 *            Binding to be returned to its original values
+	 * @param transition
+	 *            Transition containing the variable names to be matched with
+	 *            the previousBinding
+	 * @param prevBinding
+	 *            Array containing the values in the binding that were replaced
+	 */
+	protected void rollBackBinding(Binding binding, TransitionImpl transition,
+			Object[] prevBinding) {
+
+		for (int i = 0; i < prevBinding.length; i++) {
+			binding.setValue(transition.getVariableNames()[i + 1],
+					prevBinding[i]);
+		}
+	}
 }
