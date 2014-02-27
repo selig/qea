@@ -73,4 +73,22 @@ public class MonitorFactory {
 		}
 		return null;
 	}
+
+	/**
+	 * Determines if the specified QEA is well-formed. This is:
+	 * <ul>
+	 * <li>All transitions defined for one event name have the same number of
+	 * parameters
+	 * <li>...
+	 * </ul>
+	 * 
+	 * @param qea
+	 *            QEA to be evaluated
+	 * @return <code>true</code> if the specified QEA is well-formed;
+	 *         <code>false</code> otherwise
+	 */
+	public static boolean wellFormed(QEA qea) {
+		// TODO Implement this method
+		return true;
+	}
 }
