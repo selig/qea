@@ -49,11 +49,20 @@ public class BindingImpl extends Binding { // TODO Check name
 		values[variableName] = value;
 	}
 
-	
-	public Binding copy(){
+	public Binding copy() {
 		Binding binding = new BindingImpl(values.length);
-		for(int i=0;i<values.length;i++) binding.setValue(i, values[i]);		
+		// TODO Should we use System.arraycopy here?
+		for (int i = 0; i < values.length; i++)
+			binding.setValue(i, values[i]);
 		return binding;
 	}
-	
+
+	@Override
+	public void setEmpty() {
+
+		// Make all references null
+		for (int i = 0; i < values.length; i++) {
+			values[i] = null;
+		}
+	}
 }
