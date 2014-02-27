@@ -54,6 +54,21 @@ public class TransitionImpl implements Transition {
 		this.assignment = assignment;		
 		this.endState = endState;
 	}		
+	public TransitionImpl(int var1, int var2, int endState){
+		this.variableNames = new int[]{var1,var2};
+		this.endState = endState;
+	}
+	public TransitionImpl(int var1, int var2, Guard guard, int endState){
+		this.variableNames = new int[]{var1,var2};
+		this.guard = guard;
+		this.endState = endState;
+	}	
+	public TransitionImpl(int var1, int var2, Guard guard, Assignment assignment, int endState){
+		this.variableNames = new int[]{var1,var2};
+		this.guard = guard;
+		this.assignment = assignment;		
+		this.endState = endState;
+	}		
 	
 	
 	public TransitionImpl(int[] variableNames, Guard guard,
