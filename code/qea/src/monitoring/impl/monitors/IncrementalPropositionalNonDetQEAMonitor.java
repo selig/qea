@@ -38,7 +38,7 @@ public class IncrementalPropositionalNonDetQEAMonitor extends
 	public Verdict step(int eventName) {
 
 		// Update configuration
-		currentConfig = qea.getNextStates(currentConfig, eventName);
+		currentConfig = qea.getNextConfig(currentConfig, eventName);
 
 		// Determine verdict according to the current configuration
 		if (qea.containsFinalState(currentConfig)) {
