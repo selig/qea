@@ -99,8 +99,8 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 		if (isPropositional)
 			return new int[] {};
 		if (quantificationUniversal)
-			return new int[] { 1 };
-		return new int[] { -1 };
+			return new int[] { -1 };
+		return new int[] { 1 };
 	}
 
 	@Override

@@ -75,18 +75,13 @@ public abstract class SimpleQEA implements QEA {
 		return initialState;
 	}
 
-	/**
-	 * Returns the quantification list in order. Variables are positive if
-	 * universally quantified and negative if existentially quantifed.
-	 * 
-	 * @return Returns Lambda
-	 */
+	@Override
 	public int[] getLambda() {
 		if (isPropositional)
 			return new int[] {};
 		if (quantificationUniversal)
-			return new int[] { 1 };
-		return new int[] { -1 };
+			return new int[] { -1 };
+		return new int[] { 1 };
 	}
 
 	@Override
