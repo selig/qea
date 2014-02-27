@@ -41,13 +41,9 @@ public class IncrementalNonSimpleDetQEAMonitor extends
 		DetConfig config;
 
 		// Obtain the value for the quantified variable
-		// TODO How can we obtain the quantified variable value if the
-		// definition of the parameters is specific to a start state/event in
-		// the QEA?
-		Object quantifiedVar = null;
-
-		// TODO If there's no quantified variable, the event should be applied
-		// to all the bindings?
+		// Assumption: The (unique) quantified variable is present in all events
+		// and it’s always the first argument
+		Object quantifiedVar = args[0];
 
 		// Determine if the value received corresponds to an existing binding
 		if (bindings.containsKey(quantifiedVar)) { // Existing quantified
@@ -123,5 +119,4 @@ public class IncrementalNonSimpleDetQEAMonitor extends
 		}
 		return ret;
 	}
-
 }
