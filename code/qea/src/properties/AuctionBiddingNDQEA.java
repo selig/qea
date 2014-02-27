@@ -20,16 +20,18 @@ public class AuctionBiddingNDQEA extends NonSimpleNonDetQEA {
 
 		// define the event names for convenience
 		int BID = 1;
+		// define quantified var name
+		int ITEM = -1;		
 		// define free var names
 		int AMOUNT = 0;
 		int NEW_AMOUNT = 1;
 
 
-		addTransition(1, BID, new TransitionImpl(AMOUNT,2));
-		addTransition(2, BID, new TransitionImpl(NEW_AMOUNT,
+		addTransition(1, BID, new TransitionImpl(ITEM,AMOUNT,2));
+		addTransition(2, BID, new TransitionImpl(ITEM,NEW_AMOUNT,
 				Guard.isGreaterThan(NEW_AMOUNT, AMOUNT),
 				Assignment.store(AMOUNT, NEW_AMOUNT), 2));
-		addTransition(2,BID, new TransitionImpl(NEW_AMOUNT,
+		addTransition(2,BID, new TransitionImpl(ITEM,NEW_AMOUNT,
 				Guard.isLessThanOrEqualTo(NEW_AMOUNT,AMOUNT), 3));
 
 
