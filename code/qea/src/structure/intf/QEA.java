@@ -22,7 +22,7 @@ public interface QEA {
 
 	/**
 	 * Returns the quantification list in order. Variables are positive if
-	 * universally quantified and negative if existentially quantifed.
+	 * existentially quantified and negative if universally quantified.
 	 * 
 	 * @return Returns Lambda
 	 */
