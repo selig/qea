@@ -27,7 +27,7 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 	 * index corresponds to the event name. For a given start state and event
 	 * name, there may be an array of transitions (non-deterministic)
 	 */
-	private Transition[][][] delta;
+	private TransitionImpl[][][] delta;
 
 	/**
 	 * Creates a NonSimpleNonDetQEA for the specified number of states, number
@@ -45,7 +45,7 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 	public NonSimpleNonDetQEA(int numStates, int numEvents, int initialState,
 			Quantification quantification, int freeVariablesCount) {
 		super(numStates, initialState, quantification, freeVariablesCount);
-		delta = new Transition[numStates + 1][numEvents + 1][];
+		delta = new TransitionImpl[numStates + 1][numEvents + 1][];
 	}
 
 	/**
@@ -61,7 +61,17 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 	 *            end state
 	 */
 	public void addTransition(int startState, int event, Transition transition) {
-		delta[startState][event] = new Transition[] { transition };
+		if (delta[startState][event] == null) {
+			delta[startState][event] = new TransitionImpl[] { (TransitionImpl) transition };
+		} else {
+			// Resize transitions array
+			TransitionImpl[] newTransitions = new TransitionImpl[delta[startState][event].length + 1];
+			System.arraycopy(delta[startState][event], 0, newTransitions, 0,
+					delta[startState][event].length);
+			newTransitions[delta[startState][event].length] = (TransitionImpl) transition;
+			delta[startState][event] = newTransitions;
+		}
+
 	}
 
 	/**
@@ -77,7 +87,7 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 	 *            end state
 	 */
 	public void addTransitions(int startState, int event,
-			Transition[] transitions) {
+			TransitionImpl[] transitions) {
 		delta[startState][event] = transitions;
 	}
 
@@ -100,8 +110,7 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 
 		if (config.getStates().length == 1) { // Only one start state
 
-			TransitionImpl[] transitions = (TransitionImpl[]) delta[config
-					.getStates()[0]][event];
+			TransitionImpl[] transitions = delta[config.getStates()[0]][event];
 
 			// If the event is not defined for the unique start state, return
 			// the failing state with an empty binding
