@@ -100,7 +100,6 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 
 		if (config.getStates().length == 1) { // Only one start state
 
-			// TODO Remove cast
 			TransitionImpl[] transitions = (TransitionImpl[]) delta[config
 					.getStates()[0]][event];
 
@@ -131,7 +130,6 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 
 					config.setState(0, 0); // Failing state
 					rollBackBinding(binding, transitions[0], prevBinding);
-
 					return config;
 				}
 
@@ -151,40 +149,36 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 				BindingImpl[] bindings = new BindingImpl[transitions.length];
 
 				// Initialise end states count
-				int endStatesCount = transitions.length;
+				int endStatesCount = 0;
 
-				// Iterate over transitions
+				// Iterate over the transitions
 				for (int i = 0; i < transitions.length; i++) {
 
-					// Copy the initial binding // TODO Check cast
-					bindings[i] = (BindingImpl) config.getBindings()[0].copy();
+					// Copy the binding of the start state
+					BindingImpl binding = (BindingImpl) config.getBindings()[0]
+							.copy();
 
 					// Update binding for free variables
-					updateBinding(bindings[i], args, transitions[i]);
+					updateBinding(binding, args, transitions[i]);
 
-					// If there is a guard and is not satisfied, rollback the
-					// binding and set the failing state
-					if (transitions[i].getGuard() != null
-							&& !transitions[i].getGuard().check(bindings[i])) {
-
-						endStates[i] = 0;
-						endStatesCount--;
-
-					} else {
+					// If there is a guard, check it is satisfied
+					if (transitions[i].getGuard() == null
+							|| transitions[i].getGuard().check(binding)) {
 
 						// If there is an assignment, execute it
 						if (transitions[i].getAssignment() != null) {
-							// TODO Check cast
-							bindings[i] = (BindingImpl) transitions[i]
-									.getAssignment().apply(bindings[i]);
+							binding = (BindingImpl) transitions[i]
+									.getAssignment().apply(binding);
 						}
 
-						// Set the end state
-						endStates[i] = transitions[i].getEndState();
-						if (endStates[i] == 0) { // TODO Can we remove this
-													// check?
-							endStatesCount--;
-						}
+						// Copy end state and binding in the arrays
+						endStates[endStatesCount] = transitions[i]
+								.getEndState();
+						bindings[endStatesCount] = binding;
+
+						// TODO We are assuming here that there's no explicit
+						// transition to the failing state
+						endStatesCount++;
 					}
 				}
 
@@ -192,28 +186,124 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 
 					// Set failing state, leave binding as it is
 					config.setState(0, 0);
+					return config;
+				}
 
-				} else { // At least one non-failing end state
-
-					if (endStatesCount > 1) {
-						// Resize configuration
-						config.add(endStatesCount - 1);
-					}
-					int i = 0;
-					for (int j = 0; j < endStates.length; j++) {
-						if (endStates[j] != 0) {
-							config.setState(i, endStates[j]);
-							config.setBinding(i, bindings[j]);
-							i++;
-						}
-					}
+				// Copy the states and bindings into the correct sized array if
+				// needed and update the configuration
+				if (endStatesCount != transitions.length) {
+					int[] reducedEndStates = new int[endStatesCount];
+					BindingImpl[] reducedBindings = new BindingImpl[endStatesCount];
+					System.arraycopy(endStates, 0, reducedEndStates, 0,
+							endStatesCount);
+					System.arraycopy(bindings, 0, reducedBindings, 0,
+							endStatesCount);
+					config.setStates(reducedEndStates);
+					config.setBindings(reducedBindings);
+				} else {
+					config.setStates(endStates);
+					config.setBindings(bindings);
 				}
 			}
 
 		} else { // Multiple start states
 
-			// TODO Implement!
+			int[] startStates = config.getStates();
+			int maxEndStates = 0;
+			boolean argsNumberChecked = false;
+			TransitionImpl[][] transitions = new TransitionImpl[startStates.length][];
 
+			// Compute maximum number of end states
+			for (int i = 0; i < startStates.length; i++) {
+
+				transitions[i] = (TransitionImpl[]) delta[startStates[i]][event];
+				if (transitions[i] != null) {
+					maxEndStates += transitions[i].length;
+
+					// Check number of arguments vs. number of parameters of the
+					// event for one transition only
+					if (!argsNumberChecked) {
+						checkArgParamLength(args.length,
+								transitions[i][0].getVariableNames().length);
+					}
+				}
+			}
+
+			// If the event is not defined for any of the current start states,
+			// return the failing state with an empty binding
+			if (maxEndStates == 0) {
+				config.setStates(new int[] { 0 });
+				config.setBindings(new Binding[] { newBinding() });
+				return config;
+			}
+
+			// Create as many states and bindings as there are end states
+			int[] endStates = new int[maxEndStates];
+			BindingImpl[] bindings = new BindingImpl[maxEndStates];
+
+			// Initialise end states count
+			int endStatesCount = 0;
+
+			// Iterate over the transitions
+			for (int i = 0; i < transitions.length; i++) {
+
+				if (transitions[i] != null) {
+					for (int j = 0; j < transitions[i].length; j++) {
+
+						// Copy the initial binding
+						BindingImpl binding = (BindingImpl) config
+								.getBindings()[i].copy();
+
+						// Update binding for free variables
+						updateBinding(binding, args, transitions[i][j]);
+
+						// If there is a guard, check it is satisfied
+						if (transitions[i][j].getGuard() == null
+								|| transitions[i][j].getGuard().check(binding)) {
+
+							// If there is an assignment, execute it
+							if (transitions[i][j].getAssignment() != null) {
+								binding = (BindingImpl) transitions[i][j]
+										.getAssignment().apply(binding);
+							}
+
+							// Copy end state and binding in the arrays
+							endStates[endStatesCount] = transitions[i][j]
+									.getEndState();
+							bindings[endStatesCount] = binding;
+
+							// TODO We are assuming here that there's no
+							// explicit transition to the failing state
+							endStatesCount++;
+						}
+					}
+				}
+			}
+
+			if (endStatesCount == 0) { // All end states are failing states
+				config.setStates(new int[] { 0 });
+				// TODO What happens with the binding here? What binding should
+				// we rollback to if there are multiple (one for each start
+				// state)?
+				config.setBindings(new Binding[] { newBinding() });
+				return config;
+			}
+
+			// Copy the states and bindings into the correct sized array if
+			// needed and update the configuration
+			if (endStatesCount != maxEndStates) {
+				int[] reducedEndStates = new int[endStatesCount];
+				BindingImpl[] reducedBindings = new BindingImpl[endStatesCount];
+				System.arraycopy(endStates, 0, reducedEndStates, 0,
+						endStatesCount);
+				System.arraycopy(bindings, 0, reducedBindings, 0,
+						endStatesCount);
+				config.setStates(reducedEndStates);
+				config.setBindings(reducedBindings);
+			} else {
+				config.setStates(endStates);
+				config.setBindings(bindings);
+			}
 		}
 
 		return config;
