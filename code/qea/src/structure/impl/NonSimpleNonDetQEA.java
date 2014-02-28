@@ -120,8 +120,11 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 
 				// Update binding for free variables
 				Binding binding = config.getBindings()[0];
-				Object[] prevBinding = updateBinding(binding, args,
-						transitions[0]);
+				Object[] prevBinding = null;
+
+				if (args.length > 1) {
+					prevBinding = updateBinding(binding, args, transitions[0]);
+				}
 
 				// If there is a guard and is not satisfied, rollback the
 				// binding and return the failing state
@@ -129,7 +132,9 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 						&& !transitions[0].getGuard().check(binding)) {
 
 					config.setState(0, 0); // Failing state
-					rollBackBinding(binding, transitions[0], prevBinding);
+					if (prevBinding != null) {
+						rollBackBinding(binding, transitions[0], prevBinding);
+					}
 					return config;
 				}
 
@@ -158,8 +163,11 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 					BindingImpl binding = (BindingImpl) config.getBindings()[0]
 							.copy();
 
-					// Update binding for free variables
-					updateBinding(binding, args, transitions[i]);
+					if (args.length > 1) {
+
+						// Update binding for free variables
+						updateBinding(binding, args, transitions[i]);
+					}
 
 					// If there is a guard, check it is satisfied
 					if (transitions[i].getGuard() == null
@@ -254,8 +262,11 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 						BindingImpl binding = (BindingImpl) config
 								.getBindings()[i].copy();
 
-						// Update binding for free variables
-						updateBinding(binding, args, transitions[i][j]);
+						if (args.length > 1) {
+
+							// Update binding for free variables
+							updateBinding(binding, args, transitions[i][j]);
+						}
 
 						// If there is a guard, check it is satisfied
 						if (transitions[i][j].getGuard() == null

@@ -93,10 +93,14 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 		// Check number of arguments vs. number of parameters of the event
 		checkArgParamLength(args.length, transition.getVariableNames().length);
 
-		// Update binding for free variables
 		Binding binding = config.getBinding();
-		Object[] prevBinding = updateBinding(config.getBinding(), args,
-				transition);
+		Object[] prevBinding = null;
+
+		if (args.length > 1) {
+
+			// Update binding for free variables
+			prevBinding = updateBinding(config.getBinding(), args, transition);
+		}
 
 		// If there is a guard and is not satisfied, rollback the binding and
 		// return the failing state
@@ -104,8 +108,9 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 				&& !transition.getGuard().check(binding)) {
 
 			config.setState(0); // Failing state
-			rollBackBinding(binding, transition, prevBinding);
-
+			if (prevBinding != null) {
+				rollBackBinding(binding, transition, prevBinding);
+			}
 			return config;
 		}
 
