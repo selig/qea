@@ -3,6 +3,7 @@ package monitoring.impl.configs;
 import java.util.Arrays;
 
 import monitoring.intf.Configuration;
+import structure.impl.BindingImpl;
 import structure.intf.Binding;
 
 /**
@@ -22,6 +23,15 @@ public class NonDetConfig implements Configuration {
 	public NonDetConfig(int initialState) {
 		states = new int[1];
 		states[0] = initialState;
+	}
+	
+	// TODO Create the analogue constructor for DetConfig
+	public NonDetConfig(int initialState, Binding binding) {
+		states = new int[1];
+		states[0] = initialState;
+		
+		bindings = new BindingImpl[1];
+		bindings[0] = binding;
 	}
 
 	public int[] getStates() {
