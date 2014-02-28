@@ -72,24 +72,4 @@ public class NonDetConfig implements Configuration {
 		// currently ignores bindings
 		return Arrays.toString(states);
 	}
-
-	/**
-	 * Adds the specified number of states and bindings to the current
-	 * configuration
-	 * 
-	 * @param count
-	 *            Number of states and bindings to be added
-	 */
-	public void add(int count) {
-
-		int[] statesNew = new int[states.length + count];
-		Binding[] bindingsNew = new Binding[bindings.length + count];
-
-		System.arraycopy(states, 0, statesNew, 0, states.length);
-		System.arraycopy(bindings, 0, bindingsNew, 0, bindings.length);
-
-		states = statesNew;
-		bindings = bindingsNew;
-	}
-
 }
