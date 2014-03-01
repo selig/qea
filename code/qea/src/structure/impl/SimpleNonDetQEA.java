@@ -37,7 +37,17 @@ public class SimpleNonDetQEA extends SimpleQEA {
 	 *            End state for the transition
 	 */
 	public void addTransition(int startState, int event, int endState) {
-		delta[startState][event] = new int[] { endState };
+		if (delta[startState][event] == null) {
+			delta[startState][event] = new int[] { endState };
+		} else {
+			// Resize end states array
+			int[] newEndStates = new int[delta[startState][event].length + 1];
+			System.arraycopy(delta[startState][event], 0, newEndStates, 0,
+					delta[startState][event].length);
+			newEndStates[delta[startState][event].length] = endState;
+			delta[startState][event] = newEndStates;
+
+		}
 	}
 
 	/**
@@ -51,7 +61,21 @@ public class SimpleNonDetQEA extends SimpleQEA {
 	 *            Array of end states for the transition
 	 */
 	public void addTransitions(int startState, int event, int[] endStates) {
-		delta[startState][event] = endStates;
+
+		// TODO Most methods addTransition(s) contain the same logic
+
+		if (delta[startState][event] == null) {
+			delta[startState][event] = endStates;
+		} else {
+			// Resize transitions array
+			int prevTransCount = delta[startState][event].length;
+			int[] newEndStates = new int[prevTransCount + endStates.length];
+			System.arraycopy(delta[startState][event], 0, newEndStates, 0,
+					delta[startState][event].length);
+			System.arraycopy(endStates, 0, newEndStates, prevTransCount,
+					endStates.length);
+			delta[startState][event] = newEndStates;
+		}
 	}
 
 	/**
@@ -86,12 +110,15 @@ public class SimpleNonDetQEA extends SimpleQEA {
 
 				int[] intermEndStates = delta[startStates[i]][event];
 
-				// Iterate over the intermediate arrays of end states
-				for (int j = 0; j < intermEndStates.length; j++) {
-					int newEndState = intermEndStates[j];
-					if (!endStatesBool[newEndState]) {
-						endStatesBool[newEndState] = true;
-						endStatesCount++;
+				if (intermEndStates != null) {
+
+					// Iterate over the intermediate arrays of end states
+					for (int j = 0; j < intermEndStates.length; j++) {
+						int newEndState = intermEndStates[j];
+						if (!endStatesBool[newEndState]) {
+							endStatesBool[newEndState] = true;
+							endStatesCount++;
+						}
 					}
 				}
 			}
