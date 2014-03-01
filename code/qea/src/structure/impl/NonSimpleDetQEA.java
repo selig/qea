@@ -48,7 +48,7 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 	}
 
 	/**
-	 * Adds a transition for the transition function delta of this QEA
+	 * Adds/replace a transition for the transition function delta of this QEA
 	 * 
 	 * @param startState
 	 *            Start state for this transition
