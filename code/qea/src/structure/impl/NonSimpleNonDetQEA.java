@@ -88,7 +88,19 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 	 */
 	public void addTransitions(int startState, int event,
 			TransitionImpl[] transitions) {
-		delta[startState][event] = transitions;
+		if (delta[startState][event] == null) {
+			delta[startState][event] = transitions;
+		} else {
+			// Resize transitions array
+			int prevTransCount = delta[startState][event].length;
+			TransitionImpl[] newTransitions = new TransitionImpl[prevTransCount
+					+ transitions.length];
+			System.arraycopy(delta[startState][event], 0, newTransitions, 0,
+					delta[startState][event].length);
+			System.arraycopy(transitions, 0, newTransitions, prevTransCount,
+					transitions.length);
+			delta[startState][event] = newTransitions;
+		}
 	}
 
 	/**
