@@ -22,7 +22,7 @@ public class IncrementalPropositionalQEAMonitor extends
 
 	public IncrementalPropositionalQEAMonitor(SimpleDetQEA qea) {
 		super(qea);
-		currentConfig.setState(qea.getInitialState());
+		currentConfig = new DetConfig(qea.getInitialState());
 	}
 
 	@Override
