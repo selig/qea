@@ -106,17 +106,16 @@ public class SimpleNonDetQEA extends SimpleQEA {
 			int endStatesCount = 0;
 
 			// Iterate over the multiple arrays of end states
-			for (int i = 0; i < startStates.length; i++) {
+			for (int startState : startStates) {
 
-				int[] intermEndStates = delta[startStates[i]][event];
+				int[] intermEndStates = delta[startState][event];
 
 				if (intermEndStates != null) {
 
 					// Iterate over the intermediate arrays of end states
-					for (int j = 0; j < intermEndStates.length; j++) {
-						int newEndState = intermEndStates[j];
-						if (!endStatesBool[newEndState]) {
-							endStatesBool[newEndState] = true;
+					for (int intermEndState : intermEndStates) {
+						if (!endStatesBool[intermEndState]) {
+							endStatesBool[intermEndState] = true;
 							endStatesCount++;
 						}
 					}
