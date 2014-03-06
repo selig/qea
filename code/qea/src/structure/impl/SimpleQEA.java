@@ -19,16 +19,16 @@ public abstract class SimpleQEA implements QEA {
 		this.initialState = initialState;
 		switch (quantification) {
 		case FORALL:
-			this.quantificationUniversal = true;
-			this.isPropositional = false;
+			quantificationUniversal = true;
+			isPropositional = false;
 			break;
 		case EXISTS:
-			this.quantificationUniversal = false;
-			this.isPropositional = false;
+			quantificationUniversal = false;
+			isPropositional = false;
 			break;
 		case NONE:
-			this.quantificationUniversal = false;
-			this.isPropositional = true;
+			quantificationUniversal = false;
+			isPropositional = true;
 			break;
 		default:
 			throw new ShouldNotHappenException("Unknown quantification "
@@ -53,8 +53,9 @@ public abstract class SimpleQEA implements QEA {
 	 *            Names of states to add
 	 */
 	public void setStatesAsFinal(int... states) {
-		for (int state : states)
+		for (int state : states) {
 			finalStates[state] = 1;
+		}
 	}
 
 	@Override
@@ -77,10 +78,12 @@ public abstract class SimpleQEA implements QEA {
 
 	@Override
 	public int[] getLambda() {
-		if (isPropositional)
+		if (isPropositional) {
 			return new int[] {};
-		if (quantificationUniversal)
+		}
+		if (quantificationUniversal) {
 			return new int[] { -1 };
+		}
 		return new int[] { 1 };
 	}
 
@@ -95,6 +98,7 @@ public abstract class SimpleQEA implements QEA {
 	 * @param state
 	 * @return true if the specified state is a final state. Otherwise, false
 	 */
+	@Override
 	public boolean isStateFinal(int state) {
 		if (finalStates[state] == 1) {
 			return true;
