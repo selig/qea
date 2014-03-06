@@ -40,10 +40,11 @@ public abstract class Binding {
 	 * @return Value of var in binding
 	 */
 	public Object getForced(int var) {
-		Object val = this.getValue(var);
-		if (val == null)
+		Object val = getValue(var);
+		if (val == null) {
 			throw new BindingException("Variable x_" + var + " expected in "
 					+ this);
+		}
 		return val;
 	}
 
@@ -56,13 +57,15 @@ public abstract class Binding {
 	 * @return the value of var in binding
 	 */
 	public Integer getForcedAsInteger(int var) {
-		Object val = this.getValue(var);
-		if (val == null)
+		Object val = getValue(var);
+		if (val == null) {
 			throw new BindingException("Variable x_" + var + " expected in "
 					+ this);
-		if (!(val instanceof Integer))
+		}
+		if (!(val instanceof Integer)) {
 			throw new BindingException("Variable x_" + var
 					+ " expected as integer in " + this);
+		}
 
 		return (Integer) val;
 	}
