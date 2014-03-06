@@ -178,7 +178,7 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 				int endStatesCount = 0;
 
 				// Iterate over the transitions
-				for (int i = 0; i < transitions.length; i++) {
+				for (TransitionImpl transition : transitions) {
 
 					// Copy the binding of the start state
 					BindingImpl binding = (BindingImpl) config.getBindings()[0]
@@ -187,22 +187,21 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 					if (args.length > 1) {
 
 						// Update binding for free variables
-						updateBinding(binding, args, transitions[i]);
+						updateBinding(binding, args, transition);
 					}
 
 					// If there is a guard, check it is satisfied
-					if (transitions[i].getGuard() == null
-							|| transitions[i].getGuard().check(binding)) {
+					if (transition.getGuard() == null
+							|| transition.getGuard().check(binding)) {
 
 						// If there is an assignment, execute it
-						if (transitions[i].getAssignment() != null) {
-							binding = (BindingImpl) transitions[i]
-									.getAssignment().apply(binding);
+						if (transition.getAssignment() != null) {
+							binding = (BindingImpl) transition.getAssignment()
+									.apply(binding);
 						}
 
 						// Copy end state and binding in the arrays
-						endStates[endStatesCount] = transitions[i]
-								.getEndState();
+						endStates[endStatesCount] = transition.getEndState();
 						bindings[endStatesCount] = binding;
 
 						// TODO We are assuming here that there's no explicit
@@ -245,7 +244,7 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 			// Compute maximum number of end states
 			for (int i = 0; i < startStates.length; i++) {
 
-				transitions[i] = (TransitionImpl[]) delta[startStates[i]][event];
+				transitions[i] = delta[startStates[i]][event];
 				if (transitions[i] != null) {
 					maxEndStates += transitions[i].length;
 
