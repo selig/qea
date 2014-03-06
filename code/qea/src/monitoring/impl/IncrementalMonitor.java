@@ -5,20 +5,34 @@ import structure.impl.Verdict;
 import structure.intf.QEA;
 
 /**
- * All incremental monitors implement the trace method using the step method.
- * 
+ * This class provides implementation for the <code>trace</code> method using
+ * the <code>step</code> method, as well as some utility methods to be used by
+ * the subclasses
  * 
  * @author Giles Reger
  * @author Helena Cuenca
  */
 public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 
-	protected int bindingsInNonFinalStateCount;
-
+	/**
+	 * Number of bindings for this monitor that are in a final state
+	 */
 	protected int bindingsInFinalStateCount;
 
-	public IncrementalMonitor(Q q) {
-		super(q);
+	/**
+	 * Number of bindings for this monitor that are in a non-final state
+	 */
+	protected int bindingsInNonFinalStateCount;
+
+	/**
+	 * Class constructor specifying the QEA to be monitored. For invocation by
+	 * subclass constructors
+	 * 
+	 * @param qea
+	 *            QEA property
+	 */
+	protected IncrementalMonitor(Q qea) {
+		super(qea);
 	}
 
 	@Override
@@ -58,10 +72,10 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	}
 
 	/**
-	 * Determines if all bindings for the current monitor are in a final state
+	 * Determines if all bindings in this monitor are in a final state
 	 * 
-	 * @return <code>true</code> if all bindings for the current monitor are in
-	 *         a final state; <code>false</code> otherwise
+	 * @return <code>true</code> if all bindings in this monitor are in a final
+	 *         state; <code>false</code> otherwise
 	 */
 	protected boolean allBindingsInFinalState() {
 		if (bindingsInNonFinalStateCount == 0) {
@@ -71,11 +85,11 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	}
 
 	/**
-	 * Determines if there is at least one binding in a final state for the
-	 * current monitor
+	 * Determines if there is at least one binding in a final state in this
+	 * monitor
 	 * 
-	 * @return <code>true</code> if at least one binding is in final state;
-	 *         <code>false</code> otherwise
+	 * @return <code>true</code> if at least one binding in this monitor is in
+	 *         final state; <code>false</code> otherwise
 	 */
 	protected boolean existsOneBindingInFinalState() {
 		if (bindingsInFinalStateCount > 0) {
@@ -83,5 +97,4 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 		}
 		return false;
 	}
-
 }

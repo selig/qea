@@ -45,7 +45,7 @@ public class IncrementalNSPropositionalQEAMonitor extends
 
 	@Override
 	public Verdict end() {
-		
+
 		// Determine verdict according to the state
 		if (qea.isStateFinal(config.getState())) {
 			return Verdict.SUCCESS;

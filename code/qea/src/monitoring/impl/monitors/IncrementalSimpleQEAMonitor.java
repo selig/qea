@@ -1,11 +1,12 @@
 package monitoring.impl.monitors;
 
-import exceptions.ShouldNotHappenException;
 import monitoring.impl.IncrementalMonitor;
 import structure.impl.SimpleQEA;
 import structure.impl.Verdict;
+import exceptions.ShouldNotHappenException;
 
-public abstract class IncrementalSimpleQEAMonitor<Q extends SimpleQEA> extends IncrementalMonitor<Q> {
+public abstract class IncrementalSimpleQEAMonitor<Q extends SimpleQEA> extends
+		IncrementalMonitor<Q> {
 
 	public IncrementalSimpleQEAMonitor(Q q) {
 		super(q);
@@ -13,9 +14,12 @@ public abstract class IncrementalSimpleQEAMonitor<Q extends SimpleQEA> extends I
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-		if(args.length>1) throw new ShouldNotHappenException("Was only expecting one parameter");
-		return step(eventName,args[0]);
-	}	
+		if (args.length > 1) {
+			throw new ShouldNotHappenException(
+					"Was only expecting one parameter");
+		}
+		return step(eventName, args[0]);
+	}
 
 	@Override
 	public Verdict end() {
@@ -27,6 +31,6 @@ public abstract class IncrementalSimpleQEAMonitor<Q extends SimpleQEA> extends I
 			return Verdict.SUCCESS;
 		}
 		return Verdict.FAILURE;
-	}	
-	
+	}
+
 }
