@@ -57,6 +57,7 @@ public class SimpleDetQEA extends SimpleQEA {
 	 * 
 	 * @return Array of integers with the names of the events
 	 */
+	@Override
 	public int[] getEventsAlphabet() {
 		int[] a = new int[delta[0].length - 1];
 		for (int i = 0; i < a.length; i++) {
@@ -70,6 +71,7 @@ public class SimpleDetQEA extends SimpleQEA {
 	 * 
 	 * @return True if the QEA is deterministic, false otherwise
 	 */
+	@Override
 	public boolean isDeterministic() {
 		return true;
 	}
