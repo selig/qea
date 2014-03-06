@@ -33,6 +33,7 @@ public class BindingImpl extends Binding { // TODO Check name
 	 *            Variable name
 	 * @return Value of the variable
 	 */
+	@Override
 	public Object getValue(int variableName) {
 		return values[variableName];
 	}
@@ -45,15 +46,18 @@ public class BindingImpl extends Binding { // TODO Check name
 	 * @param value
 	 *            Value of the variable
 	 */
+	@Override
 	public void setValue(int variableName, Object value) {
 		values[variableName] = value;
 	}
 
+	@Override
 	public Binding copy() {
 		Binding binding = new BindingImpl(values.length);
 		// TODO Should we use System.arraycopy here?
-		for (int i = 0; i < values.length; i++)
+		for (int i = 0; i < values.length; i++) {
 			binding.setValue(i, values[i]);
+		}
 		return binding;
 	}
 
