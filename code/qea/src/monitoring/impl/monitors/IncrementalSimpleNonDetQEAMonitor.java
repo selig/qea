@@ -3,11 +3,9 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.SimpleNonDetQEA;
 import structure.impl.Verdict;
-import exceptions.ShouldNotHappenException;
 
 /**
  * A small-step monitor for a non-deterministic simple QEA
@@ -16,7 +14,7 @@ import exceptions.ShouldNotHappenException;
  * @author Giles Reger
  */
 public class IncrementalSimpleNonDetQEAMonitor extends
-	IncrementalSimpleQEAMonitor<SimpleNonDetQEA> {
+		IncrementalSimpleQEAMonitor<SimpleNonDetQEA> {
 
 	private IdentityHashMap<Object, NonDetConfig> bindings;
 
@@ -47,7 +45,6 @@ public class IncrementalSimpleNonDetQEAMonitor extends
 			config = new NonDetConfig(qea.getInitialState());
 		}
 
-		
 		// Flag needed to update counters later
 		boolean startConfigFinal = qea.containsFinalState(config);
 
@@ -85,6 +82,7 @@ public class IncrementalSimpleNonDetQEAMonitor extends
 		}
 		return Verdict.WEAK_FAILURE;
 	}
+
 	@Override
 	public Verdict step(int eventName) {
 		Verdict finalVerdict = null;
@@ -98,12 +96,13 @@ public class IncrementalSimpleNonDetQEAMonitor extends
 	 * Override toString to print current map to configurations
 	 */
 	@Override
-	public String toString(){
+	public String toString() {
 		String ret = "Map:\n";
-		for(IdentityHashMap.Entry<Object,NonDetConfig> entry : bindings.entrySet()){
-			ret += entry.getKey()+"\t->\t"+entry.getValue()+"\n";
+		for (IdentityHashMap.Entry<Object, NonDetConfig> entry : bindings
+				.entrySet()) {
+			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;
 	}
-	
+
 }

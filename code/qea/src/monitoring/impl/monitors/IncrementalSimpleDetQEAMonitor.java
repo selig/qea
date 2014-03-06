@@ -31,9 +31,10 @@ public class IncrementalSimpleDetQEAMonitor extends
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-		if (args.length > 1)
+		if (args.length > 1) {
 			throw new ShouldNotHappenException(
 					"Was only expecting one parameter");
+		}
 		return step(eventName, args[0]);
 	}
 
