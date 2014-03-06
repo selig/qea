@@ -38,39 +38,44 @@ public class TransitionImpl implements Transition {
 	 */
 	private int endState;
 
-	
-	public TransitionImpl(int varName, int endState){
-		this.variableNames = new int[]{varName};
+	public TransitionImpl(int varName, int endState) {
+		variableNames = new int[] { varName };
 		this.endState = endState;
 	}
-	public TransitionImpl(int varName, Guard guard, int endState){
-		this.variableNames = new int[]{varName};
+
+	public TransitionImpl(int varName, Guard guard, int endState) {
+		variableNames = new int[] { varName };
 		this.guard = guard;
-		this.endState = endState;
-	}	
-	public TransitionImpl(int varName, Guard guard, Assignment assignment, int endState){
-		this.variableNames = new int[]{varName};
-		this.guard = guard;
-		this.assignment = assignment;		
-		this.endState = endState;
-	}		
-	public TransitionImpl(int var1, int var2, int endState){
-		this.variableNames = new int[]{var1,var2};
 		this.endState = endState;
 	}
-	public TransitionImpl(int var1, int var2, Guard guard, int endState){
-		this.variableNames = new int[]{var1,var2};
+
+	public TransitionImpl(int varName, Guard guard, Assignment assignment,
+			int endState) {
+		variableNames = new int[] { varName };
+		this.guard = guard;
+		this.assignment = assignment;
+		this.endState = endState;
+	}
+
+	public TransitionImpl(int var1, int var2, int endState) {
+		variableNames = new int[] { var1, var2 };
+		this.endState = endState;
+	}
+
+	public TransitionImpl(int var1, int var2, Guard guard, int endState) {
+		variableNames = new int[] { var1, var2 };
 		this.guard = guard;
 		this.endState = endState;
-	}	
-	public TransitionImpl(int var1, int var2, Guard guard, Assignment assignment, int endState){
-		this.variableNames = new int[]{var1,var2};
+	}
+
+	public TransitionImpl(int var1, int var2, Guard guard,
+			Assignment assignment, int endState) {
+		variableNames = new int[] { var1, var2 };
 		this.guard = guard;
-		this.assignment = assignment;		
+		this.assignment = assignment;
 		this.endState = endState;
-	}		
-	
-	
+	}
+
 	public TransitionImpl(int[] variableNames, Guard guard,
 			Assignment assignment, int endState) {
 		super();
