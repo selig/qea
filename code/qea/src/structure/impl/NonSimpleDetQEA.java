@@ -14,6 +14,8 @@ import structure.intf.Transition;
  * and an end state. Optionally, it can be associated to a guard and/or an
  * assignment
  * <li>The QEA is deterministic
+ * <li>Fixed quantified variable optimisation: The array of arguments of an
+ * event always contains the value of the quantified in the first position
  * </ul>
  * 
  * @author Helena Cuenca
@@ -29,17 +31,22 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 	private Transition[][] delta;
 
 	/**
-	 * Creates a NonSimpleDetQEA for the specified number of states, number of
-	 * events, initial state and quantification type
+	 * Creates a <code>NonSimpleDetQEA</code> for the specified number of
+	 * states, number of events, initial state, quantification type and number
+	 * of free variables
 	 * 
 	 * @param numStates
-	 *            Number of states
+	 *            Number of states. The states are named: 1, 2,...
+	 *            <code>numStates</code>
 	 * @param numEvents
-	 *            Number of events
+	 *            Number of events. The events are named: 1, 2,...
+	 *            <code>numEvents</code>
 	 * @param initialState
 	 *            Initial state
 	 * @param quantification
 	 *            Quantification type
+	 * @param freeVariablesCount
+	 *            Number of free variables
 	 */
 	public NonSimpleDetQEA(int numStates, int numEvents, int initialState,
 			Quantification quantification, int freeVariablesCount) {
@@ -73,7 +80,9 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 	 * @param event
 	 *            Name of the event
 	 * @param args
-	 *            Arguments for the event
+	 *            Array of arguments for the event. The first position contains
+	 *            the value for the quantified variable, while the values
+	 *            starting from the second position correspond to free variables
 	 * @return End configuration containing the end state and binding (values of
 	 *         free variables) after the transition
 	 */
@@ -99,7 +108,7 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 		if (args.length > 1) {
 
 			// Update binding for free variables
-			prevBinding = updateBinding(config.getBinding(), args, transition);
+			prevBinding = updateBindingFixedQVar(binding, args, transition);
 		}
 
 		// If there is a guard and is not satisfied, rollback the binding and
@@ -109,7 +118,7 @@ public class NonSimpleDetQEA extends NonSimpleQEA {
 
 			config.setState(0); // Failing state
 			if (prevBinding != null) {
-				rollBackBinding(binding, transition, prevBinding);
+				rollBackBindingFixedQVar(binding, transition, prevBinding);
 			}
 			return config;
 		}
