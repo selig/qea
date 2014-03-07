@@ -34,7 +34,7 @@ public abstract class Monitor<Q extends QEA> {
 	/**
 	 * Processes the specified event with the specified arguments and produces a
 	 * verdict according to the property described by the QEA and the state of
-	 * this monitor, and produces a verdict
+	 * this monitor
 	 * 
 	 * @param eventName
 	 *            Name of the event
@@ -56,7 +56,7 @@ public abstract class Monitor<Q extends QEA> {
 	/**
 	 * Processes the specified event with no arguments and produces a verdict
 	 * according to the property described by the QEA and the state of this
-	 * monitor, and produces a verdict
+	 * monitor
 	 * 
 	 * @param eventName
 	 *            Name of the event
@@ -68,7 +68,7 @@ public abstract class Monitor<Q extends QEA> {
 	/**
 	 * Processes the specified event with the specified argument and produces a
 	 * verdict according to the property described by the QEA and the state of
-	 * this monitor, and produces a verdict
+	 * this monitor
 	 * 
 	 * @param eventName
 	 *            Name of the event
@@ -84,7 +84,7 @@ public abstract class Monitor<Q extends QEA> {
 	/**
 	 * Processes the specified event with the two specified arguments and
 	 * produces a verdict according to the property described by the QEA and the
-	 * state of this monitor, and produces a verdict
+	 * state of this monitor
 	 * 
 	 * @param eventName
 	 *            Name of the event
@@ -102,7 +102,7 @@ public abstract class Monitor<Q extends QEA> {
 	/**
 	 * Processes the specified event with the three specified arguments and
 	 * produces a verdict according to the property described by the QEA and the
-	 * state of this monitor, and produces a verdict
+	 * state of this monitor
 	 * 
 	 * @param eventName
 	 *            Name of the event
@@ -123,7 +123,7 @@ public abstract class Monitor<Q extends QEA> {
 	/**
 	 * Processes the specified event with the four specified arguments and
 	 * produces a verdict according to the property described by the QEA and the
-	 * state of this monitor, and produces a verdict
+	 * state of this monitor
 	 * 
 	 * @param eventName
 	 *            Name of the event
@@ -146,7 +146,7 @@ public abstract class Monitor<Q extends QEA> {
 	/**
 	 * Processes the specified event with the four specified arguments and
 	 * produces a verdict according to the property described by the QEA and the
-	 * state of this monitor, and produces a verdict
+	 * state of this monitor
 	 * 
 	 * @param eventName
 	 *            Name of the event
