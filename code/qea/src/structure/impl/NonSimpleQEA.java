@@ -144,42 +144,92 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 	}
 
 	/**
-	 * Updates the specified binding with the specified arguments, according to
-	 * the variable names in the specified transition and returns an array with
-	 * the values in the binding that were replaced
+	 * Updates the specified free variables binding with the specified
+	 * arguments, according to the variable names in the specified transition
+	 * and returns an array with the values in the binding that were replaced
 	 * 
 	 * @param binding
 	 *            Binding to be updated
 	 * @param args
-	 *            Values for the variables
+	 *            Array of arguments
 	 * @param transition
 	 *            Transition containing the variable names to be matched with
 	 *            the arguments
-	 * @return Array with the values in the binding that were replaced
+	 * @return Array with the values in the binding that were replaced (free
+	 *         variables only). The size of the array is equal to the size of
+	 *         <code>args</code>. The order of the values returned corresponds
+	 *         to the order of the variables defined in the transition. If there
+	 *         is a quantified variable defined in the transition, a
+	 *         <code>null</code> value is returned in the corresponding position
 	 */
 	protected Object[] updateBinding(Binding binding, Object[] args,
 			TransitionImpl transition) {
 
-		// Create an array for the previous binding
-		Object[] prevBinding = new Object[args.length - 1];
+		Object[] prevBinding = new Object[args.length];
 
-		// Starting in the second position, all parameters are free variables
-		for (int i = 1; i < args.length; i++) {
+		for (int i = 0; i < args.length; i++) {
 
-			// Save previous value
-			prevBinding[i - 1] = binding
-					.getValue(transition.getVariableNames()[i]);
+			int varName = transition.getVariableNames()[i];
 
-			// Set new value for the free variable
-			binding.setValue(transition.getVariableNames()[i], args[i]);
+			// Check the variable is free
+			if (varName >= 0) {
+
+				// Save previous value
+				prevBinding[i] = binding.getValue(varName);
+
+				// Set new value
+				binding.setValue(varName, args[i]);
+			}
 		}
 
 		return prevBinding;
 	}
 
 	/**
-	 * Updates the specified binding with the values specified in prevBinding,
-	 * according to the variable names in the specified transition
+	 * Updates the specified free variables binding with the specified
+	 * arguments, according to the variable names in the specified transition
+	 * and returns an array with the values in the binding that were replaced
+	 * 
+	 * @param binding
+	 *            Binding to be updated
+	 * @param args
+	 *            Array of arguments. The first position contains the value for
+	 *            the quantified variable, while the values starting from the
+	 *            second position correspond to free variables
+	 * @param transition
+	 *            Transition containing the variable names to be matched with
+	 *            the arguments
+	 * @return Array with the values in the binding that were replaced (free
+	 *         variables only). The size of the array is equal to the size of
+	 *         <code>args - 1</code>. The order of the values returned
+	 *         corresponds to the order of the free variables defined in the
+	 *         transition
+	 */
+	protected Object[] updateBindingFixedQVar(Binding binding, Object[] args,
+			TransitionImpl transition) {
+
+		Object[] prevBinding = new Object[args.length - 1];
+
+		// Starting in the second position, all parameters are free variables
+		for (int i = 1; i < args.length; i++) {
+
+			int varName = transition.getVariableNames()[i];
+
+			// Save previous value
+			prevBinding[i - 1] = binding.getValue(varName);
+
+			// Set new value for the free variable
+			binding.setValue(varName, args[i]);
+		}
+
+		return prevBinding;
+	}
+
+	/**
+	 * Updates the specified binding with the values in the array
+	 * <code>prevBinding</code>, according to the variable names in the
+	 * specified transition. This method should be used after a call to
+	 * <code>updateBinding</code>
 	 * 
 	 * @param binding
 	 *            Binding to be returned to its original values
@@ -188,9 +238,36 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 	 *            the previousBinding
 	 * @param prevBinding
 	 *            Array containing the values in the binding that were replaced
+	 *            (only free variables)
 	 */
 	protected void rollBackBinding(Binding binding, TransitionImpl transition,
 			Object[] prevBinding) {
+
+		for (int i = 0; i < prevBinding.length; i++) {
+			if (transition.getVariableNames()[i] >= 0) {
+				binding.setValue(transition.getVariableNames()[i],
+						prevBinding[i]);
+			}
+		}
+	}
+
+	/**
+	 * Updates the specified binding with the values in the array
+	 * <code>prevBinding</code>, according to the variable names in the
+	 * specified transition. This method should be used after a call to
+	 * <code>updateBindingFixedQVar</code>
+	 * 
+	 * @param binding
+	 *            Binding to be returned to its original values
+	 * @param transition
+	 *            Transition containing the variable names to be matched with
+	 *            the previousBinding
+	 * @param prevBinding
+	 *            Array containing the values in the binding that were replaced
+	 *            (only free variables)
+	 */
+	protected void rollBackBindingFixedQVar(Binding binding,
+			TransitionImpl transition, Object[] prevBinding) {
 
 		for (int i = 0; i < prevBinding.length; i++) {
 			binding.setValue(transition.getVariableNames()[i + 1],
