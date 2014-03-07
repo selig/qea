@@ -41,6 +41,8 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 	 *            Initial state
 	 * @param quantification
 	 *            Quantification type
+	 * @param freeVariablesCount
+	 *            Number of free variables
 	 */
 	public NonSimpleNonDetQEA(int numStates, int numEvents, int initialState,
 			Quantification quantification, int freeVariablesCount) {
@@ -144,7 +146,8 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 				Object[] prevBinding = null;
 
 				if (args.length > 1) {
-					prevBinding = updateBinding(binding, args, transitions[0]);
+					prevBinding = updateBindingFixedQVar(binding, args,
+							transitions[0]);
 				}
 
 				// If there is a guard and is not satisfied, rollback the
@@ -154,7 +157,8 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 
 					config.setState(0, 0); // Failing state
 					if (prevBinding != null) {
-						rollBackBinding(binding, transitions[0], prevBinding);
+						rollBackBindingFixedQVar(binding, transitions[0],
+								prevBinding);
 					}
 					return config;
 				}
@@ -187,7 +191,7 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 					if (args.length > 1) {
 
 						// Update binding for free variables
-						updateBinding(binding, args, transition);
+						updateBindingFixedQVar(binding, args, transition);
 					}
 
 					// If there is a guard, check it is satisfied
@@ -285,7 +289,8 @@ public class NonSimpleNonDetQEA extends NonSimpleQEA {
 						if (args.length > 1) {
 
 							// Update binding for free variables
-							updateBinding(binding, args, transitions[i][j]);
+							updateBindingFixedQVar(binding, args,
+									transitions[i][j]);
 						}
 
 						// If there is a guard, check it is satisfied
