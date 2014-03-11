@@ -92,11 +92,8 @@ public class IncrementalSimpleNonDetQEAMonitor extends
 		return finalVerdict;
 	}
 
-	/*
-	 * Override toString to print current map to configurations
-	 */
 	@Override
-	public String toString() {
+	public String getStatus() {
 		String ret = "Map:\n";
 		for (IdentityHashMap.Entry<Object, NonDetConfig> entry : bindings
 				.entrySet()) {

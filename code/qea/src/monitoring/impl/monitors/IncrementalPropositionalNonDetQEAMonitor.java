@@ -57,4 +57,9 @@ public class IncrementalPropositionalNonDetQEAMonitor extends
 		return Verdict.FAILURE;
 	}
 
+	@Override
+	public String getStatus() {		
+		return "Config: "+currentConfig;
+	}		
+	
 }

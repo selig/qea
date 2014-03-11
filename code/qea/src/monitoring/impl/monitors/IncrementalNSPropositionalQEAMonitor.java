@@ -53,4 +53,9 @@ public class IncrementalNSPropositionalQEAMonitor extends
 		return Verdict.FAILURE;
 	}
 
+	@Override
+	public String getStatus() {		
+		return "Config: "+config;
+	}		
+	
 }

@@ -4,6 +4,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import monitoring.impl.configs.DetConfig;
+import monitoring.impl.configs.NonDetConfig;
 import structure.impl.NonSimpleDetQEA;
 import structure.impl.Verdict;
 
@@ -119,4 +120,14 @@ public class IncrementalNonSimpleDetQEAMonitor extends
 		}
 		return ret;
 	}
+	
+	@Override
+	public String getStatus() {
+		String ret = "Map:\n";
+		for (IdentityHashMap.Entry<Object, DetConfig> entry : bindings
+				.entrySet()) {
+			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
+		}
+		return ret;
+	}	
 }

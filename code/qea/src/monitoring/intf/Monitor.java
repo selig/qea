@@ -206,4 +206,12 @@ public abstract class Monitor<Q extends QEA> {
 	 */
 	public abstract Verdict trace(int[] eventNames, Object[][] args);
 
+	
+	/*
+	 * For Debugging
+	 */
+	public abstract String getStatus();
+	@Override
+	public String toString(){ return getStatus();}
+	
 }

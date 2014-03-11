@@ -8,7 +8,7 @@ public class ExampleUsage {
 	
 	public static QEA makeHasNext() {
 		
-		int i = 1;
+		int i = -1;
 		int NEXT = 1;
 		int HASNEXT_TRUE = 2;
 		int HASNEXT_FALSE = 3;

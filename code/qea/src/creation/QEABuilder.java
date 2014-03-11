@@ -206,7 +206,8 @@ public class QEABuilder {
 									qea.addTransitions(i,((int)entry.getKey()),nextstates);
 							}
 					}
-					for(Integer s : finalstates) qea.setStateAsFinal(s);					
+					for(Integer s : finalstates) qea.setStateAsFinal(s);	
+					return qea;
 				}
 			}
 			else{
@@ -246,10 +247,10 @@ public class QEABuilder {
 							}
 					}
 					for(Integer s : finalstates) qea.setStateAsFinal(s);
+					return qea;
 				}				
 			}
 		}
-		throw new ShouldNotHappenException("I don't know how to make that kind of QEA yet");
 	}	
 	
 	private int countStates(){
