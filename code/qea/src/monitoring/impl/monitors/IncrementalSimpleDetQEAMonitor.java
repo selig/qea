@@ -1,9 +1,6 @@
 package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
-import java.util.Map;
-
-import monitoring.impl.configs.NonDetConfig;
 
 import structure.impl.SimpleDetQEA;
 import structure.impl.Verdict;
@@ -95,8 +92,8 @@ public class IncrementalSimpleDetQEAMonitor extends
 	@Override
 	public Verdict step(int eventName) {
 		Verdict finalVerdict = null;
-		for (Map.Entry<Object, Integer> entry : bindings.entrySet()) {
-			finalVerdict = step(eventName, entry.getKey());
+		for (Object binding : bindings.keySet()) {
+			finalVerdict = step(eventName, binding);
 		}
 		return finalVerdict;
 	}
@@ -104,11 +101,10 @@ public class IncrementalSimpleDetQEAMonitor extends
 	@Override
 	public String getStatus() {
 		String ret = "Map:\n";
-		for (IdentityHashMap.Entry<Object, Integer> entry : bindings
-				.entrySet()) {
+		for (IdentityHashMap.Entry<Object, Integer> entry : bindings.entrySet()) {
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;
-	}	
-	
+	}
+
 }
