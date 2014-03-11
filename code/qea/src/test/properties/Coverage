@@ -1,0 +1,10 @@
+Mapping QEA structures to tests. 
+Should probably expand table to consider the different parameters to these QEAs.
+Update names when we update naming structure.
+
+SimpleDet			HasNext, UseFile, UseFilePropositional
+SimpleNonDet		SampleNonDet
+NonSimpleDet		AuctionBidding
+NonSimpleNonDet		AuctionBidding
+NonSimpleDetGen
+NonSimpleNonDetGen
