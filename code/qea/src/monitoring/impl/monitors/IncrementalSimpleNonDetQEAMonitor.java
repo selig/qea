@@ -1,7 +1,6 @@
 package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
-import java.util.Map;
 
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.SimpleNonDetQEA;
@@ -86,8 +85,8 @@ public class IncrementalSimpleNonDetQEAMonitor extends
 	@Override
 	public Verdict step(int eventName) {
 		Verdict finalVerdict = null;
-		for (Map.Entry<Object, NonDetConfig> entry : bindings.entrySet()) {
-			finalVerdict = step(eventName, entry.getKey());
+		for (Object binding : bindings.keySet()) {
+			finalVerdict = step(eventName, binding);
 		}
 		return finalVerdict;
 	}
