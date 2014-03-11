@@ -1,5 +1,7 @@
 package monitoring.impl.monitors;
 
+import java.util.IdentityHashMap;
+
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.DetConfig;
 import structure.impl.SimpleDetQEA;
@@ -55,4 +57,9 @@ public class IncrementalPropositionalQEAMonitor extends
 		return Verdict.FAILURE;
 	}
 
+	@Override
+	public String getStatus() {		
+		return "Config: "+currentConfig;
+	}		
+	
 }

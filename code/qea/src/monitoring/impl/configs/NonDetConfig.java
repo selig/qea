@@ -79,7 +79,10 @@ public class NonDetConfig implements Configuration {
 	 */
 	@Override
 	public String toString() {
-		// currently ignores bindings
-		return Arrays.toString(states);
+		String [] out = new String[states.length];
+		for(int i=0;i<states.length;i++){
+			out[i] = "("+states[i]+","+bindings[i]+")";
+		}
+		return Arrays.toString(out);
 	}
 }

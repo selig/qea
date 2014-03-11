@@ -1,5 +1,7 @@
 package structure.impl;
 
+import java.util.Arrays;
+
 import structure.intf.Binding;
 
 /**
@@ -69,4 +71,15 @@ public class BindingImpl extends Binding { // TODO Check name
 			values[i] = null;
 		}
 	}
+	
+	@Override
+	public String toString(){
+		String[] out = new String[values.length];
+		for(int i=0;i<values.length;i++){
+			if(values[i]==null) out[i]="-";
+			else out[i]=values[i].toString();
+		}
+		return Arrays.toString(out);
+	}
+	
 }

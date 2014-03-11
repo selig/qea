@@ -14,6 +14,7 @@ import structure.impl.NonSimpleNonDetQEA;
 import structure.impl.SimpleDetQEA;
 import structure.impl.SimpleNonDetQEA;
 import structure.intf.QEA;
+import exceptions.ShouldNotHappenException;
 
 /**
  * This class should be used to construct Monitors from QEA. The general idea is
@@ -69,7 +70,7 @@ public class MonitorFactory {
 				&& qea.getLambda().length == 0) {
 			// TODO: New monitor to be created
 		}
-		return null;
+		throw new ShouldNotHappenException("No monitor for "+qea.getClass());
 	}
 
 	/**

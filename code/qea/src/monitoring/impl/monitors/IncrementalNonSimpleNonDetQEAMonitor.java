@@ -91,4 +91,14 @@ public class IncrementalNonSimpleNonDetQEAMonitor extends
 		return null;
 	}
 
+	@Override
+	public String getStatus() {
+		String ret = "Map:\n";
+		for (IdentityHashMap.Entry<Object, NonDetConfig> entry : bindings
+				.entrySet()) {
+			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
+		}
+		return ret;
+	}	
+	
 }
