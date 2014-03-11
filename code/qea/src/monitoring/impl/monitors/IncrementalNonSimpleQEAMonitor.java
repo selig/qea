@@ -24,48 +24,84 @@ public abstract class IncrementalNonSimpleQEAMonitor<Q extends NonSimpleQEA>
 	}
 
 	/**
-	 * Retrieves the value of the quantified variable (if present) in the
-	 * specified array of arguments according to the specified variable names
+	 * Retrieves the different bindings for the quantified variable, according
+	 * to the event mask and arguments specified
 	 * 
-	 * @param variableNames
-	 *            Array containing names of variables. The quantified variable
-	 *            name is an integer < 0
+	 * @param eventMask
+	 *            Array containing a value <code>true</code> in the positions of
+	 *            the quantified variable. The size must be equal to the size of
+	 *            <code>args</code>
 	 * @param args
-	 *            Array containing the data values
-	 * @return Data value for the quantified variable or <code>null</code> if
-	 *         there is no quantified variable in the array of variable names
+	 *            Array of arguments for the event. The size must be equal to
+	 *            the size of <code>eventMask</code>
+	 * @param numQVarPositions
+	 *            Number of positions in the mask for the quantified variable,
+	 *            i.e., number of positions in <code>eventMask</code> whose
+	 *            value is <code>true</code>
+	 * @return An array with the different bindings (values) for the quantified
+	 *         variable
 	 */
-	protected Object getQVarValue(Object[] args, int[] variableNames) {
-		for (int i = 0; i < variableNames.length; i++) {
-			if (variableNames[i] < 0) {
+	protected Object[] getUniqueQVarBindings(boolean[] eventMask,
+			Object[] args, int numQVarPositions) {
+
+		Object[] bindings = new Object[numQVarPositions];
+		int numBindings = 0;
+		boolean existingBinding;
+
+		// Iterate over the mask
+		for (int i = 0; i < eventMask.length; i++) {
+
+			if (eventMask[i]) { // QVar position found
+
+				// Check if the binding is already in the array
+				existingBinding = false;
+				for (int j = 0; j < numBindings; j++) {
+					if (args[i].equals(bindings[j])) {
+						existingBinding = true;
+					}
+				}
+
+				// If it's a new binding, add it
+				if (!existingBinding) {
+					bindings[numBindings] = args[i];
+					numBindings++;
+				}
+			}
+		}
+
+		// Resize array if needed
+		if (numBindings != numQVarPositions) {
+			Object[] resizedBindings = new Object[numBindings];
+			System.arraycopy(bindings, 0, resizedBindings, 0, numBindings);
+			return resizedBindings;
+		}
+
+		return bindings;
+	}
+
+	/**
+	 * Retrieves the first binding for the quantified variable, according to the
+	 * event mask and arguments specified
+	 * 
+	 * @param eventMask
+	 *            Array containing a value <code>true</code> in the positions of
+	 *            the quantified variable. The size must be equal to the size of
+	 *            <code>args</code>
+	 * @param args
+	 *            Array of arguments for the event. The size must be equal to
+	 *            the size of <code>eventMask</code>
+	 * @return The first binding (value) for the quantified variable or
+	 *         <code>null</code> if the array <code>eventMask</code> does not
+	 *         contain any mark for the quantified variable
+	 */
+	protected Object getFirstQVarBinding(boolean[] eventMask, Object[] args) {
+
+		for (int i = 0; i < eventMask.length; i++) {
+			if (eventMask[i]) {
 				return args[i];
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Determines if the specified array of event signatures contains at least
-	 * one signature where all parameters correspond to free variables
-	 * 
-	 * @param eventSignatures
-	 *            Array of parameters
-	 * @return <code>true</code> if there is at least one set of parameters
-	 *         containing only free variables; <code>false</code> otherwise
-	 */
-	protected boolean containsSignatureOnlyFVars(int[][] eventSignatures) {
-		for (int[] variableNames : eventSignatures) {
-			boolean qVar = false;
-			for (int varName : variableNames) {
-				if (varName < 0) {
-					qVar = true;
-				}
-			}
-			if (!qVar) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }
