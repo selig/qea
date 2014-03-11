@@ -1,10 +1,8 @@
 package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
-import java.util.Map;
 
 import monitoring.impl.configs.DetConfig;
-import monitoring.impl.configs.NonDetConfig;
 import structure.impl.NonSimpleDetQEA;
 import structure.impl.Verdict;
 
@@ -59,8 +57,7 @@ public class IncrementalNonSimpleDetQEAMonitor extends
 		} else { // New quantified variable binding
 
 			// Create configuration for the new binding
-			config = new DetConfig(qea.getInitialState());
-			config.setBinding(qea.newBinding());
+			config = new DetConfig(qea.getInitialState(), qea.newBinding());
 		}
 
 		// Flag needed to update counters later
@@ -105,8 +102,8 @@ public class IncrementalNonSimpleDetQEAMonitor extends
 	@Override
 	public Verdict step(int eventName) {
 		Verdict finalVerdict = null;
-		for (Map.Entry<Object, DetConfig> entry : bindings.entrySet()) {
-			finalVerdict = step(eventName, entry.getKey());
+		for (Object binding : bindings.keySet()) {
+			finalVerdict = step(eventName, binding);
 		}
 		return finalVerdict;
 	}
@@ -120,7 +117,7 @@ public class IncrementalNonSimpleDetQEAMonitor extends
 		}
 		return ret;
 	}
-	
+
 	@Override
 	public String getStatus() {
 		String ret = "Map:\n";
@@ -129,5 +126,5 @@ public class IncrementalNonSimpleDetQEAMonitor extends
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;
-	}	
+	}
 }
