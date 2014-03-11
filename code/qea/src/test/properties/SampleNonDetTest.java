@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
-import properties.SampleNonDetQEA;
+import properties.simple.SampleNonDetQEA;
 import structure.intf.QEA;
 import static structure.impl.Verdict.*;
 

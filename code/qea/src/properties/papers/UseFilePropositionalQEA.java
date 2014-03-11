@@ -1,22 +1,22 @@
-package properties;
+package properties.papers;
 
-import static structure.impl.Quantification.FORALL;
+import static structure.impl.Quantification.NONE;
 import structure.impl.SimpleDetQEA;
 
 /**
  * A QEA giving the very simple UseFile property
  * 
- * This states that a file should be opened before being used and should
- * eventually be closed.
+ * This is the propositional version - the only difference being a flag saying
+ * it has no quantified variables.
  * 
  * @author Giles Reger
  */
 
-public class UseFileQEA extends SimpleDetQEA {
+public class UseFilePropositionalQEA extends SimpleDetQEA {
 
-	public UseFileQEA() {
+	public UseFilePropositionalQEA() {
 		// we use two states, three events and 0 as the initial state
-		super(2, 3, 1, FORALL);
+		super(2, 3, 1, NONE);
 
 		// define the event names for convenience
 		int OPEN = 1;

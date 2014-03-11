@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
-import properties.HasNextQEA;
+import properties.papers.HasNextQEA;
 import structure.intf.QEA;
 import static structure.impl.Verdict.*;
 

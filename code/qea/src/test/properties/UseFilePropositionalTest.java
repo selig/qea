@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
-import properties.UseFilePropositionalQEA;
+import properties.papers.UseFilePropositionalQEA;
 import structure.intf.QEA;
 import static structure.impl.Verdict.*;
 

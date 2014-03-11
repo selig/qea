@@ -1,4 +1,4 @@
-package properties;
+package properties.papers;
 
 import static structure.impl.Quantification.FORALL;
 import structure.impl.SimpleDetQEA;
