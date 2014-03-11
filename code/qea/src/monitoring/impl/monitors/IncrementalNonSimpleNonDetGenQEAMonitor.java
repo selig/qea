@@ -1,8 +1,6 @@
 package monitoring.impl.monitors;
 
-import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.Map;
 
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.NonSimpleNonDetGenQEA;
@@ -20,13 +18,32 @@ import structure.intf.Transition;
 public class IncrementalNonSimpleNonDetGenQEAMonitor extends
 		IncrementalNonSimpleQEAMonitor<NonSimpleNonDetGenQEA> {
 
+	/**
+	 * Maps the current values of the quantified variable to the
+	 * non-deterministic configuration for each binding. The configuration
+	 * contains the set of states and set of bindings for the free variables
+	 */
 	private IdentityHashMap<Object, NonDetConfig> bindings;
 
 	/**
-	 * Maps the event names defined in the QEA of this monitor to the signatures
-	 * defined for it
+	 * For each event stores a <code>true</code> indicating it has at least one
+	 * signature that only contains free variables as parameters,
+	 * <code>false</code> otherwise
 	 */
-	private HashMap<Integer, int[][]> eventsIndex;
+	private boolean[] onlyFVarSignature;
+
+	/**
+	 * For each event stores the number of different positions of the quantified
+	 * variable in the event signatures
+	 */
+	private int[] numQVarPositions;
+
+	/**
+	 * For each event stores an array showing (with a value <code>true</code>)
+	 * the possible different positions of the quantified variables in the
+	 * signatures
+	 */
+	private boolean[][] eventsMasks;
 
 	/**
 	 * Creates a <code>IncrementalNonSimpleNonDetGenQEAMonitor</code> to monitor
@@ -38,62 +55,64 @@ public class IncrementalNonSimpleNonDetGenQEAMonitor extends
 	public IncrementalNonSimpleNonDetGenQEAMonitor(NonSimpleNonDetGenQEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
-		eventsIndex = new HashMap<>();
-		buildEventsIndex();
+		buildEventsIndices();
 	}
 
 	/**
-	 * Builds an index of the different signatures for every event in the QEA of
-	 * this monitor
+	 * Initialise the arrays <code>onlyFVarSignature</code>,
+	 * <code>numQVarPositions</code> and <code>eventsMasks</code> according to
+	 * the events defined in the QEA of this monitor
 	 */
-	private void buildEventsIndex() {
+	private void buildEventsIndices() {
 
+		int numEvents = qea.getEventsAlphabet().length;
 		int[] states = qea.getStates();
 		int[] eventsAlphabet = qea.getEventsAlphabet();
-		int[] signaturesCountPerEvent = new int[eventsAlphabet.length];
 
-		// Count number of signatures per event
+		onlyFVarSignature = new boolean[numEvents + 1];
+		numQVarPositions = new int[numEvents + 1];
+		eventsMasks = new boolean[numEvents + 1][];
+
+		// Iterate over all start states and event names
 		for (int i = 0; i < states.length; i++) {
 			for (int j = 0; j < eventsAlphabet.length; j++) {
 
+				// Get transitions for the specified start state and event
 				Transition[] transitions = qea.getTransitions(states[i],
 						eventsAlphabet[j]);
-
-				// If at least one transition is defined, count the signatures
-				if (transitions != null) {
-					signaturesCountPerEvent[j] += transitions.length;
-				}
-			}
-		}
-
-		// Put events in the map and initialise parameters matrix
-		for (int i = 0; i < signaturesCountPerEvent.length; i++) {
-			eventsIndex.put(eventsAlphabet[i],
-					new int[signaturesCountPerEvent[i]][]);
-			signaturesCountPerEvent[i] = 0;
-		}
-
-		// Populate index
-		for (int i = 0; i < states.length; i++) {
-			for (int j = 0; j < eventsAlphabet.length; j++) {
-
-				int eventName = eventsAlphabet[j];
-
-				// Get the transitions for the start state - event
-				Transition[] transitions = qea.getTransitions(states[i],
-						eventName);
-
 				if (transitions != null) {
 
-					// Add the set of parameters of each transition to the
-					// index
+					// Iterate over each transition
 					for (Transition transition : transitions) {
 
-						int[][] parameters = eventsIndex.get(eventName);
-						parameters[signaturesCountPerEvent[j]] = ((TransitionImpl) transition)
-								.getVariableNames();
+						// TODO Remove cast
+						TransitionImpl transitionImpl = (TransitionImpl) transition;
+						int eventName = eventsAlphabet[j];
+						boolean onlyFreeVar = true;
 
-						signaturesCountPerEvent[j]++;
+						// If needed, initialise array of mask for the event
+						if (eventsMasks[eventName] == null) {
+							eventsMasks[eventName] = new boolean[transitionImpl
+									.getVariableNames().length];
+						}
+
+						// Iterate over the variables names of this signature
+						int[] varNames = transitionImpl.getVariableNames();
+						for (int k = 0; k < varNames.length; k++) {
+							if (varNames[k] < 0) { // Quantified variable
+								onlyFreeVar = false;
+								if (!eventsMasks[eventName][k]) {
+									eventsMasks[eventName][k] = true;
+									numQVarPositions[eventName]++;
+								}
+								k = varNames.length; // Exit the loop
+							}
+						}
+
+						if (onlyFreeVar) {
+							// This signature only contains free variables
+							onlyFVarSignature[eventName] = true;
+						}
 					}
 				}
 			}
@@ -103,22 +122,35 @@ public class IncrementalNonSimpleNonDetGenQEAMonitor extends
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
-		int[][] eventSignatures = eventsIndex.get(eventName);
+		boolean eventProcessedForAllExistingBindings = false;
+		if (onlyFVarSignature[eventName]) {
 
-		if (containsSignatureOnlyFVars(eventSignatures)) {
-
-			// If there is a signature for the event with only free variables
-			// (no quantified variables), apply event to all bindings
-			for (Map.Entry<Object, NonDetConfig> entry : bindings.entrySet()) {
-				stepNoVerdict(eventName, args, entry.getKey());
+			// If there is a signature for the event with only free variables,
+			// apply event to all existing bindings
+			for (Object binding : bindings.keySet()) {
+				stepNoVerdict(eventName, args, binding);
 			}
+			eventProcessedForAllExistingBindings = true;
+		}
 
-		} else {
+		if (numQVarPositions[eventName] == 1) { // Only one value for the QVar
 
-			// Apply event to each value of quantified variable
-			for (int[] eventSignature : eventSignatures) {
-				Object qVarValue = getQVarValue(args, eventSignature);
-				stepNoVerdict(eventName, args, qVarValue);
+			Object qVarBinding = getFirstQVarBinding(eventsMasks[eventName],
+					args);
+			if (!eventProcessedForAllExistingBindings
+					|| bindings.get(qVarBinding) == null) {
+				stepNoVerdict(eventName, args, qVarBinding);
+			}
+		} else if (numQVarPositions[eventName] > 1) { // Possibly multiple
+														// values for the QVar
+
+			Object[] qVarBindings = getUniqueQVarBindings(
+					eventsMasks[eventName], args, numQVarPositions[eventName]);
+			for (Object qVarBinding : qVarBindings) {
+				if (!eventProcessedForAllExistingBindings
+						|| bindings.get(qVarBinding) == null) {
+					stepNoVerdict(eventName, args, qVarBinding);
+				}
 			}
 		}
 
@@ -129,14 +161,13 @@ public class IncrementalNonSimpleNonDetGenQEAMonitor extends
 			return Verdict.WEAK_SUCCESS;
 		}
 		return Verdict.WEAK_FAILURE;
-
 	}
 
 	@Override
 	public Verdict step(int eventName) {
 		Verdict finalVerdict = null;
-		for (Map.Entry<Object, NonDetConfig> entry : bindings.entrySet()) {
-			finalVerdict = step(eventName, entry.getKey());
+		for (Object binding : bindings.keySet()) {
+			finalVerdict = step(eventName, binding);
 		}
 		return finalVerdict;
 	}
@@ -160,6 +191,7 @@ public class IncrementalNonSimpleNonDetGenQEAMonitor extends
 		// Determine if the value received corresponds to an existing binding
 		if (bindings.containsKey(qVarValue)) { // Existing quantified
 												// variable binding
+
 			// Get current configuration for the binding
 			config = bindings.get(qVarValue);
 
@@ -210,6 +242,6 @@ public class IncrementalNonSimpleNonDetGenQEAMonitor extends
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;
-	}	
-	
+	}
+
 }
