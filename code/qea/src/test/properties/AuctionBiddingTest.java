@@ -9,8 +9,8 @@ import monitoring.intf.Monitor;
 import org.junit.Before;
 import org.junit.Test;
 
-import properties.AuctionBiddingNDQEA;
-import properties.AuctionBiddingQEA;
+import properties.papers.AuctionBiddingNDQEA;
+import properties.papers.AuctionBiddingQEA;
 import structure.intf.QEA;
 
 public class AuctionBiddingTest {
