@@ -2,7 +2,7 @@ package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.NonDetConfig;
-import structure.impl.SimpleNonDetQEA;
+import structure.impl.QVar01_NoFVar_NonDet_QEA;
 import structure.impl.Verdict;
 import exceptions.ShouldNotHappenException;
 
@@ -13,15 +13,15 @@ import exceptions.ShouldNotHappenException;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class IncrementalPropositionalNonDetQEAMonitor extends
-		IncrementalMonitor<SimpleNonDetQEA> {
+public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
+		IncrementalMonitor<QVar01_NoFVar_NonDet_QEA> {
 
 	/**
 	 * Contains the current configuration (set of states) for the monitor
 	 */
 	private NonDetConfig currentConfig;
 
-	public IncrementalPropositionalNonDetQEAMonitor(SimpleNonDetQEA qea) {
+	public Incr_QVar0_NoFVar_NonDet_QEAMonitor(QVar01_NoFVar_NonDet_QEA qea) {
 		super(qea);
 
 		// Set initial state
@@ -58,8 +58,8 @@ public class IncrementalPropositionalNonDetQEAMonitor extends
 	}
 
 	@Override
-	public String getStatus() {		
-		return "Config: "+currentConfig;
-	}		
-	
+	public String getStatus() {
+		return "Config: " + currentConfig;
+	}
+
 }

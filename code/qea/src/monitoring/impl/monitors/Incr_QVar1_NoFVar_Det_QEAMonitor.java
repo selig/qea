@@ -2,71 +2,78 @@ package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
 
-import monitoring.impl.configs.NonDetConfig;
-import structure.impl.SimpleNonDetQEA;
+import structure.impl.QVar01_NoFVar_Det_QEA;
 import structure.impl.Verdict;
+import exceptions.ShouldNotHappenException;
 
 /**
- * A small-step monitor for a non-deterministic simple QEA
+ * A small-step monitor for the Simplest QEA
  * 
- * @author Helena Cuenca
  * @author Giles Reger
+ * @author Helena Cuenca
  */
-public class IncrementalSimpleNonDetQEAMonitor extends
-		IncrementalSimpleQEAMonitor<SimpleNonDetQEA> {
+public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
+		IncrementalSimpleQEAMonitor<QVar01_NoFVar_Det_QEA> {
 
-	private IdentityHashMap<Object, NonDetConfig> bindings;
+	private IdentityHashMap<Object, Integer> bindings;
 
-	public IncrementalSimpleNonDetQEAMonitor(SimpleNonDetQEA qea) {
+	/**
+	 * Creates an IncrementalSimpleDetQEAMonitor for the specified QEA
+	 * 
+	 * @param qea
+	 *            QEA
+	 */
+	public Incr_QVar1_NoFVar_Det_QEAMonitor(QVar01_NoFVar_Det_QEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
+	}
+
+	@Override
+	public Verdict step(int eventName, Object[] args) {
+		if (args.length > 1) {
+			throw new ShouldNotHappenException(
+					"Was only expecting one parameter");
+		}
+		return step(eventName, args[0]);
 	}
 
 	@Override
 	public Verdict step(int eventName, Object param1) {
 
 		boolean existingBinding = false;
-		NonDetConfig config;
+		int startState;
 
 		// Determine if the value received corresponds to an existing binding
-		if (bindings.containsKey(param1)) { // Existing quantified variable
-											// binding
+		if (bindings.containsKey(param1)) { // Existing binding
 
-			// Get current configuration for the binding
-			config = bindings.get(param1);
+			// Get current state for the binding
+			startState = bindings.get(param1);
 
 			// Assign flag for counters update
 			existingBinding = true;
 
-		} else { // New quantified variable binding
-
-			// Create configuration for the new binding
-			config = new NonDetConfig(qea.getInitialState());
+		} else { // New binding
+			startState = qea.getInitialState();
 		}
 
-		// Flag needed to update counters later
-		boolean startConfigFinal = qea.containsFinalState(config);
+		// Compute next state
+		int endState = qea.getNextState(startState, eventName);
 
-		// Compute next configuration
-		config = qea.getNextConfig(config, eventName);
-
-		// Flag needed to update counters later
-		boolean endConfigFinal = qea.containsFinalState(config);
-
-		// Update/add configuration for the binding
-		bindings.put(param1, config);
+		// Update/add state for the binding
+		bindings.put(param1, endState);
 
 		// If applicable, update counters
 		if (existingBinding) {
-			if (startConfigFinal && !endConfigFinal) {
+			if (qea.isStateFinal(startState) && !qea.isStateFinal(endState)) {
 				bindingsInNonFinalStateCount++;
 				bindingsInFinalStateCount--;
-			} else if (!startConfigFinal && endConfigFinal) {
+			} else if (!qea.isStateFinal(startState)
+					&& qea.isStateFinal(endState)) {
 				bindingsInNonFinalStateCount--;
 				bindingsInFinalStateCount++;
 			}
 		} else {
-			if (endConfigFinal) {
+			if (qea.isStateFinal(endState)) {
 				bindingsInFinalStateCount++;
 			} else {
 				bindingsInNonFinalStateCount++;
@@ -94,8 +101,7 @@ public class IncrementalSimpleNonDetQEAMonitor extends
 	@Override
 	public String getStatus() {
 		String ret = "Map:\n";
-		for (IdentityHashMap.Entry<Object, NonDetConfig> entry : bindings
-				.entrySet()) {
+		for (IdentityHashMap.Entry<Object, Integer> entry : bindings.entrySet()) {
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;

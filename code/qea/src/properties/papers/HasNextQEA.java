@@ -1,7 +1,7 @@
 package properties.papers;
 
 import static structure.impl.Quantification.FORALL;
-import structure.impl.SimpleDetQEA;
+import structure.impl.QVar01_NoFVar_Det_QEA;
 
 /**
  * A QEA giving the canonical HasNext property
@@ -22,7 +22,7 @@ import structure.impl.SimpleDetQEA;
  * @author Giles Reger
  */
 
-public class HasNextQEA extends SimpleDetQEA {
+public class HasNextQEA extends QVar01_NoFVar_Det_QEA {
 
 	public HasNextQEA() {
 		// we use three states, three events and 0 as the initial state

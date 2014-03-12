@@ -3,7 +3,7 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.DetConfig;
-import structure.impl.NonSimpleDetGenQEA;
+import structure.impl.QVar01_FVar_Det_QEA;
 import structure.impl.TransitionImpl;
 import structure.impl.Verdict;
 
@@ -13,8 +13,8 @@ import structure.impl.Verdict;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class IncrementalNonSimpleDetGenQEAMonitor extends
-		IncrementalNonSimpleQEAMonitor<NonSimpleDetGenQEA> {
+public class Incr_QVar1_FVar_Det_QEAMonitor extends
+		IncrementalNonSimpleQEAMonitor<QVar01_FVar_Det_QEA> {
 
 	/**
 	 * Maps the current values of the quantified variable to the deterministic
@@ -50,7 +50,7 @@ public class IncrementalNonSimpleDetGenQEAMonitor extends
 	 * @param qea
 	 *            QEA property
 	 */
-	public IncrementalNonSimpleDetGenQEAMonitor(NonSimpleDetGenQEA qea) {
+	public Incr_QVar1_FVar_Det_QEAMonitor(QVar01_FVar_Det_QEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
 		buildEventsIndices();

@@ -9,18 +9,18 @@ import monitoring.impl.configs.NonDetConfig;
  * <li>There is at most one quantified variable
  * <li>The transitions in the function delta consist of a start state, an event
  * and a set of end states, no guards or assigns are considered
- * <li>The QEA can is non-deterministic
+ * <li>The QEA is non-deterministic
  * </ul>
  * 
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class SimpleNonDetQEA extends SimpleQEA {
+public class QVar01_NoFVar_NonDet_QEA extends SimpleQEA {
 
 	private int[][][] delta;
 
-	public SimpleNonDetQEA(int numStates, int numEvents, int initialState,
-			Quantification quantification) {
+	public QVar01_NoFVar_NonDet_QEA(int numStates, int numEvents,
+			int initialState, Quantification quantification) {
 		super(numStates, initialState, quantification);
 		delta = new int[numStates + 1][numEvents + 1][];
 

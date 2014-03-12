@@ -2,7 +2,7 @@ package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.DetConfig;
-import structure.impl.NonSimpleDetQEA;
+import structure.impl.QVar01_FVar_Det_FixedQVar_QEA;
 import structure.impl.Verdict;
 
 /**
@@ -11,15 +11,15 @@ import structure.impl.Verdict;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class IncrementalNSPropositionalQEAMonitor extends
-		IncrementalMonitor<NonSimpleDetQEA> {
+public class Incr_QVar0_FVar_Det_QEAMonitor extends
+		IncrementalMonitor<QVar01_FVar_Det_FixedQVar_QEA> {
 
 	/**
 	 * Current configuration (state) for the monitor
 	 */
 	private DetConfig config;
 
-	public IncrementalNSPropositionalQEAMonitor(NonSimpleDetQEA qea) {
+	public Incr_QVar0_FVar_Det_QEAMonitor(QVar01_FVar_Det_FixedQVar_QEA qea) {
 		super(qea);
 		config.setState(qea.getInitialState());
 	}
@@ -54,8 +54,8 @@ public class IncrementalNSPropositionalQEAMonitor extends
 	}
 
 	@Override
-	public String getStatus() {		
-		return "Config: "+config;
-	}		
-	
+	public String getStatus() {
+		return "Config: " + config;
+	}
+
 }

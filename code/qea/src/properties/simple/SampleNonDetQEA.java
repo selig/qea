@@ -1,9 +1,9 @@
 package properties.simple;
 
 import static structure.impl.Quantification.FORALL;
-import structure.impl.SimpleNonDetQEA;
+import structure.impl.QVar01_NoFVar_NonDet_QEA;
 
-public class SampleNonDetQEA extends SimpleNonDetQEA {
+public class SampleNonDetQEA extends QVar01_NoFVar_NonDet_QEA {
 
 	public SampleNonDetQEA() {
 		super(8, 6, 1, FORALL);

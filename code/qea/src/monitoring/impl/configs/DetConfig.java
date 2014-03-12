@@ -1,7 +1,5 @@
 package monitoring.impl.configs;
 
-import java.util.Arrays;
-
 import monitoring.intf.Configuration;
 import structure.intf.Binding;
 
@@ -46,12 +44,13 @@ public class DetConfig implements Configuration {
 	public void setBinding(Binding binding) {
 		this.binding = binding;
 	}
+
 	/**
 	 * Override toString to print out config
 	 */
 	@Override
 	public String toString() {
-		return "("+state+","+binding+")";
-	}	
-	
+		return "(" + state + "," + binding + ")";
+	}
+
 }

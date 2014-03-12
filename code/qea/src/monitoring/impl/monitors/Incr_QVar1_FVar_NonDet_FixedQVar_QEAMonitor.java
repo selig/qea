@@ -3,7 +3,7 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.NonDetConfig;
-import structure.impl.NonSimpleNonDetQEA;
+import structure.impl.QVar01_FVar_NonDet_FixedQVar_QEA;
 import structure.impl.Verdict;
 
 /**
@@ -11,12 +11,13 @@ import structure.impl.Verdict;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class IncrementalNonSimpleNonDetQEAMonitor extends
-		IncrementalNonSimpleQEAMonitor<NonSimpleNonDetQEA> {
+public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
+		IncrementalNonSimpleQEAMonitor<QVar01_FVar_NonDet_FixedQVar_QEA> {
 
 	private IdentityHashMap<Object, NonDetConfig> bindings;
 
-	public IncrementalNonSimpleNonDetQEAMonitor(NonSimpleNonDetQEA qea) {
+	public Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(
+			QVar01_FVar_NonDet_FixedQVar_QEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
 	}
@@ -99,6 +100,6 @@ public class IncrementalNonSimpleNonDetQEAMonitor extends
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;
-	}	
-	
+	}
+
 }
