@@ -5,7 +5,7 @@ import exceptions.ShouldNotHappenException;
 
 public abstract class SimpleQEA implements QEA {
 
-	protected int[] finalStates; // TODO Can we use a boolean array of here?
+	protected int[] finalStates; // TODO Can we use a boolean array here?
 
 	protected final int initialState;
 

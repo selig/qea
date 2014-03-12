@@ -4,7 +4,7 @@ import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.DetConfig;
 import structure.impl.QVar01_FVar_Det_QEA;
-import structure.impl.TransitionImpl;
+import structure.impl.Transition;
 import structure.impl.Verdict;
 
 /**
@@ -72,16 +72,13 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 		eventsMasks = new boolean[numEvents + 1][];
 
 		// Iterate over all start states and event names
-		for (int i = 0; i < states.length; i++) {
-			for (int j = 0; j < eventsAlphabet.length; j++) {
+		for (int state : states) {
+			for (int eventName : eventsAlphabet) {
 
 				// Check if there is a transition for the start state and event
-				// TODO Remove cast
-				TransitionImpl transition = (TransitionImpl) qea.getTransition(
-						states[i], eventsAlphabet[j]);
+				Transition transition = qea.getTransition(state, eventName);
 				if (transition != null) {
 
-					int eventName = eventsAlphabet[j];
 					boolean onlyFreeVar = true;
 
 					// If needed, initialise array of mask for the event
@@ -99,7 +96,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 								eventsMasks[eventName][k] = true;
 								numQVarPositions[eventName]++;
 							}
-							k = varNames.length; // Exit the loop
+							break; // Exit the loop
 						}
 					}
 
@@ -179,7 +176,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 	private void stepNoVerdict(int eventName, Object[] args, Object qVarValue) {
 
 		// TODO This method contains almost the same logic of step(int,
-		// Object[]) in IncrementalNonSimpleDetQEAMonitor
+		// Object[]) in Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor
 
 		boolean existingBinding = false;
 		boolean startConfigFinal = false;

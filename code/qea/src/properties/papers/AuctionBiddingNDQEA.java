@@ -2,7 +2,7 @@ package properties.papers;
 
 import static structure.impl.Quantification.FORALL;
 import structure.impl.QVar1_FVar_NonDet_FixedQVar_QEA;
-import structure.impl.TransitionImpl;
+import structure.impl.Transition;
 import structure.intf.Assignment;
 import structure.intf.Guard;
 
@@ -26,17 +26,17 @@ public class AuctionBiddingNDQEA extends QVar1_FVar_NonDet_FixedQVar_QEA {
 		int AMOUNT = 0;
 		int NEW_AMOUNT = 1;
 
-		addTransition(1, BID, new TransitionImpl(ITEM, AMOUNT, 2));
+		addTransition(1, BID, new Transition(ITEM, AMOUNT, 2));
 		addTransition(
 				2,
 				BID,
-				new TransitionImpl(ITEM, NEW_AMOUNT, Guard.isGreaterThan(
+				new Transition(ITEM, NEW_AMOUNT, Guard.isGreaterThan(
 						NEW_AMOUNT, AMOUNT), Assignment.store(AMOUNT,
 						NEW_AMOUNT), 2));
 		addTransition(
 				2,
 				BID,
-				new TransitionImpl(ITEM, NEW_AMOUNT, Guard.isLessThanOrEqualTo(
+				new Transition(ITEM, NEW_AMOUNT, Guard.isLessThanOrEqualTo(
 						NEW_AMOUNT, AMOUNT), 3));
 
 		setStatesAsFinal(1, 2);

@@ -12,7 +12,7 @@ import exceptions.ShouldNotHappenException;
  */
 public abstract class NonSimpleQEA implements QEA { // TODO Check name
 
-	protected int[] finalStates; // TODO Can we use a boolean array of here?
+	protected int[] finalStates; // TODO Can we use a boolean array here?
 
 	protected final int initialState;
 
@@ -163,7 +163,7 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 	 *         <code>null</code> value is returned in the corresponding position
 	 */
 	protected Object[] updateBinding(Binding binding, Object[] args,
-			TransitionImpl transition) {
+			Transition transition) {
 
 		Object[] prevBinding = new Object[args.length];
 
@@ -206,7 +206,7 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 	 *         transition
 	 */
 	protected Object[] updateBindingFixedQVar(Binding binding, Object[] args,
-			TransitionImpl transition) {
+			Transition transition) {
 
 		Object[] prevBinding = new Object[args.length - 1];
 
@@ -240,7 +240,7 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 	 *            Array containing the values in the binding that were replaced
 	 *            (only free variables)
 	 */
-	protected void rollBackBinding(Binding binding, TransitionImpl transition,
+	protected void rollBackBinding(Binding binding, Transition transition,
 			Object[] prevBinding) {
 
 		for (int i = 0; i < prevBinding.length; i++) {
@@ -267,7 +267,7 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 	 *            (only free variables)
 	 */
 	protected void rollBackBindingFixedQVar(Binding binding,
-			TransitionImpl transition, Object[] prevBinding) {
+			Transition transition, Object[] prevBinding) {
 
 		for (int i = 0; i < prevBinding.length; i++) {
 			binding.setValue(transition.getVariableNames()[i + 1],

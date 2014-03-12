@@ -2,7 +2,6 @@ package structure.impl;
 
 import structure.intf.Assignment;
 import structure.intf.Guard;
-import structure.intf.Transition;
 
 /**
  * This class represents a transition in the transition function for a QEA. It
@@ -13,7 +12,7 @@ import structure.intf.Transition;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class TransitionImpl implements Transition {
+public class Transition {
 
 	/**
 	 * Array for the variable names that the event to which this transition is
@@ -38,18 +37,18 @@ public class TransitionImpl implements Transition {
 	 */
 	private int endState;
 
-	public TransitionImpl(int varName, int endState) {
+	public Transition(int varName, int endState) {
 		variableNames = new int[] { varName };
 		this.endState = endState;
 	}
 
-	public TransitionImpl(int varName, Guard guard, int endState) {
+	public Transition(int varName, Guard guard, int endState) {
 		variableNames = new int[] { varName };
 		this.guard = guard;
 		this.endState = endState;
 	}
 
-	public TransitionImpl(int varName, Guard guard, Assignment assignment,
+	public Transition(int varName, Guard guard, Assignment assignment,
 			int endState) {
 		variableNames = new int[] { varName };
 		this.guard = guard;
@@ -57,27 +56,27 @@ public class TransitionImpl implements Transition {
 		this.endState = endState;
 	}
 
-	public TransitionImpl(int var1, int var2, int endState) {
+	public Transition(int var1, int var2, int endState) {
 		variableNames = new int[] { var1, var2 };
 		this.endState = endState;
 	}
 
-	public TransitionImpl(int var1, int var2, Guard guard, int endState) {
+	public Transition(int var1, int var2, Guard guard, int endState) {
 		variableNames = new int[] { var1, var2 };
 		this.guard = guard;
 		this.endState = endState;
 	}
 
-	public TransitionImpl(int var1, int var2, Guard guard,
-			Assignment assignment, int endState) {
+	public Transition(int var1, int var2, Guard guard, Assignment assignment,
+			int endState) {
 		variableNames = new int[] { var1, var2 };
 		this.guard = guard;
 		this.assignment = assignment;
 		this.endState = endState;
 	}
 
-	public TransitionImpl(int[] variableNames, Guard guard,
-			Assignment assignment, int endState) {
+	public Transition(int[] variableNames, Guard guard, Assignment assignment,
+			int endState) {
 		super();
 		this.variableNames = variableNames;
 		this.guard = guard;
@@ -85,7 +84,7 @@ public class TransitionImpl implements Transition {
 		this.endState = endState;
 	}
 
-	public TransitionImpl(int[] variableNames, int endState) {
+	public Transition(int[] variableNames, int endState) {
 		super();
 		this.variableNames = variableNames;
 		this.endState = endState;
