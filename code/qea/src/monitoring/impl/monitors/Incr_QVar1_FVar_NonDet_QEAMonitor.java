@@ -4,9 +4,8 @@ import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.QVar01_FVar_NonDet_QEA;
-import structure.impl.TransitionImpl;
+import structure.impl.Transition;
 import structure.impl.Verdict;
-import structure.intf.Transition;
 
 /**
  * An incremental monitor for a non-simple non-deterministic generic QEA
@@ -74,20 +73,17 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		eventsMasks = new boolean[numEvents + 1][];
 
 		// Iterate over all start states and event names
-		for (int i = 0; i < states.length; i++) {
-			for (int j = 0; j < eventsAlphabet.length; j++) {
+		for (int state : states) {
+			for (int eventName : eventsAlphabet) {
 
 				// Get transitions for the specified start state and event
-				Transition[] transitions = qea.getTransitions(states[i],
-						eventsAlphabet[j]);
+				Transition[] transitions = qea.getTransitions(state, eventName);
 				if (transitions != null) {
 
 					// Iterate over each transition
 					for (Transition transition : transitions) {
 
-						// TODO Remove cast
-						TransitionImpl transitionImpl = (TransitionImpl) transition;
-						int eventName = eventsAlphabet[j];
+						Transition transitionImpl = transition;
 						boolean onlyFreeVar = true;
 
 						// If needed, initialise array of mask for the event
@@ -105,7 +101,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 									eventsMasks[eventName][k] = true;
 									numQVarPositions[eventName]++;
 								}
-								k = varNames.length; // Exit the loop
+								break; // Exit the loop
 							}
 						}
 

@@ -25,7 +25,6 @@ public class NonDetConfig implements Configuration {
 		states[0] = initialState;
 	}
 
-	// TODO Create the analogue constructor for DetConfig
 	public NonDetConfig(int initialState, Binding binding) {
 		states = new int[1];
 		states[0] = initialState;

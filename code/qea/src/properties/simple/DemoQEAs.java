@@ -1,9 +1,10 @@
 package properties.simple;
 
-import static structure.impl.Quantification.*;
-import creation.QEABuilder;
+import static structure.impl.Quantification.EXISTS;
+import static structure.impl.Quantification.FORALL;
 import structure.intf.Guard;
 import structure.intf.QEA;
+import creation.QEABuilder;
 
 public class DemoQEAs {
 

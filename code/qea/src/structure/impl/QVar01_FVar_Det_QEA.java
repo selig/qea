@@ -2,7 +2,6 @@ package structure.impl;
 
 import monitoring.impl.configs.DetConfig;
 import structure.intf.Binding;
-import structure.intf.Transition;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
@@ -87,7 +86,7 @@ public class QVar01_FVar_Det_QEA extends NonSimpleQEA {
 		// TODO This method is very similar to getNextConfig in
 		// QVar01_FVar_Det_FixedQVar_QEA
 
-		TransitionImpl transition = (TransitionImpl) delta[config.getState()][event];
+		Transition transition = delta[config.getState()][event];
 
 		// If the event is not defined for the current start state, return the
 		// failing state with an empty binding

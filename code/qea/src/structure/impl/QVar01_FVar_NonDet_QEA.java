@@ -2,7 +2,6 @@ package structure.impl;
 
 import monitoring.impl.configs.NonDetConfig;
 import structure.intf.Binding;
-import structure.intf.Transition;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
@@ -27,7 +26,7 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 	 * index corresponds to the event name. For a given start state and event
 	 * name, there may be an array of transitions (non-deterministic)
 	 */
-	private TransitionImpl[][][] delta;
+	private Transition[][][] delta;
 
 	/**
 	 * Creates a <code>QVar01_FVar_NonDet_QEA</code> for the specified number of
@@ -48,7 +47,7 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 			int initialState, Quantification quantification,
 			int freeVariablesCount) {
 		super(numStates, initialState, quantification, freeVariablesCount);
-		delta = new TransitionImpl[numStates + 1][numEvents + 1][];
+		delta = new Transition[numStates + 1][numEvents + 1][];
 	}
 
 	/**
@@ -65,13 +64,13 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 	 */
 	public void addTransition(int startState, int event, Transition transition) {
 		if (delta[startState][event] == null) {
-			delta[startState][event] = new TransitionImpl[] { (TransitionImpl) transition };
+			delta[startState][event] = new Transition[] { transition };
 		} else {
 			// Resize transitions array
-			TransitionImpl[] newTransitions = new TransitionImpl[delta[startState][event].length + 1];
+			Transition[] newTransitions = new Transition[delta[startState][event].length + 1];
 			System.arraycopy(delta[startState][event], 0, newTransitions, 0,
 					delta[startState][event].length);
-			newTransitions[delta[startState][event].length] = (TransitionImpl) transition;
+			newTransitions[delta[startState][event].length] = transition;
 			delta[startState][event] = newTransitions;
 		}
 	}
@@ -89,13 +88,13 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 	 *            end state
 	 */
 	public void addTransitions(int startState, int event,
-			TransitionImpl[] transitions) {
+			Transition[] transitions) {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = transitions;
 		} else {
 			// Resize transitions array
 			int prevTransCount = delta[startState][event].length;
-			TransitionImpl[] newTransitions = new TransitionImpl[prevTransCount
+			Transition[] newTransitions = new Transition[prevTransCount
 					+ transitions.length];
 			System.arraycopy(delta[startState][event], 0, newTransitions, 0,
 					delta[startState][event].length);
@@ -127,7 +126,7 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 
 		if (config.getStates().length == 1) { // Only one start state
 
-			TransitionImpl[] transitions = delta[config.getStates()[0]][event];
+			Transition[] transitions = delta[config.getStates()[0]][event];
 
 			// If the event is not defined for the unique start state, return
 			// the failing state with an empty binding
@@ -178,7 +177,7 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 				int endStatesCount = 0;
 
 				// Iterate over the transitions
-				for (TransitionImpl transition : transitions) {
+				for (Transition transition : transitions) {
 
 					// Copy the binding of the start state
 					BindingImpl binding = (BindingImpl) config.getBindings()[0]
@@ -236,7 +235,7 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 			int[] startStates = config.getStates();
 			int maxEndStates = 0;
 			boolean argsNumberChecked = false;
-			TransitionImpl[][] transitions = new TransitionImpl[startStates.length][];
+			Transition[][] transitions = new Transition[startStates.length][];
 
 			// Compute maximum number of end states
 			for (int i = 0; i < startStates.length; i++) {

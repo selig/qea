@@ -1,15 +1,16 @@
 package test.properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static structure.impl.Verdict.WEAK_FAILURE;
+import static structure.impl.Verdict.WEAK_SUCCESS;
+import monitoring.impl.MonitorFactory;
+import monitoring.intf.Monitor;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
 import properties.simple.DemoQEAs;
 import structure.intf.QEA;
-import static structure.impl.Verdict.*;
 
 public class PropositionalDependTest {
 

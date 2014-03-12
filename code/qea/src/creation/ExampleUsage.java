@@ -1,7 +1,7 @@
 package creation;
 
+import static structure.impl.Quantification.FORALL;
 import structure.intf.QEA;
-import static structure.impl.Quantification.*;
 
 public class ExampleUsage {
 
