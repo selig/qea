@@ -21,7 +21,7 @@ import structure.intf.Transition;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar01_FVar_Det_FixedQVar_QEA extends NonSimpleQEA {
+public class QVar1_FVar_Det_FixedQVar_QEA extends NonSimpleQEA {
 
 	/**
 	 * Transition function delta for this QEA. For a given Transition in the
@@ -48,7 +48,7 @@ public class QVar01_FVar_Det_FixedQVar_QEA extends NonSimpleQEA {
 	 * @param freeVariablesCount
 	 *            Number of free variables
 	 */
-	public QVar01_FVar_Det_FixedQVar_QEA(int numStates, int numEvents,
+	public QVar1_FVar_Det_FixedQVar_QEA(int numStates, int numEvents,
 			int initialState, Quantification quantification,
 			int freeVariablesCount) {
 		super(numStates, initialState, quantification, freeVariablesCount);
