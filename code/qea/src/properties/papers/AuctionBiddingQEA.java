@@ -1,7 +1,7 @@
 package properties.papers;
 
 import static structure.impl.Quantification.FORALL;
-import structure.impl.QVar01_FVar_Det_FixedQVar_QEA;
+import structure.impl.QVar1_FVar_Det_FixedQVar_QEA;
 import structure.impl.TransitionImpl;
 import structure.intf.Assignment;
 import structure.intf.Guard;
@@ -12,7 +12,7 @@ import structure.intf.Guard;
  * @author Giles Reger
  */
 
-public class AuctionBiddingQEA extends QVar01_FVar_Det_FixedQVar_QEA {
+public class AuctionBiddingQEA extends QVar1_FVar_Det_FixedQVar_QEA {
 
 	public AuctionBiddingQEA() {
 		// we use two states, one event and 1 as the initial state
