@@ -1,18 +1,19 @@
 package monitoring.impl;
 
-import monitoring.impl.monitors.Incr_QVar0_FVar_NonDet_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar0_FVar_Det_QEAMonitor;
-import monitoring.impl.monitors.Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor;
-import monitoring.impl.monitors.Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor;
-import monitoring.impl.monitors.Incr_QVar0_NoFVar_NonDet_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar0_NoFVar_Det_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar0_NoFVar_NonDet_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar1_FVar_Det_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_NoFVar_Det_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_NoFVar_NonDet_QEAMonitor;
 import monitoring.intf.Monitor;
-import structure.impl.QVar01_FVar_Det_FixedQVar_QEA;
-import structure.impl.QVar01_FVar_NonDet_FixedQVar_QEA;
+import structure.impl.QVar01_FVar_Det_QEA;
 import structure.impl.QVar01_NoFVar_Det_QEA;
 import structure.impl.QVar01_NoFVar_NonDet_QEA;
+import structure.impl.QVar1_FVar_Det_FixedQVar_QEA;
+import structure.impl.QVar1_FVar_NonDet_FixedQVar_QEA;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
 
@@ -51,25 +52,22 @@ public class MonitorFactory {
 				return new Incr_QVar1_NoFVar_NonDet_QEAMonitor(
 						(QVar01_NoFVar_NonDet_QEA) qea);
 			}
-		} else if (qea instanceof QVar01_FVar_Det_FixedQVar_QEA) {
+		} else if (qea instanceof QVar1_FVar_Det_FixedQVar_QEA) {
+			// Lambda size is 1
+			return new Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(
+					(QVar1_FVar_Det_FixedQVar_QEA) qea);
+		} else if (qea instanceof QVar1_FVar_NonDet_FixedQVar_QEA) {
+			// Lambda size is 1
+			return new Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(
+					(QVar1_FVar_NonDet_FixedQVar_QEA) qea);
+		} else if (qea instanceof QVar01_FVar_Det_QEA) {
 			if (qea.getLambda().length == 0) {
 				return new Incr_QVar0_FVar_Det_QEAMonitor(
-						(QVar01_FVar_Det_FixedQVar_QEA) qea);
+						(QVar01_FVar_Det_QEA) qea);
 			} else {
-				return new Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(
-						(QVar01_FVar_Det_FixedQVar_QEA) qea);
+				return new Incr_QVar1_FVar_Det_QEAMonitor(
+						(QVar01_FVar_Det_QEA) qea);
 			}
-		} else if (qea instanceof QVar01_FVar_NonDet_FixedQVar_QEA) {
-			if (qea.getLambda().length == 0) {
-				return new Incr_QVar0_FVar_NonDet_QEAMonitor(
-						(QVar01_FVar_NonDet_FixedQVar_QEA) qea);
-			} else {
-				return new Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(
-						(QVar01_FVar_NonDet_FixedQVar_QEA) qea);
-			}
-		} else if (!qea.isDeterministic() && !qea.usesFreeVariables()
-				&& qea.getLambda().length == 0) {
-			// TODO: New monitor to be created
 		}
 		throw new ShouldNotHappenException("No monitor for " + qea.getClass());
 	}
