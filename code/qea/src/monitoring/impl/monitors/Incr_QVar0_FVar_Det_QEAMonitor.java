@@ -2,7 +2,7 @@ package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.DetConfig;
-import structure.impl.QVar01_FVar_Det_FixedQVar_QEA;
+import structure.impl.QVar01_FVar_Det_QEA;
 import structure.impl.Verdict;
 
 /**
@@ -12,14 +12,14 @@ import structure.impl.Verdict;
  * @author Giles Reger
  */
 public class Incr_QVar0_FVar_Det_QEAMonitor extends
-		IncrementalMonitor<QVar01_FVar_Det_FixedQVar_QEA> {
+		IncrementalMonitor<QVar01_FVar_Det_QEA> {
 
 	/**
 	 * Current configuration (state) for the monitor
 	 */
 	private DetConfig config;
 
-	public Incr_QVar0_FVar_Det_QEAMonitor(QVar01_FVar_Det_FixedQVar_QEA qea) {
+	public Incr_QVar0_FVar_Det_QEAMonitor(QVar01_FVar_Det_QEA qea) {
 		super(qea);
 		config.setState(qea.getInitialState());
 	}

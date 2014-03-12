@@ -2,7 +2,7 @@ package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.NonDetConfig;
-import structure.impl.QVar01_FVar_NonDet_FixedQVar_QEA;
+import structure.impl.QVar01_FVar_NonDet_QEA;
 import structure.impl.Verdict;
 
 /**
@@ -13,15 +13,14 @@ import structure.impl.Verdict;
  * @author Giles Reger
  */
 public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
-		IncrementalMonitor<QVar01_FVar_NonDet_FixedQVar_QEA> {
+		IncrementalMonitor<QVar01_FVar_NonDet_QEA> {
 
 	/**
 	 * Contains the current configuration (set of states) for the monitor
 	 */
 	private NonDetConfig config;
 
-	public Incr_QVar0_FVar_NonDet_QEAMonitor(
-			QVar01_FVar_NonDet_FixedQVar_QEA qea) {
+	public Incr_QVar0_FVar_NonDet_QEAMonitor(QVar01_FVar_NonDet_QEA qea) {
 		super(qea);
 
 		// Set initial state
