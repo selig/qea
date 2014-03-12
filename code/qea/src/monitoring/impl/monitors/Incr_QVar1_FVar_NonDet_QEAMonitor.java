@@ -186,6 +186,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	private void stepNoVerdict(int eventName, Object[] args, Object qVarValue) {
 
 		boolean existingBinding = false;
+		boolean startConfigFinal = false;
 		NonDetConfig config;
 
 		// Determine if the value received corresponds to an existing binding
@@ -195,17 +196,15 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			// Get current configuration for the binding
 			config = bindings.get(qVarValue);
 
-			// Assign flag for counters update
+			// Assign flags for counters update
 			existingBinding = true;
+			startConfigFinal = qea.containsFinalState(config);
 
 		} else { // New quantified variable binding
 
 			// Create configuration for the new binding
 			config = new NonDetConfig(qea.getInitialState(), qea.newBinding());
 		}
-
-		// Flag needed to update counters later
-		boolean startConfigFinal = qea.containsFinalState(config);
 
 		// Compute next configuration
 		config = qea.getNextConfig(config, eventName, args);
