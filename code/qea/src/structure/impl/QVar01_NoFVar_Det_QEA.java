@@ -13,12 +13,12 @@ package structure.impl;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class SimpleDetQEA extends SimpleQEA {
+public class QVar01_NoFVar_Det_QEA extends SimpleQEA {
 
 	private int[][] delta;
 
-	public SimpleDetQEA(int numStates, int numEvents, int initialState,
-			Quantification quantification) {
+	public QVar01_NoFVar_Det_QEA(int numStates, int numEvents,
+			int initialState, Quantification quantification) {
 		super(numStates, initialState, quantification);
 		delta = new int[numStates + 1][numEvents + 1];
 	}

@@ -1,6 +1,5 @@
 package structure.intf;
 
-
 public abstract class Guard {
 
 	/**

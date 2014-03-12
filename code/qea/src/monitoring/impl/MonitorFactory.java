@@ -1,18 +1,18 @@
 package monitoring.impl;
 
-import monitoring.impl.monitors.IncrementalNSPropositionalNonDetQEAMonitor;
-import monitoring.impl.monitors.IncrementalNSPropositionalQEAMonitor;
-import monitoring.impl.monitors.IncrementalNonSimpleDetQEAMonitor;
-import monitoring.impl.monitors.IncrementalNonSimpleNonDetQEAMonitor;
-import monitoring.impl.monitors.IncrementalPropositionalNonDetQEAMonitor;
-import monitoring.impl.monitors.IncrementalPropositionalQEAMonitor;
-import monitoring.impl.monitors.IncrementalSimpleDetQEAMonitor;
-import monitoring.impl.monitors.IncrementalSimpleNonDetQEAMonitor;
+import monitoring.impl.monitors.Incr_QVar0_FVar_NonDet_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar0_FVar_Det_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar0_NoFVar_NonDet_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar0_NoFVar_Det_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar1_NoFVar_Det_QEAMonitor;
+import monitoring.impl.monitors.Incr_QVar1_NoFVar_NonDet_QEAMonitor;
 import monitoring.intf.Monitor;
-import structure.impl.NonSimpleDetQEA;
-import structure.impl.NonSimpleNonDetQEA;
-import structure.impl.SimpleDetQEA;
-import structure.impl.SimpleNonDetQEA;
+import structure.impl.QVar01_FVar_Det_FixedQVar_QEA;
+import structure.impl.QVar01_FVar_NonDet_FixedQVar_QEA;
+import structure.impl.QVar01_NoFVar_Det_QEA;
+import structure.impl.QVar01_NoFVar_NonDet_QEA;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
 
@@ -35,42 +35,43 @@ public class MonitorFactory {
 	 */
 	public static Monitor create(QEA qea) {
 
-		if (qea instanceof SimpleDetQEA) {
+		if (qea instanceof QVar01_NoFVar_Det_QEA) {
 			if (qea.getLambda().length == 0) {
-				return new IncrementalPropositionalQEAMonitor(
-						(SimpleDetQEA) qea);
+				return new Incr_QVar0_NoFVar_Det_QEAMonitor(
+						(QVar01_NoFVar_Det_QEA) qea);
 			} else {
-				return new IncrementalSimpleDetQEAMonitor((SimpleDetQEA) qea);
+				return new Incr_QVar1_NoFVar_Det_QEAMonitor(
+						(QVar01_NoFVar_Det_QEA) qea);
 			}
-		} else if (qea instanceof SimpleNonDetQEA) {
+		} else if (qea instanceof QVar01_NoFVar_NonDet_QEA) {
 			if (qea.getLambda().length == 0) {
-				return new IncrementalPropositionalNonDetQEAMonitor(
-						(SimpleNonDetQEA) qea);
+				return new Incr_QVar0_NoFVar_NonDet_QEAMonitor(
+						(QVar01_NoFVar_NonDet_QEA) qea);
 			} else {
-				return new IncrementalSimpleNonDetQEAMonitor(
-						(SimpleNonDetQEA) qea);
+				return new Incr_QVar1_NoFVar_NonDet_QEAMonitor(
+						(QVar01_NoFVar_NonDet_QEA) qea);
 			}
-		} else if (qea instanceof NonSimpleDetQEA) {
+		} else if (qea instanceof QVar01_FVar_Det_FixedQVar_QEA) {
 			if (qea.getLambda().length == 0) {
-				return new IncrementalNSPropositionalQEAMonitor(
-						(NonSimpleDetQEA) qea);
+				return new Incr_QVar0_FVar_Det_QEAMonitor(
+						(QVar01_FVar_Det_FixedQVar_QEA) qea);
 			} else {
-				return new IncrementalNonSimpleDetQEAMonitor(
-						(NonSimpleDetQEA) qea);
+				return new Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(
+						(QVar01_FVar_Det_FixedQVar_QEA) qea);
 			}
-		} else if (qea instanceof NonSimpleNonDetQEA) {
+		} else if (qea instanceof QVar01_FVar_NonDet_FixedQVar_QEA) {
 			if (qea.getLambda().length == 0) {
-				return new IncrementalNSPropositionalNonDetQEAMonitor(
-						(NonSimpleNonDetQEA) qea);
+				return new Incr_QVar0_FVar_NonDet_QEAMonitor(
+						(QVar01_FVar_NonDet_FixedQVar_QEA) qea);
 			} else {
-				return new IncrementalNonSimpleNonDetQEAMonitor(
-						(NonSimpleNonDetQEA) qea);
+				return new Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(
+						(QVar01_FVar_NonDet_FixedQVar_QEA) qea);
 			}
 		} else if (!qea.isDeterministic() && !qea.usesFreeVariables()
 				&& qea.getLambda().length == 0) {
 			// TODO: New monitor to be created
 		}
-		throw new ShouldNotHappenException("No monitor for "+qea.getClass());
+		throw new ShouldNotHappenException("No monitor for " + qea.getClass());
 	}
 
 	/**

@@ -84,11 +84,12 @@ public class TransitionImpl implements Transition {
 		this.assignment = assignment;
 		this.endState = endState;
 	}
+
 	public TransitionImpl(int[] variableNames, int endState) {
 		super();
 		this.variableNames = variableNames;
 		this.endState = endState;
-	}	
+	}
 
 	public int[] getVariableNames() {
 		return variableNames;

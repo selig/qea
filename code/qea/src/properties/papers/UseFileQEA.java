@@ -1,7 +1,7 @@
 package properties.papers;
 
 import static structure.impl.Quantification.FORALL;
-import structure.impl.SimpleDetQEA;
+import structure.impl.QVar01_NoFVar_Det_QEA;
 
 /**
  * A QEA giving the very simple UseFile property
@@ -12,7 +12,7 @@ import structure.impl.SimpleDetQEA;
  * @author Giles Reger
  */
 
-public class UseFileQEA extends SimpleDetQEA {
+public class UseFileQEA extends QVar01_NoFVar_Det_QEA {
 
 	public UseFileQEA() {
 		// we use two states, three events and 0 as the initial state
