@@ -2,9 +2,9 @@ Mapping QEA structures to tests.
 Should probably expand table to consider the different parameters to these QEAs.
 Update names when we update naming structure.
 
-SimpleDet			HasNext, UseFile, UseFilePropositional
-SimpleNonDet		SampleNonDet
-NonSimpleDet		AuctionBidding
-NonSimpleNonDet		AuctionBidding
-NonSimpleDetGen
-NonSimpleNonDetGen
+QVar01_NoFVar_Det_QEA				HasNext, UseFile, UseFilePropositional
+QVar01_NoFVar_NonDet_QEA			SampleNonDet
+QVar01_FVar_Det_FixedQVar_QEA		AuctionBidding
+QVar01_FVar_NonDet_FixedQVar_QEA	AuctionBidding
+QVar01_FVar_Det_QEA
+QVar01_FVar_NonDet_QEA
