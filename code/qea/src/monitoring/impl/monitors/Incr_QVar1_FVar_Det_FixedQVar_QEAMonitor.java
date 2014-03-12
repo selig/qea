@@ -3,7 +3,7 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.DetConfig;
-import structure.impl.QVar01_FVar_Det_FixedQVar_QEA;
+import structure.impl.QVar1_FVar_Det_FixedQVar_QEA;
 import structure.impl.Verdict;
 
 /**
@@ -13,7 +13,7 @@ import structure.impl.Verdict;
  * @author Giles Reger
  */
 public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
-		IncrementalNonSimpleQEAMonitor<QVar01_FVar_Det_FixedQVar_QEA> {
+		IncrementalNonSimpleQEAMonitor<QVar1_FVar_Det_FixedQVar_QEA> {
 
 	/**
 	 * Maps the current values of the quantified variable to the deterministic
@@ -29,7 +29,7 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 	 *            QEA
 	 */
 	public Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(
-			QVar01_FVar_Det_FixedQVar_QEA qea) {
+			QVar1_FVar_Det_FixedQVar_QEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
 	}
@@ -38,6 +38,7 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 	public Verdict step(int eventName, Object[] args) {
 
 		boolean existingBinding = false;
+		boolean startConfigFinal = false;
 		DetConfig config;
 
 		// Obtain the value for the quantified variable
@@ -52,17 +53,15 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 			// Get current configuration for the binding
 			config = bindings.get(quantifiedVar);
 
-			// Assign flag for counters update
+			// Assign flags for counters update
 			existingBinding = true;
+			startConfigFinal = qea.isStateFinal(config.getState());
 
 		} else { // New quantified variable binding
 
 			// Create configuration for the new binding
 			config = new DetConfig(qea.getInitialState(), qea.newBinding());
 		}
-
-		// Flag needed to update counters later
-		boolean startConfigFinal = qea.isStateFinal(config.getState());
 
 		// Compute next configuration
 		config = qea.getNextConfig(config, eventName, args);

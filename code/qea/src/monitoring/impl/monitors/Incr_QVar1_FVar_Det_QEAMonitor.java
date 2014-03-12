@@ -182,6 +182,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 		// Object[]) in IncrementalNonSimpleDetQEAMonitor
 
 		boolean existingBinding = false;
+		boolean startConfigFinal = false;
 		DetConfig config;
 
 		// Determine if the value received corresponds to an existing binding
@@ -191,17 +192,15 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 			// Get current configuration for the binding
 			config = bindings.get(qVarValue);
 
-			// Assign flag for counters update
+			// Assign flags for counters update
 			existingBinding = true;
+			startConfigFinal = qea.isStateFinal(config.getState());
 
 		} else { // New quantified variable binding
 
 			// Create configuration for the new binding
 			config = new DetConfig(qea.getInitialState(), qea.newBinding());
 		}
-
-		// Flag needed to update counters later
-		boolean startConfigFinal = qea.isStateFinal(config.getState());
 
 		// Compute next configuration
 		config = qea.getNextConfig(config, eventName, args);
