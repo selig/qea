@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import structure.impl.QVar1_FVar_Det_FixedQVar_QEA;
 import structure.impl.QVar01_FVar_Det_QEA;
-import structure.impl.QVar01_FVar_Det_FixedQVar_QEA;
+import structure.impl.QVar1_FVar_NonDet_FixedQVar_QEA;
 import structure.impl.QVar01_FVar_NonDet_QEA;
-import structure.impl.QVar01_FVar_NonDet_FixedQVar_QEA;
-import structure.impl.Quantification;
 import structure.impl.QVar01_NoFVar_Det_QEA;
 import structure.impl.QVar01_NoFVar_NonDet_QEA;
+import structure.impl.Quantification;
 import structure.impl.TransitionImpl;
 import structure.intf.Assignment;
 import structure.intf.Guard;
@@ -230,9 +230,9 @@ public class QEABuilder {
 			}
 		} else {
 			int frees = countFreeVars();
-			if (singleQvarFirst()) {
+			if (fixedQVar()) {
 				if (isEventDeterministic()) {
-					QVar01_FVar_Det_FixedQVar_QEA qea = new QVar01_FVar_Det_FixedQVar_QEA(
+					QVar1_FVar_Det_FixedQVar_QEA qea = new QVar1_FVar_Det_FixedQVar_QEA(
 							states, events, 1, q, frees);
 
 					for (TempTransition t : transitions) {
@@ -246,7 +246,7 @@ public class QEABuilder {
 
 					return qea;
 				} else {
-					QVar01_FVar_NonDet_FixedQVar_QEA qea = new QVar01_FVar_NonDet_FixedQVar_QEA(
+					QVar1_FVar_NonDet_FixedQVar_QEA qea = new QVar1_FVar_NonDet_FixedQVar_QEA(
 							states, events, 1, q, frees);
 					Map<Integer, Set<TransitionImpl>>[] actual_trans = new Map[states];
 					for (TempTransition t : transitions) {
@@ -293,6 +293,8 @@ public class QEABuilder {
 					for (TempTransition t : transitions) {
 						Transition trans = new TransitionImpl(t.var_args(),
 								t.end);
+						((TransitionImpl) trans).setAssignment(t.a);
+						((TransitionImpl) trans).setGuard(t.g);
 						qea.addTransition(t.start, t.event_name, trans);
 					}
 					for (Integer s : finalstates) {
@@ -449,22 +451,34 @@ public class QEABuilder {
 		return true;
 	}
 
-	/*
-	 * Check that there is a single quantified variable appearing only in the
-	 * first position
+	/**
+	 * Checks if there is a single quantified variable appearing only in the
+	 * first position of the events with parameters
+	 * 
+	 * @return <code>true</code> if the QEA of this builder meets the conditions
+	 *         for the FixedQVar optimisation; <code>false</code> otherwise
 	 */
-	private boolean singleQvarFirst() {
+	private boolean fixedQVar() {
 		if (quants.size() != 1) {
 			return false;
 		}
 		int var = quants.get(0).var;
+
+		// Iterate over all the transitions
 		for (TempTransition t : transitions) {
-			if (t.event_args[0].var == var) {
-				continue;
-			}
-			for (int i = 1; i < t.event_args.length; i++) {
-				if (t.event_args[i].var == var) {
+
+			if (t.event_args != null && t.event_args.length > 0) {
+
+				// Check the quantified variable is in the first position
+				if (t.event_args[0].var != var) {
 					return false;
+				}
+
+				// Check starting from the 2nd position there are only free vars
+				for (int i = 1; i < t.event_args.length; i++) {
+					if (t.event_args[i].var == var) {
+						return false;
+					}
 				}
 			}
 		}
