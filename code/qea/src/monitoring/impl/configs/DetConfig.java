@@ -29,6 +29,10 @@ public class DetConfig implements Configuration {
 		this.binding = binding;
 	}
 
+	public DetConfig copy() {
+		return new DetConfig(state, binding.copy());
+	}
+
 	public void setState(int state) {
 		this.state = state;
 	}

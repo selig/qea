@@ -33,6 +33,24 @@ public class NonDetConfig implements Configuration {
 		bindings[0] = binding;
 	}
 
+	private NonDetConfig(int[] states, Binding[] bindings) {
+		this.states = states;
+		this.bindings = bindings;
+	}
+
+	public NonDetConfig copy() {
+
+		int[] statesCopy = new int[states.length];
+		System.arraycopy(states, 0, statesCopy, 0, states.length);
+
+		Binding[] bindingsCopy = new Binding[bindings.length];
+		for (int i = 0; i < bindings.length; i++) {
+			bindingsCopy[i] = bindings[i].copy();
+		}
+
+		return new NonDetConfig(statesCopy, bindingsCopy);
+	}
+
 	public int[] getStates() {
 		return states;
 	}
@@ -81,7 +99,8 @@ public class NonDetConfig implements Configuration {
 		String[] out = new String[states.length];
 		for (int i = 0; i < states.length; i++) {
 			String b = "[]";
-			if(bindings!=null) b = bindings[i].toString();
+			if (bindings != null)
+				b = bindings[i].toString();
 			out[i] = "(" + states[i] + "," + b + ")";
 		}
 		return Arrays.toString(out);
