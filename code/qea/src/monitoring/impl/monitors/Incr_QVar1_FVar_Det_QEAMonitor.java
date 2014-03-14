@@ -24,6 +24,12 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 	private IdentityHashMap<Object, DetConfig> bindings;
 
 	/**
+	 * Configuration storing the state and free variables binding for events
+	 * where the quantified variable is not present
+	 */
+	private DetConfig propConfig;
+
+	/**
 	 * For each event stores a <code>true</code> indicating it has at least one
 	 * signature that only contains free variables as parameters,
 	 * <code>false</code> otherwise
@@ -53,6 +59,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 	public Incr_QVar1_FVar_Det_QEAMonitor(QVar01_FVar_Det_QEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
+		propConfig = new DetConfig(qea.getInitialState(), qea.newBinding());
 		buildEventsIndices();
 	}
 
@@ -113,10 +120,13 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 	public Verdict step(int eventName, Object[] args) {
 
 		boolean eventProcessedForAllExistingBindings = false;
+
 		if (onlyFVarSignature[eventName]) {
 
-			// If there is a signature for the event with only free variables,
-			// apply event to all existing bindings
+			// Update propositional configuration
+			propConfig = qea.getNextConfig(propConfig, eventName, args);
+
+			// Apply event to all existing bindings
 			for (Object binding : bindings.keySet()) {
 				stepNoVerdict(eventName, args, binding);
 			}
@@ -134,7 +144,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 		} else if (numQVarPositions[eventName] > 1) { // Possibly multiple
 														// values for the QVar
 
-			Object[] qVarBindings = getUniqueQVarBindings(
+			Object[] qVarBindings = getDistinctQVarBindings(
 					eventsMasks[eventName], args, numQVarPositions[eventName]);
 			for (Object qVarBinding : qVarBindings) {
 				if (!eventProcessedForAllExistingBindings
@@ -155,8 +165,10 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 	@Override
 	public Verdict step(int eventName) {
+
 		Verdict finalVerdict = null;
 		for (Object binding : bindings.keySet()) {
+			// TODO Calling wrong definition
 			finalVerdict = step(eventName, binding);
 		}
 		return finalVerdict;
@@ -195,8 +207,8 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 		} else { // New quantified variable binding
 
-			// Create configuration for the new binding
-			config = new DetConfig(qea.getInitialState(), qea.newBinding());
+			// Create new configuration with a copy of the propositional conf.
+			config = propConfig.copy();
 		}
 
 		// Compute next configuration

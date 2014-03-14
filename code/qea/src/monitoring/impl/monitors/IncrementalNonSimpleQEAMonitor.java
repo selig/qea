@@ -41,7 +41,7 @@ public abstract class IncrementalNonSimpleQEAMonitor<Q extends NonSimpleQEA>
 	 * @return An array with the different bindings (values) for the quantified
 	 *         variable
 	 */
-	protected Object[] getUniqueQVarBindings(boolean[] eventMask,
+	protected Object[] getDistinctQVarBindings(boolean[] eventMask,
 			Object[] args, int numQVarPositions) {
 
 		Object[] bindings = new Object[numQVarPositions];
