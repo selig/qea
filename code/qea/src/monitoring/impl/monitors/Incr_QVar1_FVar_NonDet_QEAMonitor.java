@@ -28,7 +28,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	 * Configuration storing the state and free variables binding for events
 	 * where the quantified variable is not present
 	 */
-	private NonDetConfig propConfig;
+	private NonDetConfig emptyBindingConfig;
 
 	/**
 	 * For each event stores a <code>true</code> indicating it has at least one
@@ -60,7 +60,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	public Incr_QVar1_FVar_NonDet_QEAMonitor(QVar01_FVar_NonDet_QEA qea) {
 		super(qea);
 		bindings = new IdentityHashMap<>();
-		propConfig = new NonDetConfig(qea.getInitialState(), qea.newBinding());
+		emptyBindingConfig = new NonDetConfig(qea.getInitialState(),
+				qea.newBinding());
 		buildEventsIndices();
 	}
 
@@ -130,7 +131,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		if (onlyFVarSignature[eventName]) {
 
 			// Update propositional configuration
-			propConfig = qea.getNextConfig(propConfig, eventName, args);
+			emptyBindingConfig = qea.getNextConfig(emptyBindingConfig,
+					eventName, args);
 
 			// Apply event to all existing bindings
 			for (Object binding : bindings.keySet()) {
@@ -149,6 +151,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			}
 		} else if (numQVarPositions[eventName] > 1) { // Possibly multiple
 														// values for the QVar
+
+			// TODO Check NonDetChoice
 
 			Object[] qVarBindings = getDistinctQVarBindings(
 					eventsMasks[eventName], args, numQVarPositions[eventName]);
@@ -209,7 +213,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		} else { // New quantified variable binding
 
 			// Create new configuration with a copy of the propositional conf.
-			config = propConfig.copy();
+			config = emptyBindingConfig.copy();
 		}
 
 		// Compute next configuration
