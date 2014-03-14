@@ -449,33 +449,42 @@ public class QEABuilder {
 	}
 
 	/**
-	 * Checks if there is a single quantified variable appearing only in the
-	 * first position of the events with parameters
+	 * Checks if the QEA of this builder meets the conditions for the FixedQVar
+	 * optimisation. This is:
+	 * <ul>
+	 * <li>There is a single quantified variable
+	 * <li>All the events contain the quantified variable as the first parameter
+	 * <li>There are no events without parameters
+	 * </ul>
 	 * 
 	 * @return <code>true</code> if the QEA of this builder meets the conditions
 	 *         for the FixedQVar optimisation; <code>false</code> otherwise
 	 */
 	private boolean fixedQVar() {
+
+		// Check there is a single quantified variable
 		if (quants.size() != 1) {
 			return false;
 		}
-		int var = quants.get(0).var;
+		int qVar = quants.get(0).var;
 
 		// Iterate over all the transitions
 		for (TempTransition t : transitions) {
 
-			if (t.event_args != null && t.event_args.length > 0) {
+			// Check it's not an event without parameters
+			if (t.event_args == null || t.event_args.length == 0) {
+				return false;
+			}
 
-				// Check the quantified variable is in the first position
-				if (t.event_args[0].var != var) {
+			// Check the quantified variable is in the first position
+			if (t.event_args[0].var != qVar) {
+				return false;
+			}
+
+			// Check starting from the 2nd position there are only free vars
+			for (int i = 1; i < t.event_args.length; i++) {
+				if (t.event_args[i].var == qVar) {
 					return false;
-				}
-
-				// Check starting from the 2nd position there are only free vars
-				for (int i = 1; i < t.event_args.length; i++) {
-					if (t.event_args[i].var == var) {
-						return false;
-					}
 				}
 			}
 		}
@@ -580,9 +589,9 @@ public class QEABuilder {
 	}
 
 	public void makeSkipStates(int... states) {
-		
+
 		throw new RuntimeException("TODO- makeSkipStates");
-		
+
 	}
 
 }
