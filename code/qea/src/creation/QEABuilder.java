@@ -579,4 +579,10 @@ public class QEABuilder {
 		}
 	}
 
+	public void makeSkipStates(int... states) {
+		
+		throw new RuntimeException("TODO- makeSkipStates");
+		
+	}
+
 }
