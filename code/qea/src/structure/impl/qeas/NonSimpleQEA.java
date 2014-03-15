@@ -86,8 +86,7 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 	 * @return Binding
 	 */
 	public Binding newBinding() {
-		// TODO Free variables names should start in 0 or 1?
-		return new BindingImpl(freeVariablesCount + 1);
+		return new BindingImpl(freeVariablesCount);
 	}
 
 	/**
