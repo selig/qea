@@ -3,9 +3,9 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.DetConfig;
-import structure.impl.QVar01_FVar_Det_QEA;
-import structure.impl.Transition;
-import structure.impl.Verdict;
+import structure.impl.other.Transition;
+import structure.impl.other.Verdict;
+import structure.impl.qeas.QVar01_FVar_Det_QEA;
 
 /**
  * An incremental monitor for a non-simple deterministic generic QEA

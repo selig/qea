@@ -1,8 +1,8 @@
 package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
-import structure.impl.SimpleQEA;
-import structure.impl.Verdict;
+import structure.impl.other.Verdict;
+import structure.impl.qeas.SimpleQEA;
 import exceptions.ShouldNotHappenException;
 
 public abstract class IncrementalSimpleQEAMonitor<Q extends SimpleQEA> extends

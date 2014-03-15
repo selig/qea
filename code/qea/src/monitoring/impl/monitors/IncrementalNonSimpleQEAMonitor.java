@@ -1,8 +1,8 @@
 package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
-import structure.impl.NonSimpleQEA;
-import structure.impl.Verdict;
+import structure.impl.other.Verdict;
+import structure.impl.qeas.NonSimpleQEA;
 
 public abstract class IncrementalNonSimpleQEAMonitor<Q extends NonSimpleQEA>
 		extends IncrementalMonitor<Q> {

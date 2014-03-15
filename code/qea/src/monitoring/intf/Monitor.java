@@ -1,6 +1,6 @@
 package monitoring.intf;
 
-import structure.impl.Verdict;
+import structure.impl.other.Verdict;
 import structure.intf.QEA;
 
 /**

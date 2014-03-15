@@ -1,7 +1,7 @@
 package properties.simple;
 
-import static structure.impl.Quantification.FORALL;
-import structure.impl.QVar01_NoFVar_NonDet_QEA;
+import static structure.impl.other.Quantification.FORALL;
+import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
 
 public class SampleNonDetQEA extends QVar01_NoFVar_NonDet_QEA {
 

@@ -1,10 +1,10 @@
 package test.properties;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.Verdict.FAILURE;
-import static structure.impl.Verdict.SUCCESS;
-import static structure.impl.Verdict.WEAK_FAILURE;
-import static structure.impl.Verdict.WEAK_SUCCESS;
+import static structure.impl.other.Verdict.FAILURE;
+import static structure.impl.other.Verdict.SUCCESS;
+import static structure.impl.other.Verdict.WEAK_FAILURE;
+import static structure.impl.other.Verdict.WEAK_SUCCESS;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 

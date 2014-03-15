@@ -4,7 +4,7 @@ import structure.intf.Guard;
 import structure.intf.QEA;
 import creation.QEABuilder;
 
-import static structure.impl.Quantification.*;
+import static structure.impl.other.Quantification.*;
 
 /*
  * External

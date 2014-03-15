@@ -2,8 +2,8 @@ package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.DetConfig;
-import structure.impl.QVar01_NoFVar_Det_QEA;
-import structure.impl.Verdict;
+import structure.impl.other.Verdict;
+import structure.impl.qeas.QVar01_NoFVar_Det_QEA;
 import exceptions.ShouldNotHappenException;
 
 /**

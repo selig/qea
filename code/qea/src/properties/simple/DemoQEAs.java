@@ -1,7 +1,7 @@
 package properties.simple;
 
-import static structure.impl.Quantification.EXISTS;
-import static structure.impl.Quantification.FORALL;
+import static structure.impl.other.Quantification.EXISTS;
+import static structure.impl.other.Quantification.FORALL;
 import structure.intf.Guard;
 import structure.intf.QEA;
 import creation.QEABuilder;
