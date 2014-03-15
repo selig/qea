@@ -13,8 +13,9 @@ import structure.intf.Binding;
 public class BindingImpl extends Binding { // TODO Check name
 
 	/**
-	 * Array of values for the objects. The position of an object in the array
-	 * corresponds to the name of the variable
+	 * Array of values for the objects. The size of the array is equal to the
+	 * number of free variables. The position of an object in the array
+	 * corresponds to the name of the variable - 1
 	 */
 	private Object[] values;
 
@@ -37,7 +38,7 @@ public class BindingImpl extends Binding { // TODO Check name
 	 */
 	@Override
 	public Object getValue(int variableName) {
-		return values[variableName];
+		return values[variableName - 1];
 	}
 
 	/**
@@ -50,7 +51,7 @@ public class BindingImpl extends Binding { // TODO Check name
 	 */
 	@Override
 	public void setValue(int variableName, Object value) {
-		values[variableName] = value;
+		values[variableName - 1] = value;
 	}
 
 	@Override
