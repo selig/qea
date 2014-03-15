@@ -1,24 +1,29 @@
-package structure.impl;
+package structure.impl.qeas;
 
 import monitoring.impl.configs.NonDetConfig;
+import structure.impl.other.BindingImpl;
+import structure.impl.other.Quantification;
+import structure.impl.other.Transition;
 import structure.intf.Binding;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
  * characteristics:
  * <ul>
- * <li>There is at most one quantified variable
+ * <li>There is exactly one quantified variable
  * <li>It can contain any number of free variables
  * <li>The transitions in the function delta consist of a start state, an event
  * and an end state. Optionally, it can be associated to a guard and/or an
  * assignment
  * <li>The QEA is non-deterministic
+ * <li>Fixed quantified variable optimisation: The array of parameters of an
+ * event always contains the quantified variable in the first position
  * </ul>
  * 
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
+public class QVar1_FVar_NonDet_FixedQVar_QEA extends NonSimpleQEA {
 
 	/**
 	 * Transition function delta for this QEA. For a given Transition in the
@@ -29,8 +34,8 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 	private Transition[][][] delta;
 
 	/**
-	 * Creates a <code>QVar01_FVar_NonDet_QEA</code> for the specified number of
-	 * states, number of events, initial state and quantification type
+	 * Creates a <code>QVar01_FVar_NonDet_FixedQVar_QEA</code> for the specified
+	 * number of states, number of events, initial state and quantification type
 	 * 
 	 * @param numStates
 	 *            Number of states
@@ -43,7 +48,7 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 	 * @param freeVariablesCount
 	 *            Number of free variables
 	 */
-	public QVar01_FVar_NonDet_QEA(int numStates, int numEvents,
+	public QVar1_FVar_NonDet_FixedQVar_QEA(int numStates, int numEvents,
 			int initialState, Quantification quantification,
 			int freeVariablesCount) {
 		super(numStates, initialState, quantification, freeVariablesCount);
@@ -73,6 +78,7 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 			newTransitions[delta[startState][event].length] = transition;
 			delta[startState][event] = newTransitions;
 		}
+
 	}
 
 	/**
@@ -121,9 +127,6 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 	public NonDetConfig getNextConfig(NonDetConfig config, int event,
 			Object[] args) {
 
-		// TODO This method is very similar to getNextConfig in
-		// QVar01_FVar_NonDet_FixedQVar_QEA
-
 		if (config.getStates().length == 1) { // Only one start state
 
 			Transition[] transitions = delta[config.getStates()[0]][event];
@@ -145,8 +148,12 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 
 				// Update binding for free variables
 				Binding binding = config.getBindings()[0];
-				Object[] prevBinding = updateBinding(binding, args,
-						transitions[0]);
+				Object[] prevBinding = null;
+
+				if (args.length > 1) {
+					prevBinding = updateBindingFixedQVar(binding, args,
+							transitions[0]);
+				}
 
 				// If there is a guard and is not satisfied, rollback the
 				// binding and return the failing state
@@ -154,7 +161,10 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 						&& !transitions[0].getGuard().check(binding)) {
 
 					config.setState(0, 0); // Failing state
-					rollBackBinding(binding, transitions[0], prevBinding);
+					if (prevBinding != null) {
+						rollBackBindingFixedQVar(binding, transitions[0],
+								prevBinding);
+					}
 					return config;
 				}
 
@@ -183,8 +193,11 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 					BindingImpl binding = (BindingImpl) config.getBindings()[0]
 							.copy();
 
-					// Update binding for free variables
-					updateBinding(binding, args, transition);
+					if (args.length > 1) {
+
+						// Update binding for free variables
+						updateBindingFixedQVar(binding, args, transition);
+					}
 
 					// If there is a guard, check it is satisfied
 					if (transition.getGuard() == null
@@ -278,8 +291,12 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 						BindingImpl binding = (BindingImpl) config
 								.getBindings()[i].copy();
 
-						// Update binding for free variables
-						updateBinding(binding, args, transitions[i][j]);
+						if (args.length > 1) {
+
+							// Update binding for free variables
+							updateBindingFixedQVar(binding, args,
+									transitions[i][j]);
+						}
 
 						// If there is a guard, check it is satisfied
 						if (transitions[i][j].getGuard() == null
@@ -366,18 +383,4 @@ public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
 		return false;
 	}
 
-	/**
-	 * Returns the transitions for the specified start state and event name,
-	 * according to the transition function delta of this QEA
-	 * 
-	 * @param startState
-	 *            Start state
-	 * @param eventName
-	 *            Event name
-	 * @return Transitions defined for the specified state and event name or
-	 *         <code>null</code> if no transition is defined
-	 */
-	public Transition[] getTransitions(int startState, int eventName) {
-		return delta[startState][eventName];
-	}
 }

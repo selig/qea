@@ -1,8 +1,8 @@
 package properties.papers;
 
-import static structure.impl.Quantification.FORALL;
-import structure.impl.QVar1_FVar_Det_FixedQVar_QEA;
-import structure.impl.Transition;
+import static structure.impl.other.Quantification.FORALL;
+import structure.impl.other.Transition;
+import structure.impl.qeas.QVar1_FVar_Det_FixedQVar_QEA;
 import structure.intf.Assignment;
 import structure.intf.Guard;
 

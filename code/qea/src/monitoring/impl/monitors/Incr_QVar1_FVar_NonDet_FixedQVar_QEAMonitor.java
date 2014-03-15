@@ -3,8 +3,8 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.NonDetConfig;
-import structure.impl.QVar1_FVar_NonDet_FixedQVar_QEA;
-import structure.impl.Verdict;
+import structure.impl.other.Verdict;
+import structure.impl.qeas.QVar1_FVar_NonDet_FixedQVar_QEA;
 
 /**
  * 

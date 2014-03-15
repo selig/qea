@@ -1,6 +1,6 @@
 package properties.papers;
 
-import structure.impl.Quantification;
+import structure.impl.other.Quantification;
 import structure.intf.QEA;
 import creation.QEABuilder;
 

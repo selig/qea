@@ -3,7 +3,7 @@ package monitoring.impl.configs;
 import java.util.Arrays;
 
 import monitoring.intf.Configuration;
-import structure.impl.BindingImpl;
+import structure.impl.other.BindingImpl;
 import structure.intf.Binding;
 
 /**

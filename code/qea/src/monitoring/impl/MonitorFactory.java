@@ -11,12 +11,12 @@ import monitoring.impl.monitors.Incr_QVar1_FVar_NonDet_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_NoFVar_Det_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_NoFVar_NonDet_QEAMonitor;
 import monitoring.intf.Monitor;
-import structure.impl.QVar01_FVar_Det_QEA;
-import structure.impl.QVar01_FVar_NonDet_QEA;
-import structure.impl.QVar01_NoFVar_Det_QEA;
-import structure.impl.QVar01_NoFVar_NonDet_QEA;
-import structure.impl.QVar1_FVar_Det_FixedQVar_QEA;
-import structure.impl.QVar1_FVar_NonDet_FixedQVar_QEA;
+import structure.impl.qeas.QVar01_FVar_Det_QEA;
+import structure.impl.qeas.QVar01_FVar_NonDet_QEA;
+import structure.impl.qeas.QVar01_NoFVar_Det_QEA;
+import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
+import structure.impl.qeas.QVar1_FVar_Det_FixedQVar_QEA;
+import structure.impl.qeas.QVar1_FVar_NonDet_FixedQVar_QEA;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
 

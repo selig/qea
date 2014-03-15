@@ -3,8 +3,8 @@ package monitoring.impl.monitors;
 import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.NonDetConfig;
-import structure.impl.QVar01_NoFVar_NonDet_QEA;
-import structure.impl.Verdict;
+import structure.impl.other.Verdict;
+import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
 
 /**
  * A small-step monitor for a non-deterministic simple QEA

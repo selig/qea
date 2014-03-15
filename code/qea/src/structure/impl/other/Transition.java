@@ -1,4 +1,4 @@
-package structure.impl;
+package structure.impl.other;
 
 import structure.intf.Assignment;
 import structure.intf.Guard;

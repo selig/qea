@@ -1,7 +1,7 @@
 package properties.papers;
 
-import static structure.impl.Quantification.NONE;
-import structure.impl.QVar01_NoFVar_Det_QEA;
+import static structure.impl.other.Quantification.NONE;
+import structure.impl.qeas.QVar01_NoFVar_Det_QEA;
 
 /**
  * A QEA giving the very simple UseFile property

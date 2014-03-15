@@ -1,8 +1,8 @@
 package creation;
 
-import static structure.impl.Quantification.EXISTS;
-import static structure.impl.Quantification.FORALL;
-import static structure.impl.Quantification.NONE;
+import static structure.impl.other.Quantification.EXISTS;
+import static structure.impl.other.Quantification.FORALL;
+import static structure.impl.other.Quantification.NONE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import structure.impl.QVar01_FVar_Det_QEA;
-import structure.impl.QVar01_FVar_NonDet_QEA;
-import structure.impl.QVar01_NoFVar_Det_QEA;
-import structure.impl.QVar01_NoFVar_NonDet_QEA;
-import structure.impl.QVar1_FVar_Det_FixedQVar_QEA;
-import structure.impl.QVar1_FVar_NonDet_FixedQVar_QEA;
-import structure.impl.Quantification;
-import structure.impl.Transition;
+import structure.impl.other.Quantification;
+import structure.impl.other.Transition;
+import structure.impl.qeas.QVar01_FVar_Det_QEA;
+import structure.impl.qeas.QVar01_FVar_NonDet_QEA;
+import structure.impl.qeas.QVar01_NoFVar_Det_QEA;
+import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
+import structure.impl.qeas.QVar1_FVar_Det_FixedQVar_QEA;
+import structure.impl.qeas.QVar1_FVar_NonDet_FixedQVar_QEA;
 import structure.intf.Assignment;
 import structure.intf.Guard;
 import structure.intf.QEA;

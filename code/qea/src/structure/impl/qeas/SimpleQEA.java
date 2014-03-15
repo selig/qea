@@ -1,5 +1,6 @@
-package structure.impl;
+package structure.impl.qeas;
 
+import structure.impl.other.Quantification;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
 

@@ -1,4 +1,6 @@
-package structure.impl;
+package structure.impl.qeas;
+
+import structure.impl.other.Quantification;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the

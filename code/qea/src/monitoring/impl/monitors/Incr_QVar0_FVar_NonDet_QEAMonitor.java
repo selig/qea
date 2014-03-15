@@ -2,8 +2,8 @@ package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.configs.NonDetConfig;
-import structure.impl.QVar01_FVar_NonDet_QEA;
-import structure.impl.Verdict;
+import structure.impl.other.Verdict;
+import structure.impl.qeas.QVar01_FVar_NonDet_QEA;
 
 /**
  * An incremental propositional monitor for a non-simple non-deterministic QEA
