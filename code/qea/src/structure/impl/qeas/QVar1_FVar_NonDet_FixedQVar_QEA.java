@@ -1,7 +1,7 @@
 package structure.impl.qeas;
 
 import monitoring.impl.configs.NonDetConfig;
-import structure.impl.other.BindingImpl;
+import structure.impl.other.FBindingImpl;
 import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
@@ -181,7 +181,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
 				// Create as many states and bindings as there are transitions
 				int[] endStates = new int[transitions.length];
-				BindingImpl[] bindings = new BindingImpl[transitions.length];
+				FBindingImpl[] bindings = new FBindingImpl[transitions.length];
 
 				// Initialise end states count
 				int endStatesCount = 0;
@@ -190,7 +190,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 				for (Transition transition : transitions) {
 
 					// Copy the binding of the start state
-					BindingImpl binding = (BindingImpl) config.getBindings()[0]
+					FBindingImpl binding = (FBindingImpl) config.getBindings()[0]
 							.copy();
 
 					if (args.length > 1) {
@@ -205,7 +205,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
 						// If there is an assignment, execute it
 						if (transition.getAssignment() != null) {
-							binding = (BindingImpl) transition.getAssignment()
+							binding = (FBindingImpl) transition.getAssignment()
 									.apply(binding);
 						}
 
@@ -230,7 +230,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 				// needed and update the configuration
 				if (endStatesCount != transitions.length) {
 					int[] reducedEndStates = new int[endStatesCount];
-					BindingImpl[] reducedBindings = new BindingImpl[endStatesCount];
+					FBindingImpl[] reducedBindings = new FBindingImpl[endStatesCount];
 					System.arraycopy(endStates, 0, reducedEndStates, 0,
 							endStatesCount);
 					System.arraycopy(bindings, 0, reducedBindings, 0,
@@ -276,7 +276,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
 			// Create as many states and bindings as there are end states
 			int[] endStates = new int[maxEndStates];
-			BindingImpl[] bindings = new BindingImpl[maxEndStates];
+			FBindingImpl[] bindings = new FBindingImpl[maxEndStates];
 
 			// Initialise end states count
 			int endStatesCount = 0;
@@ -288,7 +288,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 					for (int j = 0; j < transitions[i].length; j++) {
 
 						// Copy the initial binding
-						BindingImpl binding = (BindingImpl) config
+						FBindingImpl binding = (FBindingImpl) config
 								.getBindings()[i].copy();
 
 						if (args.length > 1) {
@@ -304,7 +304,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
 							// If there is an assignment, execute it
 							if (transitions[i][j].getAssignment() != null) {
-								binding = (BindingImpl) transitions[i][j]
+								binding = (FBindingImpl) transitions[i][j]
 										.getAssignment().apply(binding);
 							}
 
@@ -334,7 +334,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 			// needed and update the configuration
 			if (endStatesCount != maxEndStates) {
 				int[] reducedEndStates = new int[endStatesCount];
-				BindingImpl[] reducedBindings = new BindingImpl[endStatesCount];
+				FBindingImpl[] reducedBindings = new FBindingImpl[endStatesCount];
 				System.arraycopy(endStates, 0, reducedEndStates, 0,
 						endStatesCount);
 				System.arraycopy(bindings, 0, reducedBindings, 0,

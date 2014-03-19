@@ -1,7 +1,5 @@
 package structure.impl.other;
 
-import java.util.Arrays;
-
 import structure.intf.Binding;
 
 /**
@@ -15,7 +13,7 @@ public class FullBindingImpl extends Binding {
 	/**
 	 * Internal bindings for free and quantified variables
 	 */
-	private BindingImpl freeBinding;
+	private FBindingImpl freeBinding;
 	private QBindingImpl quantBinding;
 
 	/**
@@ -27,9 +25,10 @@ public class FullBindingImpl extends Binding {
 	 *            Number of quantified variables for this binding
 	 */
 	public FullBindingImpl(int freeCount, int quantCount) {
-		freeBinding = new BindingImpl(freeCount);
+		freeBinding = new FBindingImpl(freeCount);
 		quantBinding = new QBindingImpl(quantCount);
 	}
+
 	/**
 	 * Creates a new Binding with previous bindings
 	 * 
@@ -38,10 +37,10 @@ public class FullBindingImpl extends Binding {
 	 * @param quant
 	 *            Bindings for the quantified variables
 	 */
-	public FullBindingImpl(BindingImpl free, QBindingImpl quant) {
+	public FullBindingImpl(FBindingImpl free, QBindingImpl quant) {
 		freeBinding = free;
 		quantBinding = quant;
-	}	
+	}
 
 	/**
 	 * Returns the value of the variable with the specified name
@@ -52,7 +51,7 @@ public class FullBindingImpl extends Binding {
 	 */
 	@Override
 	public Object getValue(int variableName) {
-		if(variableName>=0)
+		if (variableName >= 0)
 			return freeBinding.getValue(variableName);
 		else
 			return quantBinding.getValue(variableName);
@@ -68,31 +67,30 @@ public class FullBindingImpl extends Binding {
 	 */
 	@Override
 	public void setValue(int variableName, Object value) {
-		if(variableName>=0)
-			freeBinding.setValue(variableName,value);
+		if (variableName >= 0)
+			freeBinding.setValue(variableName, value);
 		else
-			quantBinding.setValue(variableName,value);
+			quantBinding.setValue(variableName, value);
 	}
-
 
 	@Override
 	public Binding copy() {
-		BindingImpl copyFree = (BindingImpl) freeBinding.copy();
+		FBindingImpl copyFree = (FBindingImpl) freeBinding.copy();
 		QBindingImpl copyQuant = (QBindingImpl) quantBinding.copy();
-		return new FullBindingImpl(copyFree,copyQuant);
-	}	
-	
+		return new FullBindingImpl(copyFree, copyQuant);
+	}
+
 	@Override
 	public void setEmpty() {
 
 		// Make all references null
 		freeBinding.setEmpty();
-		quantBinding.setEmpty();	
+		quantBinding.setEmpty();
 	}
 
 	@Override
 	public String toString() {
-		return "f"+freeBinding+"q"+quantBinding;
+		return "f" + freeBinding + "q" + quantBinding;
 	}
 
 }

@@ -10,11 +10,11 @@ import structure.intf.Binding;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class BindingImpl extends Binding { // TODO Check name
+public class FBindingImpl extends Binding {
 
 	/**
-	 * Array of values for the objects. The size of the array is equal to the
-	 * number of free variables. The position of an object in the array
+	 * Array of values for the variables. The size of the array is equal to the
+	 * number of free variables. The position of a value in the array
 	 * corresponds to the name of the variable - 1
 	 */
 	private Object[] values;
@@ -25,7 +25,7 @@ public class BindingImpl extends Binding { // TODO Check name
 	 * @param variablesCount
 	 *            Number of variables for this binding
 	 */
-	public BindingImpl(int variablesCount) {
+	public FBindingImpl(int variablesCount) {
 		values = new Object[variablesCount];
 	}
 
@@ -57,7 +57,7 @@ public class BindingImpl extends Binding { // TODO Check name
 	@Override
 	public Binding copy() {
 
-		Binding binding = new BindingImpl(values.length);
+		Binding binding = new FBindingImpl(values.length);
 		for (int i = 0; i < values.length; i++) {
 			binding.setValue(i + 1, values[i]);
 		}
