@@ -15,7 +15,7 @@ import structure.impl.other.Quantification;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar01_NoFVar_Det_QEA extends SimpleQEA {
+public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 
 	private int[][] delta;
 

@@ -4,7 +4,7 @@ import structure.impl.other.Quantification;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
 
-public abstract class SimpleQEA implements QEA {
+public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 
 	protected int[] finalStates; // TODO Can we use a boolean array here?
 
@@ -14,7 +14,7 @@ public abstract class SimpleQEA implements QEA {
 
 	protected final boolean quantificationUniversal;
 
-	public SimpleQEA(int numStates, int initialState,
+	public Abstr_QVar01_NoFVar_QEA(int numStates, int initialState,
 			Quantification quantification) {
 		finalStates = new int[numStates + 1];
 		this.initialState = initialState;

@@ -16,7 +16,7 @@ import monitoring.impl.configs.NonDetConfig;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar01_NoFVar_NonDet_QEA extends SimpleQEA {
+public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 
 	private int[][][] delta;
 
@@ -62,8 +62,6 @@ public class QVar01_NoFVar_NonDet_QEA extends SimpleQEA {
 	 *            Array of end states for the transition
 	 */
 	public void addTransitions(int startState, int event, int[] endStates) {
-
-		// TODO Most methods addTransition(s) contain the same logic
 
 		if (delta[startState][event] == null) {
 			delta[startState][event] = endStates;
@@ -125,7 +123,7 @@ public class QVar01_NoFVar_NonDet_QEA extends SimpleQEA {
 
 			// System.out.println("endStatesBool: "+java.util.Arrays.toString(endStatesBool));
 
-			// Remove state 0 if there are other end states
+			// Remove failure state (0) if there are other end states
 			// Because state 0 is the failure state, and can be safely removed
 			if (endStatesBool[0] && endStatesCount > 1) {
 				endStatesBool[0] = false;
