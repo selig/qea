@@ -23,8 +23,8 @@ public class AuctionBiddingQEA extends QVar1_FVar_Det_FixedQVar_QEA {
 		// define quantified var name
 		int ITEM = -1;
 		// define free var names
-		int AMOUNT = 0;
-		int NEW_AMOUNT = 1;
+		int AMOUNT = 1;
+		int NEW_AMOUNT = 2;
 
 		addTransition(1, BID, new Transition(ITEM, AMOUNT, 2));
 		addTransition(
