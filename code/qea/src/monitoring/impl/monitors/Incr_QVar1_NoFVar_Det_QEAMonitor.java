@@ -13,7 +13,7 @@ import exceptions.ShouldNotHappenException;
  * @author Helena Cuenca
  */
 public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
-		IncrementalSimpleQEAMonitor<QVar01_NoFVar_Det_QEA> {
+		Abstr_Incr_QVar1_NoFVar_QEAMonitor<QVar01_NoFVar_Det_QEA> {
 
 	private IdentityHashMap<Object, Integer> bindings;
 
@@ -62,23 +62,9 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 		// Update/add state for the binding
 		bindings.put(param1, endState);
 
-		// If applicable, update counters
-		if (existingBinding) {
-			if (qea.isStateFinal(startState) && !qea.isStateFinal(endState)) {
-				bindingsInNonFinalStateCount++;
-				bindingsInFinalStateCount--;
-			} else if (!qea.isStateFinal(startState)
-					&& qea.isStateFinal(endState)) {
-				bindingsInNonFinalStateCount--;
-				bindingsInFinalStateCount++;
-			}
-		} else {
-			if (qea.isStateFinal(endState)) {
-				bindingsInFinalStateCount++;
-			} else {
-				bindingsInNonFinalStateCount++;
-			}
-		}
+		// Update counters
+		updateCounters(existingBinding, qea.isStateFinal(startState),
+				qea.isStateFinal(endState));
 
 		// According to the quantification of the variable, return verdict
 		if (qea.isQuantificationUniversal() && allBindingsInFinalState()

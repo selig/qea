@@ -2,13 +2,13 @@ package monitoring.impl.monitors;
 
 import monitoring.impl.IncrementalMonitor;
 import structure.impl.other.Verdict;
-import structure.impl.qeas.SimpleQEA;
+import structure.impl.qeas.Abstr_QVar01_NoFVar_QEA;
 import exceptions.ShouldNotHappenException;
 
-public abstract class IncrementalSimpleQEAMonitor<Q extends SimpleQEA> extends
-		IncrementalMonitor<Q> {
+public abstract class Abstr_Incr_QVar1_NoFVar_QEAMonitor<Q extends Abstr_QVar01_NoFVar_QEA>
+		extends IncrementalMonitor<Q> {
 
-	public IncrementalSimpleQEAMonitor(Q q) {
+	public Abstr_Incr_QVar1_NoFVar_QEAMonitor(Q q) {
 		super(q);
 	}
 

@@ -12,7 +12,7 @@ import structure.impl.qeas.QVar1_FVar_NonDet_FixedQVar_QEA;
  * @author Giles Reger
  */
 public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
-		IncrementalNonSimpleQEAMonitor<QVar1_FVar_NonDet_FixedQVar_QEA> {
+		Abstr_Incr_QVar1_FVar_QEAMonitor<QVar1_FVar_NonDet_FixedQVar_QEA> {
 
 	private IdentityHashMap<Object, NonDetConfig> bindings;
 
@@ -59,22 +59,8 @@ public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 		// Update/add configuration for the binding
 		bindings.put(quantifiedVar, config);
 
-		// If applicable, update counters
-		if (existingBinding) {
-			if (startConfigFinal && !endConfigFinal) {
-				bindingsInNonFinalStateCount++;
-				bindingsInFinalStateCount--;
-			} else if (!startConfigFinal && endConfigFinal) {
-				bindingsInNonFinalStateCount--;
-				bindingsInFinalStateCount++;
-			}
-		} else {
-			if (endConfigFinal) {
-				bindingsInFinalStateCount++;
-			} else {
-				bindingsInNonFinalStateCount++;
-			}
-		}
+		// Update counters
+		updateCounters(existingBinding, startConfigFinal, endConfigFinal);
 
 		// According to the quantification of the variable, return verdict
 		if (qea.isQuantificationUniversal() && allBindingsInFinalState()
