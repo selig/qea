@@ -1,12 +1,11 @@
 package structure.impl.other;
 
-
-/*
- * A binding structure to represent bindings of quantified variables
- * one of the key things is that we use -variableName instead of variableName
- * to index the array
+/**
+ * A binding structure to represent bindings of quantified variables. One of the
+ * key things is that we use -variableName instead of variableName to index the
+ * array
  */
-public class QBindingImpl extends BindingImpl {
+public class QBindingImpl extends FBindingImpl {
 
 	public QBindingImpl(int variablesCount) {
 		super(variablesCount);
@@ -22,7 +21,11 @@ public class QBindingImpl extends BindingImpl {
 	@Override
 	public Object getValue(int variableName) {
 		return super.getValue(-variableName);
-	}	
-	
+	}
+
+	@Override
+	public void setValue(int variableName, Object value) {
+		super.setValue(-variableName, value);
+	}
 
 }

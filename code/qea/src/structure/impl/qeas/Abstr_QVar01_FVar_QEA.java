@@ -1,6 +1,6 @@
 package structure.impl.qeas;
 
-import structure.impl.other.BindingImpl;
+import structure.impl.other.FBindingImpl;
 import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
@@ -86,7 +86,7 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 	 * @return Binding
 	 */
 	public Binding newBinding() {
-		return new BindingImpl(freeVariablesCount);
+		return new FBindingImpl(freeVariablesCount);
 	}
 
 	/**

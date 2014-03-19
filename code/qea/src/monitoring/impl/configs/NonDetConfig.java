@@ -3,7 +3,7 @@ package monitoring.impl.configs;
 import java.util.Arrays;
 
 import monitoring.intf.Configuration;
-import structure.impl.other.BindingImpl;
+import structure.impl.other.FBindingImpl;
 import structure.intf.Binding;
 
 /**
@@ -29,7 +29,7 @@ public class NonDetConfig implements Configuration {
 		states = new int[1];
 		states[0] = initialState;
 
-		bindings = new BindingImpl[1];
+		bindings = new FBindingImpl[1];
 		bindings[0] = binding;
 	}
 
