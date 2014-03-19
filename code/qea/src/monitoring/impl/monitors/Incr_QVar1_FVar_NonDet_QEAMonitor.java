@@ -15,7 +15,7 @@ import structure.impl.qeas.QVar01_FVar_NonDet_QEA;
  * @param <Q>
  */
 public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
-		IncrementalNonSimpleQEAMonitor<QVar01_FVar_NonDet_QEA> {
+		Abstr_Incr_QVar1_FVar_QEAMonitor<QVar01_FVar_NonDet_QEA> {
 
 	/**
 	 * Maps the current values of the quantified variable to the
@@ -225,22 +225,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		// Update/add configuration for the binding
 		bindings.put(qVarValue, config);
 
-		// If applicable, update counters
-		if (existingBinding) {
-			if (startConfigFinal && !endConfigFinal) {
-				bindingsInNonFinalStateCount++;
-				bindingsInFinalStateCount--;
-			} else if (!startConfigFinal && endConfigFinal) {
-				bindingsInNonFinalStateCount--;
-				bindingsInFinalStateCount++;
-			}
-		} else {
-			if (endConfigFinal) {
-				bindingsInFinalStateCount++;
-			} else {
-				bindingsInNonFinalStateCount++;
-			}
-		}
+		// Update counters
+		updateCounters(existingBinding, startConfigFinal, endConfigFinal);
 	}
 
 	@Override

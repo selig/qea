@@ -97,4 +97,38 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 		}
 		return false;
 	}
+
+	/**
+	 * Updates the counters for the bindings in final and non-final state after
+	 * a binding has been added/modified
+	 * 
+	 * @param existingBinding
+	 *            Indicates if a binding was modified (<code>true</code>) or if
+	 *            a new binding was added (<code>false</code>)
+	 * @param startConfigFinal
+	 *            Indicates if the initial configuration of the binding was in a
+	 *            final state
+	 * @param endConfigFinal
+	 *            Indicates if the final configuration of the binding was in a
+	 *            final state
+	 */
+	protected void updateCounters(boolean existingBinding,
+			boolean startConfigFinal, boolean endConfigFinal) {
+		if (existingBinding) {
+			if (startConfigFinal && !endConfigFinal) {
+				bindingsInNonFinalStateCount++;
+				bindingsInFinalStateCount--;
+			} else if (!startConfigFinal && endConfigFinal) {
+				bindingsInNonFinalStateCount--;
+				bindingsInFinalStateCount++;
+			}
+		} else {
+			if (endConfigFinal) {
+				bindingsInFinalStateCount++;
+			} else {
+				bindingsInNonFinalStateCount++;
+			}
+		}
+	}
+
 }
