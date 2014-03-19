@@ -56,10 +56,10 @@ public class BindingImpl extends Binding { // TODO Check name
 
 	@Override
 	public Binding copy() {
+
 		Binding binding = new BindingImpl(values.length);
-		// TODO Should we use System.arraycopy here?
 		for (int i = 0; i < values.length; i++) {
-			binding.setValue(i, values[i]);
+			binding.setValue(i + 1, values[i]);
 		}
 		return binding;
 	}
