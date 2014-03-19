@@ -13,7 +13,7 @@ import exceptions.ShouldNotHappenException;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public abstract class NonSimpleQEA implements QEA { // TODO Check name
+public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 
 	protected int[] finalStates; // TODO Can we use a boolean array here?
 
@@ -25,7 +25,7 @@ public abstract class NonSimpleQEA implements QEA { // TODO Check name
 
 	protected final int freeVariablesCount;
 
-	public NonSimpleQEA(int numStates, int initialState,
+	public Abstr_QVar01_FVar_QEA(int numStates, int initialState,
 			Quantification quantification, int freeVariablesCount) {
 		finalStates = new int[numStates + 1];
 		this.initialState = initialState;

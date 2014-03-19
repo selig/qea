@@ -21,7 +21,7 @@ import structure.intf.Binding;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar01_FVar_NonDet_QEA extends NonSimpleQEA {
+public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 	/**
 	 * Transition function delta for this QEA. For a given Transition in the
