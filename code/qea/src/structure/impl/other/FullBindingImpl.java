@@ -13,8 +13,8 @@ public class FullBindingImpl extends Binding {
 	/**
 	 * Internal bindings for free and quantified variables
 	 */
-	private FBindingImpl freeBinding;
-	private QBindingImpl quantBinding;
+	private Binding freeBinding;
+	private Binding quantBinding;
 
 	/**
 	 * Creates a new Binding with the specified number of variables
@@ -37,7 +37,7 @@ public class FullBindingImpl extends Binding {
 	 * @param quant
 	 *            Bindings for the quantified variables
 	 */
-	public FullBindingImpl(FBindingImpl free, QBindingImpl quant) {
+	public FullBindingImpl(Binding free, Binding quant) {
 		freeBinding = free;
 		quantBinding = quant;
 	}
