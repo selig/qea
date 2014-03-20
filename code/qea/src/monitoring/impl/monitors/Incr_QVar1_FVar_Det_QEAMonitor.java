@@ -126,7 +126,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 			// Update propositional configuration
 			emptyBindingConfig = qea.getNextConfig(emptyBindingConfig,
-					eventName, args);
+					eventName, args,null);
 
 			// Apply event to all existing bindings
 			for (Object binding : bindings.keySet()) {
@@ -214,7 +214,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 		}
 
 		// Compute next configuration
-		config = qea.getNextConfig(config, eventName, args);
+		config = qea.getNextConfig(config, eventName, args,qVarValue);
 
 		// Flag needed to update counters later
 		boolean endConfigFinal = qea.isStateFinal(config.getState());

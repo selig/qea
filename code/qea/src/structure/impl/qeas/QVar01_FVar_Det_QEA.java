@@ -1,8 +1,7 @@
 package structure.impl.qeas;
 
 import monitoring.impl.configs.DetConfig;
-import structure.impl.other.Quantification;
-import structure.impl.other.Transition;
+import structure.impl.other.*;
 import structure.intf.Binding;
 
 /**
@@ -83,7 +82,7 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 	 * @return End configuration containing the end state and binding (values of
 	 *         free variables) after the transition
 	 */
-	public DetConfig getNextConfig(DetConfig config, int event, Object[] args) {
+	public DetConfig getNextConfig(DetConfig config, int event, Object[] args, Object xval) {
 
 		// TODO This method is very similar to getNextConfig in
 		// QVar01_FVar_Det_FixedQVar_QEA
@@ -106,10 +105,18 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 		// Update binding for free variables
 		Object[] prevBinding = updateBinding(binding, args, transition);
 
+		//Shared binding if
+		Binding shared_binding = null;
+		if(true){ //relace with check to see if guards use quantified variables
+			shared_binding=new FullBindingImpl(binding,
+					new SingleBindingImpl(xval,-1));
+		}
+		else shared_binding=binding;
+		
 		// If there is a guard and is not satisfied, rollback the binding and
 		// return the failing state
 		if (transition.getGuard() != null
-				&& !transition.getGuard().check(binding)) {
+				&& !transition.getGuard().check(shared_binding)) {
 
 			config.setState(0); // Failing state
 			rollBackBinding(binding, transition, prevBinding);
