@@ -1,8 +1,7 @@
 package test.properties;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.WEAK_FAILURE;
-import static structure.impl.other.Verdict.WEAK_SUCCESS;
+import static structure.impl.other.Verdict.*;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 
@@ -31,11 +30,14 @@ public class DemoNonDetChoiceTest {
 	 */
 	@Test
 	public void test_one() {
-		Object x = new Object();
-		Object y = new Object();
+		Object x = new Object(){ public String toString(){return "A";}};
+		Object y = new Object(){ public String toString(){return "B";}};
 		assertEquals(monitor.step(e, x, y), WEAK_FAILURE);
+		System.out.println(monitor);
 		assertEquals(monitor.step(f, y), WEAK_FAILURE);
-		assertEquals(monitor.step(f, x), WEAK_SUCCESS);
+		System.out.println(monitor);
+		assertEquals(monitor.step(f, x), WEAK_FAILURE);
+		System.out.println(monitor);
 	}
 
 }

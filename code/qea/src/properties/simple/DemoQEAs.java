@@ -50,7 +50,7 @@ public class DemoQEAs {
 
 		qea.addTransition(3, F, new int[] { x }, 3);
 
-		qea.addFinalStates(1, 4);
+		qea.addFinalStates(1, 3);
 
 		return qea.make();
 
