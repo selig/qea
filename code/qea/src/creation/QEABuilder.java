@@ -142,6 +142,7 @@ public class QEABuilder {
 	}
 
 	private QEA makeProp(int states, int events) {
+		boolean[] strongStates = computeStrongStates();
 		if (noFreeVariables()) {
 			if (isEventDeterministic()) {
 				QVar01_NoFVar_Det_QEA qea = new QVar01_NoFVar_Det_QEA(states,
@@ -152,6 +153,8 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
+				for(int i=1;i<strongStates.length;i++)
+					if(strongStates[i]) qea.setStateAsStrong(i);
 				return qea;
 			} else {
 				QVar01_NoFVar_NonDet_QEA qea = new QVar01_NoFVar_NonDet_QEA(
@@ -188,6 +191,8 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
+				for(int i=1;i<strongStates.length;i++)
+					if(strongStates[i]) qea.setStateAsStrong(i);				
 				return qea;
 			}
 		} else {
@@ -203,6 +208,8 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
+				for(int i=1;i<strongStates.length;i++)
+					if(strongStates[i]) qea.setStateAsStrong(i);				
 				return qea;				
 				
 			} else {
@@ -214,6 +221,7 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingle(int states, int events) {
+		boolean[] strongStates = computeStrongStates();
 		Quantification q;
 		if (quants.get(0).universal) {
 			q = FORALL;
@@ -231,6 +239,8 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
+				for(int i=1;i<strongStates.length;i++)
+					if(strongStates[i]) qea.setStateAsStrong(i);				
 				return qea;
 			} else {
 				QVar01_NoFVar_NonDet_QEA qea = new QVar01_NoFVar_NonDet_QEA(
@@ -267,6 +277,8 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
+				for(int i=1;i<strongStates.length;i++)
+					if(strongStates[i]) qea.setStateAsStrong(i);				
 				return qea;
 			}
 		} else {
@@ -283,7 +295,8 @@ public class QEABuilder {
 					for (Integer s : finalstates) {
 						qea.setStateAsFinal(s);
 					}
-
+					for(int i=1;i<strongStates.length;i++)
+						if(strongStates[i]) qea.setStateAsStrong(i);
 					return qea;
 				} else {
 					QVar1_FVar_NonDet_FixedQVar_QEA qea = new QVar1_FVar_NonDet_FixedQVar_QEA(
@@ -323,6 +336,8 @@ public class QEABuilder {
 					for (Integer s : finalstates) {
 						qea.setStateAsFinal(s);
 					}
+					for(int i=1;i<strongStates.length;i++)
+						if(strongStates[i]) qea.setStateAsStrong(i);					
 					return qea;
 				}
 			} else {
@@ -339,7 +354,8 @@ public class QEABuilder {
 					for (Integer s : finalstates) {
 						qea.setStateAsFinal(s);
 					}
-
+					for(int i=1;i<strongStates.length;i++)
+						if(strongStates[i]) qea.setStateAsStrong(i);
 					return qea;
 				} else {
 					QVar01_FVar_NonDet_QEA qea = new QVar01_FVar_NonDet_QEA(
@@ -379,6 +395,8 @@ public class QEABuilder {
 					for (Integer s : finalstates) {
 						qea.setStateAsFinal(s);
 					}
+					for(int i=1;i<strongStates.length;i++)
+						if(strongStates[i]) qea.setStateAsStrong(i);					
 					return qea;
 				}
 			}
@@ -696,8 +714,43 @@ public class QEABuilder {
 	 */
 	private boolean[] computeStrongStates(){
 		
-		boolean[] strong = new boolean[countStates()+1];
+		int nstates = countStates();
 		
+		boolean[] strong = new boolean[nstates+1];
+		
+		// reach[1][2] is true if state 2 is reachable from state 1
+		boolean[][] reach = new boolean[nstates+1][nstates+1];
+		
+		for(TempTransition t : transitions){
+			reach[t.start][t.end]=true;
+		}
+		
+		for(int i=1;i<nstates;i++){
+			for(int start=1;start<(nstates+1);start++){
+				for(int middle=1;middle<(nstates+1);middle++){
+					//for each entry in reach where start can reach middle
+					if(reach[start][middle]){
+						// for every state end that middle can reach
+						for(int end=1;end<(nstates+1);end++){
+							if(reach[middle][end]){
+								//set that start can reach end
+								reach[start][end]=true;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		for(int i=1;i<nstates;i++){
+			boolean is_strong=true;
+			for(int j=1;j<nstates;j++){
+				if(reach[i][j]){
+					is_strong &= (finalstates.contains(i)==finalstates.contains(j));			
+				}
+			}
+			strong[i]=is_strong;
+		}
 		
 		
 		return strong;
