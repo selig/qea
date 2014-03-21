@@ -24,7 +24,7 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 		super(qea);
 
 		// Set initial state
-		config.setStates(new int[] { qea.getInitialState() });
+		config = new NonDetConfig(qea.getInitialState(),qea.newBinding());
 	}
 
 	@Override
@@ -42,8 +42,7 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 
 	@Override
 	public Verdict step(int eventName) {
-		// TODO Is this a valid case? What happens here?
-		return null;
+		return step(eventName, new Object[]{});
 	}
 
 	@Override

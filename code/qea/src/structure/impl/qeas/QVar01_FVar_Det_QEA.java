@@ -105,22 +105,23 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 		// Update binding for free variables
 		Object[] prevBinding = updateBinding(binding, args, transition);
 
-		//Shared binding if
-		Binding shared_binding = null;
-		if(true){ //relace with check to see if guards use quantified variables
-			shared_binding=new FullBindingImpl(binding,
-					new SingleBindingImpl(xval,-1));
-		}
-		else shared_binding=binding;
 		
 		// If there is a guard and is not satisfied, rollback the binding and
 		// return the failing state
-		if (transition.getGuard() != null
-				&& !transition.getGuard().check(shared_binding)) {
+		if (transition.getGuard() != null){
+			//Option one for qvars in guards
+			Binding shared_binding = null;
+			if(transition.getGuard().usesQvars()){
+				shared_binding=new FullBindingImpl(binding,new SingleBindingImpl(xval,-1));
+			}
+			else shared_binding=binding;
+		
+			if(!transition.getGuard().check(shared_binding)) {
 
-			config.setState(0); // Failing state
-			rollBackBinding(binding, transition, prevBinding);
-			return config;
+				config.setState(0); // Failing state
+				rollBackBinding(binding, transition, prevBinding);
+				return config;
+			}
 		}
 
 		// If there is an assignment, execute it

@@ -168,12 +168,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 	@Override
 	public Verdict step(int eventName) {
 
-		Verdict finalVerdict = null;
-		for (Object binding : bindings.keySet()) {
-			// TODO Calling wrong definition
-			finalVerdict = step(eventName, binding);
-		}
-		return finalVerdict;
+		return step(eventName, new Object[]{});
 	}
 
 	/**
@@ -228,7 +223,8 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 	@Override
 	public String getStatus() {
-		String ret = "Map:\n";
+		String ret = "Empty: "+emptyBindingConfig+"\n";
+		ret += "Map:\n";
 		for (IdentityHashMap.Entry<Object, DetConfig> entry : bindings
 				.entrySet()) {
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
