@@ -5,6 +5,7 @@ import static structure.impl.other.Quantification.FORALL;
 import static structure.impl.other.Quantification.NONE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,9 @@ public class QEABuilder {
 		VarOrVal[] event_args;
 		Guard g;
 		Assignment a;
+		
+		TempEvent temp_event=null;
+		
 
 		public int[] var_args() {
 			int[] vargs = new int[event_args.length];
@@ -72,6 +76,30 @@ public class QEABuilder {
 
 	}
 
+	private static class TempEvent{
+		int event_name = -1;
+		VarOrVal[] event_args = null;
+		
+		
+		public int hashCode(){
+			return (event_name+Arrays.toString(event_args)).hashCode();
+		}
+		
+		public boolean equals(Object o){
+			if(o instanceof TempEvent){
+				TempEvent other = (TempEvent) o;
+				if(other.event_name!=event_name) return false;
+				if(other.event_args==null && event_args==null) return true;
+				if(other.event_args==null || event_args==null) return false;
+				if(other.event_args.length!=event_args.length)return false; 
+				for(int i=0;i<event_args.length;i++)
+					if(other.event_args[i]!=event_args[i]) return false;
+				return true;
+			}
+			else return false;
+		}
+	}
+	
 	private static class Quant {
 		boolean universal;
 		int var = -1;
@@ -344,39 +372,41 @@ public class QEABuilder {
 	}
 
 	private int countStates() {
-		Set<Integer> states = new HashSet<Integer>();
+		int max = 0;
 		for (TempTransition t : transitions) {
-			states.add(t.start);
-			states.add(t.end);
+			if(t.start>max) max=t.start;
+			if(t.end>max) max=t.end;
 		}
-		return states.size();
+		return max;
 	}
 
 	private int countEvents() {
-		Set<Integer> events = new HashSet<Integer>();
+		int max = 0;
 		for (TempTransition t : transitions) {
-			events.add(t.event_name);
+			if(t.event_name>max) max=t.event_name;
 		}
-		return events.size();
+		return max;
 	}
 
 	private int countFreeVars() {
 		Set<Integer> qvars = new HashSet<Integer>();
+		int max = 0;
 		for (Quant q : quants) {
 			qvars.add(q.var);
 		}
-		Set<Integer> fvars = new HashSet<Integer>();
+		//Set<Integer> fvars = new HashSet<Integer>();
 		for (TempTransition t : transitions) {
 			if (t.event_args != null) {
 				for (VarOrVal event_arg : t.event_args) {
 					int var = event_arg.var;
 					if (var != 0 && !qvars.contains(var)) {
-						fvars.add(var);
+						//fvars.add(var);
+						if(var>max) max=var;
 					}
 				}
 			}
 		}
-		return fvars.size();
+		return max;
 	}
 
 	/*
@@ -385,13 +415,13 @@ public class QEABuilder {
 	 */
 	private boolean wellFormed() {
 		for (TempTransition trans : transitions) {
-			if (trans.start == -1) {
+			if (trans.start < 1) {
 				return false;
 			}
-			if (trans.end == -1) {
+			if (trans.end < 1) {
 				return false;
 			}
-			if (trans.event_name == -1) {
+			if (trans.event_name < 1) {
 				return false;
 			}
 			if (trans.event_args != null) {
@@ -588,10 +618,56 @@ public class QEABuilder {
 		}
 	}
 
-	public void makeSkipStates(int... states) {
+	/*
+	 * Must be called after all transitions that mention these events
+	 * are defined
+	 */
+	public void setSkipStates(int... states) {
 
-		throw new RuntimeException("TODO- makeSkipStates");
+		Set<TempEvent> events = getEvents();
+		
+		for(int state : states){
+			for(TempEvent event : events){
+				if(!existsTransition(state,event)){
+					addTransition(state,event,state);
+				}
+			}
+		}
 
+	}
+
+	private void addTransition(int start, TempEvent event, int end) {
+		TempTransition trans = new TempTransition();
+		trans.start=start;
+		trans.end=end;
+		trans.event_name=event.event_name;
+		trans.event_args=event.event_args;
+		trans.temp_event=event;
+		transitions.add(trans);
+		
+	}
+
+	private boolean existsTransition(int state, TempEvent event) {
+		for(TempTransition trans : transitions){
+			if(trans.start==state && trans.temp_event.equals(event)) return true;
+		}
+		
+		
+		return false;
+	}
+
+	private Set<TempEvent> getEvents() {
+		Set<TempEvent> events = new HashSet<TempEvent>();
+		
+		for(TempTransition trans : transitions){
+			TempEvent e = new TempEvent();
+			e.event_name=trans.event_name;
+			e.event_args=trans.event_args;
+			events.add(e);
+			trans.temp_event=e;
+		}
+		
+		return events;
 	}
 
 }
