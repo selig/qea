@@ -33,7 +33,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 	/**
 	 * Creates a <code>QVar01_FVar_NonDet_QEA</code> for the specified number of
-	 * states, number of events, initial state and quantification type
+	 * states, number of events, initial state, quantification type and number
+	 * of free variables
 	 * 
 	 * @param numStates
 	 *            Number of states
@@ -122,7 +123,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 	 *         bindings after the transition
 	 */
 	public NonDetConfig getNextConfig(NonDetConfig config, int event,
-			Object[] args) {
+			Object[] args, Object qVarValue, boolean isQVarValue) {
 
 		// TODO This method is very similar to getNextConfig in
 		// QVar01_FVar_NonDet_FixedQVar_QEA
@@ -144,196 +145,220 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 			checkArgParamLength(args.length,
 					transitions[0].getVariableNames().length);
 
-			if (transitions.length == 1) { // One start state - one transition
+			// 1 start state - 1 transition
+			if (transitions.length == 1) {
+				return getNextConfig1StartState1Transition(config, args,
+						transitions[0]);
+			}
+
+			// 1 start state - Multiple transitions
+			return getNextConfig1StartStateMultTransitions(config, args,
+					transitions, qVarValue, isQVarValue);
+		}
+
+		// Multiple start states
+		return getNextConfigMultStartStatesMultTransitions(config, event, args,
+				qVarValue, isQVarValue);
+
+	}
+
+	private NonDetConfig getNextConfig1StartState1Transition(
+			NonDetConfig config, Object[] args, Transition transition) {
+
+		// Update binding for free variables
+		Binding binding = config.getBindings()[0];
+		Object[] prevBinding = updateBinding(binding, args, transition);
+
+		// If there is a guard and is not satisfied, rollback the binding and
+		// return the failing state
+		if (transition.getGuard() != null
+				&& !transition.getGuard().check(binding)) {
+
+			config.setState(0, 0); // Failing state
+			rollBackBinding(binding, transition, prevBinding);
+			return config;
+		}
+
+		// If there is an assignment, execute it
+		if (transition.getAssignment() != null) {
+			config.setBinding(0, transition.getAssignment().apply(binding));
+		}
+
+		// Set the end state
+		config.setState(0, transition.getEndState());
+
+		return config;
+	}
+
+	private NonDetConfig getNextConfig1StartStateMultTransitions(
+			NonDetConfig config, Object[] args, Transition[] transitions,
+			Object qVarValue, boolean isQVarValue) {
+
+		// Create as many states and bindings as there are transitions
+		int[] endStates = new int[transitions.length];
+		FBindingImpl[] bindings = new FBindingImpl[transitions.length];
+
+		// Initialise end states count
+		int endStatesCount = 0;
+
+		// Iterate over the transitions
+		for (Transition transition : transitions) {
+
+			// Check the transition matches the value of the QVar
+			if (!isQVarValue || isQVarValue
+					&& qVarMatchesBinding(qVarValue, args, transition)) {
+
+				// Copy the binding of the start state
+				FBindingImpl binding = (FBindingImpl) config.getBindings()[0]
+						.copy();
 
 				// Update binding for free variables
-				Binding binding = config.getBindings()[0];
-				Object[] prevBinding = updateBinding(binding, args,
-						transitions[0]);
+				updateBinding(binding, args, transition);
 
-				// If there is a guard and is not satisfied, rollback the
-				// binding and return the failing state
-				if (transitions[0].getGuard() != null
-						&& !transitions[0].getGuard().check(binding)) {
+				// If there is a guard, check it is satisfied
+				if (transition.getGuard() == null
+						|| transition.getGuard().check(binding)) {
 
-					config.setState(0, 0); // Failing state
-					rollBackBinding(binding, transitions[0], prevBinding);
-					return config;
-				}
-
-				// If there is an assignment, execute it
-				if (transitions[0].getAssignment() != null) {
-					config.setBinding(0,
-							transitions[0].getAssignment().apply(binding));
-				}
-
-				// Set the end state
-				config.setState(0, transitions[0].getEndState());
-
-			} else { // One start state - Multiple transitions
-
-				// Create as many states and bindings as there are transitions
-				int[] endStates = new int[transitions.length];
-				FBindingImpl[] bindings = new FBindingImpl[transitions.length];
-
-				// Initialise end states count
-				int endStatesCount = 0;
-
-				// Iterate over the transitions
-				for (Transition transition : transitions) {
-
-					// Copy the binding of the start state
-					FBindingImpl binding = (FBindingImpl) config.getBindings()[0]
-							.copy();
-
-					// Update binding for free variables
-					updateBinding(binding, args, transition);
-
-					// If there is a guard, check it is satisfied
-					if (transition.getGuard() == null
-							|| transition.getGuard().check(binding)) {
-
-						// If there is an assignment, execute it
-						if (transition.getAssignment() != null) {
-							binding = (FBindingImpl) transition.getAssignment()
-									.apply(binding);
-						}
-
-						// Copy end state and binding in the arrays
-						endStates[endStatesCount] = transition.getEndState();
-						bindings[endStatesCount] = binding;
-
-						// TODO We are assuming here that there's no explicit
-						// transition to the failing state
-						endStatesCount++;
+					// If there is an assignment, execute it
+					if (transition.getAssignment() != null) {
+						binding = (FBindingImpl) transition.getAssignment()
+								.apply(binding);
 					}
-				}
 
-				if (endStatesCount == 0) { // All end states are failing states
+					// Copy end state and binding in the arrays
+					endStates[endStatesCount] = transition.getEndState();
+					bindings[endStatesCount] = binding;
 
-					// Set failing state, leave binding as it is
-					config.setState(0, 0);
-					return config;
-				}
-
-				// Copy the states and bindings into the correct sized array if
-				// needed and update the configuration
-				if (endStatesCount != transitions.length) {
-					int[] reducedEndStates = new int[endStatesCount];
-					FBindingImpl[] reducedBindings = new FBindingImpl[endStatesCount];
-					System.arraycopy(endStates, 0, reducedEndStates, 0,
-							endStatesCount);
-					System.arraycopy(bindings, 0, reducedBindings, 0,
-							endStatesCount);
-					config.setStates(reducedEndStates);
-					config.setBindings(reducedBindings);
-				} else {
-					config.setStates(endStates);
-					config.setBindings(bindings);
+					endStatesCount++;
 				}
 			}
+		}
 
-		} else { // Multiple start states
+		if (endStatesCount == 0) { // All end states are failing
 
-			int[] startStates = config.getStates();
-			int maxEndStates = 0;
-			boolean argsNumberChecked = false;
-			Transition[][] transitions = new Transition[startStates.length][];
+			// Set failing state, leave binding as it is
+			config.setState(0, 0);
+			return config;
+		}
 
-			// Compute maximum number of end states
-			for (int i = 0; i < startStates.length; i++) {
+		config.setStates(resizeArray(endStates, endStatesCount));
+		config.setBindings(resizeArray(bindings, endStatesCount));
 
-				transitions[i] = delta[startStates[i]][event];
-				if (transitions[i] != null) {
-					maxEndStates += transitions[i].length;
+		return config;
+	}
 
-					// Check number of arguments vs. number of parameters of the
-					// event for one transition only
-					if (!argsNumberChecked) {
-						checkArgParamLength(args.length,
-								transitions[i][0].getVariableNames().length);
-					}
+	private NonDetConfig getNextConfigMultStartStatesMultTransitions(
+			NonDetConfig config, int event, Object[] args, Object qVarValue,
+			boolean isQVarValue) {
+
+		int[] startStates = config.getStates();
+		int maxEndStates = 0;
+		boolean argsNumberChecked = false;
+		Transition[][] transitions = new Transition[startStates.length][];
+
+		// Compute maximum number of end states
+		for (int i = 0; i < startStates.length; i++) {
+
+			transitions[i] = delta[startStates[i]][event];
+			if (transitions[i] != null) {
+				maxEndStates += transitions[i].length;
+
+				// Check number of arguments vs. number of parameters of the
+				// event for one transition only
+				if (!argsNumberChecked) {
+					checkArgParamLength(args.length,
+							transitions[i][0].getVariableNames().length);
+					argsNumberChecked = true;
 				}
 			}
+		}
 
-			// If the event is not defined for any of the current start states,
-			// return the failing state with an empty binding
-			if (maxEndStates == 0) {
-				config.setStates(new int[] { 0 });
-				config.setBindings(new Binding[] { newBinding() });
-				return config;
-			}
+		// If the event is not defined for any of the current start states,
+		// return the failing state with an empty binding
+		if (maxEndStates == 0) {
+			config.setStates(new int[] { 0 });
+			config.setBindings(new Binding[] { newBinding() });
+			return config;
+		}
 
-			// Create as many states and bindings as there are end states
-			int[] endStates = new int[maxEndStates];
-			FBindingImpl[] bindings = new FBindingImpl[maxEndStates];
+		// Create as many states and bindings as there are end states
+		int[] endStates = new int[maxEndStates];
+		FBindingImpl[] bindings = new FBindingImpl[maxEndStates];
 
-			// Initialise end states count
-			int endStatesCount = 0;
+		// Initialise end states count
+		int endStatesCount = 0;
 
-			// Iterate over the transitions
-			for (int i = 0; i < transitions.length; i++) {
+		// Iterate over the transitions
+		for (int i = 0; i < transitions.length; i++) {
+			if (transitions[i] != null) {
+				for (Transition transition : transitions[i]) {
 
-				if (transitions[i] != null) {
-					for (int j = 0; j < transitions[i].length; j++) {
+					// Check the transition matches the value of the QVar
+					if (!isQVarValue || isQVarValue
+							&& qVarMatchesBinding(qVarValue, args, transition)) {
 
 						// Copy the initial binding
 						FBindingImpl binding = (FBindingImpl) config
 								.getBindings()[i].copy();
 
+						// TODO It's updating bindings even when there are no
+						// free variables
+
 						// Update binding for free variables
-						updateBinding(binding, args, transitions[i][j]);
+						updateBinding(binding, args, transition);
 
 						// If there is a guard, check it is satisfied
-						if (transitions[i][j].getGuard() == null
-								|| transitions[i][j].getGuard().check(binding)) {
+						if (transition.getGuard() == null
+								|| transition.getGuard().check(binding)) {
 
 							// If there is an assignment, execute it
-							if (transitions[i][j].getAssignment() != null) {
-								binding = (FBindingImpl) transitions[i][j]
+							if (transition.getAssignment() != null) {
+								binding = (FBindingImpl) transition
 										.getAssignment().apply(binding);
 							}
 
 							// Copy end state and binding in the arrays
-							endStates[endStatesCount] = transitions[i][j]
+							endStates[endStatesCount] = transition
 									.getEndState();
 							bindings[endStatesCount] = binding;
 
-							// TODO We are assuming here that there's no
-							// explicit transition to the failing state
 							endStatesCount++;
 						}
 					}
 				}
 			}
+		}
 
-			if (endStatesCount == 0) { // All end states are failing states
-				config.setStates(new int[] { 0 });
-				// TODO What happens with the binding here? What binding should
-				// we rollback to if there are multiple (one for each start
-				// state)?
-				config.setBindings(new Binding[] { newBinding() });
-				return config;
-			}
+		if (endStatesCount == 0) { // All end states are failing states
+			config.setStates(new int[] { 0 });
+			// TODO What happens with the binding here? What binding
+			// should we rollback to if there are multiple (one for each
+			// start state)?
+			config.setBindings(new Binding[] { newBinding() });
+			return config;
 
-			// Copy the states and bindings into the correct sized array if
-			// needed and update the configuration
-			if (endStatesCount != maxEndStates) {
-				int[] reducedEndStates = new int[endStatesCount];
-				FBindingImpl[] reducedBindings = new FBindingImpl[endStatesCount];
-				System.arraycopy(endStates, 0, reducedEndStates, 0,
-						endStatesCount);
-				System.arraycopy(bindings, 0, reducedBindings, 0,
-						endStatesCount);
-				config.setStates(reducedEndStates);
-				config.setBindings(reducedBindings);
-			} else {
-				config.setStates(endStates);
-				config.setBindings(bindings);
+		}
+
+		config.setStates(resizeArray(endStates, endStatesCount));
+		config.setBindings(resizeArray(bindings, endStatesCount));
+
+		return config;
+	}
+
+	private boolean qVarMatchesBinding(Object qVarValue, Object[] args,
+			Transition transition) {
+
+		for (int i = 0; i < args.length; i++) {
+			if (transition.getVariableNames()[i] < 0) {
+				if (args[i] == qVarValue) {
+					return true;
+				}
+				return false;
 			}
 		}
 
-		return config;
+		// There's no quantified variable
+		return true;
 	}
 
 	/**
@@ -383,4 +408,23 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 	public Transition[] getTransitions(int startState, int eventName) {
 		return delta[startState][eventName];
 	}
+
+	private static int[] resizeArray(int[] array, int size) {
+		if (array.length == size) {
+			return array;
+		}
+		int[] resizedArray = new int[size];
+		System.arraycopy(array, 0, resizedArray, 0, size);
+		return resizedArray;
+	}
+
+	private static FBindingImpl[] resizeArray(FBindingImpl[] array, int size) {
+		if (array.length == size) {
+			return array;
+		}
+		FBindingImpl[] resizedArray = new FBindingImpl[size];
+		System.arraycopy(array, 0, resizedArray, 0, size);
+		return resizedArray;
+	}
+
 }
