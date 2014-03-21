@@ -31,7 +31,7 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 	public Verdict step(int eventName, Object[] args) {
 
 		// Update configuration
-		config = qea.getNextConfig(config, eventName, args);
+		config = qea.getNextConfig(config, eventName, args, null, false);
 
 		// Determine verdict according to the current configuration
 		if (qea.containsFinalState(config)) {
