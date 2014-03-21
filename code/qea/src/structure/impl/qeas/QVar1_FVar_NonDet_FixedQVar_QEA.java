@@ -262,6 +262,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 					if (!argsNumberChecked) {
 						checkArgParamLength(args.length,
 								transitions[i][0].getVariableNames().length);
+						argsNumberChecked = true;
 					}
 				}
 			}
