@@ -303,6 +303,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 						// TODO It's updating bindings even when there are no
 						// free variables
+						// Comment: Later consider adding flag to Transition to filter this case
+						// - do this in the presence of benchmarking to check performance difference?
 
 						// Update binding for free variables
 						updateBinding(binding, args, transition);

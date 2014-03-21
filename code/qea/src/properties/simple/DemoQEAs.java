@@ -9,6 +9,31 @@ import creation.QEABuilder;
 public class DemoQEAs {
 
 	
+	public static QEA detOneFreeWithOneProp(){
+		
+		int y = -1;
+		int x = 1;
+		int F = 1;
+		int G = 2;
+		
+		QEABuilder qea = new QEABuilder("detOneFreeWithOneProp");
+		
+		qea.addQuantification(FORALL, y);
+		
+		qea.addTransition(1, F, 2);
+		
+		qea.startTransition(2);
+		qea.eventName(G);
+		qea.addVarArg(y);
+		qea.addVarArg(x);
+		qea.addGuard(Guard.isGreaterThanConstant(x,5));
+		qea.endTransition(3);
+		
+		qea.addFinalStates(3);
+		
+		return qea.make();
+	}	
+	
 	public static QEA detFreeWithOneProp(){
 		
 		int x = 1;

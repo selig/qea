@@ -428,7 +428,7 @@ public class QEABuilder {
 	 * quantifications have a var
 	 */
 	private String wellFormed() {
-		int[] num_args = new int[countEvents()];
+		int[] num_args = new int[1+countEvents()];
 		for(int i=0;i<num_args.length;i++) num_args[i]= -1;
 		
 		for (TempTransition trans : transitions) {
