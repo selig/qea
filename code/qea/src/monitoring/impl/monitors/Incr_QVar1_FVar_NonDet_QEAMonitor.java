@@ -132,7 +132,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 
 			// Update propositional configuration
 			emptyBindingConfig = qea.getNextConfig(emptyBindingConfig,
-					eventName, args);
+					eventName, args, null, false);
 
 			// Apply event to all existing bindings
 			for (Object binding : bindings.keySet()) {
@@ -151,8 +151,6 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			}
 		} else if (numQVarPositions[eventName] > 1) { // Possibly multiple
 														// values for the QVar
-
-			// TODO Check NonDetChoice
 
 			Object[] qVarBindings = getDistinctQVarBindings(
 					eventsMasks[eventName], args, numQVarPositions[eventName]);
@@ -217,7 +215,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		}
 
 		// Compute next configuration
-		config = qea.getNextConfig(config, eventName, args);
+		config = qea.getNextConfig(config, eventName, args, qVarValue, true);
 
 		// Flag needed to update counters later
 		boolean endConfigFinal = qea.containsFinalState(config);
