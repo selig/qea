@@ -49,4 +49,12 @@ public interface QEA {
 	 * @return true if the specified state is a final state. Otherwise, false
 	 */
 	public boolean isStateFinal(int state);
+	
+	/**
+	 * Determines if the specified state is in the set of strong states
+	 * 
+	 * @param state
+	 * @return true if the specified state is a strong state. Otherwise, false
+	 */
+	public boolean isStateStrong(int state);
 }

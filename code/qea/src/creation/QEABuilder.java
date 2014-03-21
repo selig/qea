@@ -452,10 +452,12 @@ public class QEABuilder {
 				}
 			}
 		}
+		int qstep = -1;
 		for (Quant q : quants) {
-			if (q.var >=0) {
-				return "All quantified variables should be <0";
+			if (q.var != qstep) {
+				return "Quantified variables should named -1,-2,...";
 			}
+			qstep--;
 		}
 		return null;
 	}
@@ -689,4 +691,16 @@ public class QEABuilder {
 		return events;
 	}
 
+	/*
+	 * Should only be called after all transitions are created.
+	 */
+	private boolean[] computeStrongStates(){
+		
+		boolean[] strong = new boolean[countStates()+1];
+		
+		
+		
+		return strong;
+	}
+	
 }

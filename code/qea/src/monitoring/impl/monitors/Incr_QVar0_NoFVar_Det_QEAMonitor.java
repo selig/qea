@@ -40,8 +40,10 @@ public class Incr_QVar0_NoFVar_Det_QEAMonitor extends
 
 		// Determine verdict according to the state
 		if (qea.isStateFinal(currentConfig.getState())) {
+			if(qea.isStateStrong(currentConfig.getState())) return Verdict.SUCCESS;
 			return Verdict.WEAK_SUCCESS;
 		}
+		if(qea.isStateStrong(currentConfig.getState())) return Verdict.FAILURE;
 		return Verdict.WEAK_FAILURE;
 	}
 
