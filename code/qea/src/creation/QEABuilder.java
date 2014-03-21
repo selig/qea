@@ -48,7 +48,7 @@ public class QEABuilder {
 	 * We use internal representations
 	 */
 	private static class VarOrVal {
-		int var = 0;
+		int var = -1000;
 		Object val;
 	}
 
@@ -63,6 +63,7 @@ public class QEABuilder {
 		
 
 		public int[] var_args() {
+			if(event_args==null) return new int[]{};
 			int[] vargs = new int[event_args.length];
 			for (int i = 0; i < event_args.length; i++) {
 				vargs[i] = event_args[i].var;
@@ -102,7 +103,7 @@ public class QEABuilder {
 	
 	private static class Quant {
 		boolean universal;
-		int var = -1;
+		int var = 1;
 		Guard g;
 	}
 
@@ -120,7 +121,8 @@ public class QEABuilder {
 	}
 
 	public QEA make() {
-		assert (wellFormed());
+		String error = wellFormed();
+		if(error!=null) throw new ShouldNotHappenException(error);		
 
 		// first get number of states and events
 		int states = countStates();
@@ -191,6 +193,18 @@ public class QEABuilder {
 		} else {
 			if (isEventDeterministic()) {
 
+				int fvars = countFreeVars();
+				QVar01_FVar_Det_QEA qea = new QVar01_FVar_Det_QEA(states,
+						events, 1, NONE, fvars);
+				for (TempTransition t : transitions) {
+					Transition trans = new Transition(t.var_args(),t.g,t.end);
+					qea.addTransition(t.start, t.event_name,trans);
+				}
+				for (Integer s : finalstates) {
+					qea.setStateAsFinal(s);
+				}
+				return qea;				
+				
 			} else {
 
 			}
@@ -413,32 +427,37 @@ public class QEABuilder {
 	 * Check that all transitions have a start, end and event name And that all
 	 * quantifications have a var
 	 */
-	private boolean wellFormed() {
+	private String wellFormed() {
+		int[] num_args = new int[countEvents()];
+		for(int i=0;i<num_args.length;i++) num_args[i]= -1;
+		
 		for (TempTransition trans : transitions) {
 			if (trans.start < 1) {
-				return false;
+				return "All states should be >0";
 			}
 			if (trans.end < 1) {
-				return false;
+				return "All states should be >0";
 			}
 			if (trans.event_name < 1) {
-				return false;
+				return "All event names should be >0";
 			}
 			if (trans.event_args != null) {
+				if(num_args[trans.event_name]== -1) num_args[trans.event_name] = trans.event_args.length;
+				else if(num_args[trans.event_name] != trans.event_args.length) return "All events with the same name should have the same number of parameters";
 				for (VarOrVal event_arg : trans.event_args) {
 					if (event_arg == null
-							|| (event_arg.val == null && event_arg.var == -1)) {
-						return false;
+							|| (event_arg.val == null && event_arg.var == -1000)) {
+						return "The paramters were not correctly defined in a transition";
 					}
 				}
 			}
 		}
 		for (Quant q : quants) {
-			if (q.var == -1) {
-				return false;
+			if (q.var >=0) {
+				return "All quantified variables should be <0";
 			}
 		}
-		return true;
+		return null;
 	}
 
 	/*

@@ -82,22 +82,4 @@ public class MonitorFactory {
 		}
 		throw new ShouldNotHappenException("No monitor for " + qea.getClass());
 	}
-
-	/**
-	 * Determines if the specified QEA is well-formed. This is:
-	 * <ul>
-	 * <li>All transitions defined for one event name have the same number of
-	 * parameters
-	 * <li>...
-	 * </ul>
-	 * 
-	 * @param qea
-	 *            QEA to be evaluated
-	 * @return <code>true</code> if the specified QEA is well-formed as
-	 *         described above; <code>false</code> otherwise
-	 */
-	public static boolean wellFormed(QEA qea) {
-		// TODO Implement this method
-		return true;
-	}
 }

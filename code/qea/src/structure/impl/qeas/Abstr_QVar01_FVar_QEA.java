@@ -169,7 +169,7 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 			Transition transition) {
 
 		Object[] prevBinding = new Object[args.length];
-
+		
 		for (int i = 0; i < args.length; i++) {
 
 			int varName = transition.getVariableNames()[i];
