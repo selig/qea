@@ -15,6 +15,7 @@ public class UseFileOtherQEA {
 		int write = 2;
 		int save = 3;
 		int close = 4;
+		int read = 5;
 
 		QEABuilder qeaBuilder = new QEABuilder("UseFile");
 
@@ -26,6 +27,11 @@ public class UseFileOtherQEA {
 		qeaBuilder.addTransition(3, save, new int[] { f }, 4);
 		qeaBuilder.addTransition(4, close, new int[] { f }, 1);
 
+		qeaBuilder.addTransition(1,read, new int[]{ f}, 5);
+		
+		
+		qeaBuilder.setSkipStates(1,2,3,4);
+		
 		qeaBuilder.addFinalStates(1);
 
 		return qeaBuilder.make();

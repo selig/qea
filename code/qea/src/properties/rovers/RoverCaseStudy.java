@@ -25,7 +25,7 @@ import static structure.impl.other.Quantification.*;
  * 
  */
 
-public class RoverCastStudy {
+public class RoverCaseStudy {
 
 	/*
 	 * 
@@ -148,7 +148,7 @@ public class RoverCastStudy {
 		q.addTransition(3,FINISH, new int[]{C},4);
 		
 		q.addFinalStates(1,2);
-		q.makeSkipStates(1,2,3,4);
+		q.setSkipStates(1,2,3,4);
 		
 		return q.make();
 	}
