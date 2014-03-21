@@ -7,6 +7,7 @@ import exceptions.ShouldNotHappenException;
 public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 
 	protected int[] finalStates; // TODO Can we use a boolean array here?
+	protected boolean[] strongStates;
 
 	protected final int initialState;
 
@@ -48,7 +49,7 @@ public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 	}
 
 	/**
-	 * Adds the specified states to the set of final statess
+	 * Adds the specified states to the set of final states
 	 * 
 	 * @param states
 	 *            Names of states to add
@@ -59,6 +60,28 @@ public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 		}
 	}
 
+	/**
+	 * Adds the specified state to the set of strong states
+	 * 
+	 * @param state
+	 *            State name
+	 */
+	public void setStateAsStrong(int state) {
+		strongStates[state] = true;
+	}	
+	
+	/**
+	 * Adds the specified states to the set of strong states
+	 * 
+	 * @param states
+	 *            Names of states to add
+	 */
+	public void setStatesAsStrong(int... states) {
+		for (int state : states) {
+			strongStates[state] = true;
+		}
+	}	
+	
 	@Override
 	public int[] getStates() {
 		int[] q = new int[finalStates.length - 1];
@@ -107,6 +130,17 @@ public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 		return false;
 	}
 
+	/**
+	 * Determines if the specified state is in the set of strong states
+	 * 
+	 * @param state
+	 * @return true if the specified state is a strong state. Otherwise, false
+	 */
+	@Override
+	public boolean isStateStrong(int state) {
+		return strongStates[state];
+	}
+	
 	/**
 	 * @return true if the quantification for the variable of this QEA is
 	 *         universal. false if it is existential

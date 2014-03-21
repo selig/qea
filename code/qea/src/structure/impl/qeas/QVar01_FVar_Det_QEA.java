@@ -82,7 +82,7 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 	 * @return End configuration containing the end state and binding (values of
 	 *         free variables) after the transition
 	 */
-	public DetConfig getNextConfig(DetConfig config, int event, Object[] args, Object xval) {
+	public DetConfig getNextConfig(DetConfig config, int event, Object[] args, Object qval) {
 
 		// TODO This method is very similar to getNextConfig in
 		// QVar01_FVar_Det_FixedQVar_QEA
@@ -110,13 +110,13 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 		// return the failing state
 		if (transition.getGuard() != null){
 			//Option one for qvars in guards
-			Binding shared_binding = null;
-			if(transition.getGuard().usesQvars()){
-				shared_binding=new FullBindingImpl(binding,new SingleBindingImpl(xval,-1));
-			}
-			else shared_binding=binding;
+			//Binding shared_binding = null;
+			//if(transition.getGuard().usesQvars()){
+			//	shared_binding=new FullBindingImpl(binding,new SingleBindingImpl(qval,-1));
+			//}
+			//else shared_binding=binding;
 		
-			if(!transition.getGuard().check(shared_binding)) {
+			if(!transition.getGuard().check(binding,-1,qval)) {
 
 				config.setState(0); // Failing state
 				rollBackBinding(binding, transition, prevBinding);
