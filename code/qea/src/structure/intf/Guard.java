@@ -10,6 +10,7 @@ public abstract class Guard {
 	 * @return true if guard evaluates to true on binding
 	 */
 	public abstract boolean check(Binding binding);
+	public abstract boolean check(Binding binding, int qvar, Object firstQval);
 	public abstract boolean usesQvars();
 	public Guard replace(int var, Object val){ 
 		throw new ShouldNotHappenException("Not implemented - experimental feature!");
@@ -44,6 +45,12 @@ public abstract class Guard {
 				return (val0 == val1);
 			}
 			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Object val0 = (var0 == qvar) ? firstQval : binding.getForced(var0);
+				Object val1 = (var1 == qvar) ? firstQval : binding.getForced(var1);
+				return (val0 == val1);
+			}			
+			@Override
 			public boolean usesQvars(){ return var0<0 || var1 < 0;}
 		};
 	}
@@ -61,6 +68,12 @@ public abstract class Guard {
 				Object val1 = binding.getForced(var1);
 				return (val0 != val1);
 			}
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Object val0 = (var0 == qvar) ? firstQval : binding.getForced(var0);
+				Object val1 = (var1 == qvar) ? firstQval : binding.getForced(var1);
+				return (val0 != val1);
+			}			
 			@Override
 			public boolean usesQvars(){ return var0<0 || var1 < 0;}			
 		};
@@ -80,6 +93,12 @@ public abstract class Guard {
 				return val0.equals(val1);
 			}
 			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Object val0 = (var0 == qvar) ? firstQval : binding.getForced(var0);
+				Object val1 = (var1 == qvar) ? firstQval : binding.getForced(var1);
+				return val0.equals(val1);
+			}			
+			@Override
 			public boolean usesQvars(){ return var0<0 || var1 < 0;}			
 		};
 	}
@@ -98,9 +117,15 @@ public abstract class Guard {
 				return (val0 > val1);
 			}
 			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding.getForced(var0));
+				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding.getForced(var1));
+				return (val0 > val1);
+			}			
+			@Override
 			public boolean usesQvars(){ return var0<0 || var1 < 0;}		
 			
-			public Guard replace(final int var, final Object val){
+			/*public Guard replace(final int var, final Object val){
 				if(var!=var0 && var!=var1) return this;
 				return new Guard(""){
 					public boolean check(Binding binding){
@@ -114,7 +139,7 @@ public abstract class Guard {
 						return false;
 					}
 				};
-			}
+			}*/
 		};
 	}
 
@@ -132,6 +157,12 @@ public abstract class Guard {
 				return (val0 <= val1);
 			}
 			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding.getForced(var0));
+				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding.getForced(var1));
+				return (val0 <= val1);
+			}				
+			@Override
 			public boolean usesQvars(){ return var0<0 || var1 < 0;}			
 		};
 	}
@@ -143,6 +174,11 @@ public abstract class Guard {
 				Integer val0 = binding.getForcedAsInteger(var0);
 				return (val0 > val1);
 			}
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding.getForced(var0));
+				return (val0 > val1);
+			}				
 			@Override
 			public boolean usesQvars(){ return var0<0;}			
 		};

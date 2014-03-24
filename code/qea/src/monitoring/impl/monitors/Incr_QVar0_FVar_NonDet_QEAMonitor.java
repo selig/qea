@@ -24,7 +24,7 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 		super(qea);
 
 		// Set initial state
-		config = new NonDetConfig(qea.getInitialState(),qea.newBinding());
+		config = new NonDetConfig(qea.getInitialState(), qea.newBinding());
 	}
 
 	@Override
@@ -32,22 +32,22 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 
 		// Update configuration
 		config = qea.getNextConfig(config, eventName, args, null, false);
-
-		// Determine verdict according to the current configuration
-		if (qea.containsFinalState(config)) {
-			return Verdict.WEAK_SUCCESS;
-		}
-		return Verdict.WEAK_FAILURE;
+		return computeVerdict();
 	}
 
 	@Override
 	public Verdict step(int eventName) {
-		return step(eventName, new Object[]{});
+		return step(eventName, new Object[] {});
 	}
 
 	@Override
 	public Verdict end() {
+		return computeVerdict();
+	}
 
+	private Verdict computeVerdict() {
+
+		// TODO Take into account strong states
 		// Determine verdict according to the current configuration
 		if (qea.containsFinalState(config)) {
 			return Verdict.SUCCESS;

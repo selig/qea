@@ -18,11 +18,11 @@ public class Incr_QVar0_NoFVar_Det_QEAMonitor extends
 	/**
 	 * Current configuration (state) for the monitor
 	 */
-	private DetConfig currentConfig;
+	private DetConfig config;
 
 	public Incr_QVar0_NoFVar_Det_QEAMonitor(QVar01_NoFVar_Det_QEA qea) {
 		super(qea);
-		currentConfig = new DetConfig(qea.getInitialState());
+		config = new DetConfig(qea.getInitialState());
 	}
 
 	@Override
@@ -35,29 +35,33 @@ public class Incr_QVar0_NoFVar_Det_QEAMonitor extends
 	public Verdict step(int eventName) {
 
 		// Update state
-		currentConfig.setState(qea.getNextState(currentConfig.getState(),
-				eventName));
-
-		// Determine verdict according to the state
-		if (qea.isStateFinal(currentConfig.getState())) {
-			return Verdict.WEAK_SUCCESS;
-		}
-		return Verdict.WEAK_FAILURE;
+		config.setState(qea.getNextState(config.getState(), eventName));
+		return computeVerdict();
 	}
 
 	@Override
 	public Verdict end() {
+		return computeVerdict();
+	}
 
-		// Determine verdict according to the state
-		if (qea.isStateFinal(currentConfig.getState())) {
-			return Verdict.SUCCESS;
+	private Verdict computeVerdict() {
+
+		if (qea.isStateFinal(config.getState())) {
+			if (qea.isStateStrong(config.getState())) {
+				return Verdict.SUCCESS;
+			}
+			return Verdict.WEAK_SUCCESS;
+		} else {
+			if (qea.isStateStrong(config.getState())) {
+				return Verdict.FAILURE;
+			}
+			return Verdict.WEAK_FAILURE;
 		}
-		return Verdict.FAILURE;
 	}
 
 	@Override
 	public String getStatus() {
-		return "Config: " + currentConfig;
+		return "Config: " + config;
 	}
 
 }

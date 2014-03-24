@@ -25,6 +25,8 @@ import structure.intf.Binding;
  */
 public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
+	private final QEAType qeaType = QEAType.QVAR1_FVAR_NONDET_FIXEDQVAR_QEA;
+
 	/**
 	 * Transition function delta for this QEA. For a given Transition in the
 	 * array, the first index corresponds to the start state and the second
@@ -148,11 +150,9 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
 				// Update binding for free variables
 				Binding binding = config.getBindings()[0];
-				Object[] prevBinding = null;
 
 				if (args.length > 1) {
-					prevBinding = updateBindingFixedQVar(binding, args,
-							transitions[0]);
+					updateBindingFixedQVar(binding, args, transitions[0]);
 				}
 
 				// If there is a guard and is not satisfied, rollback the
@@ -161,10 +161,6 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 						&& !transitions[0].getGuard().check(binding)) {
 
 					config.setState(0, 0); // Failing state
-					if (prevBinding != null) {
-						rollBackBindingFixedQVar(binding, transitions[0],
-								prevBinding);
-					}
 					return config;
 				}
 
@@ -213,8 +209,6 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 						endStates[endStatesCount] = transition.getEndState();
 						bindings[endStatesCount] = binding;
 
-						// TODO We are assuming here that there's no explicit
-						// transition to the failing state
 						endStatesCount++;
 					}
 				}
@@ -295,7 +289,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 						if (args.length > 1) {
 
 							// Update binding for free variables
-							updateBindingFixedQVar(binding, args,
+							updateBindingFixedQVarRB(binding, args,
 									transitions[i][j]);
 						}
 
@@ -314,8 +308,6 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 									.getEndState();
 							bindings[endStatesCount] = binding;
 
-							// TODO We are assuming here that there's no
-							// explicit transition to the failing state
 							endStatesCount++;
 						}
 					}
@@ -324,9 +316,6 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
 			if (endStatesCount == 0) { // All end states are failing states
 				config.setStates(new int[] { 0 });
-				// TODO What happens with the binding here? What binding should
-				// we rollback to if there are multiple (one for each start
-				// state)?
 				config.setBindings(new Binding[] { newBinding() });
 				return config;
 			}
@@ -382,6 +371,11 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 	@Override
 	public boolean isDeterministic() {
 		return false;
+	}
+
+	@Override
+	public QEAType getQEAType() {
+		return qeaType;
 	}
 
 }

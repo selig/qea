@@ -1,5 +1,7 @@
 package structure.intf;
 
+import structure.impl.qeas.QEAType;
+
 /*
  * A QEA object is a specification
  */
@@ -49,4 +51,20 @@ public interface QEA {
 	 * @return true if the specified state is a final state. Otherwise, false
 	 */
 	public boolean isStateFinal(int state);
+
+	
+	/**
+	 * Determines if the specified state is in the set of strong states
+	 * 
+	 * @param state
+	 * @return true if the specified state is a strong state. Otherwise, false
+	 */
+	public boolean isStateStrong(int state);
+	
+	/**
+	 * Returns the ID for the type of this QEA
+	 * 
+	 * @return {@link QEAType}
+	 */
+	public QEAType getQEAType();
 }

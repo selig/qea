@@ -1,7 +1,8 @@
 package structure.impl.qeas;
 
 import monitoring.impl.configs.DetConfig;
-import structure.impl.other.*;
+import structure.impl.other.Quantification;
+import structure.impl.other.Transition;
 import structure.intf.Binding;
 
 /**
@@ -20,6 +21,8 @@ import structure.intf.Binding;
  * @author Giles Reger
  */
 public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
+
+	private final QEAType qeaType = QEAType.QVAR01_FVAR_DET_QEA;
 
 	/**
 	 * Transition function delta for this QEA. For a given Transition in the
@@ -82,7 +85,8 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 	 * @return End configuration containing the end state and binding (values of
 	 *         free variables) after the transition
 	 */
-	public DetConfig getNextConfig(DetConfig config, int event, Object[] args, Object xval) {
+	public DetConfig getNextConfig(DetConfig config, int event, Object[] args,
+			Object qval) {
 
 		// TODO This method is very similar to getNextConfig in
 		// QVar01_FVar_Det_FixedQVar_QEA
@@ -103,23 +107,22 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 		Binding binding = config.getBinding();
 
 		// Update binding for free variables
-		Object[] prevBinding = updateBinding(binding, args, transition);
+		updateBinding(binding, args, transition);
 
-		
 		// If there is a guard and is not satisfied, rollback the binding and
 		// return the failing state
-		if (transition.getGuard() != null){
-			//Option one for qvars in guards
-			Binding shared_binding = null;
-			if(transition.getGuard().usesQvars()){
-				shared_binding=new FullBindingImpl(binding,new SingleBindingImpl(xval,-1));
-			}
-			else shared_binding=binding;
-		
-			if(!transition.getGuard().check(shared_binding)) {
+		if (transition.getGuard() != null) {
+			// Option one for qvars in guards
+			// Binding shared_binding = null;
+			// if(transition.getGuard().usesQvars()){
+			// shared_binding=new FullBindingImpl(binding,new
+			// SingleBindingImpl(qval,-1));
+			// }
+			// else shared_binding=binding;
+
+			if (!transition.getGuard().check(binding, -1, qval)) {
 
 				config.setState(0); // Failing state
-				rollBackBinding(binding, transition, prevBinding);
 				return config;
 			}
 		}
@@ -164,4 +167,10 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 	public Transition getTransition(int startState, int eventName) {
 		return delta[startState][eventName];
 	}
+
+	@Override
+	public QEAType getQEAType() {
+		return qeaType;
+	}
+
 }

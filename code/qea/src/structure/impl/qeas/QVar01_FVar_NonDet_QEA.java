@@ -23,6 +23,8 @@ import structure.intf.Binding;
  */
 public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
+	private final QEAType qeaType = QEAType.QVAR01_FVAR_NONDET_QEA;
+
 	/**
 	 * Transition function delta for this QEA. For a given Transition in the
 	 * array, the first index corresponds to the start state and the second
@@ -167,7 +169,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 		// Update binding for free variables
 		Binding binding = config.getBindings()[0];
-		Object[] prevBinding = updateBinding(binding, args, transition);
+		updateBinding(binding, args, transition);
 
 		// If there is a guard and is not satisfied, rollback the binding and
 		// return the failing state
@@ -175,7 +177,6 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 				&& !transition.getGuard().check(binding)) {
 
 			config.setState(0, 0); // Failing state
-			rollBackBinding(binding, transition, prevBinding);
 			return config;
 		}
 
@@ -303,8 +304,10 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 						// TODO It's updating bindings even when there are no
 						// free variables
-						// Comment: Later consider adding flag to Transition to filter this case
-						// - do this in the presence of benchmarking to check performance difference?
+						// Comment: Later consider adding flag to Transition to
+						// filter this case
+						// - do this in the presence of benchmarking to check
+						// performance difference?
 
 						// Update binding for free variables
 						updateBinding(binding, args, transition);
@@ -333,9 +336,6 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 		if (endStatesCount == 0) { // All end states are failing states
 			config.setStates(new int[] { 0 });
-			// TODO What happens with the binding here? What binding
-			// should we rollback to if there are multiple (one for each
-			// start state)?
 			config.setBindings(new Binding[] { newBinding() });
 			return config;
 
@@ -374,8 +374,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 	 *         <code>false</code> otherwise
 	 */
 	public boolean containsFinalState(NonDetConfig config) {
-		for (int i = 0; i < config.getStates().length; i++) {
-			if (isStateFinal(config.getStates()[i])) {
+		for (int state : config.getStates()) {
+			if (isStateFinal(state)) {
 				return true;
 			}
 		}
@@ -429,4 +429,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 		return resizedArray;
 	}
 
+	@Override
+	public QEAType getQEAType() {
+		return qeaType;
+	}
 }

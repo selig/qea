@@ -24,6 +24,8 @@ import structure.intf.Binding;
  */
 public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
+	private final QEAType qeaType = QEAType.QVAR1_FVAR_DET_FIXEDQVAR_QEA;
+
 	/**
 	 * Transition function delta for this QEA. For a given Transition in the
 	 * array, the first index corresponds to the start state and the second
@@ -104,12 +106,11 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 		checkArgParamLength(args.length, transition.getVariableNames().length);
 
 		Binding binding = config.getBinding();
-		Object[] prevBinding = null;
 
 		if (args.length > 1) {
 
 			// Update binding for free variables
-			prevBinding = updateBindingFixedQVar(binding, args, transition);
+			updateBindingFixedQVar(binding, args, transition);
 		}
 
 		// If there is a guard and is not satisfied, rollback the binding and
@@ -118,9 +119,6 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 				&& !transition.getGuard().check(binding)) {
 
 			config.setState(0); // Failing state
-			if (prevBinding != null) {
-				rollBackBindingFixedQVar(binding, transition, prevBinding);
-			}
 			return config;
 		}
 
@@ -147,6 +145,11 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 	@Override
 	public boolean isDeterministic() {
 		return true;
+	}
+
+	@Override
+	public QEAType getQEAType() {
+		return qeaType;
 	}
 
 }
