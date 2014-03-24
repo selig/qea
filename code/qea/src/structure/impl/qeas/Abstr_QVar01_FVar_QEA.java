@@ -13,9 +13,11 @@ import exceptions.ShouldNotHappenException;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
+public abstract class Abstr_QVar01_FVar_QEA implements QEA {
 
-	protected int[] finalStates; // TODO Can we use a boolean array here?
+	protected boolean[] finalStates;
+
+	protected boolean[] strongStates;
 
 	protected final int initialState;
 
@@ -27,7 +29,7 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 
 	public Abstr_QVar01_FVar_QEA(int numStates, int initialState,
 			Quantification quantification, int freeVariablesCount) {
-		finalStates = new int[numStates + 1];
+		finalStates = new boolean[numStates + 1];
 		this.initialState = initialState;
 		this.freeVariablesCount = freeVariablesCount;
 		switch (quantification) {
@@ -56,7 +58,7 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 	 *            State name
 	 */
 	public void setStateAsFinal(int state) {
-		finalStates[state] = 1;
+		finalStates[state] = true;
 	}
 
 	/**
@@ -67,7 +69,29 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 	 */
 	public void setStatesAsFinal(int... states) {
 		for (int state : states) {
-			finalStates[state] = 1;
+			finalStates[state] = true;
+		}
+	}
+
+	/**
+	 * Adds the specified state to the set of strong states
+	 * 
+	 * @param state
+	 *            State name
+	 */
+	public void setStateAsStrong(int state) {
+		strongStates[state] = true;
+	}
+
+	/**
+	 * Adds the specified states to the set of strong states
+	 * 
+	 * @param states
+	 *            Names of states to add
+	 */
+	public void setStatesAsStrong(int... states) {
+		for (int state : states) {
+			strongStates[state] = true;
 		}
 	}
 
@@ -116,10 +140,18 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 
 	@Override
 	public boolean isStateFinal(int state) {
-		if (finalStates[state] == 1) {
-			return true;
-		}
-		return false;
+		return finalStates[state];
+	}
+
+	/**
+	 * Determines if the specified state is in the set of strong states
+	 * 
+	 * @param state
+	 * @return true if the specified state is a strong state. Otherwise, false
+	 */
+	@Override
+	public boolean isStateStrong(int state) {
+		return strongStates[state];
 	}
 
 	/**
@@ -148,8 +180,60 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 
 	/**
 	 * Updates the specified free variables binding with the specified
-	 * arguments, according to the variable names in the specified transition
-	 * and returns an array with the values in the binding that were replaced
+	 * arguments. Only the arguments that correspond to free variables,
+	 * according to the variable names in the specified transition will be taken
+	 * into account
+	 * 
+	 * @param binding
+	 *            Binding to be updated
+	 * @param args
+	 *            Array of arguments
+	 * @param transition
+	 *            Transition containing the variable names to be matched with
+	 *            the arguments
+	 */
+	protected void updateBinding(Binding binding, Object[] args,
+			Transition transition) {
+
+		for (int i = 0; i < args.length; i++) {
+
+			// Update only free variables
+			int varName = transition.getVariableNames()[i];
+			if (varName >= 0) {
+				binding.setValue(varName, args[i]);
+			}
+		}
+	}
+
+	/**
+	 * Updates the specified free variables binding with the specified
+	 * arguments. This method should be used for the FixedQVar optimisation;
+	 * therefore, all arguments starting in the second position are considered
+	 * to be free variables and will be updated
+	 * 
+	 * @param binding
+	 *            Binding to be updated
+	 * @param args
+	 *            Array of arguments
+	 * @param transition
+	 *            Transition containing the variable names to be matched with
+	 *            the arguments
+	 */
+	protected void updateBindingFixedQVar(Binding binding, Object[] args,
+			Transition transition) {
+
+		// Starting in the second position, all parameters are free variables
+		for (int i = 1; i < args.length; i++) {
+			int varName = transition.getVariableNames()[i];
+			binding.setValue(varName, args[i]);
+		}
+	}
+
+	/**
+	 * Updates the specified free variables binding with the specified arguments
+	 * and returns an array with the values in the binding that were replaced.
+	 * Only the arguments that correspond to free variables, according to the
+	 * variable names in the specified transition will be taken into account
 	 * 
 	 * @param binding
 	 *            Binding to be updated
@@ -165,11 +249,11 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 	 *         is a quantified variable defined in the transition, a
 	 *         <code>null</code> value is returned in the corresponding position
 	 */
-	protected Object[] updateBinding(Binding binding, Object[] args,
+	protected Object[] updateBindingRB(Binding binding, Object[] args,
 			Transition transition) {
 
 		Object[] prevBinding = new Object[args.length];
-		
+
 		for (int i = 0; i < args.length; i++) {
 
 			int varName = transition.getVariableNames()[i];
@@ -189,9 +273,11 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 	}
 
 	/**
-	 * Updates the specified free variables binding with the specified
-	 * arguments, according to the variable names in the specified transition
-	 * and returns an array with the values in the binding that were replaced
+	 * Updates the specified free variables binding with the specified arguments
+	 * and returns an array with the values in the binding that were replaced.
+	 * Only the arguments that correspond to free variables, according to the
+	 * variable names in the specified transition will be taken into account.
+	 * This method should be used for the FixedQVar optimisation.
 	 * 
 	 * @param binding
 	 *            Binding to be updated
@@ -208,7 +294,7 @@ public abstract class Abstr_QVar01_FVar_QEA implements QEA { // TODO Check name
 	 *         corresponds to the order of the free variables defined in the
 	 *         transition
 	 */
-	protected Object[] updateBindingFixedQVar(Binding binding, Object[] args,
+	protected Object[] updateBindingFixedQVarRB(Binding binding, Object[] args,
 			Transition transition) {
 
 		Object[] prevBinding = new Object[args.length - 1];

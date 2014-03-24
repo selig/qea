@@ -23,14 +23,18 @@ public abstract class Abstr_Incr_QVar1_NoFVar_QEAMonitor<Q extends Abstr_QVar01_
 
 	@Override
 	public Verdict end() {
+		return computeVerdict();
+	}
 
+	protected Verdict computeVerdict() {
 		// According to the quantification of the variable, return verdict
+		// TODO Take into account strong states
 		if (qea.isQuantificationUniversal() && allBindingsInFinalState()
 				|| !qea.isQuantificationUniversal()
 				&& existsOneBindingInFinalState()) {
-			return Verdict.SUCCESS;
+			return Verdict.WEAK_SUCCESS;
 		}
-		return Verdict.FAILURE;
+		return Verdict.WEAK_FAILURE;
 	}
 
 }

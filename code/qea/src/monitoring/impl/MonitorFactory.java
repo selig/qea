@@ -37,9 +37,12 @@ public class MonitorFactory {
 	 *            The QEA property
 	 * @return A monitor for the QEA property
 	 */
+	@SuppressWarnings("rawtypes")
 	public static Monitor create(QEA qea) {
 
-		if (qea instanceof QVar01_NoFVar_Det_QEA) {
+		switch (qea.getQEAType()) {
+
+		case QVAR01_NOFVAR_DET_QEA:
 			if (qea.getLambda().length == 0) {
 				return new Incr_QVar0_NoFVar_Det_QEAMonitor(
 						(QVar01_NoFVar_Det_QEA) qea);
@@ -47,7 +50,8 @@ public class MonitorFactory {
 				return new Incr_QVar1_NoFVar_Det_QEAMonitor(
 						(QVar01_NoFVar_Det_QEA) qea);
 			}
-		} else if (qea instanceof QVar01_NoFVar_NonDet_QEA) {
+
+		case QVAR01_NOFVAR_NONDET_QEA:
 			if (qea.getLambda().length == 0) {
 				return new Incr_QVar0_NoFVar_NonDet_QEAMonitor(
 						(QVar01_NoFVar_NonDet_QEA) qea);
@@ -55,15 +59,12 @@ public class MonitorFactory {
 				return new Incr_QVar1_NoFVar_NonDet_QEAMonitor(
 						(QVar01_NoFVar_NonDet_QEA) qea);
 			}
-		} else if (qea instanceof QVar1_FVar_Det_FixedQVar_QEA) {
-			// Lambda size is 1
+
+		case QVAR1_FVAR_DET_FIXEDQVAR_QEA:
 			return new Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(
 					(QVar1_FVar_Det_FixedQVar_QEA) qea);
-		} else if (qea instanceof QVar1_FVar_NonDet_FixedQVar_QEA) {
-			// Lambda size is 1
-			return new Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(
-					(QVar1_FVar_NonDet_FixedQVar_QEA) qea);
-		} else if (qea instanceof QVar01_FVar_Det_QEA) {
+
+		case QVAR01_FVAR_DET_QEA:
 			if (qea.getLambda().length == 0) {
 				return new Incr_QVar0_FVar_Det_QEAMonitor(
 						(QVar01_FVar_Det_QEA) qea);
@@ -71,7 +72,11 @@ public class MonitorFactory {
 				return new Incr_QVar1_FVar_Det_QEAMonitor(
 						(QVar01_FVar_Det_QEA) qea);
 			}
-		} else if (qea instanceof QVar01_FVar_NonDet_QEA) {
+
+		case QVAR1_FVAR_NONDET_FIXEDQVAR_QEA:
+			return new Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(
+					(QVar1_FVar_NonDet_FixedQVar_QEA) qea);
+		case QVAR01_FVAR_NONDET_QEA:
 			if (qea.getLambda().length == 0) {
 				return new Incr_QVar0_FVar_NonDet_QEAMonitor(
 						(QVar01_FVar_NonDet_QEA) qea);
@@ -79,7 +84,10 @@ public class MonitorFactory {
 				return new Incr_QVar1_FVar_NonDet_QEAMonitor(
 						(QVar01_FVar_NonDet_QEA) qea);
 			}
+
+		default:
+			throw new ShouldNotHappenException("No monitor for "
+					+ qea.getClass());
 		}
-		throw new ShouldNotHappenException("No monitor for " + qea.getClass());
 	}
 }

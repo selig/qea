@@ -21,35 +21,40 @@ public class Incr_QVar0_FVar_Det_QEAMonitor extends
 
 	public Incr_QVar0_FVar_Det_QEAMonitor(QVar01_FVar_Det_QEA qea) {
 		super(qea);
-		config = new DetConfig(qea.getInitialState(),qea.newBinding());
+		config = new DetConfig(qea.getInitialState(), qea.newBinding());
 	}
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
 		// Update configuration
-		config = qea.getNextConfig(config, eventName, args,null);
-
-		// Determine verdict according to the current configuration
-		if (qea.isStateFinal(config.getState())) {
-			return Verdict.WEAK_SUCCESS;
-		}
-		return Verdict.WEAK_FAILURE;
+		config = qea.getNextConfig(config, eventName, args, null);
+		return computeVerdict();
 	}
 
 	@Override
 	public Verdict step(int eventName) {
-		return step(eventName, new Object[]{});
+		return step(eventName, new Object[] {});
 	}
 
 	@Override
 	public Verdict end() {
+		return computeVerdict();
+	}
 
-		// Determine verdict according to the state
+	private Verdict computeVerdict() {
+
 		if (qea.isStateFinal(config.getState())) {
-			return Verdict.SUCCESS;
+			if (qea.isStateStrong(config.getState())) {
+				return Verdict.SUCCESS;
+			}
+			return Verdict.WEAK_SUCCESS;
+		} else {
+			if (qea.isStateStrong(config.getState())) {
+				return Verdict.FAILURE;
+			}
+			return Verdict.WEAK_FAILURE;
 		}
-		return Verdict.FAILURE;
 	}
 
 	@Override

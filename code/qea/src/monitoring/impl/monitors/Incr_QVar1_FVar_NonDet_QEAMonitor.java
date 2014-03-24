@@ -162,22 +162,15 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			}
 		}
 
-		// According to the quantification of the variable, return verdict
-		if (qea.isQuantificationUniversal() && allBindingsInFinalState()
-				|| !qea.isQuantificationUniversal()
-				&& existsOneBindingInFinalState()) {
-			return Verdict.WEAK_SUCCESS;
-		}
-		return Verdict.WEAK_FAILURE;
+		return computeVerdict();
 	}
 
 	@Override
 	public Verdict step(int eventName) {
-		Verdict finalVerdict = null;
 		for (Object binding : bindings.keySet()) {
-			finalVerdict = step(eventName, binding);
+			stepNoVerdict(eventName, new Object[] {}, binding);
 		}
-		return finalVerdict;
+		return computeVerdict();
 	}
 
 	/**

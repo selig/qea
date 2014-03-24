@@ -39,17 +39,17 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 
 		// Update configuration
 		currentConfig = qea.getNextConfig(currentConfig, eventName);
-
-		// Determine verdict according to the current configuration
-		if (qea.containsFinalState(currentConfig)) {
-			return Verdict.WEAK_SUCCESS;
-		}
-		return Verdict.WEAK_FAILURE;
+		return computeVerdict();
 	}
 
 	@Override
 	public Verdict end() {
+		return computeVerdict();
+	}
 
+	private Verdict computeVerdict() {
+
+		// TODO Take into account strong states
 		// Determine verdict according to the current configuration
 		if (qea.containsFinalState(currentConfig)) {
 			return Verdict.SUCCESS;

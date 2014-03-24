@@ -17,6 +17,8 @@ import structure.impl.other.Quantification;
  */
 public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 
+	private final QEAType qeaType = QEAType.QVAR01_NOFVAR_DET_QEA;
+
 	private int[][] delta;
 
 	public QVar01_NoFVar_Det_QEA(int numStates, int numEvents,
@@ -76,6 +78,11 @@ public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 	@Override
 	public boolean isDeterministic() {
 		return true;
+	}
+
+	@Override
+	public QEAType getQEAType() {
+		return qeaType;
 	}
 
 }

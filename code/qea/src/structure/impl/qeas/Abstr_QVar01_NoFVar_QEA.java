@@ -6,7 +6,9 @@ import exceptions.ShouldNotHappenException;
 
 public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 
-	protected int[] finalStates; // TODO Can we use a boolean array here?
+	protected boolean[] finalStates;
+
+	protected boolean[] strongStates;
 
 	protected final int initialState;
 
@@ -16,7 +18,7 @@ public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 
 	public Abstr_QVar01_NoFVar_QEA(int numStates, int initialState,
 			Quantification quantification) {
-		finalStates = new int[numStates + 1];
+		finalStates = new boolean[numStates + 1];
 		this.initialState = initialState;
 		switch (quantification) {
 		case FORALL:
@@ -44,18 +46,40 @@ public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 	 *            State name
 	 */
 	public void setStateAsFinal(int state) {
-		finalStates[state] = 1;
+		finalStates[state] = true;
 	}
 
 	/**
-	 * Adds the specified states to the set of final statess
+	 * Adds the specified states to the set of final states
 	 * 
 	 * @param states
 	 *            Names of states to add
 	 */
 	public void setStatesAsFinal(int... states) {
 		for (int state : states) {
-			finalStates[state] = 1;
+			finalStates[state] = true;
+		}
+	}
+
+	/**
+	 * Adds the specified state to the set of strong states
+	 * 
+	 * @param state
+	 *            State name
+	 */
+	public void setStateAsStrong(int state) {
+		strongStates[state] = true;
+	}
+
+	/**
+	 * Adds the specified states to the set of strong states
+	 * 
+	 * @param states
+	 *            Names of states to add
+	 */
+	public void setStatesAsStrong(int... states) {
+		for (int state : states) {
+			strongStates[state] = true;
 		}
 	}
 
@@ -101,10 +125,18 @@ public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 	 */
 	@Override
 	public boolean isStateFinal(int state) {
-		if (finalStates[state] == 1) {
-			return true;
-		}
-		return false;
+		return finalStates[state];
+	}
+
+	/**
+	 * Determines if the specified state is in the set of strong states
+	 * 
+	 * @param state
+	 * @return true if the specified state is a strong state. Otherwise, false
+	 */
+	@Override
+	public boolean isStateStrong(int state) {
+		return strongStates[state];
 	}
 
 	/**

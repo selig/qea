@@ -17,6 +17,8 @@ import monitoring.impl.configs.NonDetConfig;
  * @author Giles Reger
  */
 public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
+	
+	private final QEAType qeaType = QEAType.QVAR01_NOFVAR_NONDET_QEA;
 
 	private int[][][] delta;
 
@@ -188,5 +190,10 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 	public boolean isDeterministic() {
 		return false;
 	}
-
+	
+	@Override
+	public QEAType getQEAType() {
+		return qeaType;
+	}
+	
 }

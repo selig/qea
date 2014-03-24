@@ -58,19 +58,14 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 		// Update counters
 		updateCounters(existingBinding, startConfigFinal, endConfigFinal);
 
-		// According to the quantification of the variable, return verdict
-		if (qea.isQuantificationUniversal() && allBindingsInFinalState()
-				|| !qea.isQuantificationUniversal()
-				&& existsOneBindingInFinalState()) {
-			return Verdict.WEAK_SUCCESS;
-		}
-		return Verdict.WEAK_FAILURE;
+		return computeVerdict();
 	}
 
 	@Override
 	public Verdict step(int eventName) {
 		Verdict finalVerdict = null;
 		for (Object binding : bindings.keySet()) {
+			// TODO Calling wrong method here
 			finalVerdict = step(eventName, binding);
 		}
 		return finalVerdict;
