@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import monitoring.intf.Monitor;
 import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.impl.qeas.QVar01_FVar_Det_QEA;
@@ -146,6 +147,27 @@ public class QEABuilder {
 		throw new ShouldNotHappenException(
 				"I don't know how to make that kind of QEA yet");
 	}
+	
+	public QEA make(Class<? extends Monitor<?>> monitorClass) {
+		String error = wellFormed();
+		if(error!=null) throw new ShouldNotHappenException(error);		
+		
+		// first get number of states and events
+		int states = countStates();
+		int events = countEvents();
+
+		// Propositional first
+		if (quants.size() == 0) {
+			return makeProp(states, events);
+		}
+		// Single quantifier next
+		if (quants.size() == 1) {
+			return makeSingle(states, events);
+		}
+
+		throw new ShouldNotHappenException(
+				"I don't know how to make that kind of QEA yet");
+	}	
 
 	private QEA makeProp(int states, int events) {
 		boolean[] strongStates = computeStrongStates();

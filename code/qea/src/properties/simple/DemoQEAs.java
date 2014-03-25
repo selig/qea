@@ -8,6 +8,52 @@ import creation.QEABuilder;
 
 public class DemoQEAs {
 
+	public static QEA detSingleWithPropNoF(){
+		
+		int y = -1;
+		int F = 1;
+		int G = 2;
+		int H = 3;
+		
+		QEABuilder qea = new QEABuilder("detSingleNonFixedWithPropNoF");
+		
+		qea.addQuantification(FORALL, y);
+		
+		qea.addTransition(1, F, new int[]{y}, 2);
+		qea.addTransition(2, G, 3);
+		qea.addTransition(3, H, new int[]{y}, 4);
+		
+		qea.addFinalStates(4);
+		
+		return qea.make();
+	}			
+	
+	public static QEA detSingleNonFixedWithProp(){
+		
+		int y = -1;
+		int x = 1;
+		int F = 1;
+		int G = 2;
+		int H = 3;
+		
+		QEABuilder qea = new QEABuilder("detSingleNonFixedWithProp");
+		
+		qea.addQuantification(FORALL, y);
+		
+		qea.addTransition(1, F, new int[]{x,y}, 2);
+		qea.addTransition(2, G, 3);
+		
+		qea.startTransition(3);
+		qea.eventName(H);
+		qea.addVarArg(y);
+		qea.addVarArg(x);
+		qea.addGuard(Guard.isGreaterThanConstant(x,5));
+		qea.endTransition(4);
+		
+		qea.addFinalStates(4);
+		
+		return qea.make();
+	}		
 	
 	public static QEA detOneFreeWithOneProp(){
 		
