@@ -85,4 +85,30 @@ public class DemoPropsTest {
 		assertEquals(monitor.step(b,o1), SUCCESS);
 	}		
 	
+	@Test
+	public void test_six() {
+
+		int f=1;
+		int g=2;
+		int h=3;
+		Monitor monitor = MonitorFactory.create(DemoQEAs.detSingleNonFixedWithProp());			
+		
+		Object x = new Object();
+		assertEquals(monitor.step(f, 1, x), WEAK_FAILURE);
+		assertEquals(monitor.step(g), WEAK_FAILURE);
+		assertEquals(monitor.step(h,x,6), WEAK_SUCCESS);
+	}
+	@Test
+	public void test_seven() {
+
+		int f=1;
+		int g=2;
+		int h=3;
+		Monitor monitor = MonitorFactory.create(DemoQEAs.detSingleWithPropNoF());			
+		
+		Object x = new Object();
+		assertEquals(monitor.step(f, x), WEAK_FAILURE);
+		assertEquals(monitor.step(g), WEAK_FAILURE);
+		assertEquals(monitor.step(h,x), WEAK_SUCCESS);
+	}			
 }
