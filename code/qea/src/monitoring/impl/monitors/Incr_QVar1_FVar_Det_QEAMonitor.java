@@ -156,7 +156,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 			}
 		}
 
-		return computeVerdict();
+		return computeVerdict(false);
 	}
 
 	@Override

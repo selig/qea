@@ -75,7 +75,7 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 		// Update counters
 		updateCounters(existingBinding, startConfigFinal, endConfigFinal);
 
-		return computeVerdict();
+		return computeVerdict(false);
 	}
 
 	@Override

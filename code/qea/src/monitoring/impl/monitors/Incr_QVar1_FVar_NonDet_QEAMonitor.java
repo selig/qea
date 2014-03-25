@@ -162,7 +162,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			}
 		}
 
-		return computeVerdict();
+		return computeVerdict(false);
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		for (Object binding : bindings.keySet()) {
 			stepNoVerdict(eventName, new Object[] {}, binding);
 		}
-		return computeVerdict();
+		return computeVerdict(false);
 	}
 
 	/**
