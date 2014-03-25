@@ -19,6 +19,7 @@ public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
 	public Abstr_QVar01_NoFVar_QEA(int numStates, int initialState,
 			Quantification quantification) {
 		finalStates = new boolean[numStates + 1];
+		strongStates = new boolean[numStates + 1];
 		this.initialState = initialState;
 		switch (quantification) {
 		case FORALL:
