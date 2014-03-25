@@ -47,7 +47,7 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 				Object val0 = (var0 == qvar) ? firstQval : binding.getForced(var0);
-				Object val1 = (var1 == qvar) ? firstQval : binding.getForced(var1);
+				Object val1 = (var1 == qvar) ? firstQval : binding.getForced(var1);				
 				return (val0 == val1);
 			}			
 			@Override

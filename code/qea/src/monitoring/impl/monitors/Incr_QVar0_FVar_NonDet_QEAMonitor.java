@@ -32,7 +32,16 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 
 		// Update configuration
 		config = qea.getNextConfig(config, eventName, args, null, false);
-		return computeVerdict();
+		
+		int[] states = config.getStates();
+		for(int s : states){
+			if(qea.isStateStrong(s)){
+				if(qea.isStateFinal(s)) finalStrongState=true;
+				else nonFinalStrongState=true;
+			}
+		}
+		
+		return computeVerdict(false);
 	}
 
 	@Override
@@ -42,17 +51,19 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 
 	@Override
 	public Verdict end() {
-		return computeVerdict();
+		return computeVerdict(true);
 	}
 
-	private Verdict computeVerdict() {
+	private Verdict computeVerdict(boolean end) {
 
 		// TODO Take into account strong states
 		// Determine verdict according to the current configuration
 		if (qea.containsFinalState(config)) {
-			return Verdict.SUCCESS;
+			if(finalStrongState) return Verdict.SUCCESS;
+			return Verdict.WEAK_SUCCESS;
 		}
-		return Verdict.FAILURE;
+		if(nonFinalStrongState) return Verdict.FAILURE;
+		return Verdict.WEAK_FAILURE;
 	}
 
 	@Override

@@ -25,7 +25,7 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 		super(qea);
 
 		// Set initial state
-		currentConfig.setStates(new int[] { qea.getInitialState() });
+		currentConfig = new NonDetConfig(qea.getInitialState());
 	}
 
 	@Override

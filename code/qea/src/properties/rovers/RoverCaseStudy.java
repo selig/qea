@@ -30,7 +30,7 @@ public class RoverCaseStudy {
 	/*
 	 * 
 	 */	
-	public QEA makeGrantCancelSingleSwitch(){
+	public static QEA makeGrantCancelSingleSwitch(){
 		
 		QEABuilder q = new QEABuilder("GrantCancelSingleSwitch");
 		
@@ -57,7 +57,7 @@ public class RoverCaseStudy {
 	/*
 	 * 
 	 */	
-	public QEA makeGrantCancelSingle(){
+	public  static QEA makeGrantCancelSingle(){
 		
 		QEABuilder q = new QEABuilder("GrantCancelSingle");
 		
@@ -83,7 +83,7 @@ public class RoverCaseStudy {
 	/*
 	 * 
 	 */	
-	public QEA makeGrantCancelDouble(){
+	public static  QEA makeGrantCancelDouble(){
 		
 		QEABuilder q = new QEABuilder("GrantCancelDouble");
 		
@@ -106,7 +106,7 @@ public class RoverCaseStudy {
 	/*
 	 * 
 	 */
-	public QEA makeResourceLifecycle(){
+	public static  QEA makeResourceLifecycle(){
 		
 		QEABuilder q = new QEABuilder("ResourceLifecycle");
 		
@@ -130,7 +130,7 @@ public class RoverCaseStudy {
 	/*
 	 * 
 	 */
-	public QEA makeReleaseResource(){
+	public static  QEA makeReleaseResource(){
 		
 		QEABuilder q = new QEABuilder("ReleaseResource");
 		
