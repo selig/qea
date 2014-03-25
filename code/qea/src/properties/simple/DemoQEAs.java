@@ -104,4 +104,92 @@ public class DemoQEAs {
 
 	}
 
+	public static QEA makeNonDetProp(){
+		
+		QEABuilder qea = new QEABuilder("NonDetProp");
+		
+		int A = 1;
+		int B = 2;
+		int C = 3;
+		
+		qea.addTransition(1,A,2);
+		qea.addTransition(1,A,1);
+		qea.addTransition(1,B,3);
+		qea.addTransition(1,B,1);
+		qea.addTransition(1,C,4);
+		qea.addTransition(1,C,1);		
+		
+		qea.addFinalStates(4);
+		
+		return qea.make();
+	}
+	
+	public static QEA makeSimulateQuantification(){
+		
+		QEABuilder qea = new QEABuilder("SimulateQuantification");
+		
+		int A = 1;
+		int B = 2;
+		int x = 1;
+		int y = 2;
+				
+		qea.addTransition(1,A, new int[]{x}, 1);
+		qea.addTransition(1,B, new int[]{x}, 1);
+		
+		qea.addTransition(1,A, new int[]{x}, 2);
+		
+		qea.startTransition(2);
+		qea.eventName(B);
+		qea.addVarArg(y);
+		qea.addGuard(Guard.isEqual(x, y));
+		qea.endTransition(3);
+		
+		qea.startTransition(2);
+		qea.eventName(B);
+		qea.addVarArg(y);
+		qea.addGuard(Guard.isNotEqual(x, y));
+		qea.endTransition(2);		
+		
+		qea.startTransition(2);
+		qea.eventName(A);
+		qea.addVarArg(y);
+		qea.addGuard(Guard.isEqual(x,y));
+		qea.endTransition(4);
+				
+		qea.startTransition(2);
+		qea.eventName(A);
+		qea.addVarArg(y);
+		qea.addGuard(Guard.isNotEqual(x,y));
+		qea.endTransition(2);		
+		
+		qea.startTransition(3);
+		qea.eventName(A);
+		qea.addVarArg(y);
+		qea.addGuard(Guard.isEqual(x,y));
+		qea.endTransition(4);
+		
+		qea.startTransition(3);
+		qea.eventName(B);
+		qea.addVarArg(y);
+		qea.addGuard(Guard.isEqual(x,y));
+		qea.endTransition(4);		
+		
+		qea.startTransition(3);
+		qea.eventName(A);
+		qea.addVarArg(y);
+		qea.addGuard(Guard.isNotEqual(x,y));
+		qea.endTransition(3);
+		
+		qea.startTransition(3);
+		qea.eventName(B);
+		qea.addVarArg(y);
+		qea.addGuard(Guard.isNotEqual(x,y));
+		qea.endTransition(3);		
+		
+		qea.addFinalStates(4);		
+		qea.setSkipStates(4);
+		
+		return qea.make();
+	}	
+	
 }
