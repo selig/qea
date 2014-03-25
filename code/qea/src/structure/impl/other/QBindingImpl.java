@@ -28,4 +28,12 @@ public class QBindingImpl extends FBindingImpl {
 		super.setValue(-variableName, value);
 	}
 
+	private static QBindingImpl empty;
+	public static QBindingImpl emptyBinding() {
+		if(empty==null){
+			empty = new QBindingImpl(0); // is this safe?
+		}
+		return empty;
+	}
+
 }

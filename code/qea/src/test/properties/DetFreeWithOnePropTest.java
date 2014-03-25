@@ -1,8 +1,7 @@
 package test.properties;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.WEAK_FAILURE;
-import static structure.impl.other.Verdict.WEAK_SUCCESS;
+import static structure.impl.other.Verdict.*;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 
@@ -33,7 +32,7 @@ public class DetFreeWithOnePropTest {
 
 		assertEquals(monitor.step(f), WEAK_FAILURE);
 		System.out.println(monitor);
-		assertEquals(monitor.step(g, 6), WEAK_SUCCESS);
+		assertEquals(monitor.step(g, 6), SUCCESS);
 		System.out.println(monitor);
 	}
 

@@ -50,7 +50,8 @@ public class DemoQEAs {
 		qea.addGuard(Guard.isGreaterThanConstant(x,5));
 		qea.endTransition(3);
 		
-		qea.addFinalStates(3);
+		qea.addFinalStates(3);				
+		qea.setSkipStates(3);
 		
 		return qea.make();
 	}

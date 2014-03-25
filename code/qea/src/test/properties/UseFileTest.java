@@ -66,7 +66,7 @@ public class UseFileTest {
 		// use before opening
 		Object f = new Object();
 
-		assertEquals(monitor.step(USE, f), WEAK_FAILURE);
+		assertEquals(monitor.step(USE, f), FAILURE);
 		assertEquals(monitor.end(), FAILURE);
 	}
 
@@ -90,7 +90,7 @@ public class UseFileTest {
 		assertEquals(monitor.step(OPEN, f), WEAK_FAILURE);
 		assertEquals(monitor.step(USE, f), WEAK_FAILURE);
 		assertEquals(monitor.step(CLOSE, f), WEAK_SUCCESS);
-		assertEquals(monitor.step(CLOSE, f), WEAK_FAILURE);
+		assertEquals(monitor.step(CLOSE, f), FAILURE);
 		assertEquals(monitor.end(), FAILURE);
 	}
 

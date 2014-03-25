@@ -41,6 +41,8 @@ import exceptions.ShouldNotHappenException;
 
 public class QEABuilder {
 
+	private static final boolean DEBUG = false;
+	
 	/*
 	 * To create a QEA we need - a set of transitions - a set of final stats - a
 	 * quanfication list
@@ -75,6 +77,7 @@ public class QEABuilder {
 			return vargs;
 		}
 
+		public String toString(){return start+"-"+event_name+"("+Arrays.toString(event_args)+")-"+end;}
 	}
 
 	private static class TempEvent{
@@ -87,18 +90,21 @@ public class QEABuilder {
 		}
 		
 		public boolean equals(Object o){
+			//if(o==this) return true;
 			if(o instanceof TempEvent){
 				TempEvent other = (TempEvent) o;
-				if(other.event_name!=event_name) return false;
+				if(other.event_name!=event_name) return false;				
 				if(other.event_args==null && event_args==null) return true;
 				if(other.event_args==null || event_args==null) return false;
-				if(other.event_args.length!=event_args.length)return false; 
+				if(other.event_args.length!=event_args.length)return false;				
 				for(int i=0;i<event_args.length;i++)
 					if(other.event_args[i]!=event_args[i]) return false;
 				return true;
 			}
 			else return false;
 		}
+		
+		public String toString(){ return event_name+"("+Arrays.toString(event_args)+")";}
 	}
 	
 	private static class Quant {
@@ -153,7 +159,7 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
-				for(int i=1;i<strongStates.length;i++)
+				for(int i=0;i<strongStates.length;i++)
 					if(strongStates[i]) qea.setStateAsStrong(i);
 				return qea;
 			} else {
@@ -191,7 +197,7 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
-				for(int i=1;i<strongStates.length;i++)
+				for(int i=0;i<strongStates.length;i++)
 					if(strongStates[i]) qea.setStateAsStrong(i);				
 				return qea;
 			}
@@ -208,12 +214,12 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
-				for(int i=1;i<strongStates.length;i++)
+				for(int i=0;i<strongStates.length;i++)
 					if(strongStates[i]) qea.setStateAsStrong(i);				
 				return qea;				
 				
 			} else {
-
+				System.err.println("Missing prop case: nondet with fvar");
 			}
 		}
 		throw new ShouldNotHappenException(
@@ -239,7 +245,7 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
-				for(int i=1;i<strongStates.length;i++)
+				for(int i=0;i<strongStates.length;i++)
 					if(strongStates[i]) qea.setStateAsStrong(i);				
 				return qea;
 			} else {
@@ -277,7 +283,7 @@ public class QEABuilder {
 				for (Integer s : finalstates) {
 					qea.setStateAsFinal(s);
 				}
-				for(int i=1;i<strongStates.length;i++)
+				for(int i=0;i<strongStates.length;i++)
 					if(strongStates[i]) qea.setStateAsStrong(i);				
 				return qea;
 			}
@@ -295,7 +301,7 @@ public class QEABuilder {
 					for (Integer s : finalstates) {
 						qea.setStateAsFinal(s);
 					}
-					for(int i=1;i<strongStates.length;i++)
+					for(int i=0;i<strongStates.length;i++)
 						if(strongStates[i]) qea.setStateAsStrong(i);
 					return qea;
 				} else {
@@ -336,7 +342,7 @@ public class QEABuilder {
 					for (Integer s : finalstates) {
 						qea.setStateAsFinal(s);
 					}
-					for(int i=1;i<strongStates.length;i++)
+					for(int i=0;i<strongStates.length;i++)
 						if(strongStates[i]) qea.setStateAsStrong(i);					
 					return qea;
 				}
@@ -354,7 +360,7 @@ public class QEABuilder {
 					for (Integer s : finalstates) {
 						qea.setStateAsFinal(s);
 					}
-					for(int i=1;i<strongStates.length;i++)
+					for(int i=0;i<strongStates.length;i++)
 						if(strongStates[i]) qea.setStateAsStrong(i);
 					return qea;
 				} else {
@@ -395,7 +401,7 @@ public class QEABuilder {
 					for (Integer s : finalstates) {
 						qea.setStateAsFinal(s);
 					}
-					for(int i=1;i<strongStates.length;i++)
+					for(int i=0;i<strongStates.length;i++)
 						if(strongStates[i]) qea.setStateAsStrong(i);					
 					return qea;
 				}
@@ -507,10 +513,15 @@ public class QEABuilder {
 	 * Check that for each state and event name there is a single transition
 	 */
 	private boolean isEventDeterministic() {
-
-		Map<Integer, Integer> start_trans = new HashMap<Integer, Integer>();
+		
+		Map<Integer, Set<Integer>> start_trans = new HashMap<Integer, Set<Integer>>();
 		for (TempTransition t : transitions) {
-			if (start_trans.put(t.start, t.event_name) != null) {
+			Set<Integer> states = start_trans.get(t.start);
+			if(states==null){
+				states = new HashSet<Integer>();
+				start_trans.put(t.start,states);
+			}			
+			if (!states.add(t.event_name)) {	
 				return false;
 			}
 		}
@@ -664,10 +675,10 @@ public class QEABuilder {
 	public void setSkipStates(int... states) {
 
 		Set<TempEvent> events = getEvents();
-		
+				
 		for(int state : states){
 			for(TempEvent event : events){
-				if(!existsTransition(state,event)){
+				if(!existsTransition(state,event)){		
 					addTransition(state,event,state);
 				}
 			}
@@ -690,8 +701,6 @@ public class QEABuilder {
 		for(TempTransition trans : transitions){
 			if(trans.start==state && trans.temp_event.equals(event)) return true;
 		}
-		
-		
 		return false;
 	}
 
@@ -718,12 +727,30 @@ public class QEABuilder {
 		
 		boolean[] strong = new boolean[nstates+1];
 		
+		//state 0 is always strong
+		strong[0]=true;
+		
 		// reach[1][2] is true if state 2 is reachable from state 1
 		boolean[][] reach = new boolean[nstates+1][nstates+1];
 		
+		
+		
+		Set<TempEvent> events = getEvents();
+		Set<TempEvent>[] used = new Set[nstates+1];
+		
+		for(int i=1;i<reach.length;i++){
+			reach[i][i]=true;
+			used[i] = new HashSet<TempEvent>();
+		}
+		
 		for(TempTransition t : transitions){
 			reach[t.start][t.end]=true;
+			used[t.start].add(t.temp_event);
 		}
+		
+		for(int i=1;i<reach.length;i++){
+			if(used[i].size()!=events.size()) reach[i][0]=true;
+		}		
 		
 		for(int i=1;i<nstates;i++){
 			for(int start=1;start<(nstates+1);start++){
@@ -742,9 +769,17 @@ public class QEABuilder {
 			}
 		}
 		
-		for(int i=1;i<nstates;i++){
+		if(DEBUG){
+			System.err.println("reach:");
+			for(int i=1;i<reach.length;i++){
+				System.err.println(i+"\t->\t"+Arrays.toString(reach[i]));
+			}
+			System.err.println();
+		}
+		
+		for(int i=1;i<=nstates;i++){
 			boolean is_strong=true;
-			for(int j=1;j<nstates;j++){
+			for(int j=0;j<=nstates;j++){
 				if(reach[i][j]){
 					is_strong &= (finalstates.contains(i)==finalstates.contains(j));			
 				}
@@ -752,6 +787,8 @@ public class QEABuilder {
 			strong[i]=is_strong;
 		}
 		
+		
+		if(DEBUG) System.err.println("\nStrong states: "+Arrays.toString(strong));
 		
 		return strong;
 	}
