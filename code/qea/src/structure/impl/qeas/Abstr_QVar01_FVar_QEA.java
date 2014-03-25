@@ -13,7 +13,7 @@ import exceptions.ShouldNotHappenException;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public abstract class Abstr_QVar01_FVar_QEA implements QEA {
+public abstract class Abstr_QVar01_FVar_QEA extends QEA {
 
 	protected boolean[] finalStates;
 

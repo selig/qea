@@ -51,7 +51,12 @@ public class RoverCaseStudy {
 		
 		q.addFinalStates(1,2);
 		
-		return q.make();		
+		QEA qea = q.make();
+		
+		qea.record_event_name("grant", 1);
+		qea.record_event_name("cancel",2);
+		
+		return qea;		
 	}
 
 	/*
@@ -78,7 +83,12 @@ public class RoverCaseStudy {
 		
 		q.addFinalStates(1,2);
 		
-		return q.make();		
+		QEA qea = q.make();
+		
+		qea.record_event_name("grant", 1);
+		qea.record_event_name("cancel",2);
+		
+		return qea;
 	}
 	/*
 	 * 
@@ -100,7 +110,12 @@ public class RoverCaseStudy {
 		
 		q.addFinalStates(1,2);
 		
-		return q.make();		
+		QEA qea = q.make();
+		
+		qea.record_event_name("grant", 1);
+		qea.record_event_name("cancel",2);
+		
+		return qea;		
 	}	
 	
 	/*
@@ -124,7 +139,15 @@ public class RoverCaseStudy {
 		
 		q.addFinalStates(1,2);
 		
-		return q.make();
+		QEA qea = q.make();
+		
+		qea.record_event_name("request", 1);
+		qea.record_event_name("grant",2);
+		qea.record_event_name("deny",3);
+		qea.record_event_name("rescind",4);
+		qea.record_event_name("cancel",5);
+		
+		return qea;
 	}
 	
 	/*
@@ -150,6 +173,13 @@ public class RoverCaseStudy {
 		q.addFinalStates(1,2);
 		q.setSkipStates(1,2,3,4);
 		
-		return q.make();
+		QEA qea = q.make();
+		
+		qea.record_event_name("schedule", 1);
+		qea.record_event_name("grant",2);
+		qea.record_event_name("cancel",2);
+		qea.record_event_name("finish",2);
+		
+		return qea;	
 	}
 }

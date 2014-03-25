@@ -4,7 +4,7 @@ import structure.impl.other.Quantification;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
 
-public abstract class Abstr_QVar01_NoFVar_QEA implements QEA {
+public abstract class Abstr_QVar01_NoFVar_QEA extends QEA {
 
 	protected boolean[] finalStates;
 
