@@ -1,5 +1,6 @@
 package monitoring.impl.monitors;
 
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 
 import monitoring.impl.configs.DetConfig;
@@ -36,7 +37,7 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-
+		
 		boolean existingBinding = false;
 		boolean startConfigFinal = false;
 		DetConfig config;

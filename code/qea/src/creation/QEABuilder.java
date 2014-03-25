@@ -135,15 +135,22 @@ public class QEABuilder {
 		int states = countStates();
 		int events = countEvents();
 
+		QEA qea = null;
+		
 		// Propositional first
 		if (quants.size() == 0) {
-			return makeProp(states, events);
+			qea = makeProp(states, events);
 		}
 		// Single quantifier next
 		if (quants.size() == 1) {
-			return makeSingle(states, events);
+			qea = makeSingle(states, events);
 		}
 
+		if(qea!=null){
+			qea.setName(name);
+			return qea;
+		}
+		
 		throw new ShouldNotHappenException(
 				"I don't know how to make that kind of QEA yet");
 	}
