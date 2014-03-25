@@ -13,7 +13,7 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 
 	@Override
 	public Verdict end() {
-		return computeVerdict();
+		return computeVerdict(true);
 	}
 
 	/**
@@ -97,14 +97,15 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 		return null;
 	}
 
-	protected Verdict computeVerdict() {
+	protected Verdict computeVerdict(boolean end) {
 		// According to the quantification of the variable, return verdict
-		// TODO Take into account strong states
-		if (qea.isQuantificationUniversal() && allBindingsInFinalState()
-				|| !qea.isQuantificationUniversal()
-				&& existsOneBindingInFinalState()) {
+		if ((qea.isQuantificationUniversal() && allBindingsInFinalState())
+				|| 
+				(!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
+			if(end || finalStrongState) return Verdict.SUCCESS;
 			return Verdict.WEAK_SUCCESS;
 		}
+		if(end || nonFinalStrongState) return Verdict.FAILURE;
 		return Verdict.WEAK_FAILURE;
 	}
 
