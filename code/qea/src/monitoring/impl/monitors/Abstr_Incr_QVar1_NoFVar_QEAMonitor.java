@@ -30,12 +30,15 @@ public abstract class Abstr_Incr_QVar1_NoFVar_QEAMonitor<Q extends Abstr_QVar01_
 		// According to the quantification of the variable, return verdict
 		// TODO Take into account strong states
 		if ((qea.isQuantificationUniversal() && allBindingsInFinalState())
-				|| 
-				(!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
-			if(end || finalStrongState) return Verdict.SUCCESS;
+				|| (!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
+			if (end || finalStrongState) {
+				return Verdict.SUCCESS;
+			}
 			return Verdict.WEAK_SUCCESS;
 		}
-		if(end || nonFinalStrongState) return Verdict.FAILURE;
+		if (end || nonFinalStrongState) {
+			return Verdict.FAILURE;
+		}
 		return Verdict.WEAK_FAILURE;
 	}
 

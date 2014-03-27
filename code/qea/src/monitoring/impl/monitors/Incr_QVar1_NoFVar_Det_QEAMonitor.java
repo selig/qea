@@ -63,15 +63,18 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 		bindings.put(param1, endState);
 
 		boolean endStateFinal = qea.isStateFinal(endState);
-		
+
 		// Update counters
 		updateCounters(existingBinding, qea.isStateFinal(startState),
 				endStateFinal);
-		
-		//update strong state
-		if(qea.isStateStrong(endState)){
-			if(endStateFinal) finalStrongState=true;
-			else nonFinalStrongState=true;
+
+		// update strong state
+		if (qea.isStateStrong(endState)) {
+			if (endStateFinal) {
+				finalStrongState = true;
+			} else {
+				nonFinalStrongState = true;
+			}
 		}
 
 		return computeVerdict(false);

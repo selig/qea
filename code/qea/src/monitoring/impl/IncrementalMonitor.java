@@ -25,15 +25,15 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	protected int bindingsInNonFinalStateCount;
 
 	/**
-	 * We have seen a final strong state	
+	 * We have seen a final strong state
 	 */
 	protected boolean finalStrongState = false;
-	
+
 	/**
 	 * We have seen a non-final strong state
 	 */
 	protected boolean nonFinalStrongState = false;
-	
+
 	/**
 	 * Class constructor specifying the QEA to be monitored. For invocation by
 	 * subclass constructors
@@ -140,6 +140,5 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 			}
 		}
 	}
-	
 
 }
