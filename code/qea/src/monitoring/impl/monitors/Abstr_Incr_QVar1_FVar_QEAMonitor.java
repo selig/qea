@@ -100,12 +100,15 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 	protected Verdict computeVerdict(boolean end) {
 		// According to the quantification of the variable, return verdict
 		if ((qea.isQuantificationUniversal() && allBindingsInFinalState())
-				|| 
-				(!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
-			if(end || finalStrongState) return Verdict.SUCCESS;
+				|| (!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
+			if (end || finalStrongState) {
+				return Verdict.SUCCESS;
+			}
 			return Verdict.WEAK_SUCCESS;
 		}
-		if(end || nonFinalStrongState) return Verdict.FAILURE;
+		if (end || nonFinalStrongState) {
+			return Verdict.FAILURE;
+		}
 		return Verdict.WEAK_FAILURE;
 	}
 

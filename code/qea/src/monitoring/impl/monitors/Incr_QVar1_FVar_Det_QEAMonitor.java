@@ -126,7 +126,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 			// Update propositional configuration
 			emptyBindingConfig = qea.getNextConfig(emptyBindingConfig,
-					eventName, args,null);
+					eventName, args, null);
 
 			// Apply event to all existing bindings
 			for (Object binding : bindings.keySet()) {
@@ -161,7 +161,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 	@Override
 	public Verdict step(int eventName) {
-		return step(eventName, new Object[]{});
+		return step(eventName, new Object[] {});
 	}
 
 	/**
@@ -202,7 +202,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 		}
 
 		// Compute next configuration
-		config = qea.getNextConfig(config, eventName, args,qVarValue);
+		config = qea.getNextConfig(config, eventName, args, qVarValue);
 
 		// Flag needed to update counters later
 		boolean endConfigFinal = qea.isStateFinal(config.getState());
@@ -216,7 +216,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 	@Override
 	public String getStatus() {
-		String ret = "Empty: "+emptyBindingConfig+"\n";
+		String ret = "Empty: " + emptyBindingConfig + "\n";
 		ret += "Map:\n";
 		for (IdentityHashMap.Entry<Object, DetConfig> entry : bindings
 				.entrySet()) {
