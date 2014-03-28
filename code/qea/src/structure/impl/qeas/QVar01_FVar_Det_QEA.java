@@ -4,6 +4,7 @@ import monitoring.impl.configs.DetConfig;
 import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
+import structure.intf.Guard;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
@@ -86,7 +87,7 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 	 *         free variables) after the transition
 	 */
 	public DetConfig getNextConfig(DetConfig config, int event, Object[] args,
-			Object qval) {
+			Object qVarValue, boolean isQVarValue) {
 
 		// TODO This method is very similar to getNextConfig in
 		// QVar01_FVar_Det_FixedQVar_QEA
@@ -112,16 +113,9 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 		// If there is a guard and is not satisfied, rollback the binding and
 		// return the failing state
 		if (transition.getGuard() != null) {
-			// Option one for qvars in guards
-			// Binding shared_binding = null;
-			// if(transition.getGuard().usesQvars()){
-			// shared_binding=new FullBindingImpl(binding,new
-			// SingleBindingImpl(qval,-1));
-			// }
-			// else shared_binding=binding;
-
-			if (!transition.getGuard().check(binding, -1, qval)) {
-
+			Guard guard = transition.getGuard();
+			if (isQVarValue && !guard.check(binding, -1, qVarValue)
+					|| !isQVarValue && !guard.check(binding)) {
 				config.setState(0); // Failing state
 				return config;
 			}

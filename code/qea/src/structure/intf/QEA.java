@@ -12,22 +12,28 @@ import structure.impl.qeas.QEAType;
 public abstract class QEA {
 
 	private String name;
-	
-	public QEA(){
-		this.name="No-name";
+
+	public QEA() {
+		name = "No-name";
 	}
-	
-	public QEA(String name){
-		this.name=name;
+
+	public QEA(String name) {
+		this.name = name;
 	}
-	
-	public void setName(String name){
-		this.name=name;
+
+	public void setName(String name) {
+		this.name = name;
 	}
-	public String name(){ return name; }
-	
-	public String toString(){ return name; }
-	
+
+	public String name() {
+		return name;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+
 	/**
 	 * Retrieves the set of states Q for this QEA
 	 * 
@@ -72,7 +78,6 @@ public abstract class QEA {
 	 */
 	public abstract boolean isStateFinal(int state);
 
-	
 	/**
 	 * Determines if the specified state is in the set of strong states
 	 * 
@@ -80,39 +85,41 @@ public abstract class QEA {
 	 * @return true if the specified state is a strong state. Otherwise, false
 	 */
 	public abstract boolean isStateStrong(int state);
-	
+
 	/**
 	 * Returns the ID for the type of this QEA
 	 * 
 	 * @return {@link QEAType}
 	 */
 	public abstract QEAType getQEAType();
-	
-	
-	Map<String,Integer> name_lookup;
-	
+
+	Map<String, Integer> name_lookup;
+
 	/**
 	 * Records a name for an event id
 	 * 
-	 *  @param name
-	 *  @param id
+	 * @param name
+	 * @param id
 	 */
-	public void record_event_name(String name, int id){
-		if(name_lookup==null) name_lookup = new HashMap<String,Integer>();
-		name_lookup.put(name,id);
+	public void record_event_name(String name, int id) {
+		if (name_lookup == null) {
+			name_lookup = new HashMap<String, Integer>();
+		}
+		name_lookup.put(name, id);
 	}
-	
+
 	/**
 	 * Gets the event id for a name
 	 * 
-	 *  @param name
-	 *  @return id
+	 * @param name
+	 * @return id
 	 */
-	public int get_event_id(String name){
+	public int get_event_id(String name) {
 		Integer id = name_lookup.get(name);
-		if(id==null) return -1;
+		if (id == null) {
+			return -1;
+		}
 		return id;
 	}
 
-	
 }
