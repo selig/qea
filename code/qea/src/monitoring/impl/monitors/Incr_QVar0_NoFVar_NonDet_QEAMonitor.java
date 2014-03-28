@@ -19,13 +19,13 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 	/**
 	 * Contains the current configuration (set of states) for the monitor
 	 */
-	private NonDetConfig currentConfig;
+	private NonDetConfig config;
 
 	public Incr_QVar0_NoFVar_NonDet_QEAMonitor(QVar01_NoFVar_NonDet_QEA qea) {
 		super(qea);
 
 		// Set initial state
-		currentConfig = new NonDetConfig(qea.getInitialState());
+		config = new NonDetConfig(qea.getInitialState());
 	}
 
 	@Override
@@ -38,28 +38,55 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 	public Verdict step(int eventName) {
 
 		// Update configuration
-		currentConfig = qea.getNextConfig(currentConfig, eventName);
-		return computeVerdict();
+		config = qea.getNextConfig(config, eventName);
+
+		// Determine if there is a final/non-final strong state
+		checkFinalAndStrongStates(config);
+
+		return computeVerdict(false);
 	}
 
 	@Override
 	public Verdict end() {
-		return computeVerdict();
+		return computeVerdict(true);
 	}
 
-	private Verdict computeVerdict() {
+	/**
+	 * Computes the verdict for this monitor according to the current state of
+	 * the binding(s)
+	 * 
+	 * @param end
+	 *            <code>true</code> if all the events have been processed and a
+	 *            final verdict is to be computed; <code>false</code> otherwise
+	 * 
+	 * @return <ul>
+	 *         <li>{@link Verdict#SUCCESS} for a strong success
+	 *         <li>{@link Verdict#FAILURE} for a strong failure
+	 *         <li>{@link Verdict#WEAK_SUCCESS} for a weak success
+	 *         <li>{@link Verdict#WEAK_FAILURE} for a weak failure
+	 *         </ul>
+	 * 
+	 *         A strong success or failure means that other events processed
+	 *         after this will produce the same verdict, while a weak success or
+	 *         failure indicates that the verdict can change
+	 */
+	private Verdict computeVerdict(boolean end) {
 
-		// TODO Take into account strong states
-		// Determine verdict according to the current configuration
-		if (qea.containsFinalState(currentConfig)) {
-			return Verdict.SUCCESS;
+		if (qea.containsFinalState(config)) {
+			if (end || finalStrongState) {
+				return Verdict.SUCCESS;
+			}
+			return Verdict.WEAK_SUCCESS;
 		}
-		return Verdict.FAILURE;
+		if (end || nonFinalStrongState) {
+			return Verdict.FAILURE;
+		}
+		return Verdict.WEAK_FAILURE;
 	}
 
 	@Override
 	public String getStatus() {
-		return "Config: " + currentConfig;
+		return "Config: " + config;
 	}
 
 }

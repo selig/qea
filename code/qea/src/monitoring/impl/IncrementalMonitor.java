@@ -1,5 +1,6 @@
 package monitoring.impl;
 
+import monitoring.impl.configs.NonDetConfig;
 import monitoring.intf.Monitor;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
@@ -139,6 +140,35 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 				bindingsInNonFinalStateCount++;
 			}
 		}
+	}
+
+	/**
+	 * Determines if the specified non-deterministic configuration contains a
+	 * final strong state or a non-final strong state and sets the corresponding
+	 * flags of this monitor accordingly.
+	 * 
+	 * @param config
+	 *            Non-deterministic configuration containing a set of states to
+	 *            be checked
+	 * @return <code>true</code> if the specified configuration contains at
+	 *         least one final state (not necessarily strong);
+	 *         <code>false</code> otherwise
+	 */
+	protected boolean checkFinalAndStrongStates(NonDetConfig config) {
+
+		boolean endConfigFinal = false;
+		int[] configStates = config.getStates();
+		for (int s : configStates) {
+			if (qea.isStateFinal(s)) {
+				endConfigFinal = true;
+				if (qea.isStateStrong(s)) {
+					finalStrongState = true;
+				}
+			} else if (qea.isStateStrong(s)) {
+				nonFinalStrongState = true;
+			}
+		}
+		return endConfigFinal;
 	}
 
 }

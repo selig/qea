@@ -29,7 +29,7 @@ public class Incr_QVar0_FVar_Det_QEAMonitor extends
 
 		// Update configuration
 		config = qea.getNextConfig(config, eventName, args, null);
-		return computeVerdict();
+		return computeVerdict(false);
 	}
 
 	@Override
@@ -39,18 +39,37 @@ public class Incr_QVar0_FVar_Det_QEAMonitor extends
 
 	@Override
 	public Verdict end() {
-		return computeVerdict();
+		return computeVerdict(true);
 	}
 
-	private Verdict computeVerdict() {
+	/**
+	 * Computes the verdict for this monitor according to the current state of
+	 * the binding(s)
+	 * 
+	 * @param end
+	 *            <code>true</code> if all the events have been processed and a
+	 *            final verdict is to be computed; <code>false</code> otherwise
+	 * 
+	 * @return <ul>
+	 *         <li>{@link Verdict#SUCCESS} for a strong success
+	 *         <li>{@link Verdict#FAILURE} for a strong failure
+	 *         <li>{@link Verdict#WEAK_SUCCESS} for a weak success
+	 *         <li>{@link Verdict#WEAK_FAILURE} for a weak failure
+	 *         </ul>
+	 * 
+	 *         A strong success or failure means that other events processed
+	 *         after this will produce the same verdict, while a weak success or
+	 *         failure indicates that the verdict can change
+	 */
+	private Verdict computeVerdict(boolean end) {
 
 		if (qea.isStateFinal(config.getState())) {
-			if (qea.isStateStrong(config.getState())) {
+			if (end || qea.isStateStrong(config.getState())) {
 				return Verdict.SUCCESS;
 			}
 			return Verdict.WEAK_SUCCESS;
 		} else {
-			if (qea.isStateStrong(config.getState())) {
+			if (end || qea.isStateStrong(config.getState())) {
 				return Verdict.FAILURE;
 			}
 			return Verdict.WEAK_FAILURE;

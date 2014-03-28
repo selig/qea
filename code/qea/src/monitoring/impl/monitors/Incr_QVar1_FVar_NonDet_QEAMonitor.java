@@ -210,11 +210,11 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		// Compute next configuration
 		config = qea.getNextConfig(config, eventName, args, qVarValue, true);
 
-		// Flag needed to update counters later
-		boolean endConfigFinal = qea.containsFinalState(config);
-
 		// Update/add configuration for the binding
 		bindings.put(qVarValue, config);
+
+		// Determine if there is a final/non-final strong state
+		boolean endConfigFinal = checkFinalAndStrongStates(config);
 
 		// Update counters
 		updateCounters(existingBinding, startConfigFinal, endConfigFinal);
