@@ -157,17 +157,21 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	protected boolean checkFinalAndStrongStates(NonDetConfig config) {
 
 		boolean endConfigFinal = false;
+		boolean allNonFinalStronState = true;
 		int[] configStates = config.getStates();
 		for (int s : configStates) {
 			if (qea.isStateFinal(s)) {
 				endConfigFinal = true;
+				allNonFinalStronState=false;
 				if (qea.isStateStrong(s)) {
 					finalStrongState = true;
 				}
-			} else if (qea.isStateStrong(s)) {
-				nonFinalStrongState = true;
+			} else if (!qea.isStateStrong(s)) {
+				allNonFinalStronState = false;
 			}
 		}
+		if(allNonFinalStronState)
+			nonFinalStrongState = true;
 		return endConfigFinal;
 	}
 
