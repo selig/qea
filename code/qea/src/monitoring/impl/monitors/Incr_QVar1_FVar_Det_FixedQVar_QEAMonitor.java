@@ -42,14 +42,14 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 		DetConfig config;
 
 		// Obtain the value for the quantified variable
-		Object quantifiedVar = args[0];
+		Object qVarValue = args[0];
 
 		// Determine if the value received corresponds to an existing binding
-		if (bindings.containsKey(quantifiedVar)) { // Existing quantified
-													// variable binding
+		if (bindings.containsKey(qVarValue)) { // Existing quantified
+												// variable binding
 
 			// Get current configuration for the binding
-			config = bindings.get(quantifiedVar);
+			config = bindings.get(qVarValue);
 
 			// Assign flags for counters update
 			existingBinding = true;
@@ -62,10 +62,10 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 		}
 
 		// Compute next configuration
-		config = qea.getNextConfig(config, eventName, args);
+		config = qea.getNextConfig(config, eventName, args, qVarValue);
 
 		// Update/add configuration for the binding
-		bindings.put(quantifiedVar, config);
+		bindings.put(qVarValue, config);
 
 		// Flag needed to update counters later
 		boolean endConfigFinal = qea.isStateFinal(config.getState());

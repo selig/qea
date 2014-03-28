@@ -5,6 +5,7 @@ import structure.impl.other.FBindingImpl;
 import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
+import structure.intf.Guard;
 import util.ArrayUtil;
 
 /**
@@ -117,11 +118,12 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 	 *            Name of the event
 	 * @param args
 	 *            Arguments for the event
+	 * @param qVarValue
 	 * @return End configuration containing the set of end state and the set of
 	 *         bindings after the transition
 	 */
 	public NonDetConfig getNextConfig(NonDetConfig config, int event,
-			Object[] args) {
+			Object[] args, Object qVarValue) {
 
 		if (config.getStates().length == 1) { // Only one start state
 
@@ -142,30 +144,32 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
 			if (transitions.length == 1) { // One start state - one transition
 
+				Transition transition = transitions[0];
+
 				// Update binding for free variables
 				Binding binding = config.getBindings()[0];
-
 				if (args.length > 1) {
 					updateBindingFixedQVar(binding, args, transitions[0]);
 				}
 
 				// If there is a guard and is not satisfied, rollback the
 				// binding and return the failing state
-				if (transitions[0].getGuard() != null
-						&& !transitions[0].getGuard().check(binding)) {
-
-					config.setState(0, 0); // Failing state
-					return config;
+				if (transition.getGuard() != null) {
+					Guard guard = transition.getGuard();
+					if (!guard.check(binding, -1, qVarValue)) {
+						config.setState(0, 0); // Failing state
+						return config;
+					}
 				}
 
 				// If there is an assignment, execute it
-				if (transitions[0].getAssignment() != null) {
+				if (transition.getAssignment() != null) {
 					config.setBinding(0,
-							transitions[0].getAssignment().apply(binding));
+							transition.getAssignment().apply(binding));
 				}
 
 				// Set the end state
-				config.setState(0, transitions[0].getEndState());
+				config.setState(0, transition.getEndState());
 
 			} else { // One start state - Multiple transitions
 
@@ -191,7 +195,8 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 
 					// If there is a guard, check it is satisfied
 					if (transition.getGuard() == null
-							|| transition.getGuard().check(binding)) {
+							|| transition.getGuard().check(binding, -1,
+									qVarValue)) {
 
 						// If there is an assignment, execute it
 						if (transition.getAssignment() != null) {
@@ -263,7 +268,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 			for (int i = 0; i < transitions.length; i++) {
 
 				if (transitions[i] != null) {
-					for (int j = 0; j < transitions[i].length; j++) {
+					for (Transition transition : transitions[i]) {
 
 						// Copy the initial binding
 						FBindingImpl binding = (FBindingImpl) config
@@ -272,22 +277,22 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 						if (args.length > 1) {
 
 							// Update binding for free variables
-							updateBindingFixedQVarRB(binding, args,
-									transitions[i][j]);
+							updateBindingFixedQVar(binding, args, transition);
 						}
 
 						// If there is a guard, check it is satisfied
-						if (transitions[i][j].getGuard() == null
-								|| transitions[i][j].getGuard().check(binding)) {
+						if (transition.getGuard() == null
+								|| transition.getGuard().check(binding, -1,
+										qVarValue)) {
 
 							// If there is an assignment, execute it
-							if (transitions[i][j].getAssignment() != null) {
-								binding = (FBindingImpl) transitions[i][j]
+							if (transition.getAssignment() != null) {
+								binding = (FBindingImpl) transition
 										.getAssignment().apply(binding);
 							}
 
 							// Copy end state and binding in the arrays
-							endStates[endStatesCount] = transitions[i][j]
+							endStates[endStatesCount] = transition
 									.getEndState();
 							bindings[endStatesCount] = binding;
 
