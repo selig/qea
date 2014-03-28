@@ -5,6 +5,7 @@ import structure.impl.other.FBindingImpl;
 import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
+import util.ArrayUtil;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
@@ -72,12 +73,11 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = new Transition[] { transition };
 		} else {
-			// Resize transitions array
-			Transition[] newTransitions = new Transition[delta[startState][event].length + 1];
-			System.arraycopy(delta[startState][event], 0, newTransitions, 0,
-					delta[startState][event].length);
-			newTransitions[delta[startState][event].length] = transition;
-			delta[startState][event] = newTransitions;
+			// Resize transitions array and add the new transition
+			int currentSize = delta[startState][event].length;
+			delta[startState][event] = ArrayUtil.resize(
+					delta[startState][event], currentSize + 1);
+			delta[startState][event][currentSize] = transition;
 		}
 	}
 
@@ -98,15 +98,9 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = transitions;
 		} else {
-			// Resize transitions array
-			int prevTransCount = delta[startState][event].length;
-			Transition[] newTransitions = new Transition[prevTransCount
-					+ transitions.length];
-			System.arraycopy(delta[startState][event], 0, newTransitions, 0,
-					delta[startState][event].length);
-			System.arraycopy(transitions, 0, newTransitions, prevTransCount,
-					transitions.length);
-			delta[startState][event] = newTransitions;
+			// Add new transitions
+			delta[startState][event] = ArrayUtil.concat(
+					delta[startState][event], transitions);
 		}
 	}
 
@@ -242,8 +236,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 			return config;
 		}
 
-		config.setStates(resizeArray(endStates, endStatesCount));
-		config.setBindings(resizeArray(bindings, endStatesCount));
+		config.setStates(ArrayUtil.resize(endStates, endStatesCount));
+		config.setBindings(ArrayUtil.resize(bindings, endStatesCount));
 
 		return config;
 	}
@@ -341,8 +335,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 		}
 
-		config.setStates(resizeArray(endStates, endStatesCount));
-		config.setBindings(resizeArray(bindings, endStatesCount));
+		config.setStates(ArrayUtil.resize(endStates, endStatesCount));
+		config.setBindings(ArrayUtil.resize(bindings, endStatesCount));
 
 		return config;
 	}
@@ -409,24 +403,6 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 	 */
 	public Transition[] getTransitions(int startState, int eventName) {
 		return delta[startState][eventName];
-	}
-
-	private static int[] resizeArray(int[] array, int size) {
-		if (array.length == size) {
-			return array;
-		}
-		int[] resizedArray = new int[size];
-		System.arraycopy(array, 0, resizedArray, 0, size);
-		return resizedArray;
-	}
-
-	private static FBindingImpl[] resizeArray(FBindingImpl[] array, int size) {
-		if (array.length == size) {
-			return array;
-		}
-		FBindingImpl[] resizedArray = new FBindingImpl[size];
-		System.arraycopy(array, 0, resizedArray, 0, size);
-		return resizedArray;
 	}
 
 	@Override

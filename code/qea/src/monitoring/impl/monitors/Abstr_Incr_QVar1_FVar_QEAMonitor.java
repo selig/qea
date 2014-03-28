@@ -3,6 +3,7 @@ package monitoring.impl.monitors;
 import monitoring.impl.IncrementalMonitor;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.Abstr_QVar01_FVar_QEA;
+import util.ArrayUtil;
 
 public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FVar_QEA>
 		extends IncrementalMonitor<Q> {
@@ -62,14 +63,7 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 			}
 		}
 
-		// Resize array if needed
-		if (numBindings != numQVarPositions) {
-			Object[] resizedBindings = new Object[numBindings];
-			System.arraycopy(bindings, 0, resizedBindings, 0, numBindings);
-			return resizedBindings;
-		}
-
-		return bindings;
+		return ArrayUtil.resize(bindings, numBindings);
 	}
 
 	/**
