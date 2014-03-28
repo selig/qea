@@ -97,8 +97,27 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 		return null;
 	}
 
+	/**
+	 * Computes the verdict for this monitor according to the current state of
+	 * the binding(s)
+	 * 
+	 * @param end
+	 *            <code>true</code> if all the events have been processed and a
+	 *            final verdict is to be computed; <code>false</code> otherwise
+	 * 
+	 * @return <ul>
+	 *         <li>{@link Verdict#SUCCESS} for a strong success
+	 *         <li>{@link Verdict#FAILURE} for a strong failure
+	 *         <li>{@link Verdict#WEAK_SUCCESS} for a weak success
+	 *         <li>{@link Verdict#WEAK_FAILURE} for a weak failure
+	 *         </ul>
+	 * 
+	 *         A strong success or failure means that other events processed
+	 *         after this will produce the same verdict, while a weak success or
+	 *         failure indicates that the verdict can change
+	 */
 	protected Verdict computeVerdict(boolean end) {
-		// According to the quantification of the variable, return verdict
+
 		if ((qea.isQuantificationUniversal() && allBindingsInFinalState())
 				|| (!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
 			if (end || finalStrongState) {
