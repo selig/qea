@@ -1,7 +1,8 @@
 package structure.impl.qeas;
 
-import structure.impl.other.Quantification;
 import monitoring.impl.configs.NonDetConfig;
+import structure.impl.other.Quantification;
+import util.ArrayUtil;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
@@ -17,7 +18,7 @@ import monitoring.impl.configs.NonDetConfig;
  * @author Giles Reger
  */
 public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
-	
+
 	private final QEAType qeaType = QEAType.QVAR01_NOFVAR_NONDET_QEA;
 
 	private int[][][] delta;
@@ -43,13 +44,11 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = new int[] { endState };
 		} else {
-			// Resize end states array
-			int[] newEndStates = new int[delta[startState][event].length + 1];
-			System.arraycopy(delta[startState][event], 0, newEndStates, 0,
-					delta[startState][event].length);
-			newEndStates[delta[startState][event].length] = endState;
-			delta[startState][event] = newEndStates;
-
+			// Resize transitions array and add the new end state
+			int currentSize = delta[startState][event].length;
+			delta[startState][event] = ArrayUtil.resize(
+					delta[startState][event], currentSize + 1);
+			delta[startState][event][currentSize] = endState;
 		}
 	}
 
@@ -68,14 +67,9 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = endStates;
 		} else {
-			// Resize transitions array
-			int prevTransCount = delta[startState][event].length;
-			int[] newEndStates = new int[prevTransCount + endStates.length];
-			System.arraycopy(delta[startState][event], 0, newEndStates, 0,
-					delta[startState][event].length);
-			System.arraycopy(endStates, 0, newEndStates, prevTransCount,
-					endStates.length);
-			delta[startState][event] = newEndStates;
+			// Add new end states
+			delta[startState][event] = ArrayUtil.concat(
+					delta[startState][event], endStates);
 		}
 	}
 
@@ -190,10 +184,10 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 	public boolean isDeterministic() {
 		return false;
 	}
-	
+
 	@Override
 	public QEAType getQEAType() {
 		return qeaType;
 	}
-	
+
 }
