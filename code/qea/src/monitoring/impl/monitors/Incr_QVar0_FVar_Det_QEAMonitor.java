@@ -28,7 +28,7 @@ public class Incr_QVar0_FVar_Det_QEAMonitor extends
 	public Verdict step(int eventName, Object[] args) {
 
 		// Update configuration
-		config = qea.getNextConfig(config, eventName, args, null);
+		config = qea.getNextConfig(config, eventName, args, null, false);
 		return computeVerdict(false);
 	}
 
