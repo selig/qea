@@ -17,6 +17,7 @@ public class QeaDoEval extends DoEval {
 		QeaDoWork.print=false;
 		eval.eval_for_GrantCancel(RoverCaseStudy.makeGrantCancelSingle(),"GrantCancel");
 		
+		eval.eval_for_ResourceLifecycle(RoverCaseStudy.makeResourceLifecycle(), "ResourceLifecycle");
 	}
 	
 }

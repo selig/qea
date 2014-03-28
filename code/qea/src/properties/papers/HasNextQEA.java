@@ -43,5 +43,7 @@ public class HasNextQEA extends QVar01_NoFVar_Det_QEA {
 		addTransition(3, HASNEXT_FALSE, 3);
 
 		setStatesAsFinal(1, 2, 3);
+		
+		setStatesAsStrong(0);
 	}
 }

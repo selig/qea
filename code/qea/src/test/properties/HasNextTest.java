@@ -30,6 +30,7 @@ public class HasNextTest {
 
 	@Test
 	public void test_one() {
+		
 		// Test correct behaviour with a single iterator
 		Object i = new Object();
 
@@ -62,8 +63,8 @@ public class HasNextTest {
 
 		assertEquals(monitor.step(HASNEXT_TRUE, i), WEAK_SUCCESS);
 		assertEquals(monitor.step(NEXT, i), WEAK_SUCCESS);
-		assertEquals(monitor.step(NEXT, i), WEAK_FAILURE);
-		assertEquals(monitor.step(HASNEXT_FALSE, i), WEAK_FAILURE);
+		assertEquals(monitor.step(NEXT, i), FAILURE);
+		assertEquals(monitor.step(HASNEXT_FALSE, i), FAILURE);
 		assertEquals(monitor.end(), FAILURE);
 	}
 
@@ -76,7 +77,7 @@ public class HasNextTest {
 		assertEquals(monitor.step(HASNEXT_TRUE, i), WEAK_SUCCESS);
 		assertEquals(monitor.step(NEXT, i), WEAK_SUCCESS);
 		assertEquals(monitor.step(HASNEXT_FALSE, i), WEAK_SUCCESS);
-		assertEquals(monitor.step(HASNEXT_TRUE, i), WEAK_FAILURE);
+		assertEquals(monitor.step(HASNEXT_TRUE, i), FAILURE);
 		assertEquals(monitor.end(), FAILURE);
 	}
 
@@ -90,9 +91,9 @@ public class HasNextTest {
 		assertEquals(monitor.step(NEXT, i1), WEAK_SUCCESS);
 		assertEquals(monitor.step(HASNEXT_TRUE, i2), WEAK_SUCCESS);
 		assertEquals(monitor.step(NEXT, i2), WEAK_SUCCESS);
-		assertEquals(monitor.step(NEXT, i2), WEAK_FAILURE);
-		assertEquals(monitor.step(HASNEXT_FALSE, i1), WEAK_FAILURE);
-		assertEquals(monitor.step(HASNEXT_FALSE, i2), WEAK_FAILURE);
+		assertEquals(monitor.step(NEXT, i2), FAILURE);
+		assertEquals(monitor.step(HASNEXT_FALSE, i1), FAILURE);
+		assertEquals(monitor.step(HASNEXT_FALSE, i2), FAILURE);
 		assertEquals(monitor.end(), FAILURE);
 	}
 
