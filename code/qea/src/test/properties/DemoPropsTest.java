@@ -1,9 +1,7 @@
 package test.properties;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.SUCCESS;
-import static structure.impl.other.Verdict.WEAK_FAILURE;
-import static structure.impl.other.Verdict.WEAK_SUCCESS;
+import static structure.impl.other.Verdict.*;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 
@@ -37,9 +35,9 @@ public class DemoPropsTest {
 				return "B";
 			}
 		};
-		assertEquals(monitor.step(e, x, y), WEAK_FAILURE);
-		assertEquals(monitor.step(f, y), WEAK_FAILURE);
-		assertEquals(monitor.step(f, x), WEAK_FAILURE);
+		assertEquals(monitor.step(e, x, y), FAILURE);
+		assertEquals(monitor.step(f, y), FAILURE);
+		assertEquals(monitor.step(f, x), FAILURE);
 	}
 
 	@Test
@@ -63,7 +61,7 @@ public class DemoPropsTest {
 
 		assertEquals(monitor.step(f), WEAK_SUCCESS);
 		assertEquals(monitor.step(g, new Object(), 6), WEAK_SUCCESS);
-		assertEquals(monitor.step(g, new Object(), 4), WEAK_FAILURE);
+		assertEquals(monitor.step(g, new Object(), 4), FAILURE);
 	}
 
 	@Test
@@ -74,6 +72,8 @@ public class DemoPropsTest {
 		int c = 3;
 		Monitor monitor = MonitorFactory.create(DemoQEAs.makeNonDetProp());
 
+		System.err.println(monitor.getClass());
+		
 		assertEquals(monitor.step(a), WEAK_FAILURE);
 		assertEquals(monitor.step(b), WEAK_FAILURE);
 		assertEquals(monitor.step(c), WEAK_SUCCESS);
