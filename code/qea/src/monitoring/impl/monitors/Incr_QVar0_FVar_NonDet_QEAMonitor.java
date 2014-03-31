@@ -32,15 +32,10 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 
 		// Update configuration
 		config = qea.getNextConfig(config, eventName, args, null, false);
-		
-		int[] states = config.getStates();
-		for(int s : states){
-			if(qea.isStateStrong(s)){
-				if(qea.isStateFinal(s)) finalStrongState=true;
-				else nonFinalStrongState=true;
-			}
-		}
-		
+
+		// Determine if there is a final/non-final strong state
+		checkFinalAndStrongStates(config);
+
 		return computeVerdict(false);
 	}
 
@@ -54,15 +49,36 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 		return computeVerdict(true);
 	}
 
+	/**
+	 * Computes the verdict for this monitor according to the current state of
+	 * the binding(s)
+	 * 
+	 * @param end
+	 *            <code>true</code> if all the events have been processed and a
+	 *            final verdict is to be computed; <code>false</code> otherwise
+	 * 
+	 * @return <ul>
+	 *         <li>{@link Verdict#SUCCESS} for a strong success
+	 *         <li>{@link Verdict#FAILURE} for a strong failure
+	 *         <li>{@link Verdict#WEAK_SUCCESS} for a weak success
+	 *         <li>{@link Verdict#WEAK_FAILURE} for a weak failure
+	 *         </ul>
+	 * 
+	 *         A strong success or failure means that other events processed
+	 *         after this will produce the same verdict, while a weak success or
+	 *         failure indicates that the verdict can change
+	 */
 	private Verdict computeVerdict(boolean end) {
 
-		// TODO Take into account strong states
-		// Determine verdict according to the current configuration
 		if (qea.containsFinalState(config)) {
-			if(finalStrongState) return Verdict.SUCCESS;
+			if (end || finalStrongState) {
+				return Verdict.SUCCESS;
+			}
 			return Verdict.WEAK_SUCCESS;
 		}
-		if(nonFinalStrongState) return Verdict.FAILURE;
+		if (end || nonFinalStrongState) {
+			return Verdict.FAILURE;
+		}
 		return Verdict.WEAK_FAILURE;
 	}
 

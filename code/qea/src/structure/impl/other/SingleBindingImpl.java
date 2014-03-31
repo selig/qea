@@ -25,8 +25,8 @@ public class SingleBindingImpl extends Binding {
 	 *            Index of the variable
 	 */
 	public SingleBindingImpl(Object value, int index) {
-		this.value=value;
-		this.index=index;
+		this.value = value;
+		this.index = index;
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class SingleBindingImpl extends Binding {
 	 */
 	@Override
 	public Object getValue(int variableName) {
-		assert(variableName==index);
+		assert (variableName == index);
 		return value;
 	}
 
@@ -52,13 +52,14 @@ public class SingleBindingImpl extends Binding {
 	 */
 	@Override
 	public void setValue(int variableName, Object value) {
-		if(index == variableName)
-			this.value=value;
+		if (index == variableName) {
+			this.value = value;
+		}
 	}
 
 	@Override
 	public Binding copy() {
-		Binding binding = new SingleBindingImpl(value,index);
+		Binding binding = new SingleBindingImpl(value, index);
 		return binding;
 	}
 
@@ -70,7 +71,7 @@ public class SingleBindingImpl extends Binding {
 
 	@Override
 	public String toString() {
-		return "["+index+":"+value+"]";
+		return "[" + index + ":" + value + "]";
 	}
 
 }

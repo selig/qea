@@ -30,7 +30,7 @@ public class UseFileQEA extends QVar01_NoFVar_Det_QEA {
 
 		// only state 1 is final as the file must be closed
 		setStateAsFinal(1);
-		
+
 		setStateAsStrong(0);
 	}
 }

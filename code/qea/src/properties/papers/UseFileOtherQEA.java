@@ -27,11 +27,10 @@ public class UseFileOtherQEA {
 		qeaBuilder.addTransition(3, save, new int[] { f }, 4);
 		qeaBuilder.addTransition(4, close, new int[] { f }, 1);
 
-		qeaBuilder.addTransition(1,read, new int[]{ f}, 5);
-		
-		
-		qeaBuilder.setSkipStates(1,2,3,4);
-		
+		qeaBuilder.addTransition(1, read, new int[] { f }, 5);
+
+		qeaBuilder.setSkipStates(1, 2, 3, 4);
+
 		qeaBuilder.addFinalStates(1);
 
 		return qeaBuilder.make();

@@ -80,8 +80,8 @@ public class Transition {
 		this.variableNames = variableNames;
 		this.guard = guard;
 		this.endState = endState;
-	}	
-	
+	}
+
 	public Transition(int[] variableNames, Guard guard, Assignment assignment,
 			int endState) {
 		super();
@@ -96,8 +96,6 @@ public class Transition {
 		this.variableNames = variableNames;
 		this.endState = endState;
 	}
-
-
 
 	public int[] getVariableNames() {
 		return variableNames;

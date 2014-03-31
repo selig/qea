@@ -51,10 +51,11 @@ public class FullBindingImpl extends Binding {
 	 */
 	@Override
 	public Object getValue(int variableName) {
-		if (variableName >= 0)
+		if (variableName >= 0) {
 			return freeBinding.getValue(variableName);
-		else
+		} else {
 			return quantBinding.getValue(variableName);
+		}
 	}
 
 	/**
@@ -67,10 +68,11 @@ public class FullBindingImpl extends Binding {
 	 */
 	@Override
 	public void setValue(int variableName, Object value) {
-		if (variableName >= 0)
+		if (variableName >= 0) {
 			freeBinding.setValue(variableName, value);
-		else
+		} else {
 			quantBinding.setValue(variableName, value);
+		}
 	}
 
 	@Override

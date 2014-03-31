@@ -9,7 +9,6 @@ import org.junit.Test;
 import properties.papers.UseFileOtherQEA;
 import structure.intf.QEA;
 
-
 public class UseFileOtherTest {
 
 	private Monitor monitor;
