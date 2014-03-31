@@ -42,7 +42,7 @@ import exceptions.ShouldNotHappenException;
 
 public class QEABuilder {
 
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 
 	/*
 	 * To create a QEA we need - a set of transitions - a set of final stats - a

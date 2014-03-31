@@ -5,7 +5,7 @@ public class MopDoWork extends DoWork<String> {
 	@Override
 	public void run_with_spec(String spec, String name, int[] args) {
 		// Doesn't do anything as we use aspects
-
+		dowork(name, args);
 	}
 
 	/*

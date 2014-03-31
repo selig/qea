@@ -18,37 +18,37 @@ abstract class DoWork<S> {
 		if (name.equals("IncreasingCommand")) {
 			work_for_IncreasingCommand(args[0]);
 		}
-		if (name.equals("ResourceLifecycle")) {
+		else if (name.equals("ResourceLifecycle")) {
 			work_for_ResourceLifecycle(args[0], args[1]);
 		}
-		if (name.equals("ExactlyOneSuccess")) {
+		else if (name.equals("ExactlyOneSuccess")) {
 			work_for_ExactlyOneSuccess(args[0]);
 		}
-		if (name.equals("AcknowledgeCommands")) {
+		else if (name.equals("AcknowledgeCommands")) {
 			work_for_AcknowledgeCommands(args[0]);
 		}
-		if (name.equals("NestedCommand")) {
+		else if (name.equals("NestedCommand")) {
 			work_for_NestedCommand(args[0], args[1], args[2]);
 		}
-		if (name.equals("GrantCancel")) {
+		else if (name.equals("GrantCancel")) {
 			work_for_GrantRelease(args[0], args[1], args[2]);
 		}
-		if (name.equals("ReleaseResource")) {
+		else if (name.equals("ReleaseResource")) {
 			work_for_ReleaseResource(args[0], args[1], args[2]);
 		}
-		if (name.equals("RespectConflicts")) {
+		else if (name.equals("RespectConflicts")) {
 			work_for_RespectConflicts(args[0], args[1], args[2]);
 		}
-		if (name.equals("ExistsSatellite")) {
+		else if (name.equals("ExistsSatellite")) {
 			work_for_ExistsSatellite(args[0], args[1]);
 		}
-		if (name.equals("ExistsLeader")) {
+		else if (name.equals("ExistsLeader")) {
 			work_for_ExistsLeader(args[0]);
 		}
-		if (name.equals("MessageHashCorrectInvInt")) {
+		else if (name.equals("MessageHashCorrectInvInt")) {
 			work_for_MessageHashCorrectInvInt(args[0], args[1]);
 		}
-
+		else System.err.println(name+" not found");
 	}
 
 	public void work_for_IncreasingCommand(int c) {
@@ -457,8 +457,9 @@ abstract class DoWork<S> {
 
 	}
 
-	public static void work_for_ExistsLeader(int r) {
+	public void work_for_ExistsLeader(int r) {
 
+		// translate resource ids into objects
 		Object[] ros = new Object[r];
 		for (int i = 0; i < r; i++) {
 			ros[i] = new Object();
@@ -466,7 +467,10 @@ abstract class DoWork<S> {
 
 		Random rand = new Random();
 
-		Map<Integer, Queue<Integer>> map_p = new HashMap<Integer, Queue<Integer>>();
+		// maps resources into the the resources it should ping
+		Map<Integer, Queue<Integer>> map_ping = new HashMap<Integer, Queue<Integer>>();
+		
+		// randomly selects those resources
 		for (int res = 0; res < r; res++) {
 			Queue<Integer> o_res = new LinkedList<Integer>();
 			for (int i = 0; i < r; i++) {
@@ -475,47 +479,92 @@ abstract class DoWork<S> {
 				}
 			}
 			if (!o_res.isEmpty()) {
-				map_p.put(res, o_res);
+				map_ping.put(res, o_res);
 			}
 		}
 
+		// pick a leader and set to full ping
 		int leader = rand.nextInt(r);
-		Queue<Integer> o_res = new LinkedList<Integer>();
+		Queue<Integer> leader_res = new LinkedList<Integer>();
 		for (int i = 0; i < r; i++) {
-			o_res.add(i);
+			leader_res.add(i);
 		}
-		map_p.put(leader, o_res);
+		map_ping.put(leader, leader_res);
 
-		Map<Integer, Queue<Integer>> map_a = new HashMap<Integer, Queue<Integer>>();
+		// maps resources into the resources it should acknowledge
+		Map<Integer, Queue<Integer>> map_ack = new HashMap<Integer, Queue<Integer>>();
 
-		List<Integer> res_p = new ArrayList<Integer>();
-		for (int i : map_p.keySet()) {
-			res_p.add(i);
+		// set to true if some pings left
+		boolean[] res_p = new boolean[r];
+		int res_p_left=0;
+		for (int i : map_ping.keySet()) {
+			res_p[i] = true;
+			res_p_left++;
 		}
 
-		List<Integer> res_a = new ArrayList<Integer>();
+		// record acks to go
+		int res_a_left=0;
+		boolean[] res_a = new boolean[r];
 
-		System.err
-				.println("I got part way through ExistsLeader then gave up translating as we probs won't use it");
-		/*
-		 * while(!res_p.isEmpty() || !res_a.isEmpty()){
-		 * 
-		 * if((!res_p.isEmpty() && rand.nextBoolean()) || res_a.isEmpty()){ //
-		 * send ping
-		 * 
-		 * val res = res_p(rand.nextInt(res_p.length)) val o_res = map_p(res)
-		 * val rr = o_res.head m.step(('ping,List(ros(res),ros(rr)))) res_a +:=
-		 * rr map_a += (rr -> (map_a.getOrElse(rr,Set[Int]())+res))
-		 * 
-		 * if(o_res.size==1){ map_p -= res res_p = res_p.filter{_!=res} } else
-		 * map_p += ((res -> o_res.tail)) } else{ // send ack val res =
-		 * res_a(rand.nextInt(res_a.length)) val o_res =map_a(res) val rr =
-		 * o_res.head m.step(('ack,List(ros(res),ros(rr))))
-		 * 
-		 * if(o_res.size==1){ map_a -= res res_a = res_a.filter{_!=res} } else
-		 * map_a += ((res -> o_res.tail)) } }
-		 */
-		// m.asInstanceOf[qea.MonitorConfig].getConfigs foreach println
+		// while we have pings and acks left
+		while(res_p_left>0 || res_a_left>0){
+		  
+		  //System.err.println(res_p_left+","+res_a_left);	
+			
+		  // if we decide to ping
+		  if((res_p_left>0 && rand.nextBoolean()) || res_a_left==0){ 
+
+			  // pick a random res to send res_p
+			  int res = rand.nextInt(r);
+			  while(!res_p[res]) res = rand.nextInt(r);
+			  
+			  Queue<Integer> resq = map_ping.get(res);	
+			  //select a res to receive
+			  int rr = resq.remove();
+			  
+			   ping(ros[res],ros[rr]);
+			  
+			   // rr now needs to do another ack
+			   if(!res_a[rr]){
+				   res_a_left++;
+				   res_a[rr]=true;
+			   }
+			   // add res to the ack resources of rr
+			   Queue<Integer> oldq = map_ack.get(rr);
+			   if(oldq==null){
+				   oldq = new LinkedList<Integer>();
+				   map_ack.put(rr,oldq);
+			   }
+			   oldq.add(res);
+			   
+		  
+		       if(resq.isEmpty()){ 
+		    	   map_ping.remove(res);		    	   
+		    	   res_p[res]=false;
+		    	   res_p_left--;
+		    	}
+		  
+		  } 
+		  else{ // send an ack instead 
+			  
+			  int res = rand.nextInt(r);
+			  while(!res_a[res]) res = rand.nextInt(r);		  
+			  Queue<Integer> resq = map_ack.get(res);				  
+			  
+			  int rr = resq.remove();
+			  
+			  ack(ros[rr],ros[res]);
+			  
+			  if(resq.isEmpty()){
+		    	   map_ack.remove(res);		    	   
+		    	   res_a[res]=false;
+		    	   res_a_left--;
+			  }
+		  
+		  } 
+		  
+		}
+		 
 	}
 
 	private static class mhc_Entry {
