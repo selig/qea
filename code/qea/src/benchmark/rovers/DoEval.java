@@ -120,6 +120,7 @@ abstract class DoEval<S>  {
      run_eval(spec,name,new int[]{100,100,10000},0);
      run_eval(spec,name,new int[]{1000,1000,1000});
      run_eval(spec,name,new int[]{1000,1000,10000},0);
+     run_eval(spec,name,new int[]{1000,1000,1000000},0);     
 
       }
       public void eval_for_ReleaseResource(S spec, String name){ 
