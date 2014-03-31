@@ -5,6 +5,8 @@ import structure.impl.other.FBindingImpl;
 import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
+import structure.intf.Guard;
+import util.ArrayUtil;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
@@ -72,12 +74,11 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = new Transition[] { transition };
 		} else {
-			// Resize transitions array
-			Transition[] newTransitions = new Transition[delta[startState][event].length + 1];
-			System.arraycopy(delta[startState][event], 0, newTransitions, 0,
-					delta[startState][event].length);
-			newTransitions[delta[startState][event].length] = transition;
-			delta[startState][event] = newTransitions;
+			// Resize transitions array and add the new transition
+			int currentSize = delta[startState][event].length;
+			delta[startState][event] = ArrayUtil.resize(
+					delta[startState][event], currentSize + 1);
+			delta[startState][event][currentSize] = transition;
 		}
 	}
 
@@ -98,15 +99,9 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = transitions;
 		} else {
-			// Resize transitions array
-			int prevTransCount = delta[startState][event].length;
-			Transition[] newTransitions = new Transition[prevTransCount
-					+ transitions.length];
-			System.arraycopy(delta[startState][event], 0, newTransitions, 0,
-					delta[startState][event].length);
-			System.arraycopy(transitions, 0, newTransitions, prevTransCount,
-					transitions.length);
-			delta[startState][event] = newTransitions;
+			// Add new transitions
+			delta[startState][event] = ArrayUtil.concat(
+					delta[startState][event], transitions);
 		}
 	}
 
@@ -150,7 +145,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 			// 1 start state - 1 transition
 			if (transitions.length == 1) {
 				return getNextConfig1StartState1Transition(config, args,
-						transitions[0]);
+						transitions[0], qVarValue, isQVarValue);
 			}
 
 			// 1 start state - Multiple transitions
@@ -165,7 +160,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 	}
 
 	private NonDetConfig getNextConfig1StartState1Transition(
-			NonDetConfig config, Object[] args, Transition transition) {
+			NonDetConfig config, Object[] args, Transition transition,
+			Object qVarValue, boolean isQVarValue) {
 
 		// Update binding for free variables
 		Binding binding = config.getBindings()[0];
@@ -173,11 +169,13 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 		// If there is a guard and is not satisfied, rollback the binding and
 		// return the failing state
-		if (transition.getGuard() != null
-				&& !transition.getGuard().check(binding)) {
-
-			config.setState(0, 0); // Failing state
-			return config;
+		if (transition.getGuard() != null) {
+			Guard guard = transition.getGuard();
+			if (isQVarValue && !guard.check(binding, -1, qVarValue)
+					|| !isQVarValue && !guard.check(binding)) {
+				config.setState(0, 0); // Failing state
+				return config;
+			}
 		}
 
 		// If there is an assignment, execute it
@@ -206,8 +204,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 		for (Transition transition : transitions) {
 
 			// Check the transition matches the value of the QVar
-			if (!isQVarValue || isQVarValue
-					&& qVarMatchesBinding(qVarValue, args, transition)) {
+			if (!isQVarValue || qVarMatchesBinding(qVarValue, args, transition)) {
 
 				// Copy the binding of the start state
 				FBindingImpl binding = (FBindingImpl) config.getBindings()[0]
@@ -217,8 +214,9 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 				updateBinding(binding, args, transition);
 
 				// If there is a guard, check it is satisfied
-				if (transition.getGuard() == null
-						|| transition.getGuard().check(binding)) {
+				if (transition.getGuard() == null || isQVarValue
+						&& transition.getGuard().check(binding, -1, qVarValue)
+						|| !isQVarValue && transition.getGuard().check(binding)) {
 
 					// If there is an assignment, execute it
 					if (transition.getAssignment() != null) {
@@ -242,8 +240,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 			return config;
 		}
 
-		config.setStates(resizeArray(endStates, endStatesCount));
-		config.setBindings(resizeArray(bindings, endStatesCount));
+		config.setStates(ArrayUtil.resize(endStates, endStatesCount));
+		config.setBindings(ArrayUtil.resize(bindings, endStatesCount));
 
 		return config;
 	}
@@ -295,8 +293,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 				for (Transition transition : transitions[i]) {
 
 					// Check the transition matches the value of the QVar
-					if (!isQVarValue || isQVarValue
-							&& qVarMatchesBinding(qVarValue, args, transition)) {
+					if (!isQVarValue
+							|| qVarMatchesBinding(qVarValue, args, transition)) {
 
 						// Copy the initial binding
 						FBindingImpl binding = (FBindingImpl) config
@@ -314,7 +312,10 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 						// If there is a guard, check it is satisfied
 						if (transition.getGuard() == null
-								|| transition.getGuard().check(binding)) {
+								|| isQVarValue
+								&& transition.getGuard().check(binding, -1,
+										qVarValue) || !isQVarValue
+								&& transition.getGuard().check(binding)) {
 
 							// If there is an assignment, execute it
 							if (transition.getAssignment() != null) {
@@ -341,8 +342,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 		}
 
-		config.setStates(resizeArray(endStates, endStatesCount));
-		config.setBindings(resizeArray(bindings, endStatesCount));
+		config.setStates(ArrayUtil.resize(endStates, endStatesCount));
+		config.setBindings(ArrayUtil.resize(bindings, endStatesCount));
 
 		return config;
 	}
@@ -409,24 +410,6 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 	 */
 	public Transition[] getTransitions(int startState, int eventName) {
 		return delta[startState][eventName];
-	}
-
-	private static int[] resizeArray(int[] array, int size) {
-		if (array.length == size) {
-			return array;
-		}
-		int[] resizedArray = new int[size];
-		System.arraycopy(array, 0, resizedArray, 0, size);
-		return resizedArray;
-	}
-
-	private static FBindingImpl[] resizeArray(FBindingImpl[] array, int size) {
-		if (array.length == size) {
-			return array;
-		}
-		FBindingImpl[] resizedArray = new FBindingImpl[size];
-		System.arraycopy(array, 0, resizedArray, 0, size);
-		return resizedArray;
 	}
 
 	@Override

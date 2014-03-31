@@ -99,8 +99,9 @@ public class NonDetConfig implements Configuration {
 		String[] out = new String[states.length];
 		for (int i = 0; i < states.length; i++) {
 			String b = "[]";
-			if (bindings != null)
+			if (bindings != null) {
 				b = bindings[i].toString();
+			}
 			out[i] = "(" + states[i] + "," + b + ")";
 		}
 		return Arrays.toString(out);
