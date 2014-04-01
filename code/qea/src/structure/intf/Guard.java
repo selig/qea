@@ -1,5 +1,7 @@
 package structure.intf;
 
+import java.util.HashSet;
+
 import exceptions.ShouldNotHappenException;
 
 public abstract class Guard {
@@ -218,4 +220,141 @@ public abstract class Guard {
 		};
 	}
 
+	public static Guard setContainsElement(final int varElement,
+			final int varSet) {
+		return new Guard("set_" + varSet + "_ContainsElement_" + varElement) {
+
+			@Override
+			public boolean usesQvars() {
+				return varSet < 0 || varElement < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
+						: binding.getForced(varSet));
+				Object element = (varElement == qvar) ? firstQval : binding
+						.getForced(varElement);
+				return set.contains(element);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				HashSet<Object> set = (HashSet<Object>) binding
+						.getForced(varSet);
+				Object element = binding.getForced(varElement);
+				return set.contains(element);
+			}
+		};
+	}
+
+	public static Guard setNotContainsElement(final int varElement,
+			final int varSet) {
+		return new Guard("set_" + varSet + "_NotContainsElement_" + varElement) {
+
+			@Override
+			public boolean usesQvars() {
+				return varSet < 0 || varElement < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
+						: binding.getForced(varSet));
+				Object element = (varElement == qvar) ? firstQval : binding
+						.getForced(varElement);
+				return !set.contains(element);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				HashSet<Object> set = (HashSet<Object>) binding
+						.getForced(varSet);
+				Object element = binding.getForced(varElement);
+				return !set.contains(element);
+			}
+		};
+	}
+
+	public static Guard setContainsOnlyElement(final int varElement,
+			final int varSet) {
+		return new Guard("set_" + varSet + "_ContainsOnlyElement_" + varElement) {
+
+			@Override
+			public boolean usesQvars() {
+				return varSet < 0 || varElement < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
+						: binding.getForced(varSet));
+				Object element = (varElement == qvar) ? firstQval : binding
+						.getForced(varElement);
+				return set.size() == 1 && set.contains(element);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				HashSet<Object> set = (HashSet<Object>) binding
+						.getForced(varSet);
+				Object element = binding.getForced(varElement);
+				return set.size() == 1 && set.contains(element);
+			}
+		};
+	}
+
+	public static Guard setContainsMoreThanElement(final int varElement,
+			final int varSet) {
+		return new Guard("set_" + varSet + "_ContainsMoreThanElement_"
+				+ varElement) {
+
+			@Override
+			public boolean usesQvars() {
+				return varSet < 0 || varElement < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
+						: binding.getForced(varSet));
+				Object element = (varElement == qvar) ? firstQval : binding
+						.getForced(varElement);
+				return set.size() > 1 && set.contains(element);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				HashSet<Object> set = (HashSet<Object>) binding
+						.getForced(varSet);
+				Object element = binding.getForced(varElement);
+				return set.size() > 1 && set.contains(element);
+			}
+		};
+	}
+
+	public static Guard isLessThan(final int var0, final int var1) {
+		return new Guard("x_" + var0 + " <= x_" + var1) {
+			@Override
+			public boolean check(Binding binding) {
+				Integer val0 = binding.getForcedAsInteger(var0);
+				Integer val1 = binding.getForcedAsInteger(var1);
+				return (val0 < val1);
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
+						.getForced(var0));
+				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding
+						.getForced(var1));
+				return (val0 < val1);
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+		};
+	}
 }
