@@ -1,5 +1,7 @@
 package structure.intf;
 
+import java.util.HashSet;
+
 public abstract class Assignment {
 
 	/**
@@ -43,4 +45,59 @@ public abstract class Assignment {
 		};
 	}
 
+	public static Assignment createSetFromElement(final int varSet,
+			final int varElement) {
+		return new Assignment("createSet_" + varSet + "_FromElement_"
+				+ varElement) {
+
+			@Override
+			public Binding apply(Binding binding) {
+				HashSet<Object> set = new HashSet<>();
+				set.add(binding.getForced(varElement));
+				Binding newBinding = binding.copy();
+				newBinding.setValue(varSet, set);
+				return newBinding;
+			}
+		};
+	}
+
+	public static Assignment addElementToSet(final int varSet,
+			final int varElement) {
+		return new Assignment("addElement_" + varElement + "ToSet_" + varSet) {
+
+			@Override
+			public Binding apply(Binding binding) {
+				if (binding.getValue(varSet) != null) {
+					HashSet<Object> set = (HashSet<Object>) binding
+							.getForced(varSet);
+					set.add(binding.getForced(varElement));
+					Binding newBinding = binding.copy();
+					newBinding.setValue(varSet, set);
+					return newBinding;
+				}
+				HashSet<Object> set = new HashSet<>();
+				set.add(binding.getForced(varElement));
+				Binding newBinding = binding.copy();
+				newBinding.setValue(varSet, set);
+				return newBinding;
+			}
+		};
+	}
+
+	public static Assignment removeElementFromSet(final int varSet,
+			final int varElement) {
+		return new Assignment("removeElement_" + varElement + "_FromSet_"
+				+ varSet) {
+
+			@Override
+			public Binding apply(Binding binding) {
+				HashSet<Object> set = (HashSet<Object>) binding
+						.getForced(varSet);
+				set.remove(binding.getForced(varElement));
+				Binding newBinding = binding.copy();
+				newBinding.setValue(varSet, set);
+				return newBinding;
+			}
+		};
+	}
 }
