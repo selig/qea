@@ -1,5 +1,6 @@
 package properties.rovers;
 
+import static structure.impl.other.Quantification.EXISTS;
 import static structure.impl.other.Quantification.FORALL;
 import structure.intf.Assignment;
 import structure.intf.Binding;
@@ -563,4 +564,110 @@ public class RoverCaseStudy {
 
 		return qea;
 	}
+
+	public static QEA makeExistsSatelliteDouble() {
+
+		QEABuilder q = new QEABuilder("ExistsSatelliteDouble");
+
+		// Events
+		int PING = 1;
+		int ACK = 2;
+		// Quantified variables
+		int R = -1;
+		int S = -2;
+
+		q.addQuantification(FORALL, R);
+		q.addQuantification(EXISTS, S);
+
+		q.addTransition(1, PING, new int[] { R, S }, 2);
+		q.addTransition(2, ACK, new int[] { S, R }, 3);
+
+		q.addFinalStates(3);
+		q.setSkipStates(1, 2, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("ping", 1);
+		qea.record_event_name("ack", 2);
+
+		return qea;
+	}
+
+	public static QEA makeExistsSatelliteSingle() {
+
+		QEABuilder q = new QEABuilder("ExistsSatelliteSingle");
+
+		// Events
+		int PING = 1;
+		int ACK = 2;
+		// Quantified variable
+		int r = -1;
+		// Free variables
+		int s = 1;
+		int S = 2;
+
+		q.addQuantification(FORALL, r);
+
+		q.startTransition(1);
+		q.eventName(PING);
+		q.addVarArg(r);
+		q.addVarArg(s);
+		q.addAssignment(Assignment.createSetFromElement(S, s));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(PING);
+		q.addVarArg(r);
+		q.addVarArg(s);
+		q.addAssignment(Assignment.addElementToSet(S, s));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(s);
+		q.addVarArg(r);
+		q.addGuard(Guard.setContainsElement(s, S));
+		q.endTransition(3);
+
+		q.addFinalStates(1, 3);
+		q.setSkipStates(1, 3);
+
+		// TODO Manual skip state 2
+
+		QEA qea = q.make();
+
+		qea.record_event_name("ping", 1);
+		qea.record_event_name("ack", 2);
+
+		return qea;
+	}
+
+	public static QEA makeExistsLeader() {
+
+		QEABuilder q = new QEABuilder("ExistsLeader");
+
+		// Events
+		int PING = 1;
+		int ACK = 2;
+		// Quantified variables
+		int R1 = -1;
+		int R2 = -2;
+
+		q.addQuantification(EXISTS, R1);
+		q.addQuantification(FORALL, R2);
+
+		q.addTransition(1, PING, new int[] { R1, R2 }, 2);
+		q.addTransition(2, ACK, new int[] { R2, R1 }, 3);
+
+		q.addFinalStates(3);
+		q.setSkipStates(1, 2, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("ping", 1);
+		qea.record_event_name("ack", 2);
+
+		return qea;
+	}
+
 }
