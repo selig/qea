@@ -198,6 +198,56 @@ public abstract class Guard {
 		};
 	}
 
+	public static Guard isLessThan(final int var0, final int var1) {
+		return new Guard("x_" + var0 + " <= x_" + var1) {
+			@Override
+			public boolean check(Binding binding) {
+				Integer val0 = binding.getForcedAsInteger(var0);
+				Integer val1 = binding.getForcedAsInteger(var1);
+				return (val0 < val1);
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
+						.getForced(var0));
+				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding
+						.getForced(var1));
+				return (val0 < val1);
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+		};
+	}
+
+	public static Guard isGreaterThanOrEqualTo(final int var0, final int var1) {
+		return new Guard("x_" + var0 + " >= x_" + var1) {
+			@Override
+			public boolean check(Binding binding) {
+				Integer val0 = binding.getForcedAsInteger(var0);
+				Integer val1 = binding.getForcedAsInteger(var1);
+				return (val0 >= val1);
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
+						.getForced(var0));
+				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding
+						.getForced(var1));
+				return (val0 >= val1);
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+		};
+	}
+
 	public static Guard isGreaterThanConstant(final int var0, final int val1) {
 		return new Guard("x_" + var0 + " > " + val1) {
 			@Override
@@ -329,31 +379,6 @@ public abstract class Guard {
 						.getForced(varSet);
 				Object element = binding.getForced(varElement);
 				return set.size() > 1 && set.contains(element);
-			}
-		};
-	}
-
-	public static Guard isLessThan(final int var0, final int var1) {
-		return new Guard("x_" + var0 + " <= x_" + var1) {
-			@Override
-			public boolean check(Binding binding) {
-				Integer val0 = binding.getForcedAsInteger(var0);
-				Integer val1 = binding.getForcedAsInteger(var1);
-				return (val0 < val1);
-			}
-
-			@Override
-			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
-						.getForced(var0));
-				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding
-						.getForced(var1));
-				return (val0 < val1);
-			}
-
-			@Override
-			public boolean usesQvars() {
-				return var0 < 0 || var1 < 0;
 			}
 		};
 	}
