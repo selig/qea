@@ -29,9 +29,6 @@ import creation.QEABuilder;
 
 public class RoverCaseStudy {
 
-	/*
-	 * 
-	 */
 	public static QEA makeGrantCancelSingleSwitch() {
 
 		QEABuilder q = new QEABuilder("GrantCancelSingleSwitch");
@@ -64,10 +61,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	/*
-	 * 
-	 */
-	public static QEA makeGrantCancelSingle() {
+	public static QEA makeGrantCancelSingle() { // Figure A.25 (2)
 
 		QEABuilder q = new QEABuilder("GrantCancelSingle");
 
@@ -80,6 +74,7 @@ public class RoverCaseStudy {
 		q.addQuantification(FORALL, R);
 
 		q.addTransition(1, GRANT, new int[] { T1, R }, 2);
+		// TODO In the thesis, the parameters are: (-, R)
 		q.addTransition(2, GRANT, new int[] { T2, R }, 3);
 
 		q.startTransition(2);
@@ -99,10 +94,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	/*
-	 * 
-	 */
-	public static QEA makeGrantCancelDouble() {
+	public static QEA makeGrantCancelDouble() { // Figure A.25 (1)
 
 		QEABuilder q = new QEABuilder("GrantCancelDouble");
 
@@ -116,6 +108,7 @@ public class RoverCaseStudy {
 		q.addQuantification(FORALL, T);
 
 		q.addTransition(1, GRANT, new int[] { T, R }, 2);
+		// TODO In the thesis, the parameters are: (-, R)
 		q.addTransition(2, GRANT, new int[] { TT, R }, 3);
 		q.addTransition(2, CANCEL, new int[] { T, R }, 1);
 
@@ -129,10 +122,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	/*
-	 * 
-	 */
-	public static QEA makeResourceLifecycle() {
+	public static QEA makeResourceLifecycle() { // Figure A.26
 
 		QEABuilder q = new QEABuilder("ResourceLifecycle");
 
@@ -165,10 +155,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	/*
-	 * 
-	 */
-	public static QEA makeReleaseResource() {
+	public static QEA makeReleaseResource() { // Figure A.27
 
 		QEABuilder q = new QEABuilder("ReleaseResource");
 
@@ -197,13 +184,13 @@ public class RoverCaseStudy {
 
 		qea.record_event_name("schedule", 1);
 		qea.record_event_name("grant", 2);
-		qea.record_event_name("cancel", 2);
-		qea.record_event_name("finish", 2);
+		qea.record_event_name("cancel", 3);
+		qea.record_event_name("finish", 4);
 
 		return qea;
 	}
 
-	public static QEA makeRespectConflictsDouble() {
+	public static QEA makeRespectConflictsDouble() { // Figure A.28
 
 		QEABuilder q = new QEABuilder("RespectConflictsDouble");
 
@@ -236,7 +223,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeRespectConflictsSingle() {
+	public static QEA makeRespectConflictsSingle() { // Figure A.29
 
 		QEABuilder q = new QEABuilder("RespectConflictsSingle");
 
@@ -247,8 +234,8 @@ public class RoverCaseStudy {
 		// Quantified variable
 		int R1 = -1;
 		// Free variables
-		final int R2 = 1;
-		final int RS = 2;
+		int R2 = 1;
+		int RS = 2;
 
 		q.addQuantification(FORALL, R1);
 
@@ -275,9 +262,17 @@ public class RoverCaseStudy {
 		q.addGuard(Guard.setContainsElement(R2, RS));
 		q.endTransition(4);
 
-		// Manual skip states
+		// Manual skip states for state 3
+
 		q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
 
+		q.startTransition(3);
+		q.eventName(GRANT);
+		q.addVarArg(R2);
+		q.addGuard(Guard.setNotContainsElement(R2, RS));
+		q.endTransition(3);
+
+		// Final and skip states
 		q.addFinalStates(1, 2, 3);
 		q.setSkipStates(1, 2, 4);
 
@@ -290,7 +285,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeRespectPriorities() {
+	public static QEA makeRespectPriorities() { // Figure A.30
 
 		QEABuilder q = new QEABuilder("RespectPriorities");
 
@@ -432,7 +427,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeExactlyOnceSuccess() {
+	public static QEA makeExactlyOnceSuccess() { // Figure A.31
 
 		QEABuilder q = new QEABuilder("ExactlyOnceSuccess");
 
@@ -460,7 +455,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeIncreasingIdentifiers() {
+	public static QEA makeIncreasingIdentifiers() { // Figure A.32
 
 		QEABuilder q = new QEABuilder("IncreasingIdentifiers");
 
@@ -488,7 +483,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeCommandAcknowledgements() {
+	public static QEA makeCommandAcknowledgements() { // Figure A.33
 
 		QEABuilder q = new QEABuilder("CommandAcknowledgements");
 
@@ -550,9 +545,49 @@ public class RoverCaseStudy {
 		});
 		q.endTransition(4);
 
-		// Manual skip states
+		// Manual skip states for state 3
+
 		q.addTransition(3, SET_ACK_TIMEOUT, new int[] { M }, 3);
 
+		q.startTransition(3);
+		q.eventName(ACK);
+		q.addVarArg(C);
+		q.addVarArg(T2);
+		q.addGuard(Guard.isGreaterThanOrEqualTo(T2, M));
+		q.endTransition(3);
+
+		q.startTransition(3);
+		q.eventName(COM);
+		q.addVarArg(N2);
+		q.addVarArg(P2);
+		q.addVarArg(T2);
+		q.addGuard(new Guard("SpecificInverseGuard") {
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				int n1 = binding.getForcedAsInteger(N1);
+				int n2 = binding.getForcedAsInteger(N2);
+				int p1 = binding.getForcedAsInteger(P1);
+				int p2 = binding.getForcedAsInteger(P2);
+				int t1 = binding.getForcedAsInteger(T1);
+				int t2 = binding.getForcedAsInteger(T2);
+				int m = binding.getForcedAsInteger(M);
+				return !(n1 == n2 && p1 == p2 && (t2 - t1 < 2 * m));
+			}
+		});
+		q.endTransition(3);
+
+		// Final and skip states
 		q.addFinalStates(1, 2, 4);
 		q.setSkipStates(1, 2, 4);
 
@@ -565,7 +600,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeExistsSatelliteDouble() {
+	public static QEA makeExistsSatelliteDouble() { // Figure A.34
 
 		QEABuilder q = new QEABuilder("ExistsSatelliteDouble");
 
@@ -593,7 +628,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeExistsSatelliteSingle() {
+	public static QEA makeExistsSatelliteSingle() { // Figure A.35
 
 		QEABuilder q = new QEABuilder("ExistsSatelliteSingle");
 
@@ -629,10 +664,17 @@ public class RoverCaseStudy {
 		q.addGuard(Guard.setContainsElement(s, S));
 		q.endTransition(3);
 
+		// Manual skip states for state 2
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(s);
+		q.addVarArg(r);
+		q.addGuard(Guard.setNotContainsElement(s, S));
+		q.endTransition(2);
+
+		// Final and skip states
 		q.addFinalStates(1, 3);
 		q.setSkipStates(1, 3);
-
-		// TODO Manual skip state 2
 
 		QEA qea = q.make();
 
@@ -642,7 +684,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeExistsLeader() {
+	public static QEA makeExistsLeader() { // Figure A.36
 
 		QEABuilder q = new QEABuilder("ExistsLeader");
 
