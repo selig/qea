@@ -41,6 +41,13 @@ abstract class DoWork<S> {
 
 	}
 
+	/**
+	 * Generates events for the IncreasingCommand property with the specified
+	 * parameters
+	 * 
+	 * @param c
+	 *            Number of identifiers
+	 */
 	public void work_for_IncreasingCommand(int c) {
 
 		for (int i = 0; i < c; i++) {
@@ -49,19 +56,38 @@ abstract class DoWork<S> {
 
 	}
 
+	/**
+	 * Generates events for the ResourceLifecycle property with the specified
+	 * parameters
+	 * 
+	 * @param r
+	 *            Number of resources
+	 * @param u
+	 *            Number of events to generate
+	 */
 	public void work_for_ResourceLifecycle(int r, int u) {
 
+		// Initialise resources array
 		Object[] ros = new Object[r];
 		for (int i = 0; i < r; i++) {
 			ros[i] = new Object();
 		}
+
 		int[] resources = new int[r];
 
 		Random rand = new Random();
 		for (int i = 0; i < u; i++) {
+
+			// Choose a resource randomly
 			int res = rand.nextInt(r);
+
+			// Get current state
 			int s = resources[res];
+
+			// Initialise next state
 			int sp = -1;
+
+			// According to the state, generate event
 			switch (s) {
 			case 0:
 				request(ros[res]);
@@ -88,6 +114,8 @@ abstract class DoWork<S> {
 				;
 				break;
 			}
+
+			// Update state
 			resources[res] = sp;
 		}
 
@@ -317,9 +345,7 @@ abstract class DoWork<S> {
 					}
 				}
 			}
-
 		}
-
 	}
 
 	public void work_for_RespectConflicts(int r, int s, int t) {
@@ -439,15 +465,8 @@ abstract class DoWork<S> {
 					sats_p.remove(sat);
 				}
 			} else {
-				Integer sat = sats_r.get(rand.nextInt(sats_r.size())); // important
-																		// that
-																		// it's
-																		// an
-																		// object
-																		// for
-																		// list
-																		// remove
-																		// method
+				// important that it's an object for list remove method
+				Integer sat = sats_r.get(rand.nextInt(sats_r.size()));
 				Queue<Object> res = map_r.get(sat);
 				Object rr = res.remove();
 				ack(sos[sat], rr);
@@ -458,12 +477,9 @@ abstract class DoWork<S> {
 				}
 			}
 		}
-
-		//
-
 	}
 
-	public static void work_for_ExistsLeader(int r) {
+	public void work_for_ExistsLeader(int r) {
 
 		Object[] ros = new Object[r];
 		for (int i = 0; i < r; i++) {
@@ -621,5 +637,9 @@ abstract class DoWork<S> {
 	public abstract void ack(Object a, Object b, int c);
 
 	public abstract void send(Object a, Object b, int c);
+
+	public abstract void fail(Object o);
+
+	public abstract void priority(Object a, Object b);
 
 }
