@@ -430,9 +430,9 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeExactlyOnceSuccess() { // Figure A.31
+	public static QEA makeExactlyOneSuccess() { // Figure A.31
 
-		QEABuilder q = new QEABuilder("ExactlyOnceSuccess");
+		QEABuilder q = new QEABuilder("ExactlyOneSuccess");
 
 		// Events
 		int COM = 1;
@@ -451,8 +451,8 @@ public class RoverCaseStudy {
 
 		QEA qea = q.make();
 
-		qea.record_event_name("com", 1);
-		qea.record_event_name("suc", 2);
+		qea.record_event_name("command", 1);
+		qea.record_event_name("succeed", 2);
 		qea.record_event_name("fail", 3);
 
 		return qea;
@@ -481,7 +481,7 @@ public class RoverCaseStudy {
 
 		QEA qea = q.make();
 
-		qea.record_event_name("com", 1);
+		qea.record_event_name("command", 1);
 
 		return qea;
 	}
@@ -504,6 +504,7 @@ public class RoverCaseStudy {
 		final int N2 = 5;
 		final int P2 = 6;
 		final int T2 = 7;
+		int CC = 8;
 
 		q.addQuantification(FORALL, C);
 
@@ -519,6 +520,7 @@ public class RoverCaseStudy {
 
 		q.startTransition(3);
 		q.eventName(COM);
+		q.addVarArg(CC);
 		q.addVarArg(N2);
 		q.addVarArg(P2);
 		q.addVarArg(T2);
@@ -536,10 +538,10 @@ public class RoverCaseStudy {
 
 			@Override
 			public boolean check(Binding binding) {
-				int n1 = binding.getForcedAsInteger(N1);
-				int n2 = binding.getForcedAsInteger(N2);
-				int p1 = binding.getForcedAsInteger(P1);
-				int p2 = binding.getForcedAsInteger(P2);
+				Object n1 = binding.getForced(N1);
+				Object n2 = binding.getForced(N2);
+				Object p1 = binding.getForced(P1);
+				Object p2 = binding.getForced(P2);
 				int t1 = binding.getForcedAsInteger(T1);
 				int t2 = binding.getForcedAsInteger(T2);
 				int m = binding.getForcedAsInteger(M);
@@ -561,6 +563,7 @@ public class RoverCaseStudy {
 
 		q.startTransition(3);
 		q.eventName(COM);
+		q.addVarArg(CC);
 		q.addVarArg(N2);
 		q.addVarArg(P2);
 		q.addVarArg(T2);
@@ -578,10 +581,10 @@ public class RoverCaseStudy {
 
 			@Override
 			public boolean check(Binding binding) {
-				int n1 = binding.getForcedAsInteger(N1);
-				int n2 = binding.getForcedAsInteger(N2);
-				int p1 = binding.getForcedAsInteger(P1);
-				int p2 = binding.getForcedAsInteger(P2);
+				Object n1 = binding.getForced(N1);
+				Object n2 = binding.getForced(N2);
+				Object p1 = binding.getForced(P1);
+				Object p2 = binding.getForced(P2);
 				int t1 = binding.getForcedAsInteger(T1);
 				int t2 = binding.getForcedAsInteger(T2);
 				int m = binding.getForcedAsInteger(M);
@@ -597,7 +600,7 @@ public class RoverCaseStudy {
 		QEA qea = q.make();
 
 		qea.record_event_name("set_ack_timeout", 1);
-		qea.record_event_name("com", 2);
+		qea.record_event_name("command", 2);
 		qea.record_event_name("ack", 3);
 
 		return qea;
@@ -740,8 +743,8 @@ public class RoverCaseStudy {
 
 		QEA qea = q.make();
 
-		qea.record_event_name("com", 1);
-		qea.record_event_name("suc", 2);
+		qea.record_event_name("command", 1);
+		qea.record_event_name("succeed", 2);
 
 		return qea;
 	}
