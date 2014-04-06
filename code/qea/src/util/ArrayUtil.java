@@ -27,9 +27,6 @@ public class ArrayUtil {
 		return resizedArray;
 	}
 
-	// TODO Can we use generics or a cast instead of creating a method for each
-	// type?
-
 	public static int[] resize(int[] array, int size) {
 		if (array.length == size) {
 			return array;
