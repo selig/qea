@@ -2,6 +2,9 @@ package properties.rovers;
 
 import static structure.impl.other.Quantification.EXISTS;
 import static structure.impl.other.Quantification.FORALL;
+
+import java.util.HashSet;
+
 import structure.intf.Assignment;
 import structure.intf.Binding;
 import structure.intf.Guard;
@@ -455,9 +458,9 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeIncreasingIdentifiers() { // Figure A.32
+	public static QEA makeIncreasingCommand() { // Figure A.32
 
-		QEABuilder q = new QEABuilder("IncreasingIdentifiers");
+		QEABuilder q = new QEABuilder("IncreasingCommand");
 
 		// Event
 		int COM = 1;
@@ -483,9 +486,9 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeCommandAcknowledgements() { // Figure A.33
+	public static QEA makeAcknowledgeCommands() { // Figure A.33
 
-		QEABuilder q = new QEABuilder("CommandAcknowledgements");
+		QEABuilder q = new QEABuilder("AcknowledgeCommands");
 
 		// Events
 		int SET_ACK_TIMEOUT = 1;
@@ -712,4 +715,203 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
+	public static QEA makeNestedCommand() { // Figure 3.3
+
+		QEABuilder q = new QEABuilder("NestedCommand");
+
+		// Events
+		int COM = 1;
+		int SUC = 2;
+		// Quantified variables
+		int X = -1;
+		int Y = -2;
+
+		q.addQuantification(FORALL, X);
+		q.addQuantification(FORALL, Y);
+
+		q.addTransition(1, COM, new int[] { Y }, 1);
+		q.addTransition(1, SUC, new int[] { Y }, 1);
+		q.addTransition(1, COM, new int[] { X }, 2);
+		q.addTransition(2, SUC, new int[] { X }, 1);
+		q.addTransition(2, COM, new int[] { Y }, 3);
+		q.addTransition(3, SUC, new int[] { Y }, 2);
+
+		q.addFinalStates(1, 2, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("com", 1);
+		qea.record_event_name("suc", 2);
+
+		return qea;
+	}
+
+	public static QEA makeMessageHashCorrect() { // Figure A.37
+
+		QEABuilder q = new QEABuilder("MessageHashCorrect");
+
+		// Events
+		int SEND = 1;
+		int ACK = 2;
+		// Quantified variables
+		int X1 = -1;
+		int X2 = -2;
+		// Free variables
+		final int MSG = 1;
+		final int H = 2;
+		final int M = 3;
+
+		q.addQuantification(FORALL, X1);
+		q.addQuantification(FORALL, X2);
+
+		q.startTransition(1);
+		q.eventName(SEND);
+		q.addVarArg(X1);
+		q.addVarArg(X2);
+		q.addVarArg(MSG);
+		q.addAssignment(Assignment.createSetFromElement(M, MSG));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(SEND);
+		q.addVarArg(X1);
+		q.addVarArg(X2);
+		q.addVarArg(MSG);
+		q.addAssignment(Assignment.addElementToSet(M, MSG));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(X2);
+		q.addVarArg(X1);
+		q.addVarArg(H);
+		q.addGuard(new Guard("ExistsMessageWithHashH") {
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
+				for (Object msg : setM) {
+					// TODO What hash function should we use here?
+					if (msg.hashCode() == binding.getForcedAsInteger(H)
+							.intValue()) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+		q.addAssignment(new Assignment("RemoveMessagesWithHashH") {
+
+			@Override
+			public Binding apply(Binding binding) {
+				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
+				for (Object msg : setM) {
+					if (msg.hashCode() == binding.getForcedAsInteger(H)
+							.intValue()) {
+						setM.remove(msg);
+					}
+				}
+				Binding newBinding = binding.copy();
+				newBinding.setValue(M, setM);
+				return newBinding;
+
+			}
+		});
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(X2);
+		q.addVarArg(X1);
+		q.addVarArg(H);
+		q.addGuard(new Guard("SetContainsOnlyElementWithHashH") {
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
+				Object msg = binding.getForced(MSG);
+				if (setM.size() == 1
+						&& setM.contains(msg)
+						&& msg.hashCode() == binding.getForcedAsInteger(H)
+								.intValue()) {
+					return true;
+				}
+				return false;
+			}
+		});
+		q.endTransition(1);
+
+		// Manual skip states for state 2
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(X2);
+		q.addVarArg(X1);
+		q.addVarArg(H);
+		// TODO Horrible guard! Can we make it better?
+		q.addGuard(new Guard("") {
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				boolean existsMsgWithHashH = false;
+				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
+				for (Object msg : setM) {
+					if (msg.hashCode() == binding.getForcedAsInteger(H)
+							.intValue()) {
+						existsMsgWithHashH = true;
+					}
+				}
+
+				Object msg = binding.getForced(MSG);
+				if (!existsMsgWithHashH
+						&& !(setM.size() == 1 && setM.contains(msg) && msg
+								.hashCode() == binding.getForcedAsInteger(H)
+								.intValue())) {
+					return true;
+				}
+				return false;
+			}
+		});
+		q.endTransition(2);
+
+		q.addFinalStates(1);
+		q.setSkipStates(1);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("send", 1);
+		qea.record_event_name("ack", 2);
+
+		return qea;
+	}
 }
