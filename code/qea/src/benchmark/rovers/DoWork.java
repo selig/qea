@@ -17,35 +17,25 @@ abstract class DoWork<S> {
 	public void dowork(String name, int[] args) {
 		if (name.equals("IncreasingCommand")) {
 			work_for_IncreasingCommand(args[0]);
-		}
-		if (name.equals("ResourceLifecycle")) {
+		} else if (name.equals("ResourceLifecycle")) {
 			work_for_ResourceLifecycle(args[0], args[1]);
-		}
-		if (name.equals("ExactlyOneSuccess")) {
+		} else if (name.equals("ExactlyOneSuccess")) {
 			work_for_ExactlyOneSuccess(args[0]);
-		}
-		if (name.equals("AcknowledgeCommands")) {
+		} else if (name.equals("AcknowledgeCommands")) {
 			work_for_AcknowledgeCommands(args[0]);
-		}
-		if (name.equals("NestedCommand")) {
+		} else if (name.equals("NestedCommand")) {
 			work_for_NestedCommand(args[0], args[1], args[2]);
-		}
-		if (name.equals("GrantCancel")) {
-			work_for_GrantRelease(args[0], args[1], args[2]);
-		}
-		if (name.equals("ReleaseResource")) {
+		} else if (name.equals("GrantCancel")) {
+			work_for_GrantCancel(args[0], args[1], args[2]);
+		} else if (name.equals("ReleaseResource")) {
 			work_for_ReleaseResource(args[0], args[1], args[2]);
-		}
-		if (name.equals("RespectConflicts")) {
+		} else if (name.equals("RespectConflicts")) {
 			work_for_RespectConflicts(args[0], args[1], args[2]);
-		}
-		if (name.equals("ExistsSatellite")) {
+		} else if (name.equals("ExistsSatellite")) {
 			work_for_ExistsSatellite(args[0], args[1]);
-		}
-		if (name.equals("ExistsLeader")) {
+		} else if (name.equals("ExistsLeader")) {
 			work_for_ExistsLeader(args[0]);
-		}
-		if (name.equals("MessageHashCorrectInvInt")) {
+		} else if (name.equals("MessageHashCorrectInvInt")) {
 			work_for_MessageHashCorrectInvInt(args[0], args[1]);
 		}
 
@@ -199,17 +189,32 @@ abstract class DoWork<S> {
 		}
 	}
 
-	public void work_for_GrantRelease(int t, int r, int u) {
+	/**
+	 * Generates events for the GrantCancel property with the specified
+	 * parameters.
+	 * 
+	 * @param t
+	 *            Number of tasks
+	 * @param r
+	 *            Number of resources
+	 * @param u
+	 *            Number of events to generate
+	 */
+	public void work_for_GrantCancel(int t, int r, int u) {
 
+		// Initialise tasks
 		Object[] tos = new Object[t];
 		for (int i = 0; i < t; i++) {
 			tos[i] = new Object();
 		}
+
+		// Initialise resources
 		Object[] ros = new Object[r];
 		for (int i = 0; i < r; i++) {
 			ros[i] = new Object();
 		}
-		// which task owns the resource -1 means not owned
+
+		// Initialise owners (tasks) for each resource. -1 means not owned
 		int[] owning = new int[r];
 		for (int i = 0; i < r; i++) {
 			owning[i] = -1;
@@ -217,19 +222,25 @@ abstract class DoWork<S> {
 
 		Random rand = new Random();
 		for (int i = 0; i < u; i++) {
+
+			// Choose a resource randomly
 			int res = rand.nextInt(r);
+
 			int task = owning[res];
-			if (task == -1) {
+			if (task == -1) { // No task owns the resource
+
+				// Choose a task randomly and grant the resource
 				task = rand.nextInt(t);
 				grant(tos[task], ros[res]);
 				owning[res] = task;
-			} else {
+
+			} else { // Some task owns the resource
+
+				// Release the resource
 				cancel(tos[task], ros[res]);
 				owning[res] = -1;
 			}
-
 		}
-
 	}
 
 	public void work_for_ReleaseResource(int t, int r, int e) {
@@ -407,15 +418,10 @@ abstract class DoWork<S> {
 		while (!sats_p.isEmpty() || !sats_r.isEmpty()) {
 
 			if ((!sats_p.isEmpty() && rand.nextBoolean()) || sats_r.isEmpty()) {
-				Integer sat = sats_p.get(rand.nextInt(sats_p.size())); // important
-																		// that
-																		// it's
-																		// an
-																		// object
-																		// for
-																		// list
-																		// remove
-																		// method
+
+				// important that it's an object for list remove method
+				Integer sat = sats_p.get(rand.nextInt(sats_p.size()));
+
 				Queue<Object> res = map_p.get(sat);
 				Object rr = res.remove();
 
@@ -572,7 +578,8 @@ abstract class DoWork<S> {
 	}
 
 	/*
-	 * The methods that we override to call the monitor
+	 * The methods that we override to call the monitor. Events of the
+	 * properties
 	 */
 
 	public abstract void command(int x);

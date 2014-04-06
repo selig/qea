@@ -23,21 +23,54 @@ abstract class DoEval<S> {
 
 	public abstract DoWork<S> makeWork();
 
+	/**
+	 * Runs the evaluation for the specified property with the specified
+	 * arguments and warm-up repetitions. After the evaluation, the warm-up
+	 * repetitions are set to the default value
+	 * 
+	 * @param spec
+	 *            QEA property
+	 * @param name
+	 *            Name of the property
+	 * @param args
+	 *            Arguments for the evaluation. The number and meaning varies
+	 *            from property to property
+	 * @param w
+	 *            Warm-up repetitions
+	 */
 	public void run_eval(S spec, String name, int[] args, int w) {
 		warmup = w;
 		run_eval(spec, name, args);
 		warmup = 5;
 	}
 
+	/**
+	 * Runs the evaluation for the specified property with the specified
+	 * arguments
+	 * 
+	 * @param spec
+	 *            QEA property
+	 * @param name
+	 *            Name of the property
+	 * @param args
+	 *            Arguments for the evaluation. The number and meaning varies
+	 *            from property to property
+	 */
 	public void run_eval(S spec, String name, int[] args) {
 
+		// Set standard output to null
 		System.setOut(null_out);
 
+		// Execute warm-up repetitions
 		for (int i = 0; i < warmup; i++) {
 			DoWork<S> work = makeWork();
 			work.run_with_spec(spec, name, args);
 		}
+
+		// Print name of the property and arguments
 		old_out.println("==\t" + spec + ":" + Arrays.toString(args) + "\t==");
+
+		// Execute runs printing the time for each one
 		for (int i = 0; i < runs; i++) {
 			System.setOut(null_out);
 			System.gc();
@@ -56,38 +89,27 @@ abstract class DoEval<S> {
 
 		if (name.equals("IncreasingCommand")) {
 			eval_for_IncreasingCommand(spec, name);
-		}
-		if (name.equals("ResourceLifecycle")) {
+		} else if (name.equals("ResourceLifecycle")) {
 			eval_for_ResourceLifecycle(spec, name);
-		}
-		if (name.equals("ExactlyOneSuccess")) {
+		} else if (name.equals("ExactlyOneSuccess")) {
 			eval_for_ExactlyOneSuccess(spec, name);
-		}
-		if (name.equals("AcknowledgeCommands")) {
+		} else if (name.equals("AcknowledgeCommands")) {
 			eval_for_AcknowledgeCommands(spec, name);
-		}
-		if (name.equals("NestedCommand")) {
+		} else if (name.equals("NestedCommand")) {
 			eval_for_NestedCommand(spec, name);
-		}
-		if (name.equals("GrantCancel")) {
+		} else if (name.equals("GrantCancel")) {
 			eval_for_GrantCancel(spec, name);
-		}
-		if (name.equals("ReleaseResource")) {
+		} else if (name.equals("ReleaseResource")) {
 			eval_for_ReleaseResource(spec, name);
-		}
-		if (name.equals("RespectConflicts")) {
+		} else if (name.equals("RespectConflicts")) {
 			eval_for_RespectConflicts(spec, name);
-		}
-		if (name.equals("ExistsSatellite")) {
+		} else if (name.equals("ExistsSatellite")) {
 			eval_for_ExistsSatellite(spec, name);
-		}
-		if (name.equals("ExistsLeader")) {
+		} else if (name.equals("ExistsLeader")) {
 			eval_for_ExistsLeader(spec, name);
-		}
-		if (name.equals("MessageHashCorrectInvInt")) {
+		} else if (name.equals("MessageHashCorrectInvInt")) {
 			eval_for_MessageHashCorrectInvInt(spec, name);
 		}
-
 	}
 
 	public void eval_for_IncreasingCommand(S spec, String name) {
@@ -143,6 +165,15 @@ abstract class DoEval<S> {
 
 	}
 
+	/**
+	 * Runs a benchmark for the property GrantCancel
+	 * 
+	 * @param spec
+	 *            QEA
+	 * 
+	 * @param name
+	 *            String with the name of the property. Should be "GrantCancel"
+	 */
 	public void eval_for_GrantCancel(S spec, String name) {
 
 		run_eval(spec, name, new int[] { 10, 10, 1000 }, 100);
