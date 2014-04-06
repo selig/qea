@@ -557,6 +557,8 @@ public class QEABuilder {
 		return max;
 	}
 
+	// TODO Free variables in guards/assignments not present in transitions are
+	// not being considered
 	private int countFreeVars() {
 		Set<Integer> qvars = new HashSet<Integer>();
 		int max = 0;
