@@ -22,9 +22,17 @@ public class QeaDoWork extends DoWork<QEA> {
 	private Monitor monitor;
 	private int[] events;
 
+	/**
+	 * Creates a monitor for the specified QEA property and initialises the
+	 * array of events, this is for each event name obtains the ID of the event
+	 * in the QEA
+	 * 
+	 * @param qea
+	 *            QEA property
+	 */
 	private void setup(QEA qea) {
 		monitor = MonitorFactory.create(qea);
-		events = new int[14];
+		events = new int[17];
 
 		events[0] = qea.get_event_id("command");
 		events[1] = qea.get_event_id("request");
@@ -40,9 +48,17 @@ public class QeaDoWork extends DoWork<QEA> {
 		events[11] = qea.get_event_id("ping");
 		events[12] = qea.get_event_id("send");
 		events[13] = qea.get_event_id("ack");
-
+		events[14] = qea.get_event_id("fail");
+		events[15] = qea.get_event_id("priority");
+		events[16] = qea.get_event_id("suc");
 	}
 
+	/**
+	 * Prints an error message if the specified verdict is a failure
+	 * 
+	 * @param verdict
+	 *            Verdict
+	 */
 	public void handle(Verdict verdict) {
 		if (verdict == Verdict.FAILURE) {
 			System.err.println("warning: failure");
