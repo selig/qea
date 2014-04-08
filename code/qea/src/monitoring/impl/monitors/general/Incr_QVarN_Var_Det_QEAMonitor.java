@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
+import monitoring.impl.RestartMode;
 import monitoring.impl.configs.DetConfig;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Transition;
@@ -41,8 +43,8 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
         // This records the signatures for each event
 	int[][][] sigsLookup;
 
-	public Incr_QVarN_Var_Det_QEAMonitor(QVarN_FVar_Det_QEA qea) {
-		super(qea);
+	public Incr_QVarN_Var_Det_QEAMonitor(RestartMode restart, GarbageMode garbage, QVarN_FVar_Det_QEA qea) {
+		super(restart,garbage,qea);
 		//TODO - consider doing checking internally instead
 		checker = IncrementalChecker.make(qea.lambda);
 		configs = new HashMap<QBindingImpl,DetConfig>();
@@ -244,7 +246,9 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 			}			
 		}
 		
-		return checker.verdict(false);
+		Verdict result = checker.verdict(false);		
+		if(result.isStrong()) saved=result;
+		return result;
 	}
 
 
@@ -290,6 +294,18 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 			num_bindings++;
 		}
 		
+	}
+
+	@Override
+	protected int removeStrongBindings() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected int rollbackStrongBindings() {
+		// TODO Auto-generated method stub
+		return 0;
 	}	
 	
 }

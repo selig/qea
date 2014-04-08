@@ -13,7 +13,7 @@ public class SingleBindingImpl extends Binding {
 	/**
 	 * A value for variable index
 	 */
-	private int index = 0;
+	private final int index;
 	private Object value = null;
 
 	/**
@@ -65,7 +65,6 @@ public class SingleBindingImpl extends Binding {
 
 	@Override
 	public void setEmpty() {
-		index = 0;
 		value = null;
 	}
 

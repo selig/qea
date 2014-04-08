@@ -35,6 +35,13 @@ public abstract class QEA {
 	}
 
 	/**
+	 * Retrieives the initial state
+	 * 
+	 * @return The initial state
+	 */
+	public abstract int getInitialState();
+	
+	/**
 	 * Retrieves the set of states Q for this QEA
 	 * 
 	 * @return Array of integers with the names of the states

@@ -1,6 +1,8 @@
 package monitoring.impl.monitors;
 
+import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
+import monitoring.impl.RestartMode;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.Abstr_QVar01_FVar_QEA;
 import util.ArrayUtil;
@@ -8,8 +10,8 @@ import util.ArrayUtil;
 public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FVar_QEA>
 		extends IncrementalMonitor<Q> {
 
-	public Abstr_Incr_QVar1_FVar_QEAMonitor(Q q) {
-		super(q);
+	public Abstr_Incr_QVar1_FVar_QEAMonitor(RestartMode restart, GarbageMode garbage, Q q) {
+		super(restart, garbage,q);
 	}
 
 	@Override
@@ -118,11 +120,13 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 		if ((universal && allBindingsInFinalState())
 				|| (!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
 			if (end || (finalStrongState && !universal)) {
+				saved = Verdict.SUCCESS;
 				result = Verdict.SUCCESS;
 			}
 			else result = Verdict.WEAK_SUCCESS;
 		}
 		else if (end || (nonFinalStrongState && universal)) {
+			saved = Verdict.FAILURE;
 			result = Verdict.FAILURE;
 		}
 		else result = Verdict.WEAK_FAILURE;
@@ -130,8 +134,6 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 		if(qea.isQuantificationNegated())
 			result = result.negated();
 		return result;
-		
-		
 	}
 
 }

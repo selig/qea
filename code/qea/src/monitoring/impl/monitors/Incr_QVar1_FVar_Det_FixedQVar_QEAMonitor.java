@@ -1,7 +1,10 @@
 package monitoring.impl.monitors;
 
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 
+import monitoring.impl.GarbageMode;
+import monitoring.impl.RestartMode;
 import monitoring.impl.configs.DetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar1_FVar_Det_FixedQVar_QEA;
@@ -20,7 +23,8 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 	 * configuration for each binding. The configuration contains the state and
 	 * the bindings for the free variables
 	 */
-	private IdentityHashMap<Object, DetConfig> bindings;
+	private final IdentityHashMap<Object, DetConfig> bindings;
+	private final HashSet<Object> strong;
 
 	/**
 	 * Creates an IncrementalNonSimpleDetQEAMonitor for the specified QEA
@@ -28,15 +32,20 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 	 * @param qea
 	 *            QEA
 	 */
-	public Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(
+	public Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(RestartMode restart, GarbageMode garbage, 
 			QVar1_FVar_Det_FixedQVar_QEA qea) {
-		super(qea);
+		super(restart,garbage,qea);
 		bindings = new IdentityHashMap<>();
+		strong = new HashSet<Object>();
 	}
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
+		if(saved!=null){
+			if(!restart()) return saved;
+		}		
+		
 		boolean existingBinding = false;
 		boolean startConfigFinal = false;
 		DetConfig config;
@@ -72,6 +81,7 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 
 		// Determine if there is a final/non-final strong state
 		if (qea.isStateStrong(config.getState())) {
+			strong.add(qVarValue);
 			if (endConfigFinal) {
 				finalStrongState = true;
 			} else {
@@ -85,12 +95,13 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 		return computeVerdict(false);
 	}
 
+	private static final Object[] dummyArgs = new Object[]{};
 	@Override
 	public Verdict step(int eventName) {
 		Verdict finalVerdict = null;
 		for (Object binding : bindings.keySet()) {
-			// TODO Calling wrong method here
-			finalVerdict = step(eventName, binding);
+			throw new RuntimeException("Not implemented properly");
+			//finalVerdict = step(eventName, dummyArgs);
 		}
 		return finalVerdict;
 	}
@@ -113,5 +124,27 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;
+	}
+
+	@Override
+	protected int removeStrongBindings() {
+		int removed = strong.size();
+		for(Object o : strong){
+			bindings.remove(o);
+		}
+		strong.clear();
+		return removed;
+	}
+
+	@Override
+	protected int rollbackStrongBindings() {
+		int rolled = strong.size();
+		for(Object o : strong){
+			DetConfig c = bindings.get(o);
+			c.setState(qea.getInitialState());
+			c.getBinding().setEmpty();
+		}
+		strong.clear();
+		return rolled;
 	}
 }

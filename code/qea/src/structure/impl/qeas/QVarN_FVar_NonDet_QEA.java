@@ -161,5 +161,11 @@ public class QVarN_FVar_NonDet_QEA extends QEA {
 	}
 
 
+	@Override
+	public int getInitialState() {
+		return initialState;
+	}
+
+
 	
 }

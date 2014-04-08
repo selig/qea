@@ -18,5 +18,15 @@ public enum Verdict {
 		}
 		return UNKNOWN;
 	}
+
+	public boolean isStrong() {
+		switch(this){
+		case SUCCESS:
+		case FAILURE:
+			return true;
+		default:
+			return false;
+	    }
+	}
 	
 }
