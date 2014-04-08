@@ -43,9 +43,12 @@ public class NonDetConfig implements Configuration {
 		int[] statesCopy = new int[states.length];
 		System.arraycopy(states, 0, statesCopy, 0, states.length);
 
-		Binding[] bindingsCopy = new Binding[bindings.length];
-		for (int i = 0; i < bindings.length; i++) {
-			bindingsCopy[i] = bindings[i].copy();
+		Binding[] bindingsCopy = null;
+		if(bindings!=null){
+			bindingsCopy = new Binding[bindings.length];
+			for (int i = 0; i < bindings.length; i++) {
+				bindingsCopy[i] = bindings[i].copy();
+			}
 		}
 
 		return new NonDetConfig(statesCopy, bindingsCopy);

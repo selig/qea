@@ -1,5 +1,5 @@
 package monitoring.impl;
 
 public enum GarbageMode {
-	NONE
+	NONE, LAZY
 }
