@@ -1,6 +1,10 @@
 package properties.rovers;
 
+import static structure.impl.other.Quantification.EXISTS;
 import static structure.impl.other.Quantification.FORALL;
+
+import java.util.HashSet;
+
 import structure.intf.Assignment;
 import structure.intf.Binding;
 import structure.intf.Guard;
@@ -28,9 +32,6 @@ import creation.QEABuilder;
 
 public class RoverCaseStudy {
 
-	/*
-	 * 
-	 */
 	public static QEA makeGrantCancelSingleSwitch() {
 
 		QEABuilder q = new QEABuilder("GrantCancelSingleSwitch");
@@ -63,10 +64,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	/*
-	 * 
-	 */
-	public static QEA makeGrantCancelSingle() {
+	public static QEA makeGrantCancelSingle() { // Figure A.25 (2)
 
 		QEABuilder q = new QEABuilder("GrantCancelSingle");
 
@@ -79,6 +77,7 @@ public class RoverCaseStudy {
 		q.addQuantification(FORALL, R);
 
 		q.addTransition(1, GRANT, new int[] { T1, R }, 2);
+		// TODO In the thesis, the parameters are: (-, R)
 		q.addTransition(2, GRANT, new int[] { T2, R }, 3);
 
 		q.startTransition(2);
@@ -98,10 +97,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	/*
-	 * 
-	 */
-	public static QEA makeGrantCancelDouble() {
+	public static QEA makeGrantCancelDouble() { // Figure A.25 (1)
 
 		QEABuilder q = new QEABuilder("GrantCancelDouble");
 
@@ -115,6 +111,7 @@ public class RoverCaseStudy {
 		q.addQuantification(FORALL, T);
 
 		q.addTransition(1, GRANT, new int[] { T, R }, 2);
+		// TODO In the thesis, the parameters are: (-, R)
 		q.addTransition(2, GRANT, new int[] { TT, R }, 3);
 		q.addTransition(2, CANCEL, new int[] { T, R }, 1);
 
@@ -128,10 +125,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	/*
-	 * 
-	 */
-	public static QEA makeResourceLifecycle() {
+	public static QEA makeResourceLifecycle() { // Figure A.26
 
 		QEABuilder q = new QEABuilder("ResourceLifecycle");
 
@@ -164,10 +158,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	/*
-	 * 
-	 */
-	public static QEA makeReleaseResource() {
+	public static QEA makeReleaseResource() { // Figure A.27
 
 		QEABuilder q = new QEABuilder("ReleaseResource");
 
@@ -196,13 +187,13 @@ public class RoverCaseStudy {
 
 		qea.record_event_name("schedule", 1);
 		qea.record_event_name("grant", 2);
-		qea.record_event_name("cancel", 2);
-		qea.record_event_name("finish", 2);
+		qea.record_event_name("cancel", 3);
+		qea.record_event_name("finish", 4);
 
 		return qea;
 	}
 
-	public static QEA makeRespectConflictsDouble() {
+	public static QEA makeRespectConflictsDouble() { // Figure A.28
 
 		QEABuilder q = new QEABuilder("RespectConflictsDouble");
 
@@ -235,8 +226,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-
-	public static QEA makeRespectConflictsSingle() {
+	public static QEA makeRespectConflictsSingle() { // Figure A.29
 
 		QEABuilder q = new QEABuilder("RespectConflictsSingle");
 
@@ -247,8 +237,8 @@ public class RoverCaseStudy {
 		// Quantified variable
 		int R1 = -1;
 		// Free variables
-		final int R2 = 1;
-		final int RS = 2;
+		int R2 = 1;
+		int RS = 2;
 
 		q.addQuantification(FORALL, R1);
 
@@ -281,6 +271,14 @@ public class RoverCaseStudy {
 		q.addTransition(1, GRANT, new int[]{ R2}, 1);
 		q.addTransition(2, GRANT, new int[]{ R2}, 2);
 
+
+		q.startTransition(3);
+		q.eventName(GRANT);
+		q.addVarArg(R2);
+		q.addGuard(Guard.setNotContainsElement(R2, RS));
+		q.endTransition(3);
+
+		// Final and skip states
 		q.addFinalStates(1, 2, 3);
 		//q.setSkipStates(1, 2, 4);
 
@@ -335,7 +333,8 @@ public class RoverCaseStudy {
 		return qea;
 	}	
 	
-	public static QEA makeRespectPriorities() {
+	public static QEA makeRespectPriorities() { // Figure A.30
+
 
 		QEABuilder q = new QEABuilder("RespectPriorities");
 
@@ -477,9 +476,9 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
-	public static QEA makeExactlyOnceSuccess() {
+	public static QEA makeExactlyOneSuccess() { // Figure A.31
 
-		QEABuilder q = new QEABuilder("ExactlyOnceSuccess");
+		QEABuilder q = new QEABuilder("ExactlyOneSuccess");
 
 		// Events
 		int COM = 1;
@@ -498,16 +497,16 @@ public class RoverCaseStudy {
 
 		QEA qea = q.make();
 
-		qea.record_event_name("com", 1);
-		qea.record_event_name("suc", 2);
+		qea.record_event_name("command", 1);
+		qea.record_event_name("succeed", 2);
 		qea.record_event_name("fail", 3);
 
 		return qea;
 	}
 
-	public static QEA makeIncreasingIdentifiers() {
+	public static QEA makeIncreasingCommand() { // Figure A.32
 
-		QEABuilder q = new QEABuilder("IncreasingIdentifiers");
+		QEABuilder q = new QEABuilder("IncreasingCommand");
 
 		// Event
 		int COM = 1;
@@ -528,14 +527,14 @@ public class RoverCaseStudy {
 
 		QEA qea = q.make();
 
-		qea.record_event_name("com", 1);
+		qea.record_event_name("command", 1);
 
 		return qea;
 	}
 
-	public static QEA makeCommandAcknowledgements() {
+	public static QEA makeAcknowledgeCommands() { // Figure A.33
 
-		QEABuilder q = new QEABuilder("CommandAcknowledgements");
+		QEABuilder q = new QEABuilder("AcknowledgeCommands");
 
 		// Events
 		int SET_ACK_TIMEOUT = 1;
@@ -551,6 +550,7 @@ public class RoverCaseStudy {
 		final int N2 = 5;
 		final int P2 = 6;
 		final int T2 = 7;
+		int CC = 8;
 
 		q.addQuantification(FORALL, C);
 
@@ -566,6 +566,7 @@ public class RoverCaseStudy {
 
 		q.startTransition(3);
 		q.eventName(COM);
+		q.addVarArg(CC);
 		q.addVarArg(N2);
 		q.addVarArg(P2);
 		q.addVarArg(T2);
@@ -587,10 +588,10 @@ public class RoverCaseStudy {
 
 			@Override
 			public boolean check(Binding binding) {
-				int n1 = binding.getForcedAsInteger(N1);
-				int n2 = binding.getForcedAsInteger(N2);
-				int p1 = binding.getForcedAsInteger(P1);
-				int p2 = binding.getForcedAsInteger(P2);
+				Object n1 = binding.getForced(N1);
+				Object n2 = binding.getForced(N2);
+				Object p1 = binding.getForced(P1);
+				Object p2 = binding.getForced(P2);
 				int t1 = binding.getForcedAsInteger(T1);
 				int t2 = binding.getForcedAsInteger(T2);
 				int m = binding.getForcedAsInteger(M);
@@ -599,17 +600,388 @@ public class RoverCaseStudy {
 		});
 		q.endTransition(4);
 
-		// Manual skip states
+		// Manual skip states for state 3
+
 		q.addTransition(3, SET_ACK_TIMEOUT, new int[] { M }, 3);
 
+		q.startTransition(3);
+		q.eventName(ACK);
+		q.addVarArg(C);
+		q.addVarArg(T2);
+		q.addGuard(Guard.isGreaterThanOrEqualTo(T2, M));
+		q.endTransition(3);
+
+		q.startTransition(3);
+		q.eventName(COM);
+		q.addVarArg(CC);
+		q.addVarArg(N2);
+		q.addVarArg(P2);
+		q.addVarArg(T2);
+		q.addGuard(new Guard("SpecificInverseGuard") {
+
+			@Override
+			public int[] vars() {
+				return new int[]{N1,N2,P1,P2,T1,T2,M};
+			}			
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				Object n1 = binding.getForced(N1);
+				Object n2 = binding.getForced(N2);
+				Object p1 = binding.getForced(P1);
+				Object p2 = binding.getForced(P2);
+				int t1 = binding.getForcedAsInteger(T1);
+				int t2 = binding.getForcedAsInteger(T2);
+				int m = binding.getForcedAsInteger(M);
+				return !(n1 == n2 && p1 == p2 && (t2 - t1 < 2 * m));
+			}
+
+		});
+		q.endTransition(3);
+
+		// Final and skip states
 		q.addFinalStates(1, 2, 4);
 		q.setSkipStates(1, 2, 4);
 
 		QEA qea = q.make();
 
 		qea.record_event_name("set_ack_timeout", 1);
-		qea.record_event_name("com", 2);
+		qea.record_event_name("command", 2);
 		qea.record_event_name("ack", 3);
+
+		return qea;
+	}
+
+	public static QEA makeExistsSatelliteDouble() { // Figure A.34
+
+		QEABuilder q = new QEABuilder("ExistsSatelliteDouble");
+
+		// Events
+		int PING = 1;
+		int ACK = 2;
+		// Quantified variables
+		int R = -1;
+		int S = -2;
+
+		q.addQuantification(FORALL, R);
+		q.addQuantification(EXISTS, S);
+
+		q.addTransition(1, PING, new int[] { R, S }, 2);
+		q.addTransition(2, ACK, new int[] { S, R }, 3);
+
+		q.addFinalStates(3);
+		q.setSkipStates(1, 2, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("ping", 1);
+		qea.record_event_name("ack", 2);
+
+		return qea;
+	}
+
+	public static QEA makeExistsSatelliteSingle() { // Figure A.35
+
+		QEABuilder q = new QEABuilder("ExistsSatelliteSingle");
+
+		// Events
+		int PING = 1;
+		int ACK = 2;
+		// Quantified variable
+		int r = -1;
+		// Free variables
+		int s = 1;
+		int S = 2;
+
+		q.addQuantification(FORALL, r);
+
+		q.startTransition(1);
+		q.eventName(PING);
+		q.addVarArg(r);
+		q.addVarArg(s);
+		q.addAssignment(Assignment.createSetFromElement(S, s));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(PING);
+		q.addVarArg(r);
+		q.addVarArg(s);
+		q.addAssignment(Assignment.addElementToSet(S, s));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(s);
+		q.addVarArg(r);
+		q.addGuard(Guard.setContainsElement(s, S));
+		q.endTransition(3);
+
+		// Manual skip states for state 2
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(s);
+		q.addVarArg(r);
+		q.addGuard(Guard.setNotContainsElement(s, S));
+		q.endTransition(2);
+
+		// Final and skip states
+		q.addFinalStates(1, 3);
+		q.setSkipStates(1, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("ping", 1);
+		qea.record_event_name("ack", 2);
+
+		return qea;
+	}
+
+	public static QEA makeExistsLeader() { // Figure A.36
+
+		QEABuilder q = new QEABuilder("ExistsLeader");
+
+		// Events
+		int PING = 1;
+		int ACK = 2;
+		// Quantified variables
+		int R1 = -1;
+		int R2 = -2;
+
+		q.addQuantification(EXISTS, R1);
+		q.addQuantification(FORALL, R2);
+
+		q.addTransition(1, PING, new int[] { R1, R2 }, 2);
+		q.addTransition(2, ACK, new int[] { R2, R1 }, 3);
+
+		q.addFinalStates(3);
+		q.setSkipStates(1, 2, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("ping", 1);
+		qea.record_event_name("ack", 2);
+
+		return qea;
+	}
+
+	public static QEA makeNestedCommand() { // Figure 3.3
+
+		QEABuilder q = new QEABuilder("NestedCommand");
+
+		// Events
+		int COM = 1;
+		int SUC = 2;
+		// Quantified variables
+		int X = -1;
+		int Y = -2;
+
+		q.addQuantification(FORALL, X);
+		q.addQuantification(FORALL, Y);
+
+		q.addTransition(1, COM, new int[] { Y }, 1);
+		q.addTransition(1, SUC, new int[] { Y }, 1);
+		q.addTransition(1, COM, new int[] { X }, 2);
+		q.addTransition(2, SUC, new int[] { X }, 1);
+		q.addTransition(2, COM, new int[] { Y }, 3);
+		q.addTransition(3, SUC, new int[] { Y }, 2);
+
+		q.addFinalStates(1, 2, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("command", 1);
+		qea.record_event_name("succeed", 2);
+
+		return qea;
+	}
+
+	public static QEA makeMessageHashCorrect() { // Figure A.37
+
+		QEABuilder q = new QEABuilder("MessageHashCorrect");
+
+		// Events
+		int SEND = 1;
+		int ACK = 2;
+		// Quantified variables
+		int X1 = -1;
+		int X2 = -2;
+		// Free variables
+		final int MSG = 1;
+		final int H = 2;
+		final int M = 3;
+
+		q.addQuantification(FORALL, X1);
+		q.addQuantification(FORALL, X2);
+
+		q.startTransition(1);
+		q.eventName(SEND);
+		q.addVarArg(X1);
+		q.addVarArg(X2);
+		q.addVarArg(MSG);
+		q.addAssignment(Assignment.createSetFromElement(M, MSG));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(SEND);
+		q.addVarArg(X1);
+		q.addVarArg(X2);
+		q.addVarArg(MSG);
+		q.addAssignment(Assignment.addElementToSet(M, MSG));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(X2);
+		q.addVarArg(X1);
+		q.addVarArg(H);
+		q.addGuard(new Guard("ExistsMessageWithHashH") {
+
+			@Override
+			public int[] vars() {
+				return new int[]{M,H};
+			}			
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
+				for (Object msg : setM) {
+					// TODO What hash function should we use here?
+					if (msg.hashCode() == binding.getForcedAsInteger(H)
+							.intValue()) {
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+		q.addAssignment(new Assignment("RemoveMessagesWithHashH") {
+
+			@Override
+			public Binding apply(Binding binding,boolean copy) {
+				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
+				for (Object msg : setM) {
+					if (msg.hashCode() == binding.getForcedAsInteger(H)
+							.intValue()) {
+						setM.remove(msg);
+					}
+				}
+				Binding newBinding = binding;
+				if(copy) binding = binding.copy();
+				newBinding.setValue(M, setM);
+				return newBinding;
+
+			}
+		});
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(X2);
+		q.addVarArg(X1);
+		q.addVarArg(H);
+		q.addGuard(new Guard("SetContainsOnlyElementWithHashH") {
+
+			@Override
+			public int[] vars() {
+				return new int[]{M,MSG,H};
+			}
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
+				Object msg = binding.getForced(MSG);
+				if (setM.size() == 1
+						&& setM.contains(msg)
+						&& msg.hashCode() == binding.getForcedAsInteger(H)
+								.intValue()) {
+					return true;
+				}
+				return false;
+			}
+		});
+		q.endTransition(1);
+
+		// Manual skip states for state 2
+		q.startTransition(2);
+		q.eventName(ACK);
+		q.addVarArg(X2);
+		q.addVarArg(X1);
+		q.addVarArg(H);
+		// TODO Horrible guard! Can we make it better?
+		q.addGuard(new Guard("") {
+
+			@Override
+			public int[] vars() {
+				return new int[]{M,H,MSG};
+			}			
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				boolean existsMsgWithHashH = false;
+				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
+				for (Object msg : setM) {
+					if (msg.hashCode() == binding.getForcedAsInteger(H)
+							.intValue()) {
+						existsMsgWithHashH = true;
+					}
+				}
+
+				Object msg = binding.getForced(MSG);
+				if (!existsMsgWithHashH
+						&& !(setM.size() == 1 && setM.contains(msg) && msg
+								.hashCode() == binding.getForcedAsInteger(H)
+								.intValue())) {
+					return true;
+				}
+				return false;
+			}
+		});
+		q.endTransition(2);
+
+		q.addFinalStates(1);
+		q.setSkipStates(1);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("send", 1);
+		qea.record_event_name("ack", 2);
 
 		return qea;
 	}

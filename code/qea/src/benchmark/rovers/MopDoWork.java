@@ -110,7 +110,17 @@ public class MopDoWork extends DoWork<String> {
 
 	@Override
 	public void send(Object a, Object b, int c) {
-		last_event = " send";
+		last_event = "send";
+	}
+
+	@Override
+	public void fail(Object o) {
+		// TODO Is this method intercepted by AspectJ???
+	}
+
+	@Override
+	public void priority(Object a, Object b) {
+		// TODO Is this method intercepted by AspectJ???
 	}
 
 }

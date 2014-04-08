@@ -98,6 +98,7 @@ public abstract class Assignment {
 				HashSet<Object> set = (HashSet<Object>) binding
 						.getForced(varSet);
 				set.remove(binding.getForced(varElement));
+
 				Binding newBinding = binding;
 				if(copy) newBinding = binding.copy();
 				newBinding.setValue(varSet, set);
