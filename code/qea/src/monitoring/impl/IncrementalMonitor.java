@@ -1,5 +1,7 @@
 package monitoring.impl;
 
+import java.util.HashSet;
+
 import monitoring.impl.configs.NonDetConfig;
 import monitoring.intf.Monitor;
 import structure.impl.other.Verdict;
@@ -36,14 +38,29 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	protected boolean nonFinalStrongState = false;
 
 	/**
+	 * The previous verdict, only save if it was strong, used in restart
+	 */
+	protected Verdict saved = null;
+	protected final HashSet<Object> strong;		
+	
+	/**
+	 * Garbage and restart modes
+	 */
+	protected final RestartMode restart_mode;
+	protected final GarbageMode garbage_mode;
+	
+	/**
 	 * Class constructor specifying the QEA to be monitored. For invocation by
 	 * subclass constructors
 	 * 
 	 * @param qea
 	 *            QEA property
 	 */
-	protected IncrementalMonitor(Q qea) {
+	protected IncrementalMonitor(RestartMode restart, GarbageMode garbage,Q qea) {
 		super(qea);
+		restart_mode = restart;
+		garbage_mode = garbage;
+		strong = new HashSet<Object>();
 	}
 
 	@Override
@@ -150,11 +167,12 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	 * @param config
 	 *            Non-deterministic configuration containing a set of states to
 	 *            be checked
+	 * @param qVarValue 
 	 * @return <code>true</code> if the specified configuration contains at
 	 *         least one final state (not necessarily strong);
 	 *         <code>false</code> otherwise
 	 */
-	protected boolean checkFinalAndStrongStates(NonDetConfig config) {
+	protected boolean checkFinalAndStrongStates(NonDetConfig config, Object qVarValue) {
 
 		boolean endConfigFinal = false;
 		boolean allNonFinalStronState = true;
@@ -164,15 +182,60 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 				endConfigFinal = true;
 				allNonFinalStronState=false;
 				if (qea.isStateStrong(s)) {
+					strong.add(qVarValue);
 					finalStrongState = true;
 				}
 			} else if (!qea.isStateStrong(s)) {
-				allNonFinalStronState = false;
+				allNonFinalStronState = false;				
 			}
 		}
-		if(allNonFinalStronState)
+		if(allNonFinalStronState){
+			strong.add(qVarValue);
 			nonFinalStrongState = true;
+		}
 		return endConfigFinal;
 	}
 
+	/**
+	 * 
+	 */
+	protected boolean restart(){
+		switch(restart_mode){
+			case NONE:
+				return false;
+			
+			case REMOVE:
+				// remove the offending binding
+				tidyUpOnRestart(removeStrongBindings(),true);
+				return true;
+			case ROLLBACK:
+				//rollback the offending bindings to initial state
+				tidyUpOnRestart(rollbackStrongBindings(),false);
+				return true;
+		}
+		return false;
+	}
+	private void tidyUpOnRestart(int strong_bindings,boolean remove){
+		if(finalStrongState){
+			finalStrongState=false;
+			// if removed or initial state is not final then remove those as final states
+			if(remove || !qea.isStateFinal(qea.getInitialState())){
+				bindingsInFinalStateCount =- strong_bindings;
+			}
+		}
+		else{
+			nonFinalStrongState=false;
+			// if removed of initial state is final them remove those as nonfinal states
+			if(remove || qea.isStateFinal(qea.getInitialState())){
+				bindingsInNonFinalStateCount =- strong_bindings;
+			}
+		}
+		saved=null;	
+	}
+	/*
+	 * Respectively remove and rollback all strong bindings
+	 * return the number of bindings removed or rolled back
+	 */
+	protected abstract int removeStrongBindings();
+	protected abstract int rollbackStrongBindings();
 }

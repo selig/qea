@@ -32,6 +32,11 @@ import exceptions.ShouldNotHappenException;
  */
 public class MonitorFactory {
 
+	
+	public static Monitor create(QEA qea){
+		return create(qea,RestartMode.NONE,GarbageMode.NONE);
+	}
+	
 	/**
 	 * Constructs a Monitor for the specified QEA
 	 * 
@@ -40,56 +45,57 @@ public class MonitorFactory {
 	 * @return A monitor for the QEA property
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Monitor create(QEA qea) {
+	public static Monitor create(QEA qea, RestartMode restart, GarbageMode garbage) {
 
 		switch (qea.getQEAType()) {
 
 		case QVAR01_NOFVAR_DET_QEA:
 			if (qea.getLambda().length == 0) {
-				return new Incr_QVar0_NoFVar_Det_QEAMonitor(
+				return new Incr_QVar0_NoFVar_Det_QEAMonitor(restart,garbage,
 						(QVar01_NoFVar_Det_QEA) qea);
 			} else {
-				return new Incr_QVar1_NoFVar_Det_QEAMonitor(
+				return new Incr_QVar1_NoFVar_Det_QEAMonitor(restart,garbage,
 						(QVar01_NoFVar_Det_QEA) qea);
 			}
 
 		case QVAR01_NOFVAR_NONDET_QEA:
 			if (qea.getLambda().length == 0) {
-				return new Incr_QVar0_NoFVar_NonDet_QEAMonitor(
+				return new Incr_QVar0_NoFVar_NonDet_QEAMonitor(restart,garbage,
 						(QVar01_NoFVar_NonDet_QEA) qea);
 			} else {
-				return new Incr_QVar1_NoFVar_NonDet_QEAMonitor(
+				return new Incr_QVar1_NoFVar_NonDet_QEAMonitor(restart,garbage,
 						(QVar01_NoFVar_NonDet_QEA) qea);
 			}
 
 		case QVAR1_FVAR_DET_FIXEDQVAR_QEA:
-			return new Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(
+			return new Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(restart,garbage,
 					(QVar1_FVar_Det_FixedQVar_QEA) qea);
 
 		case QVAR01_FVAR_DET_QEA:
 			if (qea.getLambda().length == 0) {
-				return new Incr_QVar0_FVar_Det_QEAMonitor(
+				return new Incr_QVar0_FVar_Det_QEAMonitor(restart,garbage,
 						(QVar01_FVar_Det_QEA) qea);
 			} else {
-				return new Incr_QVar1_FVar_Det_QEAMonitor(
+				return new Incr_QVar1_FVar_Det_QEAMonitor(restart,garbage,
 						(QVar01_FVar_Det_QEA) qea);
 			}
 
 		case QVAR1_FVAR_NONDET_FIXEDQVAR_QEA:
-			return new Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(
+			return new Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(restart,garbage,
 					(QVar1_FVar_NonDet_FixedQVar_QEA) qea);
 		case QVAR01_FVAR_NONDET_QEA:
 			if (qea.getLambda().length == 0) {
-				return new Incr_QVar0_FVar_NonDet_QEAMonitor(
+				return new Incr_QVar0_FVar_NonDet_QEAMonitor(restart,garbage,
 						(QVar01_FVar_NonDet_QEA) qea);
 			} else {
-				return new Incr_QVar1_FVar_NonDet_QEAMonitor(
+				return new Incr_QVar1_FVar_NonDet_QEAMonitor(restart,garbage,
 						(QVar01_FVar_NonDet_QEA) qea);
 			}
 
 		case QVARN_FVAR_DET_QEA:
 			if(true) // replace with flag
-				return new Incr_Naive_Det_Monitor((QVarN_FVar_Det_QEA) qea);
+				return new Incr_Naive_Det_Monitor( // naive does not use restart or garbage
+						(QVarN_FVar_Det_QEA) qea);
 			
 		case QVARN_FVAR_NONDET_QEA:			
 			

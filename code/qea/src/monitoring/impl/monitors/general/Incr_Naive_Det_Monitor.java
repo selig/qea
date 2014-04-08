@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
+import monitoring.impl.RestartMode;
 import monitoring.impl.configs.DetConfig;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Verdict;
@@ -25,7 +27,7 @@ public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QE
 	
 	
 	public Incr_Naive_Det_Monitor(QVarN_FVar_Det_QEA qea) {
-		super(qea);
+		super(RestartMode.NONE,GarbageMode.NONE,qea);
 		qea.setupMatching();
 		bottom = qea.newQBinding();
 		dummyEmptyBinding.add(bottom);
@@ -40,17 +42,21 @@ public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QE
 	public Verdict step(int eventName, Object[] args) {
 		Set<QBindingImpl> qbindings = qea.makeBindings(eventName,args);
 		innerStep(eventName,qbindings,args);
-		return checker.verdict(false);
+		Verdict result = checker.verdict(false);		
+		if(result.isStrong()) saved=result;
+		return result;
 	}
 
 
 	@Override
 	public Verdict step(int eventName) {
 		innerStep(eventName,dummyEmptyBinding,emptyArgs);
-		return checker.verdict(false);
+		Verdict result = checker.verdict(false);		
+		if(result.isStrong()) saved=result;
+		return result;
 	}
 	
-	private void innerStep(int eventName, Set<QBindingImpl> qbindings, Object[] args) {
+	private void innerStep(int eventName, Set<QBindingImpl> qbindings, Object[] args) {			
 		
 		for(QBindingImpl b : B){
 			Set<QBindingImpl> consistent = null;
@@ -103,6 +109,18 @@ public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QE
 		}
 		
 		return ret;
+	}
+
+	@Override
+	protected int removeStrongBindings() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected int rollbackStrongBindings() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

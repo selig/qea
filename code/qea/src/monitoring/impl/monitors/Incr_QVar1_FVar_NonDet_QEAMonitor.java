@@ -1,7 +1,11 @@
 package monitoring.impl.monitors;
 
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 
+import monitoring.impl.GarbageMode;
+import monitoring.impl.RestartMode;
+import monitoring.impl.configs.DetConfig;
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Transition;
 import structure.impl.other.Verdict;
@@ -57,8 +61,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	 * @param qea
 	 *            QEA property
 	 */
-	public Incr_QVar1_FVar_NonDet_QEAMonitor(QVar01_FVar_NonDet_QEA qea) {
-		super(qea);
+	public Incr_QVar1_FVar_NonDet_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_FVar_NonDet_QEA qea) {
+		super(restart,garbage,qea);
 		bindings = new IdentityHashMap<>();
 		emptyBindingConfig = new NonDetConfig(qea.getInitialState(),
 				qea.newBinding());
@@ -126,6 +130,10 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
+		if(saved!=null){
+			if(!restart()) return saved;
+		}		
+		
 		boolean eventProcessedForAllExistingBindings = false;
 
 		if (onlyFVarSignature[eventName]) {
@@ -168,8 +176,11 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	private final Object[] emptyArgs = new Object[0];	
 	@Override
 	public Verdict step(int eventName) {
-		for (Object binding : bindings.keySet()) {
-			stepNoVerdict(eventName, emptyArgs, binding);
+		if(saved!=null){
+			if(!restart()) return saved;
+		}		
+		for (Object bound_object : bindings.keySet()) {
+			stepNoVerdict(eventName, emptyArgs, bound_object);
 		}
 		return computeVerdict(false);
 	}
@@ -215,7 +226,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		bindings.put(qVarValue, config);
 
 		// Determine if there is a final/non-final strong state
-		boolean endConfigFinal = checkFinalAndStrongStates(config);
+		boolean endConfigFinal = checkFinalAndStrongStates(config,qVarValue);
 
 		// Update counters
 		updateCounters(existingBinding, startConfigFinal, endConfigFinal);
@@ -231,4 +242,24 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		return ret;
 	}
 
+	@Override
+	protected int removeStrongBindings() {
+		int removed = strong.size();
+		for(Object o : strong){
+			bindings.remove(o);
+		}
+		strong.clear();
+		return removed;
+	}
+
+	@Override
+	protected int rollbackStrongBindings() {
+		int rolled = strong.size();
+		for(Object o : strong){
+			bindings.put(o,new NonDetConfig(qea.getInitialState(),qea.newBinding()));
+		}
+		strong.clear();
+		return rolled;
+	}	
+	
 }

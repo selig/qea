@@ -98,5 +98,5 @@ public abstract class Binding {
 		if(!okay) return null;
 		return binding;
 	}
-	
+
 }

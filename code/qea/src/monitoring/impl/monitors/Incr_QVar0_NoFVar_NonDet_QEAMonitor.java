@@ -1,6 +1,8 @@
 package monitoring.impl.monitors;
 
+import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
+import monitoring.impl.RestartMode;
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
@@ -21,8 +23,8 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 	 */
 	private NonDetConfig config;
 
-	public Incr_QVar0_NoFVar_NonDet_QEAMonitor(QVar01_NoFVar_NonDet_QEA qea) {
-		super(qea);
+	public Incr_QVar0_NoFVar_NonDet_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_NoFVar_NonDet_QEA qea) {
+		super(restart,garbage,qea);
 
 		// Set initial state
 		config = new NonDetConfig(qea.getInitialState());
@@ -37,11 +39,15 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 	@Override
 	public Verdict step(int eventName) {
 
+		if(saved!=null){
+			if(!restart()) return saved;
+		}		
+		
 		// Update configuration
 		config = qea.getNextConfig(config, eventName);
 
 		// Determine if there is a final/non-final strong state
-		checkFinalAndStrongStates(config);
+		checkFinalAndStrongStates(config,null);
 
 		return computeVerdict(false);
 	}
@@ -87,6 +93,18 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 	@Override
 	public String getStatus() {
 		return "Config: " + config;
+	}
+
+	@Override
+	protected int removeStrongBindings() {
+		// Not applicable to this monitor
+		return 0;
+	}
+
+	@Override
+	protected int rollbackStrongBindings() {
+		config = new NonDetConfig(qea.getInitialState());
+		return 1;
 	}
 
 }
