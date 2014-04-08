@@ -1,15 +1,15 @@
 package monitoring.impl.monitors;
 
-import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Map;
 
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
-import monitoring.impl.configs.DetConfig;
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Transition;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar01_FVar_NonDet_QEA;
+import util.WeakIdentityHashMap;
 
 /**
  * An incremental monitor for a non-simple non-deterministic generic QEA
@@ -26,7 +26,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	 * non-deterministic configuration for each binding. The configuration
 	 * contains the set of states and set of bindings for the free variables
 	 */
-	private IdentityHashMap<Object, NonDetConfig> bindings;
+	private Map<Object, NonDetConfig> bindings;
 
 	/**
 	 * Configuration storing the state and free variables binding for events
@@ -63,7 +63,10 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	 */
 	public Incr_QVar1_FVar_NonDet_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_FVar_NonDet_QEA qea) {
 		super(restart,garbage,qea);
-		bindings = new IdentityHashMap<>();
+		if(garbage==GarbageMode.LAZY)
+			bindings = new WeakIdentityHashMap<>();
+		else
+			bindings = new IdentityHashMap<>();
 		emptyBindingConfig = new NonDetConfig(qea.getInitialState(),
 				qea.newBinding());
 		buildEventsIndices();

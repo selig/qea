@@ -2,13 +2,14 @@ package monitoring.impl.monitors;
 
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Map;
 
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
-import monitoring.impl.configs.DetConfig;
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar1_FVar_NonDet_FixedQVar_QEA;
+import util.WeakIdentityHashMap;
 
 /**
  * 
@@ -18,13 +19,16 @@ import structure.impl.qeas.QVar1_FVar_NonDet_FixedQVar_QEA;
 public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 		Abstr_Incr_QVar1_FVar_QEAMonitor<QVar1_FVar_NonDet_FixedQVar_QEA> {
 
-	private IdentityHashMap<Object, NonDetConfig> bindings;
+	private Map<Object, NonDetConfig> bindings;
 	private final HashSet<Object> strong;	
 
 	public Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor(RestartMode restart, GarbageMode garbage,
 			QVar1_FVar_NonDet_FixedQVar_QEA qea) {
 		super(restart,garbage,qea);
-		bindings = new IdentityHashMap<>();
+		if(garbage==GarbageMode.LAZY)
+			bindings = new WeakIdentityHashMap<>();
+		else
+			bindings = new IdentityHashMap<>();
 		strong = new HashSet<Object>();
 	}
 

@@ -1,12 +1,14 @@
 package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
+import java.util.Map;
 
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
+import util.WeakIdentityHashMap;
 
 /**
  * A small-step monitor for a non-deterministic simple QEA
@@ -17,13 +19,16 @@ import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
 public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 		Abstr_Incr_QVar1_NoFVar_QEAMonitor<QVar01_NoFVar_NonDet_QEA> {
 
-	private IdentityHashMap<Object, NonDetConfig> bindings;
+	private Map<Object, NonDetConfig> bindings;
 
 	private NonDetConfig empty_config;
 	
 	public Incr_QVar1_NoFVar_NonDet_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_NoFVar_NonDet_QEA qea) {
 		super(restart,garbage,qea);
-		bindings = new IdentityHashMap<>();
+		if(garbage==GarbageMode.LAZY)
+			bindings = new WeakIdentityHashMap<>();
+		else
+			bindings = new IdentityHashMap<>();
 		empty_config = new NonDetConfig(qea.getInitialState());
 	}
 

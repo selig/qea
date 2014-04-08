@@ -949,7 +949,7 @@ public class QEABuilder {
 
 			for (TempEvent event : events) {
 				if (!existsTransition(state, event)) {
-					System.err.println("Adding skip transition for "+state+" and "+event);
+					//System.err.println("Adding skip transition for "+state+" and "+event);
 					addTransition(state, event, state);
 				}
 			}

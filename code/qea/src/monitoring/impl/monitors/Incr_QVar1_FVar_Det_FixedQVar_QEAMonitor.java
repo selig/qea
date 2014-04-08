@@ -1,13 +1,14 @@
 package monitoring.impl.monitors;
 
-import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Map;
 
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
 import monitoring.impl.configs.DetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar1_FVar_Det_FixedQVar_QEA;
+import util.WeakIdentityHashMap;
 
 /**
  * An incremental monitor for a non-simple deterministic QEA
@@ -23,8 +24,7 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 	 * configuration for each binding. The configuration contains the state and
 	 * the bindings for the free variables
 	 */
-	private final IdentityHashMap<Object, DetConfig> bindings;
-	private final HashSet<Object> strong;
+	private final Map<Object, DetConfig> bindings;
 
 	/**
 	 * Creates an IncrementalNonSimpleDetQEAMonitor for the specified QEA
@@ -35,8 +35,10 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 	public Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor(RestartMode restart, GarbageMode garbage, 
 			QVar1_FVar_Det_FixedQVar_QEA qea) {
 		super(restart,garbage,qea);
-		bindings = new IdentityHashMap<>();
-		strong = new HashSet<Object>();
+		if(garbage==GarbageMode.LAZY)
+			bindings = new WeakIdentityHashMap<>();
+		else
+			bindings = new IdentityHashMap<>();
 	}
 
 	@Override
