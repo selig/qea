@@ -2,6 +2,8 @@ package structure.impl.other;
 
 import java.util.Comparator;
 
+import structure.intf.Binding;
+
 /**
  * A binding structure to represent bindings of quantified variables. One of the
  * key things is that we use -variableName instead of variableName to index the
@@ -30,18 +32,22 @@ public class QBindingImpl extends FBindingImpl {
 		super.setValue(-variableName, value);
 	}
 
+	@Override
+	public Binding copy() {
+
+		QBindingImpl binding = new QBindingImpl(values.length);
+		for (int i = 0; i < values.length; i++) {
+			binding.values[i]=values[i];
+		}
+		return binding;
+	}	
+	
 	private static QBindingImpl empty;
 
-	public static QBindingImpl emptyBinding() {
-		if (empty == null) {
-			empty = new QBindingImpl(0); // is this safe?
-		}
-		return empty;
-	}
 
 	public boolean consistentWith(QBindingImpl other) {
 		for(int i=0;i<values.length;i++){
-			Object other_value = other.getValue(i);
+			Object other_value = other.values[i];
 			if(other_value!=null && values[i]!=null){
 				if(other_value!=values[i]) return false;
 			}
@@ -49,12 +55,32 @@ public class QBindingImpl extends FBindingImpl {
 		return true;
 	}
 
+	@Override
+	public boolean update(int[] variableNames, Object[] args) {
+		assert(variableNames.length==args.length);
+		for(int i=0;i<variableNames.length;i++){
+			int var = variableNames[i];
+			if(var<0){
+				Object value = getValue(var);
+				if(value!=null && args[i]!=value) return false;
+			}
+		}		
+		for(int i=0;i<variableNames.length;i++){
+			int var = variableNames[i];
+			if(var<0){
+				setValue(var,args[i]);
+			}
+		}
+		return true;
+	}
+	
+	
 	public QBindingImpl updateWith(QBindingImpl b) {
 		QBindingImpl new_binding = new QBindingImpl(values.length);
 		for(int i=0;i<values.length;i++){
-			Object value = b.getValue(i);
+			Object value = b.values[i];
 			if(value==null) value = values[i];
-			new_binding.setValue(i, value);
+			new_binding.values[i]=value;
 		}
 		return new_binding;
 	}
@@ -68,7 +94,7 @@ public class QBindingImpl extends FBindingImpl {
 
 	public boolean contains(QBindingImpl other){
 		for(int i=0;i<values.length;i++){
-			Object other_value = other.getValue(i);
+			Object other_value = other.values[i];
 			if(other_value!=null){
 				if(values[i]==null) return false;
 				if(other_value!=values[i]) return false;

@@ -97,6 +97,18 @@ public class FBindingImpl extends Binding {
 			return Arrays.equals(values, otherB.values);
 		}
 		return false;
-	}	
+	}
+
+	@Override
+	public boolean update(int[] variableNames, Object[] args) {
+		assert(variableNames.length==args.length);
+		for(int i=0;i<variableNames.length;i++){
+			int var = variableNames[i];
+			if(var>0){
+				setValue(var,args[i]);
+			}
+		}
+		return true;
+	}
 	
 }

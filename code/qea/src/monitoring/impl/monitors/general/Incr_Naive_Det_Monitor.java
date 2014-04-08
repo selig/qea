@@ -99,7 +99,7 @@ public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QE
 	public String getStatus() {
 		String ret = "mapping:\n";
 		for(Map.Entry<QBindingImpl,DetConfig> entry : mapping.entrySet()){
-			ret += entry.getKey()+"\n"+entry.getValue()+"\n";
+			ret += entry.getKey()+"\t"+entry.getValue()+"\n";
 		}
 		
 		return ret;

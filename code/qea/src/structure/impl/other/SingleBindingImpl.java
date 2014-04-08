@@ -74,4 +74,14 @@ public class SingleBindingImpl extends Binding {
 		return "[" + index + ":" + value + "]";
 	}
 
+	@Override
+	public boolean update(int[] variableNames, Object[] args) {
+		assert(variableNames.length==args.length);
+		for(int i=0;i<args.length;i++){
+			int var = variableNames[i];
+			if(var==index) value = args[i];
+		}
+		return true;
+	}
+
 }

@@ -27,8 +27,10 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 	private final IncrementalChecker checker;
 	private final HashMap<QBindingImpl,DetConfig> configs;
 
-	BindingRecord[] empty_paths;
-	HashMap<String,BindingRecord>[] maps;
+	private final QBindingImpl bottom;
+	
+	private final BindingRecord[] empty_paths;
+	private final HashMap<String,BindingRecord>[] maps;
 
 	private static final String BLANK = "_";
 	//0 for value, 1 for qblank (only qvars), 2 for fblank (some fvars)
@@ -45,6 +47,8 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 		checker = IncrementalChecker.make(qea.lambda);
 		configs = new HashMap<QBindingImpl,DetConfig>();
 
+		bottom = qea.newQBinding();
+		
                 //create a lookup map per event name
 		int num_events = qea.getEventsAlphabet().length;
 		maps = new HashMap[num_events];
@@ -54,7 +58,7 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 		//make empty paths
 		empty_paths = new BindingRecord[num_events];
 		for(int i=0;i<num_events;i++){
-			empty_paths[i] = new BindingRecord(QBindingImpl.emptyBinding());
+			empty_paths[i] = new BindingRecord(bottom);
 		}
                 Transition[][] delta = qea.getTransitions();
 
