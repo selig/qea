@@ -16,6 +16,7 @@ public abstract class Guard {
 	public abstract boolean check(Binding binding, int qvar, Object firstQval);
 
 	public abstract boolean usesQvars();
+	public abstract int[] vars();
 
 	public Guard replace(int var, Object val) {
 		throw new ShouldNotHappenException(
@@ -64,6 +65,8 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+			@Override
+			public int[] vars(){ return new int[]{var0,var1};}
 		};
 	}
 
@@ -94,6 +97,8 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+			@Override
+			public int[] vars(){ return new int[]{var0,var1};}			
 		};
 	}
 
@@ -124,6 +129,8 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+			@Override
+			public int[] vars(){ return new int[]{var0,var1};}			
 		};
 	}
 
@@ -154,6 +161,8 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+			@Override
+			public int[] vars(){ return new int[]{var0,var1};}			
 
 			/*
 			 * public Guard replace(final int var, final Object val){
@@ -195,6 +204,8 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+			@Override
+			public int[] vars(){ return new int[]{var0,var1};}			
 		};
 	}
 
@@ -217,6 +228,8 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0;
 			}
+			@Override
+			public int[] vars(){ return new int[]{var0};}			
 		};
 	}
 
@@ -245,6 +258,8 @@ public abstract class Guard {
 				Object element = binding.getForced(varElement);
 				return set.contains(element);
 			}
+			@Override
+			public int[] vars(){ return new int[]{varElement,varSet};}			
 		};
 	}
 
@@ -273,6 +288,8 @@ public abstract class Guard {
 				Object element = binding.getForced(varElement);
 				return !set.contains(element);
 			}
+			@Override
+			public int[] vars(){ return new int[]{varElement,varSet};}				
 		};
 	}
 
@@ -301,6 +318,8 @@ public abstract class Guard {
 				Object element = binding.getForced(varElement);
 				return set.size() == 1 && set.contains(element);
 			}
+			@Override
+			public int[] vars(){ return new int[]{varElement,varSet};}				
 		};
 	}
 
@@ -330,6 +349,8 @@ public abstract class Guard {
 				Object element = binding.getForced(varElement);
 				return set.size() > 1 && set.contains(element);
 			}
+			@Override
+			public int[] vars(){ return new int[]{varElement,varSet};}				
 		};
 	}
 
@@ -355,6 +376,8 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+			@Override
+			public int[] vars(){ return new int[]{var0,var1};}				
 		};
 	}
 }

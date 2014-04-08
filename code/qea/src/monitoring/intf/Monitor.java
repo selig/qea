@@ -206,6 +206,7 @@ public abstract class Monitor<Q extends QEA> {
 	 */
 	public abstract Verdict trace(int[] eventNames, Object[][] args);
 
+	
 	/*
 	 * For Debugging
 	 */

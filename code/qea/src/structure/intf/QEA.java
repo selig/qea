@@ -93,7 +93,7 @@ public abstract class QEA {
 	 */
 	public abstract QEAType getQEAType();
 
-	Map<String, Integer> name_lookup;
+	private Map<String, Integer> name_lookup;
 
 	/**
 	 * Records a name for an event id
@@ -121,5 +121,7 @@ public abstract class QEA {
 		}
 		return id;
 	}
+	
+	public Map<String,Integer> get_name_lookup(){ return name_lookup;}
 
 }
