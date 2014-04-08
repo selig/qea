@@ -25,7 +25,6 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 	 * the bindings for the free variables
 	 */
 	private IdentityHashMap<Object, DetConfig> bindings;
-	private final HashSet<Object> strong;	
 
 	/**
 	 * Configuration storing the state and free variables binding for events
@@ -66,7 +65,6 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 		emptyBindingConfig = new DetConfig(qea.getInitialState(),
 				qea.newBinding());
 		buildEventsIndices();
-		strong = new HashSet<Object>();
 	}
 
 	/**
@@ -222,7 +220,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 		// Determine if there is a final/non-final strong state
 		if (qea.isStateStrong(config.getState())) {
-			strong.add(qVarValue);
+			if(restart_mode.on()) strong.add(qVarValue);
 			if (endConfigFinal) {
 				finalStrongState = true;
 			} else {
@@ -247,9 +245,13 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 	@Override
 	protected int removeStrongBindings() {
-		int removed = strong.size();
+		int removed = 0;
 		for(Object o : strong){
-			bindings.remove(o);
+			int state = bindings.get(o).getState();
+			if(qea.isStateFinal(state)==finalStrongState){
+				removed++;
+				bindings.remove(o);
+			}
 		}
 		strong.clear();
 		return removed;
@@ -257,11 +259,13 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 	@Override
 	protected int rollbackStrongBindings() {
-		int rolled = strong.size();
+		int rolled = 0;
 		for(Object o : strong){
-			DetConfig c = bindings.get(o);
-			c.setState(qea.getInitialState());
-			c.getBinding().setEmpty();
+			int state = bindings.get(o).getState();
+			if(qea.isStateFinal(state)==finalStrongState){			
+				bindings.put(o,emptyBindingConfig.copy());
+				rolled++;
+			}
 		}
 		strong.clear();
 		return rolled;

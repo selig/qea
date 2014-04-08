@@ -118,7 +118,7 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 		Verdict result = null;
 		
 		if ((universal && allBindingsInFinalState())
-				|| (!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
+				|| (!universal && existsOneBindingInFinalState())) {
 			if (end || (finalStrongState && !universal)) {
 				saved = Verdict.SUCCESS;
 				result = Verdict.SUCCESS;

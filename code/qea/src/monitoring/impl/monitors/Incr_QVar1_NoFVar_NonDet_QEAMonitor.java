@@ -1,11 +1,9 @@
 package monitoring.impl.monitors;
 
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
-import monitoring.impl.configs.DetConfig;
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
@@ -21,9 +19,12 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 
 	private IdentityHashMap<Object, NonDetConfig> bindings;
 
+	private NonDetConfig empty_config;
+	
 	public Incr_QVar1_NoFVar_NonDet_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_NoFVar_NonDet_QEA qea) {
 		super(restart,garbage,qea);
 		bindings = new IdentityHashMap<>();
+		empty_config = new NonDetConfig(qea.getInitialState());
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 		} else { // New quantified variable binding
 
 			// Create configuration for the new binding
-			config = new NonDetConfig(qea.getInitialState());
+			config = empty_config.copy();
 		}
 
 		// Compute next configuration
@@ -72,6 +73,7 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 	@Override
 	public Verdict step(int eventName) {		
 		Verdict finalVerdict = null;
+		empty_config = qea.getNextConfig(empty_config,eventName);
 		for (Object bound_object : bindings.keySet()) {			
 			finalVerdict = step(eventName, bound_object);
 		}
@@ -90,9 +92,15 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 
 	@Override
 	protected int removeStrongBindings() {
-		int removed = strong.size();
-		for(Object o : strong){
-			bindings.remove(o);
+		int removed = 0;
+		for(Object o : strong){	
+			NonDetConfig c = bindings.get(o);
+			boolean is_final = false;
+			for(int s : c.getStates()) is_final |= qea.isStateFinal(s);
+			if(is_final==finalStrongState){
+				bindings.remove(o);
+				removed++;
+			}
 		}
 		strong.clear();
 		return removed;
@@ -100,9 +108,15 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 
 	@Override
 	protected int rollbackStrongBindings() {
-		int rolled = strong.size();
+		int rolled = 0;
 		for(Object o : strong){
-			bindings.put(o,new NonDetConfig(qea.getInitialState()));
+			NonDetConfig c = bindings.get(o);
+			boolean is_final = false;
+			for(int s : c.getStates()) is_final |= qea.isStateFinal(s);
+			if(is_final==finalStrongState){
+				bindings.put(o,empty_config.copy());
+				rolled++;
+			}						
 		}
 		strong.clear();
 		return rolled;
