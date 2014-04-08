@@ -21,6 +21,8 @@ import structure.impl.qeas.QVar01_NoFVar_Det_QEA;
 import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
 import structure.impl.qeas.QVar1_FVar_Det_FixedQVar_QEA;
 import structure.impl.qeas.QVar1_FVar_NonDet_FixedQVar_QEA;
+import structure.impl.qeas.QVarN_FVar_Det_QEA;
+import structure.impl.qeas.QVarN_FVar_NonDet_QEA;
 import structure.intf.Assignment;
 import structure.intf.Guard;
 import structure.intf.QEA;
@@ -221,6 +223,19 @@ public class QEABuilder {
 				"I don't know how to make that kind of QEA yet");
 	}
 
+	public QEA makeMostGeneral() {
+		String error = wellFormed();
+		if (error != null) {
+			throw new ShouldNotHappenException(error);
+		}
+
+		// first get number of states and events
+		int states = countStates();
+		int events = countEvents();
+
+		return makeGeneral(states,events);
+	}	
+	
 	private QEA makeProp(int states, int events) {
 		boolean[] strongStates = computeStrongStates();
 		if (noFreeVariables()) {
@@ -554,6 +569,90 @@ public class QEABuilder {
 		}
 	}
 
+	private QEA makeGeneral(int states, int events) {
+		boolean[] strongStates = computeStrongStates();
+
+		int frees = countFreeVars();
+		if (isEventDeterministic()) {
+					QVarN_FVar_Det_QEA qea = new QVarN_FVar_Det_QEA(states,
+							events, 1, quants.size(),frees);
+
+					
+					//Add quantifications
+					for(Quant q : quants){
+						qea.addQuantification(q.var, (q.universal ? FORALL : EXISTS), q.g);
+					}
+					
+					for (TempTransition t : transitions) {
+						Transition trans = new Transition(t.var_args(), t.g,
+								t.a, t.end);
+						trans.setAssignment(t.a);
+						trans.setGuard(t.g);
+						qea.addTransition(t.start, t.event_name, trans);
+					}
+					for (Integer s : finalstates) {
+						qea.setStatesAsFinal(s);
+					}
+					for (int i = 0; i < strongStates.length; i++) {
+						if (strongStates[i]) {
+							qea.setStatesAsStrong(i);
+						}
+					}
+					return qea;
+		} else {
+				QVarN_FVar_NonDet_QEA qea = new QVarN_FVar_NonDet_QEA(
+							states, events, 1, quants.size(),frees);
+				
+				//Add quantifications
+				for(Quant q : quants){
+					qea.addQuantification(q.var, (q.universal ? FORALL : EXISTS), q.g);
+				}				
+				
+					Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
+					for (TempTransition t : transitions) {
+						Map<Integer, Set<Transition>> this_state = actual_trans[t.start];
+						if (this_state == null) {
+							actual_trans[t.start] = new HashMap<Integer, Set<Transition>>();
+						}
+						this_state = actual_trans[t.start];
+
+						Set<Transition> nextstates = this_state
+								.get(t.event_name);
+						if (nextstates == null) {
+							nextstates = new HashSet<Transition>();
+							this_state.put(t.event_name, nextstates);
+						}
+						nextstates.add(new Transition(t.var_args(), t.g, t.a,
+								t.end));
+					}
+					for (int i = 0; i < actual_trans.length; i++) {
+						if (actual_trans[i] != null) {
+							for (Map.Entry<Integer, Set<Transition>> entry : actual_trans[i]
+									.entrySet()) {
+								Transition[] nextstates = new Transition[entry
+										.getValue().size()];
+								int j = 0;
+								for (Transition s : entry.getValue()) {
+									nextstates[j] = s;
+									j++;
+								}
+								qea.addTransitions(i, (entry.getKey()),
+										nextstates);
+							}
+						}
+					}
+					for (Integer s : finalstates) {
+						qea.setStatesAsFinal(s);
+					}
+					for (int i = 0; i < strongStates.length; i++) {
+						if (strongStates[i]) {
+							qea.setStatesAsStrong(i);
+						}
+					}
+					return qea;
+		}
+	}	
+	
 	private int countStates() {
 		int max = 0;
 		for (TempTransition t : transitions) {

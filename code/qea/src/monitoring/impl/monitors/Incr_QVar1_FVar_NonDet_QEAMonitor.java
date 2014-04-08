@@ -165,10 +165,11 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		return computeVerdict(false);
 	}
 
+	private final Object[] emptyArgs = new Object[0];	
 	@Override
 	public Verdict step(int eventName) {
 		for (Object binding : bindings.keySet()) {
-			stepNoVerdict(eventName, new Object[] {}, binding);
+			stepNoVerdict(eventName, emptyArgs, binding);
 		}
 		return computeVerdict(false);
 	}

@@ -17,7 +17,7 @@ public class FBindingImpl extends Binding {
 	 * number of free variables. The position of a value in the array
 	 * corresponds to the name of the variable - 1
 	 */
-	private Object[] values;
+	protected Object[] values;
 
 	/**
 	 * Creates a new Binding with the specified number of variables
@@ -86,4 +86,17 @@ public class FBindingImpl extends Binding {
 		return Arrays.toString(out);
 	}
 
+	@Override
+	public int hashCode(){
+		return Arrays.hashCode(values);
+	}	
+	@Override
+	public boolean equals(Object other){
+		if(other instanceof FBindingImpl){
+			FBindingImpl otherB = (FBindingImpl) other;
+			return Arrays.equals(values, otherB.values);
+		}
+		return false;
+	}	
+	
 }

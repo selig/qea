@@ -84,4 +84,11 @@ public class ArrayUtil {
 		return result;
 	}
 
+	public static int[][] increaseSize(int[][] array) {
+		int[][] resizedArray = new int[array.length+1][];
+		System.arraycopy(array, 0, resizedArray, 0, array.length);
+		return resizedArray;
+		
+	}	
+	
 }
