@@ -135,7 +135,18 @@ public class OutputDoWork extends DoWork<String> {
 
 	@Override
 	public void send(Object a, Object b, int c) {
-		output(" send",id(a),id(b),c+"");
+		output("send",id(a),id(b),c+"");
+	}
+
+	@Override
+	public void fail(Object o) {
+		output("fail",id(o));
+		
+	}
+
+	@Override
+	public void priority(Object a, Object b) {
+		output("priority",id(a),id(b));
 	}
 
 }

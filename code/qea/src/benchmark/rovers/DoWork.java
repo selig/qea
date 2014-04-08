@@ -23,15 +23,15 @@ abstract class DoWork<S> {
 		}
 		else if (name.equals("ExactlyOneSuccess")) {
 			work_for_ExactlyOneSuccess(args[0]);
+
 		}
 		else if (name.equals("AcknowledgeCommands")) {
-			work_for_AcknowledgeCommands(args[0]);
 		}
 		else if (name.equals("NestedCommand")) {
 			work_for_NestedCommand(args[0], args[1], args[2]);
 		}
 		else if (name.equals("GrantCancel")) {
-			work_for_GrantRelease(args[0], args[1], args[2]);
+			work_for_GrantCancel(args[0], args[1], args[2]);
 		}
 		else if (name.equals("ReleaseResource")) {
 			work_for_ReleaseResource(args[0], args[1], args[2]);
@@ -51,6 +51,13 @@ abstract class DoWork<S> {
 		else System.err.println(name+" not found");
 	}
 
+	/**
+	 * Generates events for the IncreasingCommand property with the specified
+	 * parameters
+	 * 
+	 * @param c
+	 *            Number of identifiers
+	 */
 	public void work_for_IncreasingCommand(int c) {
 
 		for (int i = 0; i < c; i++) {
@@ -59,19 +66,38 @@ abstract class DoWork<S> {
 
 	}
 
+	/**
+	 * Generates events for the ResourceLifecycle property with the specified
+	 * parameters
+	 * 
+	 * @param r
+	 *            Number of resources
+	 * @param u
+	 *            Number of events to generate
+	 */
 	public void work_for_ResourceLifecycle(int r, int u) {
 
+		// Initialise resources array
 		Object[] ros = new Object[r];
 		for (int i = 0; i < r; i++) {
 			ros[i] = new Object();
 		}
+
 		int[] resources = new int[r];
 
 		Random rand = new Random();
 		for (int i = 0; i < u; i++) {
+
+			// Choose a resource randomly
 			int res = rand.nextInt(r);
+
+			// Get current state
 			int s = resources[res];
+
+			// Initialise next state
 			int sp = -1;
+
+			// According to the state, generate event
 			switch (s) {
 			case 0:
 				request(ros[res]);
@@ -98,6 +124,8 @@ abstract class DoWork<S> {
 				;
 				break;
 			}
+
+			// Update state
 			resources[res] = sp;
 		}
 
@@ -199,17 +227,32 @@ abstract class DoWork<S> {
 		}
 	}
 
-	public void work_for_GrantRelease(int t, int r, int u) {
+	/**
+	 * Generates events for the GrantCancel property with the specified
+	 * parameters.
+	 * 
+	 * @param t
+	 *            Number of tasks
+	 * @param r
+	 *            Number of resources
+	 * @param u
+	 *            Number of events to generate
+	 */
+	public void work_for_GrantCancel(int t, int r, int u) {
 
+		// Initialise tasks
 		Object[] tos = new Object[t];
 		for (int i = 0; i < t; i++) {
 			tos[i] = new Object();
 		}
+
+		// Initialise resources
 		Object[] ros = new Object[r];
 		for (int i = 0; i < r; i++) {
 			ros[i] = new Object();
 		}
-		// which task owns the resource -1 means not owned
+
+		// Initialise owners (tasks) for each resource. -1 means not owned
 		int[] owning = new int[r];
 		for (int i = 0; i < r; i++) {
 			owning[i] = -1;
@@ -217,19 +260,25 @@ abstract class DoWork<S> {
 
 		Random rand = new Random();
 		for (int i = 0; i < u; i++) {
+
+			// Choose a resource randomly
 			int res = rand.nextInt(r);
+
 			int task = owning[res];
-			if (task == -1) {
+			if (task == -1) { // No task owns the resource
+
+				// Choose a task randomly and grant the resource
 				task = rand.nextInt(t);
 				grant(tos[task], ros[res]);
 				owning[res] = task;
-			} else {
+
+			} else { // Some task owns the resource
+
+				// Release the resource
 				cancel(tos[task], ros[res]);
 				owning[res] = -1;
 			}
-
 		}
-
 	}
 
 	public void work_for_ReleaseResource(int t, int r, int e) {
@@ -306,9 +355,7 @@ abstract class DoWork<S> {
 					}
 				}
 			}
-
 		}
-
 	}
 
 	public void work_for_RespectConflicts(int r, int s, int t) {
@@ -407,15 +454,10 @@ abstract class DoWork<S> {
 		while (!sats_p.isEmpty() || !sats_r.isEmpty()) {
 
 			if ((!sats_p.isEmpty() && rand.nextBoolean()) || sats_r.isEmpty()) {
-				Integer sat = sats_p.get(rand.nextInt(sats_p.size())); // important
-																		// that
-																		// it's
-																		// an
-																		// object
-																		// for
-																		// list
-																		// remove
-																		// method
+
+				// important that it's an object for list remove method
+				Integer sat = sats_p.get(rand.nextInt(sats_p.size()));
+
 				Queue<Object> res = map_p.get(sat);
 				Object rr = res.remove();
 
@@ -433,15 +475,8 @@ abstract class DoWork<S> {
 					sats_p.remove(sat);
 				}
 			} else {
-				Integer sat = sats_r.get(rand.nextInt(sats_r.size())); // important
-																		// that
-																		// it's
-																		// an
-																		// object
-																		// for
-																		// list
-																		// remove
-																		// method
+				// important that it's an object for list remove method
+				Integer sat = sats_r.get(rand.nextInt(sats_r.size()));
 				Queue<Object> res = map_r.get(sat);
 				Object rr = res.remove();
 				ack(sos[sat], rr);
@@ -452,9 +487,6 @@ abstract class DoWork<S> {
 				}
 			}
 		}
-
-		//
-
 	}
 
 	public void work_for_ExistsLeader(int r) {
@@ -621,7 +653,8 @@ abstract class DoWork<S> {
 	}
 
 	/*
-	 * The methods that we override to call the monitor
+	 * The methods that we override to call the monitor. Events of the
+	 * properties
 	 */
 
 	public abstract void command(int x);
@@ -663,5 +696,9 @@ abstract class DoWork<S> {
 	public abstract void ack(Object a, Object b, int c);
 
 	public abstract void send(Object a, Object b, int c);
+
+	public abstract void fail(Object o);
+
+	public abstract void priority(Object a, Object b);
 
 }
