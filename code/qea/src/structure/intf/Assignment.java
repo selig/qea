@@ -11,7 +11,7 @@ public abstract class Assignment {
 	 * 
 	 * @return updated binding
 	 */
-	public abstract Binding apply(Binding binding);
+	public abstract Binding apply(Binding binding,boolean copy);
 
 	private final String name;
 
@@ -36,10 +36,11 @@ public abstract class Assignment {
 	public static Assignment store(final int var0, final int var1) {
 		return new Assignment("store(x_" + var0 + ", x_" + var1 + ")") {
 			@Override
-			public Binding apply(Binding binding) {
+			public Binding apply(Binding binding,boolean copy) {
 				Object val1 = binding.getForced(var1);
-				Binding newBinding = binding.copy();
-				binding.setValue(var0, val1);
+				Binding newBinding = binding;
+				if(copy) newBinding = binding.copy();
+				newBinding.setValue(var0, val1);
 				return newBinding;
 			}
 		};
@@ -51,10 +52,11 @@ public abstract class Assignment {
 				+ varElement) {
 
 			@Override
-			public Binding apply(Binding binding) {
+			public Binding apply(Binding binding,boolean copy) {
 				HashSet<Object> set = new HashSet<>();
 				set.add(binding.getForced(varElement));
-				Binding newBinding = binding.copy();
+				Binding newBinding = binding;
+				if(copy) newBinding = binding.copy();
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}
@@ -66,18 +68,20 @@ public abstract class Assignment {
 		return new Assignment("addElement_" + varElement + "ToSet_" + varSet) {
 
 			@Override
-			public Binding apply(Binding binding) {
+			public Binding apply(Binding binding,boolean copy) {
 				if (binding.getValue(varSet) != null) {
 					HashSet<Object> set = (HashSet<Object>) binding
 							.getForced(varSet);
 					set.add(binding.getForced(varElement));
-					Binding newBinding = binding.copy();
+					Binding newBinding = binding;
+					if(copy) newBinding = binding.copy();
 					newBinding.setValue(varSet, set);
 					return newBinding;
 				}
 				HashSet<Object> set = new HashSet<>();
 				set.add(binding.getForced(varElement));
-				Binding newBinding = binding.copy();
+				Binding newBinding = binding;
+				if(copy) newBinding = binding.copy();
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}
@@ -90,11 +94,12 @@ public abstract class Assignment {
 				+ varSet) {
 
 			@Override
-			public Binding apply(Binding binding) {
+			public Binding apply(Binding binding,boolean copy) {
 				HashSet<Object> set = (HashSet<Object>) binding
 						.getForced(varSet);
 				set.remove(binding.getForced(varElement));
-				Binding newBinding = binding.copy();
+				Binding newBinding = binding;
+				if(copy) newBinding = binding.copy();
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}

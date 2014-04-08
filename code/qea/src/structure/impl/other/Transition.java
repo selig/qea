@@ -1,5 +1,7 @@
 package structure.impl.other;
 
+import java.util.Arrays;
+
 import structure.intf.Assignment;
 import structure.intf.Guard;
 
@@ -37,6 +39,14 @@ public class Transition {
 	 */
 	private int endState;
 
+	@Override
+	public String toString(){
+		String res = Arrays.toString(variableNames);
+		if(guard!=null) res+="-"+guard;
+		if(assignment!=null) res+="-"+assignment;
+		return res+"-"+endState;
+	}
+	
 	public Transition(int varName, int endState) {
 		variableNames = new int[] { varName };
 		this.endState = endState;

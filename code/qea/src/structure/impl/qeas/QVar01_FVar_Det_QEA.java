@@ -123,7 +123,7 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA {
 
 		// If there is an assignment, execute it
 		if (transition.getAssignment() != null) {
-			config.setBinding(transition.getAssignment().apply(binding));
+			config.setBinding(transition.getAssignment().apply(binding,false));
 		}
 
 		// Set the end state

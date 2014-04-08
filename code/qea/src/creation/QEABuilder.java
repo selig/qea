@@ -51,6 +51,26 @@ public class QEABuilder {
 	 * We use internal representations
 	 */
 	private static class VarOrVal {
+		static Map<Integer,VarOrVal> var_cache = new HashMap<Integer,VarOrVal>();
+		static VarOrVal makeVar(int var){
+			VarOrVal v = var_cache.get(var);
+			if(v==null){
+				v=new VarOrVal();
+				v.var=var;
+				var_cache.put(var,v);
+			}
+			return v;
+		}
+		static Map<Object,VarOrVal> val_cache = new HashMap<Object,VarOrVal>();
+		static VarOrVal makeVal(Object val){
+			VarOrVal v = val_cache.get(val);
+			if(v==null){
+				v=new VarOrVal();
+				v.val=val;
+				val_cache.put(val,v);
+			}
+			return v;
+		}		
 		int var = -1000;
 		Object val;
 	}
@@ -569,10 +589,19 @@ public class QEABuilder {
 				for (VarOrVal event_arg : t.event_args) {
 					int var = event_arg.var;
 					if (var != 0 && !qvars.contains(var)) {
-						// fvars.add(var);
 						if (var > max) {
 							max = var;
 						}
+					}
+				}
+				if(t.g!=null){
+					for(int var : t.g.vars()){
+						if (var != 0 && !qvars.contains(var)) {
+							// fvars.add(var);
+							if (var > max) {
+								max = var;
+							}
+						}						
 					}
 				}
 			}
@@ -730,8 +759,7 @@ public class QEABuilder {
 		trans.event_name = propname;
 		VarOrVal[] args = new VarOrVal[vargs.length];
 		for (int i = 0; i < vargs.length; i++) {
-			args[i] = new VarOrVal();
-			args[i].var = vargs[i];
+			args[i] = VarOrVal.makeVar(vargs[i]);
 		}
 		trans.event_args = args;
 		transitions.add(trans);
@@ -753,15 +781,11 @@ public class QEABuilder {
 	}
 
 	public void addVarArg(int var) {
-		VarOrVal v = new VarOrVal();
-		v.var = var;
-		incargs.add(v);
+		incargs.add(VarOrVal.makeVar(var));
 	}
 
 	public void addValArg(Object val) {
-		VarOrVal v = new VarOrVal();
-		v.val = val;
-		incargs.add(v);
+		incargs.add(VarOrVal.makeVal(val));
 	}
 
 	public void addGuard(Guard g) {
@@ -824,6 +848,7 @@ public class QEABuilder {
 
 			for (TempEvent event : events) {
 				if (!existsTransition(state, event)) {
+					System.err.println("Adding skip transition for "+state+" and "+event);
 					addTransition(state, event, state);
 				}
 			}

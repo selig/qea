@@ -165,7 +165,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 				// If there is an assignment, execute it
 				if (transition.getAssignment() != null) {
 					config.setBinding(0,
-							transition.getAssignment().apply(binding));
+							transition.getAssignment().apply(binding,false));
 				}
 
 				// Set the end state
@@ -201,7 +201,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 						// If there is an assignment, execute it
 						if (transition.getAssignment() != null) {
 							binding = (FBindingImpl) transition.getAssignment()
-									.apply(binding);
+									.apply(binding,true);
 						}
 
 						// Copy end state and binding in the arrays
@@ -288,7 +288,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 							// If there is an assignment, execute it
 							if (transition.getAssignment() != null) {
 								binding = (FBindingImpl) transition
-										.getAssignment().apply(binding);
+										.getAssignment().apply(binding,true);
 							}
 
 							// Copy end state and binding in the arrays

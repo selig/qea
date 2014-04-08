@@ -235,6 +235,7 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
+
 	public static QEA makeRespectConflictsSingle() {
 
 		QEABuilder q = new QEABuilder("RespectConflictsSingle");
@@ -257,6 +258,7 @@ public class RoverCaseStudy {
 		q.addVarArg(R2);
 		q.addAssignment(Assignment.createSetFromElement(RS, R2));
 		q.endTransition(2);
+		
 
 		q.startTransition(2);
 		q.eventName(CONFLICT);
@@ -275,10 +277,12 @@ public class RoverCaseStudy {
 		q.endTransition(4);
 
 		// Manual skip states
-		q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
+		//q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
+		q.addTransition(1, GRANT, new int[]{ R2}, 1);
+		q.addTransition(2, GRANT, new int[]{ R2}, 2);
 
 		q.addFinalStates(1, 2, 3);
-		q.setSkipStates(1, 2, 4);
+		//q.setSkipStates(1, 2, 4);
 
 		QEA qea = q.make();
 
@@ -289,6 +293,48 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
+	public static QEA makeRespectConflictsSingleNonDet() {
+
+		QEABuilder q = new QEABuilder("RespectConflictsSingle");
+
+		// Events
+		int CONFLICT = 1;
+		int GRANT = 2;
+		int CANCEL = 3;
+		// Quantified variable
+		int R1 = -1;
+		// Free variables
+		final int R2 = 1;
+		final int R3 = 2;
+
+		q.addQuantification(FORALL, R1);
+
+		q.addTransition(1, CONFLICT, new int[] { R1, R2 }, 1);
+		q.addTransition(1, CONFLICT, new int[] { R2, R1 }, 1);
+		q.addTransition(1, CONFLICT, new int[] { R1, R2 }, 2);
+		q.addTransition(1, CONFLICT, new int[] { R2, R1 }, 2);
+
+		q.addTransition(2, GRANT, new int[]{R1}, 3);
+		q.addTransition(3, CANCEL, new int[]{R1}, 2);
+		
+		q.startTransition(3);
+		q.eventName(GRANT);
+		q.addVarArg(R3);
+		q.addGuard(Guard.isEqual(R2, R3));
+		q.endTransition(4);
+
+		q.addFinalStates(4);
+		q.setSkipStates(1, 2, 4);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("conflict", 1);
+		qea.record_event_name("grant", 2);
+		qea.record_event_name("cancel", 3);
+
+		return qea;
+	}	
+	
 	public static QEA makeRespectPriorities() {
 
 		QEABuilder q = new QEABuilder("RespectPriorities");
@@ -528,6 +574,10 @@ public class RoverCaseStudy {
 			@Override
 			public boolean usesQvars() {
 				return false;
+			}
+			@Override
+			public int[] vars(){
+				return new int[]{N1,N2,P1,P2,T1,T2,M};
 			}
 
 			@Override
