@@ -1,5 +1,7 @@
 package monitoring.impl.monitors.general;
 
+import java.util.Arrays;
+
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Quantification;
 import static structure.impl.other.Quantification.*;
@@ -11,15 +13,19 @@ public abstract class IncrementalChecker {
 
 	public static IncrementalChecker make(QEntry[] lambda) {
 		
-		if(lambda.length==0) return new EmptyChecker();
+		// zeroth place is always empty
+		if(lambda.length==0 || lambda.length==1) return new EmptyChecker();
 		
-		Quantification q= null;
+		Quantification q= lambda[1].quantification;
 		
+		for(int i=2;i<lambda.length;i++){
+			if(q!=lambda[i].quantification) q=null;
+		}
 		
 		if(q==FORALL) return new AllUniversalChecker();
 		if(q==EXISTS) return new AllExistentialChecker();
 
-		throw new RuntimeException("Not implemented for general lambda");
+		throw new RuntimeException("Not implemented for general lambda "+Arrays.toString(lambda));
 	}
 
 	public abstract void newBinding(boolean started_final); 

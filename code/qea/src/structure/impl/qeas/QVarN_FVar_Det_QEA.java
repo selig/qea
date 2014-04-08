@@ -5,6 +5,7 @@ import java.util.Set;
 
 import monitoring.impl.configs.DetConfig;
 import structure.impl.other.FBindingImpl;
+import structure.impl.other.FullBindingImpl;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
@@ -36,6 +37,8 @@ public class QVarN_FVar_Det_QEA extends QEA {
 		public final Quantification quantification;
 		public final int variable;
 		public final Guard guard;
+		
+		public String toString(){ return quantification+" "+variable;}
 	}
 	
 	private final int initialState;
@@ -137,32 +140,42 @@ public class QVarN_FVar_Det_QEA extends QEA {
 	public void getNextConfig(QBindingImpl qbinding, DetConfig config,
 			int eventName, Object[] args) {
 
-                //Remember we're determinstic - this means that we can update the DetConfig instead
-                // of creating a new one
-                // TODO - check that other Det approaches do this!
+                //Remember we're deterministic - this means that we can update the DetConfig
 
                 int start_state = config.getState();
                 Binding binding = config.getBinding();
                 Transition transition = delta[start_state][eventName];
 
-                // update binding based on args
-                // TODO - don't copy binding, just update, check other Det cases
+                if(transition==null){
+                	// no transition - fail
+                	config.setState(0);
+                	return;
+                }
+                
                 // if we bind new qvariables or clash with bindings in qbinding
                 // then we return without making an update, as we are not relevant
+                Binding extend_with = qbinding.extend(transition.getVariableNames(),args);
+                if(extend_with == null || !qbinding.equals(extend_with)){
+                	//not relevant, just return 
+                	System.err.println(extend_with);
+                	return;
+                }
                 
-                //TODO - probably use a method in Binding stuff
-
-
+                // update binding based on args
+                binding.update(transition.getVariableNames(),args);                
+                
                 // check guard
                 Guard guard = transition.getGuard();
-                if(guard==null || guard.check(binding)){
+                Binding extended_guard = binding;
+                if(guard !=null && guard.usesQvars()) extended_guard = new FullBindingImpl(binding,qbinding);
+                if(guard==null || guard.check(extended_guard)){
                      config.setState(transition.getEndState());
                      Assignment assignment = transition.getAssignment();
-                     if(assignment!=null) binding = assignment.apply(binding,false); // in det case no copy
-                     config.setBinding(binding);
+                    // in det case we just update the binding, no copy
+                     if(assignment!=null) assignment.apply(binding,false); 
                 }
                 //if we cannot go to state 0
-                config.setState(0);
+                else config.setState(0);
 
 	}
 
@@ -183,7 +196,8 @@ public class QVarN_FVar_Det_QEA extends QEA {
 
 
 	public void setupMatching(){
-		for(int e=1;e<delta.length;e++){
+		e_sigs = new int[finalStates.length][][];
+		for(int e=1;e<delta[0].length;e++){
 			int[][] sigs = new int[0][];
 
 			for(int s = 1;s<delta.length;s++){
