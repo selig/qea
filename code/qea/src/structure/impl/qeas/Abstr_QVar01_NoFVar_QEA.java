@@ -15,6 +15,7 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA {
 	protected final boolean isPropositional;
 
 	protected final boolean quantificationUniversal;
+	protected final boolean negatedQuantification;	
 
 	public Abstr_QVar01_NoFVar_QEA(int numStates, int initialState,
 			Quantification quantification) {
@@ -24,15 +25,28 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA {
 		switch (quantification) {
 		case FORALL:
 			quantificationUniversal = true;
+			negatedQuantification = false;
 			isPropositional = false;
 			break;
+		case NOT_FORALL:
+			quantificationUniversal = true;
+			negatedQuantification = false;
+			isPropositional = false;
+			break;		
 		case EXISTS:
 			quantificationUniversal = false;
 			isPropositional = false;
+			negatedQuantification = false;			
 			break;
+		case NOT_EXISTS:
+			quantificationUniversal = false;
+			isPropositional = false;
+			negatedQuantification = true;			
+			break;			
 		case NONE:
 			quantificationUniversal = false;
 			isPropositional = true;
+			negatedQuantification = false;	
 			break;
 		default:
 			throw new ShouldNotHappenException("Unknown quantification "
@@ -147,5 +161,12 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA {
 	public boolean isQuantificationUniversal() {
 		return quantificationUniversal;
 	}
-
+	/**
+	 * @return <code>true</code> if the quantification for the variable of this
+	 *         QEA is negated; <code>false</code> if not
+	 */
+	public boolean isQuantificationNegated() {
+		return negatedQuantification;
+	}	
+	
 }
