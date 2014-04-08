@@ -159,9 +159,10 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 		return computeVerdict(false);
 	}
 
+	private final Object[] emptyArgs = new Object[0];
 	@Override
 	public Verdict step(int eventName) {
-		return step(eventName, new Object[] {});
+		return step(eventName, emptyArgs);
 	}
 
 	/**
