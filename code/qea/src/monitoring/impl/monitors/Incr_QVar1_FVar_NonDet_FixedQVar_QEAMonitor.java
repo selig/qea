@@ -89,12 +89,17 @@ public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 		}
 		return ret;
 	}
-
 	@Override
 	protected int removeStrongBindings() {
-		int removed = strong.size();
-		for(Object o : strong){
-			bindings.remove(o);
+		int removed = 0;
+		for(Object o : strong){	
+			NonDetConfig c = bindings.get(o);
+			boolean is_final = false;
+			for(int s : c.getStates()) is_final |= qea.isStateFinal(s);
+			if(is_final==finalStrongState){
+				bindings.remove(o);
+				removed++;
+			}
 		}
 		strong.clear();
 		return removed;
@@ -102,12 +107,18 @@ public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 
 	@Override
 	protected int rollbackStrongBindings() {
-		int rolled = strong.size();
+		int rolled = 0;
 		for(Object o : strong){
-			bindings.put(o,new NonDetConfig(qea.getInitialState(),qea.newBinding()));
+			NonDetConfig c = bindings.get(o);
+			boolean is_final = false;
+			for(int s : c.getStates()) is_final |= qea.isStateFinal(s);
+			if(is_final==finalStrongState){
+				bindings.put(o,new NonDetConfig(qea.getInitialState(),qea.newBinding()));
+				rolled++;
+			}						
 		}
 		strong.clear();
 		return rolled;
 	}	
-	
+
 }

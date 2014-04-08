@@ -41,7 +41,7 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	 * The previous verdict, only save if it was strong, used in restart
 	 */
 	protected Verdict saved = null;
-	protected final HashSet<Object> strong;		
+	protected final HashSet<Object> strong;	
 	
 	/**
 	 * Garbage and restart modes
@@ -175,22 +175,22 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	protected boolean checkFinalAndStrongStates(NonDetConfig config, Object qVarValue) {
 
 		boolean endConfigFinal = false;
-		boolean allNonFinalStronState = true;
+		boolean allNonFinalStrongState = true;
 		int[] configStates = config.getStates();
 		for (int s : configStates) {
 			if (qea.isStateFinal(s)) {
 				endConfigFinal = true;
-				allNonFinalStronState=false;
+				allNonFinalStrongState=false;
 				if (qea.isStateStrong(s)) {
-					strong.add(qVarValue);
+					if(restart_mode.on()) strong.add(qVarValue);
 					finalStrongState = true;
 				}
 			} else if (!qea.isStateStrong(s)) {
-				allNonFinalStronState = false;				
+				allNonFinalStrongState = false;				
 			}
 		}
-		if(allNonFinalStronState){
-			strong.add(qVarValue);
+		if(allNonFinalStrongState){
+			if(restart_mode.on()) strong.add(qVarValue);
 			nonFinalStrongState = true;
 		}
 		return endConfigFinal;
@@ -220,14 +220,16 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 			finalStrongState=false;
 			// if removed or initial state is not final then remove those as final states
 			if(remove || !qea.isStateFinal(qea.getInitialState())){
-				bindingsInFinalStateCount =- strong_bindings;
+				bindingsInFinalStateCount -= strong_bindings;
+				if(!remove) bindingsInNonFinalStateCount += strong_bindings;
 			}
 		}
 		else{
 			nonFinalStrongState=false;
 			// if removed of initial state is final them remove those as nonfinal states
 			if(remove || qea.isStateFinal(qea.getInitialState())){
-				bindingsInNonFinalStateCount =- strong_bindings;
+				bindingsInNonFinalStateCount -= strong_bindings;
+				if(!remove) bindingsInFinalStateCount += strong_bindings;
 			}
 		}
 		saved=null;	
