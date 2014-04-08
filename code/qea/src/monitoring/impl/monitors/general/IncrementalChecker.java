@@ -22,8 +22,10 @@ public abstract class IncrementalChecker {
 			if(q!=lambda[i].quantification) q=null;
 		}
 		
-		if(q==FORALL) return new AllUniversalChecker();
-		if(q==EXISTS) return new AllExistentialChecker();
+		if(q==FORALL) return new AllUniversalChecker(true);
+		if(q==NOT_FORALL) return new AllUniversalChecker(false);
+		if(q==EXISTS) return new AllExistentialChecker(true);
+		if(q==NOT_EXISTS) return new AllExistentialChecker(false);
 
 		throw new RuntimeException("Not implemented for general lambda "+Arrays.toString(lambda));
 	}
@@ -62,6 +64,9 @@ public abstract class IncrementalChecker {
 	public static class AllUniversalChecker extends IncrementalChecker{
 
 		private int number_non_final = 0;
+		private final boolean negated;
+		
+		AllUniversalChecker(boolean n){negated=n;}
 		
 		@Override
 		public void newBinding(boolean started_final) {
@@ -79,19 +84,25 @@ public abstract class IncrementalChecker {
 		@Override
 		public Verdict verdict(boolean at_end) {
 			boolean failing = (number_non_final > 0);
+			Verdict result;
 			if(failing){
-				if(at_end) return FAILURE;
-				else return WEAK_FAILURE;
+				if(at_end) result=  FAILURE;
+				else result=  WEAK_FAILURE;
 			}
-			if(at_end) return SUCCESS;
-			return WEAK_SUCCESS;
+			else if(at_end) result=  SUCCESS;
+			else result= WEAK_SUCCESS;
+			if(negated) result = result.negated();
+			return result;
 		}
 		
 	}
 	
 	public static class AllExistentialChecker extends IncrementalChecker{
 
-		private int number_final = 0;
+		private int number_final = 0;		
+		private final boolean negated;
+		
+		AllExistentialChecker(boolean n){negated=n;}		
 		
 		@Override
 		public void newBinding(boolean started_final) {
@@ -109,12 +120,15 @@ public abstract class IncrementalChecker {
 		@Override
 		public Verdict verdict(boolean at_end) {
 			boolean failing = (number_final == 0);
+			Verdict result;
 			if(failing){
-				if(at_end) return FAILURE;
-				else return WEAK_FAILURE;
+				if(at_end) result=  FAILURE;
+				else result=  WEAK_FAILURE;
 			}
-			if(at_end) return SUCCESS;
-			return WEAK_SUCCESS;
+			else if(at_end) result=  SUCCESS;
+			else result= WEAK_SUCCESS;
+			if(negated) result = result.negated();
+			return result;
 		}
 		
 	}	
