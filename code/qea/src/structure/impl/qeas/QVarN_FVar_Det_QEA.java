@@ -213,7 +213,7 @@ public class QVarN_FVar_Det_QEA extends QEA {
 	}
 
 	public void setupMatching() {
-		e_sigs = new int[finalStates.length][][];
+		e_sigs = new int[delta[0].length][][];
 		for (int e = 1; e < delta[0].length; e++) {
 			int[][] sigs = new int[0][];
 
