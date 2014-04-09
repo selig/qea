@@ -158,6 +158,39 @@ public class RoverCaseStudy {
 		return qea;
 	}
 
+	public static QEA makeResourceLifecycleGeneral() { // Figure A.26
+
+		QEABuilder q = new QEABuilder("ResourceLifecycle");
+
+		int REQUEST = 1;
+		int GRANT = 2;
+		int DENY = 3;
+		int RESCIND = 4;
+		int CANCEL = 5;
+		int R = -1;
+
+		q.addQuantification(FORALL, R);
+
+		int[] r = new int[] { R };
+		q.addTransition(1, REQUEST, r, 2);
+		q.addTransition(2, DENY, r, 1);
+		q.addTransition(2, GRANT, r, 3);
+		q.addTransition(3, RESCIND, r, 3);
+		q.addTransition(3, CANCEL, r, 1);
+
+		q.addFinalStates(1, 2);
+
+		QEA qea = q.makeMostGeneral();
+
+		qea.record_event_name("request", 1);
+		qea.record_event_name("grant", 2);
+		qea.record_event_name("deny", 3);
+		qea.record_event_name("rescind", 4);
+		qea.record_event_name("cancel", 5);
+
+		return qea;
+	}
+
 	public static QEA makeReleaseResource() { // Figure A.27
 
 		QEABuilder q = new QEABuilder("ReleaseResource");
@@ -248,7 +281,6 @@ public class RoverCaseStudy {
 		q.addVarArg(R2);
 		q.addAssignment(Assignment.createSetFromElement(RS, R2));
 		q.endTransition(2);
-		
 
 		q.startTransition(2);
 		q.eventName(CONFLICT);
@@ -267,10 +299,9 @@ public class RoverCaseStudy {
 		q.endTransition(4);
 
 		// Manual skip states
-		//q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
-		q.addTransition(1, GRANT, new int[]{ R2}, 1);
-		q.addTransition(2, GRANT, new int[]{ R2}, 2);
-
+		// q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
+		q.addTransition(1, GRANT, new int[] { R2 }, 1);
+		q.addTransition(2, GRANT, new int[] { R2 }, 2);
 
 		q.startTransition(3);
 		q.eventName(GRANT);
@@ -280,7 +311,7 @@ public class RoverCaseStudy {
 
 		// Final and skip states
 		q.addFinalStates(1, 2, 3);
-		//q.setSkipStates(1, 2, 4);
+		// q.setSkipStates(1, 2, 4);
 
 		QEA qea = q.make();
 
@@ -312,9 +343,9 @@ public class RoverCaseStudy {
 		q.addTransition(1, CONFLICT, new int[] { R1, R2 }, 2);
 		q.addTransition(1, CONFLICT, new int[] { R2, R1 }, 2);
 
-		q.addTransition(2, GRANT, new int[]{R1}, 3);
-		q.addTransition(3, CANCEL, new int[]{R1}, 2);
-		
+		q.addTransition(2, GRANT, new int[] { R1 }, 3);
+		q.addTransition(3, CANCEL, new int[] { R1 }, 2);
+
 		q.startTransition(3);
 		q.eventName(GRANT);
 		q.addVarArg(R3);
@@ -331,10 +362,9 @@ public class RoverCaseStudy {
 		qea.record_event_name("cancel", 3);
 
 		return qea;
-	}	
-	
-	public static QEA makeRespectPriorities() { // Figure A.30
+	}
 
+	public static QEA makeRespectPriorities() { // Figure A.30
 
 		QEABuilder q = new QEABuilder("RespectPriorities");
 
@@ -576,9 +606,10 @@ public class RoverCaseStudy {
 			public boolean usesQvars() {
 				return false;
 			}
+
 			@Override
-			public int[] vars(){
-				return new int[]{N1,N2,P1,P2,T1,T2,M};
+			public int[] vars() {
+				return new int[] { N1, N2, P1, P2, T1, T2, M };
 			}
 
 			@Override
@@ -621,8 +652,9 @@ public class RoverCaseStudy {
 
 			@Override
 			public int[] vars() {
-				return new int[]{N1,N2,P1,P2,T1,T2,M};
-			}			
+				return new int[] { N1, N2, P1, P2, T1, T2, M };
+			}
+
 			@Override
 			public boolean usesQvars() {
 				return false;
@@ -847,8 +879,9 @@ public class RoverCaseStudy {
 
 			@Override
 			public int[] vars() {
-				return new int[]{M,H};
-			}			
+				return new int[] { M, H };
+			}
+
 			@Override
 			public boolean usesQvars() {
 				return false;
@@ -875,7 +908,7 @@ public class RoverCaseStudy {
 		q.addAssignment(new Assignment("RemoveMessagesWithHashH") {
 
 			@Override
-			public Binding apply(Binding binding,boolean copy) {
+			public Binding apply(Binding binding, boolean copy) {
 				HashSet<Object> setM = (HashSet<Object>) binding.getForced(M);
 				for (Object msg : setM) {
 					if (msg.hashCode() == binding.getForcedAsInteger(H)
@@ -884,7 +917,9 @@ public class RoverCaseStudy {
 					}
 				}
 				Binding newBinding = binding;
-				if(copy) binding = binding.copy();
+				if (copy) {
+					binding = binding.copy();
+				}
 				newBinding.setValue(M, setM);
 				return newBinding;
 
@@ -901,8 +936,9 @@ public class RoverCaseStudy {
 
 			@Override
 			public int[] vars() {
-				return new int[]{M,MSG,H};
+				return new int[] { M, MSG, H };
 			}
+
 			@Override
 			public boolean usesQvars() {
 				return false;
@@ -939,8 +975,9 @@ public class RoverCaseStudy {
 
 			@Override
 			public int[] vars() {
-				return new int[]{M,H,MSG};
-			}			
+				return new int[] { M, H, MSG };
+			}
+
 			@Override
 			public boolean usesQvars() {
 				return false;
