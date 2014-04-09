@@ -2,6 +2,7 @@ package monitoring.impl.monitors;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
@@ -9,6 +10,7 @@ import monitoring.impl.configs.DetConfig;
 import structure.impl.other.Transition;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar01_FVar_Det_QEA;
+import util.EagerGarbageHashMap;
 import util.WeakIdentityHashMap;
 
 /**
@@ -62,10 +64,11 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 	 */
 	public Incr_QVar1_FVar_Det_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_FVar_Det_QEA qea) {
 		super(restart,garbage,qea);
-		if(garbage==GarbageMode.LAZY)
-			bindings = new WeakIdentityHashMap<>();
-		else
-			bindings = new IdentityHashMap<>();
+		switch(garbage){
+			case LAZY: bindings = new WeakIdentityHashMap<>(); break;
+			case EAGER: bindings = new EagerGarbageHashMap<>(); break;
+			case NONE: bindings = new IdentityHashMap<>();
+		}
 		emptyBindingConfig = new DetConfig(qea.getInitialState(),
 				qea.newBinding());
 		buildEventsIndices();
@@ -240,8 +243,10 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 	public String getStatus() {
 		String ret = "Empty: " + emptyBindingConfig + "\n";
 		ret += "Map:\n";
-		for (IdentityHashMap.Entry<Object, DetConfig> entry : bindings
-				.entrySet()) {
+		Set<Map.Entry<Object,DetConfig>> entryset = null;
+		if(bindings instanceof EagerGarbageHashMap) entryset = ((EagerGarbageHashMap) bindings).storeEntrySet();
+		else entryset = bindings.entrySet();
+		for (Map.Entry<Object, DetConfig> entry : entryset) {
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;
