@@ -117,10 +117,15 @@ public class DemoPropsTest {
 		Monitor monitor = MonitorFactory.create(DemoQEAs
 				.detSingleNonFixedWithProp());
 
+		//System.err.println(monitor.getClass());
+		
 		Object x = new Object();
 		assertEquals(monitor.step(f, 1, x), WEAK_FAILURE);
+		//System.err.println(monitor.getStatus());
 		assertEquals(monitor.step(g), WEAK_FAILURE);
+		//System.err.println(monitor.getStatus());
 		assertEquals(monitor.step(h, x, 6), WEAK_SUCCESS);
+		//System.err.println(monitor.getStatus());
 	}
 
 	@Test
