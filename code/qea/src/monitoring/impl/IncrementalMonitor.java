@@ -212,6 +212,10 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 				//rollback the offending bindings to initial state
 				tidyUpOnRestart(rollbackStrongBindings(),false);
 				return true;
+			case IGNORE:
+				//set the offending bindings to be ignored in the future
+				tidyUpOnRestart(ignoreStrongBindings(),true);
+				return true;
 		}
 		return false;
 	}
@@ -240,4 +244,5 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	 */
 	protected abstract int removeStrongBindings();
 	protected abstract int rollbackStrongBindings();
+	protected abstract int ignoreStrongBindings();
 }

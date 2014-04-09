@@ -5,18 +5,25 @@ import java.lang.ref.WeakReference;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 @SuppressWarnings("serial")
-public class EagerGarbageHashMap<V> implements Map<Object,V> {
+public class EagerGarbageHashMap<V> implements Map<Object,V>, IgnoreWrapper<Object> {
 
 	private final HashMap<Integer,V> store = new HashMap<Integer,V>();
 	private final ReferenceQueue to_remove = new ReferenceQueue();
 	private final WeakHashMap<Object,GarbageRef> garbage_store = new WeakHashMap<Object,GarbageRef>();
-
+	private final HashSet<Integer> ignored_ids = new HashSet<Integer>();
+	
+	public void ignore(Object key){
+		int id = System.identityHashCode(key);
+		ignored_ids.add(id);
+	}	
+	
 	private int counter = 0;
 	public final int frequency = 10;
 	
@@ -68,6 +75,8 @@ public class EagerGarbageHashMap<V> implements Map<Object,V> {
 	public V get(Object key) {
 		if(counter++%frequency==0) clearGarbage();		
 		Integer id = getId(key);
+		if(ignored_ids.contains(id))
+			return null;
 		return store.get(id);
 	}
 

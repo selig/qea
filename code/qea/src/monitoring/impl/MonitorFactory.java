@@ -50,6 +50,10 @@ public class MonitorFactory {
 	@SuppressWarnings("rawtypes")
 	public static Monitor create(QEA qea, RestartMode restart, GarbageMode garbage) {
 
+		if(qea.getLambda().length==0)
+			if(restart==RestartMode.REMOVE || restart==RestartMode.IGNORE)
+				System.err.println("WARNING: restart mode"+restart+" not applicable for zero quantified variables");
+		
 		switch (qea.getQEAType()) {
 
 		case QVAR01_NOFVAR_DET_QEA:

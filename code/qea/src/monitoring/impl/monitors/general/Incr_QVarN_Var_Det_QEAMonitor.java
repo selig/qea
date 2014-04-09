@@ -306,6 +306,12 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 	protected int rollbackStrongBindings() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	protected int ignoreStrongBindings() {
+		// TODO Auto-generated method stub
+		return 0;
 	}	
 	
 }
