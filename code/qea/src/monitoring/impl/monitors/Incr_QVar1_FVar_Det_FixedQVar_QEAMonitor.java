@@ -11,6 +11,8 @@ import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar1_FVar_Det_FixedQVar_QEA;
 import util.EagerGarbageHashMap;
+import util.IgnoreIdentityWrapper;
+import util.IgnoreWrapper;
 import util.WeakIdentityHashMap;
 
 /**
@@ -27,7 +29,7 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 	 * configuration for each binding. The configuration contains the state and
 	 * the bindings for the free variables
 	 */
-	private final Map<Object, DetConfig> bindings;
+	private Map<Object, DetConfig> bindings;
 
 	/**
 	 * Creates an IncrementalNonSimpleDetQEAMonitor for the specified QEA
@@ -44,6 +46,8 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 			case NONE: 
 			default: bindings = new IdentityHashMap<>();
 		}
+		if(restart==RestartMode.IGNORE && garbage!=GarbageMode.EAGER)
+			bindings = new IgnoreIdentityWrapper<>(bindings);		
 	}
 
 	@Override
@@ -66,6 +70,9 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 
 			// Get current configuration for the binding
 			config = bindings.get(qVarValue);
+			// if config=null it means the object is ignored
+			// we should stop processing it here
+			if(config==null) return computeVerdict(false);			
 
 			// Assign flags for counters update
 			existingBinding = true;
@@ -164,5 +171,17 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 		strong.clear();
 		return rolled;
 	}		
-	
+	@Override
+	protected int ignoreStrongBindings() {
+		int ignored = 0;
+		for(Object o : strong){
+			int state = bindings.get(o).getState();
+			if(qea.isStateFinal(state)==finalStrongState){			
+				((IgnoreWrapper) bindings).ignore(o);
+				ignored++;
+			}					
+		}
+		strong.clear();
+		return ignored;
+	}
 }

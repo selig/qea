@@ -100,6 +100,11 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 		// Not applicable to this monitor
 		return 0;
 	}
+	@Override
+	protected int ignoreStrongBindings() {
+		//Not applicable to this monitor
+		return 0;
+	}	
 
 	@Override
 	protected int rollbackStrongBindings() {

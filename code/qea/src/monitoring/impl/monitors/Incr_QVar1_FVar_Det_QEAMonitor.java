@@ -7,10 +7,13 @@ import java.util.Set;
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
 import monitoring.impl.configs.DetConfig;
+import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Transition;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar01_FVar_Det_QEA;
 import util.EagerGarbageHashMap;
+import util.IgnoreIdentityWrapper;
+import util.IgnoreWrapper;
 import util.WeakIdentityHashMap;
 
 /**
@@ -69,6 +72,8 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 			case EAGER: bindings = new EagerGarbageHashMap<>(); break;
 			case NONE: bindings = new IdentityHashMap<>();
 		}
+		if(restart==RestartMode.IGNORE && garbage!=GarbageMode.EAGER)
+			bindings = new IgnoreIdentityWrapper<>(bindings);		
 		emptyBindingConfig = new DetConfig(qea.getInitialState(),
 				qea.newBinding());
 		buildEventsIndices();
@@ -154,7 +159,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 			Object qVarBinding = getFirstQVarBinding(eventsMasks[eventName],
 					args);
 			if (!eventProcessedForAllExistingBindings
-					|| bindings.get(qVarBinding) == null) {
+					|| !bindings.containsKey(qVarBinding)) {
 				stepNoVerdict(eventName, args, qVarBinding);
 			}
 		} else if (numQVarPositions[eventName] > 1) { // Possibly multiple
@@ -164,7 +169,7 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 					eventsMasks[eventName], args, numQVarPositions[eventName]);
 			for (Object qVarBinding : qVarBindings) {
 				if (!eventProcessedForAllExistingBindings
-						|| bindings.get(qVarBinding) == null) {
+						|| !bindings.containsKey(qVarBinding)) {
 					stepNoVerdict(eventName, args, qVarBinding);
 				}
 			}
@@ -205,6 +210,9 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 
 			// Get current configuration for the binding
 			config = bindings.get(qVarValue);
+			// if config=null it means the object is ignored
+			// we should stop processing it here
+			if(config==null) return;			
 
 			// Assign flags for counters update
 			existingBinding = true;
@@ -279,5 +287,18 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 		strong.clear();
 		return rolled;
 	}	
+	@Override
+	protected int ignoreStrongBindings() {
+		int ignored = 0;
+		for(Object o : strong){
+			int state = bindings.get(o).getState();
+			if(qea.isStateFinal(state)==finalStrongState){			
+				((IgnoreWrapper) bindings).ignore(o);
+				ignored++;
+			}					
+		}
+		strong.clear();
+		return ignored;
+	}		
 	
 }

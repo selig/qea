@@ -10,6 +10,8 @@ import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
 import util.EagerGarbageHashMap;
+import util.IgnoreIdentityWrapper;
+import util.IgnoreWrapper;
 import util.WeakIdentityHashMap;
 
 /**
@@ -31,7 +33,9 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 			case LAZY: bindings = new WeakIdentityHashMap<>(); break;
 			case EAGER: bindings = new EagerGarbageHashMap<>(); break;
 			case NONE: bindings = new IdentityHashMap<>();
-		}			
+		}	
+		if(restart==RestartMode.IGNORE && garbage!=GarbageMode.EAGER)
+			bindings = new IgnoreIdentityWrapper<>(bindings);
 		empty_config = new NonDetConfig(qea.getInitialState());
 	}
 
@@ -52,6 +56,9 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 
 			// Get current configuration for the binding
 			config = bindings.get(param1);
+			// if config=null it means the object is ignored
+			// we should stop processing it here
+			if(config==null) return computeVerdict(false);
 
 			// Assign flags for counters update
 			existingBinding = true;
@@ -130,6 +137,22 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 		}
 		strong.clear();
 		return rolled;
+	}
+
+	@Override
+	protected int ignoreStrongBindings() {
+		int ignored = 0;
+		for(Object o : strong){
+			NonDetConfig c = bindings.get(o);
+			boolean is_final = false;
+			for(int s : c.getStates()) is_final |= qea.isStateFinal(s);
+			if(is_final==finalStrongState){
+				((IgnoreWrapper) bindings).ignore(o);
+				ignored++;
+			}						
+		}
+		strong.clear();
+		return ignored;
 	}	
 	
 }

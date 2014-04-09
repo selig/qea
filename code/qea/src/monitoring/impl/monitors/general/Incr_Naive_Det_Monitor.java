@@ -123,4 +123,10 @@ public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QE
 		return 0;
 	}
 
+	@Override
+	protected int ignoreStrongBindings() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
