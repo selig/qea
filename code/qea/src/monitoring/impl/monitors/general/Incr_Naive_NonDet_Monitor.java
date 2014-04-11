@@ -6,25 +6,32 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import monitoring.impl.configs.DetConfig;
+import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.QBindingImpl;
-import structure.impl.qeas.QVarN_FVar_Det_QEA;
+import structure.impl.qeas.QVarN_FVar_NonDet_QEA;
 
-public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FVar_Det_QEA>  {
+public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FVar_NonDet_QEA>  {
 
-	private final HashMap<QBindingImpl,DetConfig> mapping = new HashMap<QBindingImpl,DetConfig>();
+	private final HashMap<QBindingImpl,NonDetConfig> mapping = new HashMap<QBindingImpl,NonDetConfig>();
 	private final TreeSet<QBindingImpl> B = new TreeSet<QBindingImpl>(new QBindingImpl.QBindingImplComparator());
 
 	
-	public Incr_Naive_Det_Monitor(QVarN_FVar_Det_QEA qea) {
+	public Incr_Naive_NonDet_Monitor(QVarN_FVar_NonDet_QEA qea) {
 		super(qea);
 		
-		DetConfig initialConfig = new DetConfig(qea.getInitialState(),qea.newFBinding());;
+		NonDetConfig initialConfig = new NonDetConfig(qea.getInitialState(),qea.newFBinding());;
 		mapping.put(bottom, initialConfig);
 		B.add(bottom);
 		if(bottom.isTotal()) checker.newBinding(qea.isStateFinal(qea.getInitialState()));
 	}
 
+	private boolean isFinal(NonDetConfig config){
+		int[] states = config.getStates();
+		for(int state : states)
+			if(!qea.isStateFinal(state)) return false;
+		return true;
+	}
+	
 	@Override
 	protected void innerStep(int eventName, QBindingImpl[] qbindings, Object[] args) {			
 		
@@ -40,7 +47,7 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 			if(consistent!=null)
 			for(QBindingImpl b_extended : consistent){
 				
-				DetConfig config = mapping.get(b_extended);
+				NonDetConfig config = mapping.get(b_extended);
 				
 				if(config==null || b.equals(b_extended)){
 					
@@ -49,14 +56,14 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 						config = mapping.get(b).copy();
 						mapping.put(b_extended,config);
 						B.add(b_extended);
-						checker.newBinding(qea.isStateFinal(config.getState()));
+						checker.newBinding(isFinal(config));
 					}
 					
-					boolean previous_final = qea.isStateFinal(config.getState());
+					boolean previous_final = isFinal(config);
 					qea.getNextConfig(b_extended, config, eventName, args);
 					
 					if(b_extended.isTotal()){
-						boolean this_final = qea.isStateFinal(config.getState());
+						boolean this_final = isFinal(config);
 						checker.update(b_extended,this_final,previous_final);
 					}
 	
@@ -70,7 +77,7 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 	@Override
 	public String getStatus() {
 		String ret = "mapping:\n";
-		for(Map.Entry<QBindingImpl,DetConfig> entry : mapping.entrySet()){
+		for(Map.Entry<QBindingImpl,NonDetConfig> entry : mapping.entrySet()){
 			ret += entry.getKey()+"\t"+entry.getValue()+"\n";
 		}
 		

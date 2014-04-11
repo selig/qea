@@ -1,13 +1,21 @@
 package monitoring.impl.monitors.general;
 
+import static structure.impl.other.Quantification.EXISTS;
+import static structure.impl.other.Quantification.FORALL;
+import static structure.impl.other.Quantification.NOT_EXISTS;
+import static structure.impl.other.Quantification.NOT_FORALL;
+import static structure.impl.other.Verdict.FAILURE;
+import static structure.impl.other.Verdict.SUCCESS;
+import static structure.impl.other.Verdict.WEAK_FAILURE;
+import static structure.impl.other.Verdict.WEAK_SUCCESS;
+
 import java.util.Arrays;
 
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Quantification;
-import static structure.impl.other.Quantification.*;
 import structure.impl.other.Verdict;
-import static structure.impl.other.Verdict.*;
-import structure.impl.qeas.QVarN_FVar_Det_QEA.QEntry;
+import structure.impl.qeas.Abstr_QVarN_FVar_QEA.QEntry;
+
 
 public abstract class IncrementalChecker {
 
