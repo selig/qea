@@ -22,112 +22,26 @@ import util.ArrayUtil;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVarN_FVar_Det_QEA extends QEA {
+public class QVarN_FVar_Det_QEA extends Abstr_QVarN_FVar_QEA {
 
 	@Override
 	public QEAType getQEAType() {
 		return QEAType.QVARN_FVAR_DET_QEA;
 	}
 
-	/*
-	 * Contents
-	 */
-	public static class QEntry {
-		public QEntry(Quantification quantification, int variable, Guard guard) {
-			this.quantification = quantification;
-			this.variable = variable;
-			this.guard = guard;
-		}
 
-		public final Quantification quantification;
-		public final int variable;
-		public final Guard guard;
-
-		@Override
-		public String toString() {
-			return quantification + " " + variable;
-		}
-	}
-
-	private final int initialState;
-	public final QEntry[] lambda; // indexed from 1, use -qvar
 	private final Transition[][] delta;
-	private final boolean finalStates[];
-	private final boolean strongStates[];
 
-	private final int freeVariableCount;
-	private final int quantifiedVariableCount;
 
 	public QVarN_FVar_Det_QEA(int numStates, int numEvents, int initialState,
 			int qVariablesCount, int fVariablesCount) {
-		this.initialState = initialState;
-		lambda = new QEntry[qVariablesCount + 1];
+		super(numStates,numEvents,initialState,qVariablesCount,fVariablesCount);
+
 		delta = new Transition[numStates + 1][numEvents + 1];
-		finalStates = new boolean[numStates + 1];
-		strongStates = new boolean[numStates + 1];
-		freeVariableCount = fVariablesCount;
-		quantifiedVariableCount = qVariablesCount;
+
 	}
 
-	/*
-	 * Adding stuff
-	 */
 
-	public void setStatesAsFinal(int... states) {
-		for (int state : states) {
-			finalStates[state] = true;
-		}
-	}
-
-	public void setStatesAsStrong(int... states) {
-		for (int state : states) {
-			strongStates[state] = true;
-		}
-	}
-
-	public void addTransition(int startState, int event, Transition transition) {
-		delta[startState][event] = transition;
-	}
-
-	// guard can be null
-	public void addQuantification(int var, Quantification quantification,
-			Guard guard) {
-		assert (var < 0 && (-var) <= lambda.length);
-		lambda[-var] = new QEntry(quantification, var, guard);
-	}
-
-	/*
-	 * Boring helper methods
-	 */
-	@Override
-	public int[] getStates() {
-		int[] q = new int[finalStates.length - 1];
-		for (int i = 0; i < q.length; i++) {
-			q[i] = i + 1;
-		}
-		return q;
-	}
-
-	@Override
-	public int[] getEventsAlphabet() {
-		int[] a = new int[delta[0].length - 1];
-		for (int i = 0; i < a.length; i++) {
-			a[i] = i + 1;
-		}
-		return a;
-	}
-
-	@Override
-	public int[] getLambda() {
-		int[] l = new int[lambda.length];
-		for (int i = 0; i < l.length; i++) {
-			if (lambda[i] != null) {
-				l[i] = lambda[i].variable;
-			}
-		}
-
-		return l;
-	}
 
 	public Transition[][] getTransitions() {
 		return delta;
@@ -138,16 +52,18 @@ public class QVarN_FVar_Det_QEA extends QEA {
 		return true;
 	}
 
-	@Override
-	public boolean usesFreeVariables() {
-		return true;
+	public void addTransition(int startState, int event, Transition transition) {
+		delta[startState][event] = transition;
 	}
-
 	@Override
-	public boolean isStateFinal(int state) {
-		return finalStates[state];
+	public int[] getEventsAlphabet() {
+		int[] a = new int[delta[0].length - 1];
+		for (int i = 0; i < a.length; i++) {
+			a[i] = i + 1;
+		}
+		return a;
 	}
-
+	
 	public void getNextConfig(QBindingImpl qbinding, DetConfig config,
 			int eventName, Object[] args) {
 
@@ -198,19 +114,6 @@ public class QVarN_FVar_Det_QEA extends QEA {
 
 	}
 
-	@Override
-	public boolean isStateStrong(int state) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public Binding newFBinding() {
-		return new FBindingImpl(freeVariableCount);
-	}
-
-	public QBindingImpl newQBinding() {
-		return new QBindingImpl(quantifiedVariableCount);
-	}
 
 	public void setupMatching() {
 		e_sigs = new int[delta[0].length][][];
@@ -228,36 +131,6 @@ public class QVarN_FVar_Det_QEA extends QEA {
 		}
 	}
 
-	int[][][] e_sigs;
 
-	// use a set to remove redundancies - a linear removal approach might be
-	// better
-	// given the size of the set
-	// TODO check
-	public Set<QBindingImpl> makeBindings(int eventName, Object[] args) {
-
-		int[][] sigs = e_sigs[eventName];
-
-		Set<QBindingImpl> bs = new HashSet<QBindingImpl>();
-
-		for (int[] sig : sigs) {
-			QBindingImpl qbinding = newQBinding();
-			for (int j = 0; j < sig.length; j++) {
-				if (sig[j] < 0) {
-					qbinding.setValue(sig[j], args[j]);
-				}
-			}
-			bs.add(qbinding);
-		}
-
-		// TODO need to close bindings
-
-		return bs;
-	}
-
-	@Override
-	public int getInitialState() {
-		return initialState;
-	}
 
 }

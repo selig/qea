@@ -45,8 +45,7 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 
 	public Incr_QVarN_Var_Det_QEAMonitor(RestartMode restart, GarbageMode garbage, QVarN_FVar_Det_QEA qea) {
 		super(restart,garbage,qea);
-		//TODO - consider doing checking internally instead
-		checker = IncrementalChecker.make(qea.lambda);
+		checker = IncrementalChecker.make(qea.getFullLambda());
 		configs = new HashMap<QBindingImpl,DetConfig>();
 
 		bottom = qea.newQBinding();
@@ -181,7 +180,11 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 	public Verdict step(int eventName, Object[] args) {
 
 		//retrieve consistent bindings in order of informativeness
+		// do updates and extensions in-place
 
+		//keep track of bindings used
+		Set<QBindingImpl> used = new HashSet<QBindingImpl>();
+		
 		// Look at the masks, as long as the map is non-empty
 		// TODO- is this empty check premature optimisation?
 		HashMap<String,BindingRecord> map = maps[eventName];
@@ -209,25 +212,25 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 					for(int j=record.num_bindings-1;j>=0;j++){
 						QBindingImpl binding = record.bindings[j];
 
-						//TODO Check that we haven't already processed this binding
+						// If the binding hasn't already been encountered
+						if(used.add(binding)){
 
-						//Attempt extensions
-						int[][] sigs = sigsLookup[eventName];
-
-						//TODO how to check if a binding has been created before
-						//An important invariant will be to ensure each qbinding
-						//is created exactly once - factory method with lookup?
-                                                // 
-                                                // use Arrays.hashCode(int[]) and Arrays.equals(int[],int[]) in Binding
-
-
-						//Update configurations - check relevance first
-						// will not be relevant if blanks refer only to quantified variables
-						if(!has_q_blanks){
-							DetConfig config = configs.get(binding);
-							qea.getNextConfig(binding,config,eventName,args);
+							//Attempt extensions
+							int[][] sigs = sigsLookup[eventName];
+							for(int k=0;i<sigs.length;k++){
+								int[] sig = sigs[k];
+								qea.makeBindings(eventName, args);
+							}
+							
+	
+	
+							//Update configurations - check relevance first
+							// will not be relevant if blanks refer only to quantified variables
+							if(!has_q_blanks){
+								DetConfig config = configs.get(binding);
+								qea.getNextConfig(binding,config,eventName,args); // config updated in-place as Det
+							}
 						}
-
 					}
 					if(i==0){
 						used_full=true;
