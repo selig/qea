@@ -24,8 +24,8 @@ public class AuctionBiddingTest {
 
 	@Before
 	public void setup() {
-		monitorD = MonitorFactory.create(qeaD);
-		monitorND = MonitorFactory.create(qeaND);
+		monitorD = TestSettings.create(qeaD);
+		monitorND = TestSettings.create(qeaND);
 	}
 
 	@Test

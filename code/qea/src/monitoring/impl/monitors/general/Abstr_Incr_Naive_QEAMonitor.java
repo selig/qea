@@ -24,8 +24,8 @@ public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_FVar_QEA
 		qea.setupMatching();
 		bottom = qea.newQBinding();
 		dummyEmptyBinding[0]=bottom;	
-		checker = IncrementalChecker.make(qea.getFullLambda());
-		if(bottom.isTotal()) checker.newBinding(qea.isStateFinal(qea.getInitialState()));
+		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());
+		if(bottom.isTotal()) checker.newBinding(qea.getInitialState());
 	}
 
 	@Override

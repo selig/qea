@@ -21,8 +21,8 @@ public class GrantCancelTest {
 
 	@Before
 	public void setup() {
-		monitorOne = MonitorFactory.create(qeaOne);
-		monitorTwo = MonitorFactory.create(qeaTwo);
+		monitorOne = TestSettings.create(qeaOne);
+		monitorTwo = TestSettings.create(qeaTwo);
 	}
 
 	private static final Object resource_one = new Object();

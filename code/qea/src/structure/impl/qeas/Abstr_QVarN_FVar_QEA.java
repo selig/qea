@@ -1,16 +1,14 @@
 package structure.impl.qeas;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import structure.impl.other.FBindingImpl;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Quantification;
-import structure.impl.other.Transition;
 import structure.intf.Binding;
 import structure.intf.Guard;
 import structure.intf.QEA;
 import util.ArrayUtil;
+
+import java.util.Arrays;
 
 public abstract class Abstr_QVarN_FVar_QEA extends QEA {
 
@@ -99,6 +97,12 @@ public abstract class Abstr_QVarN_FVar_QEA extends QEA {
 	public QEntry[] getFullLambda(){
 		return lambda;
 	}
+	public boolean[] getFinalStates(){
+		return finalStates;
+	}	
+	public boolean[] getStrongStates(){
+		return strongStates;
+	}
 	
 	@Override
 	public boolean usesFreeVariables() {
@@ -126,32 +130,114 @@ public abstract class Abstr_QVarN_FVar_QEA extends QEA {
 	 * Matching
 	 */
 
+	// setupMatching should remove repeated signatures
 	protected int[][][] e_sigs;
 	public abstract void setupMatching();
 
+	public int[][][] getSigs() {
+		return e_sigs;
+	}	
 
 	
 	public QBindingImpl[] makeBindings(int eventName, Object[] args) {
 
+		//for(int e = 1; e<e_sigs.length;e++){
+		//	System.out.println(e);
+		//	for(int[] m : e_sigs[e])
+		//		System.out.println(Arrays.toString(m));
+		//}
+		//System.out.println(eventName);
+		//System.exit(0);
+		
 		int[][] sigs = e_sigs[eventName];
 
 		QBindingImpl[] bs = new QBindingImpl[sigs.length];
 
-		for (int i=0;i<sigs.length;i++) {
-			int sig[] = sigs[i];
+		if(sigs.length==1){
+			int sig[] = sigs[0];
 			QBindingImpl qbinding = newQBinding();
 			for (int j = 0; j < sig.length; j++) {
 				if (sig[j] < 0) {
 					qbinding.setValue(sig[j], args[j]);
 				}
 			}
-			bs[i] = qbinding;
+			bs[0] = qbinding;			
+			return bs;			
 		}
+		// If there are multiple sigs we might need to close
+		// There may be repetitions i.e. 
+		// sigs = [[-1,1],[1,-1]] for args=[A,A]
+		// These should be removed		
+		
+		int[] usedq = new int[quantifiedVariableCount+1];
+		
+		int use_next = 0;
+		for (int i=0;i<sigs.length;i++) {
+			int sig[] = sigs[i];
+			QBindingImpl qbinding = newQBinding();
+			for (int j = 0; j < sig.length; j++) {
+				if (sig[j] < 0) {
+					qbinding.setValue(sig[j], args[j]);
+					usedq[-sig[j]]++;
+				}
+			}
+			boolean repeated=false;
+			for(int j=0;j<use_next;j++){
+				Object val = bs[j];
+				if(val!=null && val.equals(qbinding)) repeated=true;
+			}
+			if(!repeated){
+				bs[use_next] = qbinding;
+				use_next+=1;				
+			}
+		}
+		bs = ArrayUtil.resize(bs, use_next);
+		
+		//*** Now close ***
+		//not necessary if all used same vars i.e. a qvar is either
+		// not used are used in all bs
+		boolean disjoint = true;
+		for(int u : usedq) disjoint &= (u==0 || u==bs.length);
+		
+		if(disjoint) return bs;	
+		
+		// very expensive, but hopefully not common
+		// TODO- there's definitely a better way of doing this
+		// TODO - test
+		// ^3 in number of bindings
+		boolean changing = true;
+		while(changing){
+			QBindingImpl[] add = new QBindingImpl[0];
+			changing=false;
+			//consider pair-wise, do +1 extensions per step
+			for(QBindingImpl b1 : bs){
+				for(QBindingImpl b2 : bs){
+					if(!b1.equals(b2)){
+						for(int q=1;q<quantifiedVariableCount;q++){
+							Object v1 = b1.getValue(-q);
+							Object v2 = b2.getValue(-q);
+							if(v1!=null || v2!=null){
+								if(v1==null){
+									changing=true;
+									QBindingImpl newone = (QBindingImpl) b1.copy();
+									newone.setValue(-q, v2);				
+									ArrayUtil.resize(add, add.length+1);
+									add[add.length-1]=newone;
+								}
+								else if(v2 == null){
+									changing=true;
+									QBindingImpl newone = (QBindingImpl) b2.copy();
+									newone.setValue(-q, v1);
+									ArrayUtil.resize(add, add.length+1);
+									add[add.length-1]=newone;
 
-		if(sigs.length>1){
-			//TODO need to close bindings
-			//TODO remove repetitions
-			// Idea - track usage of qvars when building bindings to see if we need to do this			
+								}
+							}
+						}
+					}
+				}
+			}
+			bs = ArrayUtil.concat(bs,add);
 		}
 		
 		return bs;

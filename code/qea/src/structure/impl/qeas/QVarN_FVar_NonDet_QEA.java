@@ -1,5 +1,9 @@
 package structure.impl.qeas;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.FullBindingImpl;
 import structure.impl.other.QBindingImpl;
@@ -60,9 +64,10 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA {
 		return false;
 	}
 
-	public void getNextConfig(QBindingImpl qbinding, NonDetConfig config,
+	public NonDetConfig getNextConfig(QBindingImpl qbinding, NonDetConfig config,
 			int eventName, Object[] args) {
 
+		//This *must* copy config
 
 		throw new RuntimeException("not implemented");
 
@@ -71,16 +76,23 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA {
 	public void setupMatching() {
 		e_sigs = new int[delta[0].length][][];
 		for (int e = 1; e < delta[0].length; e++) {
-			int[][] sigs = new int[0][];
-
+			Set<ArrayList<Integer>> sigset = new HashSet<ArrayList<Integer>>();
 			for (int s = 1; s < delta.length; s++) {
 				Transition[] ts = delta[s][e];
-				for(Transition t : ts){
-						sigs = ArrayUtil.increaseSize(sigs);
-						sigs[sigs.length - 1] = t.getVariableNames();
+				for(Transition t : ts) {
+                    int[] targs = t.getVariableNames();
+                    ArrayList<Integer> itargs = new ArrayList<Integer>();
+                    for(int v : targs) itargs.add(v);					
+					sigset.add(itargs);
 				}
 			}
-			e_sigs[e] = sigs;
+            int i=0;
+            for(ArrayList<Integer> siglist : sigset){
+                 int[] sig = new int[siglist.size()];
+                 for(int i1=0;i1<sig.length;i1++) sig[i1]=siglist.get(i1);
+                 e_sigs[e][i]=sig;
+                 i++;
+            }			
 		}
 	}	
 

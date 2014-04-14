@@ -20,7 +20,7 @@ public class DemoPropsTest {
 
 		int e = 1;
 		int f = 2;
-		Monitor monitor = MonitorFactory
+		Monitor monitor = TestSettings
 				.create(DemoQEAs.makeDemoNonDetChoice());
 
 		Object x = new Object() {
@@ -45,7 +45,7 @@ public class DemoPropsTest {
 
 		int f = 1;
 		int g = 2;
-		Monitor monitor = MonitorFactory.create(DemoQEAs.detFreeWithOneProp());
+		Monitor monitor = TestSettings.create(DemoQEAs.detFreeWithOneProp());
 
 		assertEquals(monitor.step(f), WEAK_FAILURE);
 		assertEquals(monitor.step(g, 6), SUCCESS);
@@ -56,7 +56,7 @@ public class DemoPropsTest {
 
 		int f = 1;
 		int g = 2;
-		Monitor monitor = MonitorFactory.create(DemoQEAs
+		Monitor monitor = TestSettings.create(DemoQEAs
 				.detOneFreeWithOneProp());
 
 		assertEquals(monitor.step(f), WEAK_SUCCESS);
@@ -70,7 +70,7 @@ public class DemoPropsTest {
 		int a = 1;
 		int b = 2;
 		int c = 3;
-		Monitor monitor = MonitorFactory.create(DemoQEAs.makeNonDetProp());
+		Monitor monitor = TestSettings.create(DemoQEAs.makeNonDetProp());
 
 		System.err.println(monitor.getClass());
 		
@@ -85,7 +85,7 @@ public class DemoPropsTest {
 		int a = 1;
 		int b = 2;
 		int c = 3;
-		Monitor monitor = MonitorFactory.create(DemoQEAs
+		Monitor monitor = TestSettings.create(DemoQEAs
 				.makeSimulateQuantification());
 
 		Object o1 = new Object() {
@@ -114,7 +114,7 @@ public class DemoPropsTest {
 		int f = 1;
 		int g = 2;
 		int h = 3;
-		Monitor monitor = MonitorFactory.create(DemoQEAs
+		Monitor monitor = TestSettings.create(DemoQEAs
 				.detSingleNonFixedWithProp());
 
 		//System.err.println(monitor.getClass());
@@ -134,7 +134,7 @@ public class DemoPropsTest {
 		int f = 1;
 		int g = 2;
 		int h = 3;
-		Monitor monitor = MonitorFactory
+		Monitor monitor = TestSettings
 				.create(DemoQEAs.detSingleWithPropNoF());
 
 		Object x = new Object();
