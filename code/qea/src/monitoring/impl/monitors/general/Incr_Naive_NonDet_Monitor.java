@@ -22,14 +22,6 @@ public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN
 		NonDetConfig initialConfig = new NonDetConfig(qea.getInitialState(),qea.newFBinding());;
 		mapping.put(bottom, initialConfig);
 		B.add(bottom);
-		if(bottom.isTotal()) checker.newBinding(qea.isStateFinal(qea.getInitialState()));
-	}
-
-	private boolean isFinal(NonDetConfig config){
-		int[] states = config.getStates();
-		for(int state : states)
-			if(!qea.isStateFinal(state)) return false;
-		return true;
 	}
 	
 	@Override
@@ -54,17 +46,16 @@ public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN
 					//The qea updates the config, so we should copy if extending
 					if(config==null){
 						config = mapping.get(b).copy();
-						mapping.put(b_extended,config);
 						B.add(b_extended);
-						checker.newBinding(isFinal(config));
+						checker.newBinding(config.getStates());
 					}
 					
-					boolean previous_final = isFinal(config);
-					qea.getNextConfig(b_extended, config, eventName, args);
+					int[] previous_states = config.getStates();//safe as nondet will update
+					config = qea.getNextConfig(b_extended, config, eventName, args);
+					mapping.put(b_extended,config);
 					
 					if(b_extended.isTotal()){
-						boolean this_final = isFinal(config);
-						checker.update(b_extended,this_final,previous_final);
+						checker.update(b_extended,previous_states,config.getStates());
 					}
 	
 				}

@@ -21,7 +21,7 @@ public class PropositionalDependTest {
 
 	@Before
 	public void setup() {
-		monitor = MonitorFactory.create(qea);
+		monitor = TestSettings.create(qea);
 	}
 
 	/*

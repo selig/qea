@@ -22,7 +22,6 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 		DetConfig initialConfig = new DetConfig(qea.getInitialState(),qea.newFBinding());;
 		mapping.put(bottom, initialConfig);
 		B.add(bottom);
-		if(bottom.isTotal()) checker.newBinding(qea.isStateFinal(qea.getInitialState()));
 	}
 
 	@Override
@@ -49,15 +48,15 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 						config = mapping.get(b).copy();
 						mapping.put(b_extended,config);
 						B.add(b_extended);
-						checker.newBinding(qea.isStateFinal(config.getState()));
+						checker.newBinding(config.getState());
 					}
 					
-					boolean previous_final = qea.isStateFinal(config.getState());
+					int previous_state = config.getState();
 					qea.getNextConfig(b_extended, config, eventName, args);
 					
 					if(b_extended.isTotal()){
 						boolean this_final = qea.isStateFinal(config.getState());
-						checker.update(b_extended,this_final,previous_final);
+						checker.update(b_extended,previous_state, config.getState());
 					}
 	
 				}

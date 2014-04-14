@@ -1,6 +1,7 @@
 package util;
 
 import structure.impl.other.FBindingImpl;
+import structure.impl.other.QBindingImpl;
 import structure.impl.other.Transition;
 
 public class ArrayUtil {
@@ -47,6 +48,16 @@ public class ArrayUtil {
 		return resizedArray;
 	}
 
+	public static QBindingImpl[] resize(QBindingImpl[] array, int size) {
+		if (array.length == size) {
+			return array;
+		}
+		QBindingImpl[] resizedArray = new QBindingImpl[size];
+		int sizeToCopy = array.length < size ? array.length : size;
+		System.arraycopy(array, 0, resizedArray, 0, sizeToCopy);
+		return resizedArray;
+	}	
+	
 	public static Transition[] resize(Transition[] array, int size) {
 		if (array.length == size) {
 			return array;
@@ -74,6 +85,13 @@ public class ArrayUtil {
 		return result;
 	}
 
+	public static QBindingImpl[] concat(QBindingImpl[] array1, QBindingImpl[] array2) {
+		QBindingImpl[] result = new QBindingImpl[array1.length + array2.length];
+		System.arraycopy(array1, 0, result, 0, array1.length);
+		System.arraycopy(array2, 0, result, array1.length, array2.length);
+		return result;
+	}	
+	
 	public static Transition[] concat(Transition[] array1, Transition[] array2) {
 		Transition[] result = new Transition[array1.length + array2.length];
 		System.arraycopy(array1, 0, result, 0, array1.length);

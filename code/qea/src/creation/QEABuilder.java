@@ -182,6 +182,8 @@ public class QEABuilder {
 
 		QEA qea = null;
 		
+		if(true) return makeMostGeneral();
+		
 		// Propositional first
 		if (quants.size() == 0) {
 			qea = makeProp(states, events);

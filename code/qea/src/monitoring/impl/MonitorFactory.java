@@ -11,6 +11,7 @@ import monitoring.impl.monitors.Incr_QVar1_FVar_NonDet_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_NoFVar_Det_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_NoFVar_NonDet_QEAMonitor;
 import monitoring.impl.monitors.general.Incr_Naive_Det_Monitor;
+import monitoring.impl.monitors.general.Incr_QVarN_Var_Det_QEAMonitor;
 import monitoring.intf.Monitor;
 import structure.impl.qeas.QVar01_FVar_Det_QEA;
 import structure.impl.qeas.QVar01_FVar_NonDet_QEA;
@@ -100,8 +101,10 @@ public class MonitorFactory {
 			}
 
 		case QVARN_FVAR_DET_QEA:
-			if(true) // replace with flag
+			if(false) // replace with flag
 				return new Incr_Naive_Det_Monitor( // naive does not use restart or garbage
+						(QVarN_FVar_Det_QEA) qea);
+				return new Incr_QVarN_Var_Det_QEAMonitor(restart,garbage,
 						(QVarN_FVar_Det_QEA) qea);
 			
 		case QVARN_FVAR_NONDET_QEA:			

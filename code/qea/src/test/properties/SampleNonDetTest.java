@@ -26,7 +26,7 @@ public class SampleNonDetTest {
 
 	@Before
 	public void setup() {
-		monitor = MonitorFactory.create(qea);
+		monitor = TestSettings.create(qea);
 	}
 
 	private void printMonitor() {
