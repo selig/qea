@@ -41,6 +41,10 @@ public class MonitorFactory {
 	public static Monitor create(RestartMode restart, QEA qea) {
 		return create(qea,restart,GarbageMode.NONE);
 	}	
+	public static Monitor create(GarbageMode garbage,QEA qea){
+			return create(qea,RestartMode.NONE,garbage);
+	}
+	
 	
 	/**
 	 * Constructs a Monitor for the specified QEA

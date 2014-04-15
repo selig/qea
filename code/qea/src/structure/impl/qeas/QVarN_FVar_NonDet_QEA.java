@@ -128,9 +128,17 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 					if (assignment != null) {
 						assignment.apply(next_binding, false);
 					}
-					end_states[end_count] = next_state;
-					end_bindings[end_count] = next_binding;
-					end_count++;
+					boolean repeated=false;
+					for(int i=0;i<end_states.length;i++){
+						if(end_states[i]==next_state &&
+								end_bindings[i].equals(next_binding))
+							repeated=true;
+					}
+					if(!repeated){
+						end_states[end_count] = next_state;
+						end_bindings[end_count] = next_binding;
+						end_count++;
+					}
 				}
 				//else don't add anything, as it would be
 				//the failing state

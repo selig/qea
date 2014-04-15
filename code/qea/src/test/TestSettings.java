@@ -33,4 +33,8 @@ public class TestSettings {
 		return null;
 	}
 
+	public static Object object(final String string) {
+		return new Object(){public String toString(){return string;}};
+	}
+
 }

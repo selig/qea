@@ -1,8 +1,7 @@
 package test.properties.rovers;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.FAILURE;
-import static structure.impl.other.Verdict.WEAK_SUCCESS;
+import static structure.impl.other.Verdict.*;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 
@@ -26,11 +25,54 @@ public class RespectConflictsTest {
 		monitorTwo = TestSettings.create(qeaTwo);
 	}
 
+	int CONFLICT = 1;
+	int GRANT = 2;
+	int CANCEL = 3;	
+	
+	public void do_test_one(Monitor monitor){
+		
+		Object r1 = TestSettings.object("r1");
+		Object r2 = TestSettings.object("r2");
+		Object r3 = TestSettings.object("r3");
+		
+		monitor.step(CONFLICT,r1,r2);
+		monitor.step(CONFLICT,r1,r3);
+		monitor.step(GRANT,r1);
+		monitor.step(CANCEL,r1);
+		monitor.step(GRANT,r2);
+		monitor.step(GRANT,r3);
+		
+		assertEquals(SUCCESS,monitor.end());
+		
+	}
 
 	@Test
 	public void test_one() {
-
-
+		do_test_one(monitorOne);
+		do_test_one(monitorTwo);
 	}
+	public void do_test_two(Monitor monitor){
+		
+		Object r1 = TestSettings.object("r1");
+		Object r2 = TestSettings.object("r2");
+		Object r3 = TestSettings.object("r3");
+		
+		monitor.step(CONFLICT,r1,r2);
+		monitor.step(CONFLICT,r1,r3);
+		monitor.step(GRANT,r1);
+		monitor.step(CANCEL,r1);
+		monitor.step(GRANT,r2);
+		monitor.step(GRANT,r3);
+		monitor.step(GRANT,r1);
+		
+		assertEquals(FAILURE,monitor.end());
+		
+	}
+
+	@Test
+	public void test_two() {
+		do_test_two(monitorOne);
+		do_test_two(monitorTwo);
+	}	
 
 }

@@ -11,12 +11,12 @@ import java.util.Set;
 import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.RestartMode;
-import monitoring.impl.configs.DetConfig;
 import monitoring.intf.Configuration;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Transition;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.Abstr_QVarN_QEA;
+import util.OurWeakHashMap;
 
 /**
  *
@@ -32,7 +32,9 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 	protected static final boolean DEBUG = false;
 	
 	protected final IncrementalChecker checker;
-	protected final HashMap<QBindingImpl,C> mapping;	
+	protected final Map<QBindingImpl,C> mapping;	
+	protected final Map<Object,QBindingImpl> support;
+	private final int freevars;
 
 	protected final QBindingImpl bottom;
 	
@@ -50,9 +52,27 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		super(restart,garbage,qea);
 		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());		
 		qea.setupMatching();
-
-		//TODO update based on garbage - see UNSAFE_LAZY first
-		mapping = new HashMap<QBindingImpl,C>();
+		freevars = qea.getFreeVars();
+		
+		//Remember that incremental_checker might contain references
+		// to objects if quantification is alternating
+		switch(garbage){
+			case NONE: 
+				mapping = new HashMap<QBindingImpl,C>();
+				support = null;
+				break;
+			case OVERSAFE_LAZY:
+				/*
+				 * The idea is that the qbinding is pointed to by
+				 * the objects it contains.
+				 * If all of those objects become garbage then
+				 * that qbinding can be removed.
+				 */
+				mapping = new OurWeakHashMap<QBindingImpl,C>();
+				support = new OurWeakHashMap<Object,QBindingImpl>();
+				break;
+		default: throw new RuntimeException("Garbage mode "+garbage+" not currently supported");
+		}
 		
 		C initial = initialConfig();	
 		bottom = qea.newQBinding();
@@ -288,6 +308,16 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 	protected abstract void processBinding(int eventName, Object[] args,
 			boolean has_q_blanks, QBindingImpl binding);
 
+	protected void addSupport(QBindingImpl binding){
+		if(support!=null){
+			for(int v=1;v<freevars;v++){
+				Object value = binding.getValue(v);
+				if(value!=null)
+					support.put(value,binding);
+			}
+		}
+	}
+	
 	protected void add_to_maps(QBindingImpl ext) {
 		int[][][] sigs = qea.getSigs();	
 		for(int e=1;e<sigs.length;e++){
@@ -352,6 +382,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 			for(Map.Entry<String,BindingRecord> entry : m.entrySet())
 				ret += "\t"+entry.getKey()+"\t"+entry.getValue()+"\n";			
 		}
+		ret +="\n"+checker;
 		return ret;
 	}	
 
