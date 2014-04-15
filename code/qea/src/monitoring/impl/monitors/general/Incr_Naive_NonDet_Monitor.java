@@ -47,7 +47,7 @@ public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN
 					if(config==null){
 						config = mapping.get(b).copy();
 						B.add(b_extended);
-						checker.newBinding(config.getStates());
+						checker.newBinding(b_extended,config.getStates());
 					}
 					
 					int[] previous_states = config.getStates();//safe as nondet will update

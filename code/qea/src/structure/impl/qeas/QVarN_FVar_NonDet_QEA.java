@@ -69,9 +69,82 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 			int eventName, Object[] args) {
 
 		//This *must* copy config
+		
+		int[] start_states = config.getStates();
+		Binding[] start_bindings = config.getBindings();
 
-		throw new RuntimeException("not implemented");
+		int[] end_states = null;
+		Binding[] end_bindings = null;
+		int end_count=0;
+		
+		for(int si = 0; si< start_states.length;si++){
+			int start_state = start_states[si];
+			Binding binding = start_bindings[si];						
+			
+			Transition[] transitions = delta[start_state][eventName];
+	
+			if (transitions == null) {
+				// no transition - fail and remove i.e.
+				continue;
+			}
+			if(end_states==null){
+				end_states = new int[transitions.length];
+				end_bindings = new Binding[transitions.length];
+			}else{
+				int new_size = end_count+transitions.length;
+				if(new_size > end_states.length){
+					end_states = ArrayUtil.resize(end_states,new_size);
+					end_bindings = ArrayUtil.resize(end_bindings,new_size);
+				}
+			}
+			
+			for(Transition transition : transitions){
+	
+				// if we bind new qvariables or clash with bindings in qbinding
+				// e are not relevant
+				Binding extend_with = qbinding.extend(transition.getVariableNames(),
+						args);
+				if (extend_with == null || !qbinding.equals(extend_with)) {
+					// not relevant, just return
+					continue;
+				}
+		
+				// update binding based on args
+				Binding next_binding = binding.extend(transition.getVariableNames(), args);
+		
 
+				// check guard
+				Guard guard = transition.getGuard();
+				Binding extended_guard = next_binding;
+				if (guard != null && guard.usesQvars()) {
+					extended_guard = new FullBindingImpl(next_binding, qbinding);
+				}
+				if (guard == null || guard.check(extended_guard)) {
+					int next_state = transition.getEndState();
+					Assignment assignment = transition.getAssignment();
+					// we've copied the binding, so the assignment doesn't
+					// need to
+					if (assignment != null) {
+						assignment.apply(next_binding, false);
+					}
+					end_states[end_count] = next_state;
+					end_bindings[end_count] = next_binding;
+					end_count++;
+				}
+				//else don't add anything, as it would be
+				//the failing state
+			}
+		}
+		
+		//if everything has been zero
+		if(end_count==0)
+			return new NonDetConfig(0,newFBinding());		
+		
+		end_states = ArrayUtil.resize(end_states, end_count);
+		end_bindings = ArrayUtil.resize(end_bindings,end_count);
+		
+		
+		return new NonDetConfig(end_states, end_bindings);		
 	}
 
 	public void setupMatching() {
@@ -80,6 +153,7 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 			Set<ArrayList<Integer>> sigset = new HashSet<ArrayList<Integer>>();
 			for (int s = 1; s < delta.length; s++) {
 				Transition[] ts = delta[s][e];
+				if(ts!=null)
 				for(Transition t : ts) {
                     int[] targs = t.getVariableNames();
                     ArrayList<Integer> itargs = new ArrayList<Integer>();
@@ -87,6 +161,7 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 					sigset.add(itargs);
 				}
 			}
+			e_sigs[e] = new int[sigset.size()][];
             int i=0;
             for(ArrayList<Integer> siglist : sigset){
                  int[] sig = new int[siglist.size()];
