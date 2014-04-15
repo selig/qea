@@ -130,6 +130,7 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 			result = Verdict.FAILURE;
 		}
 		else result = Verdict.WEAK_FAILURE;
+				
 		
 		if(qea.isQuantificationNegated())
 			result = result.negated();

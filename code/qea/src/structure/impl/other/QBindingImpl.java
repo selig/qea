@@ -60,7 +60,7 @@ public class QBindingImpl extends FBindingImpl {
 	public boolean update(int[] variableNames, Object[] args) {
 		assert(variableNames.length==args.length);
 		
-		System.err.println(Arrays.toString(variableNames)+" with "+Arrays.toString(args));
+		//System.err.println(Arrays.toString(variableNames)+" with "+Arrays.toString(args));
 		
 		for(int i=0;i<variableNames.length;i++){
 			int var = variableNames[i];

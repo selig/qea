@@ -47,8 +47,8 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMon
 					qea.getNextConfig(ext,next_config,eventName,args); 
 					mapping.put(ext,next_config);
 					add_to_maps(ext);
-					checker.newBinding(ext,previous_state);
 					if(ext.isTotal()){
+						checker.newBinding(ext,previous_state);
 						checker.update(ext,previous_state,next_config.getState());
 					}							
 				}

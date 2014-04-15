@@ -36,6 +36,7 @@ public class DemoPropsTest {
 				return "B";
 			}
 		};
+		
 		assertEquals(monitor.step(e, x, y), FAILURE);
 		assertEquals(monitor.step(f, y), FAILURE);
 		assertEquals(monitor.step(f, x), FAILURE);

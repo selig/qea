@@ -160,28 +160,28 @@ public abstract class IncrementalChecker {
 				if(strongStates[next] && !is_final) strong_reached=true;
 			}
 		}
-		public void update(QBindingImpl binding, int[] lasts, int[] nexts){
+		public void update(QBindingImpl binding, int[] lasts, int[] nexts){			
 			if(guard==null || guard.check(binding)){
-				boolean all_strong_nf = true;
 				boolean is_final=false;
+				boolean all_strong_nf=true;
 				for(int s : nexts){
 					if(finalStates[s]){
 						is_final=true;
-						all_strong_nf=false;
+						all_strong_nf=false;							
 					}
 					else{
-						all_strong_nf &= strongStates[s];
+						all_strong_nf &= strongStates[s];					
 					}
 				}
 				boolean previous_final=false;
-				for(int s : nexts){
+				for(int s : lasts){
 					if(finalStates[s]){
 						previous_final=true;
 						break;
 					}
 				}
 				if(is_final && !previous_final) number_non_final--;
-				else if(!is_final && previous_final) number_non_final++;			
+				else if(!is_final && previous_final) number_non_final++;
 				
 				if(all_strong_nf) strong_reached=true;
 			}
@@ -252,20 +252,19 @@ public abstract class IncrementalChecker {
 				for(int s : nexts){
 					if(finalStates[s]){
 						is_final=true;
-						strong_reached=true;
+						if(strongStates[s]) strong_reached=true;
 					}
 				}
 				boolean previous_final=false;
-				for(int s : nexts){
+				for(int s : lasts){
 					if(finalStates[s]){
 						previous_final=true;
 						break;
 					}
 				}
 				if(is_final && !previous_final) number_final++;
-				else if(!is_final && previous_final) number_final--;
+				else if(!is_final && previous_final) number_final--;	
 			}
-
 	}				
 
 		@Override

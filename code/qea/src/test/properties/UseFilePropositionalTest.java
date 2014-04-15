@@ -85,7 +85,7 @@ public class UseFilePropositionalTest {
 		// Test incorrect behaviour
 		// close twice
 		Object f = new Object();
-
+		
 		assertEquals(monitor.step(OPEN), WEAK_FAILURE);
 		assertEquals(monitor.step(USE), WEAK_FAILURE);
 		assertEquals(monitor.step(CLOSE), WEAK_SUCCESS);

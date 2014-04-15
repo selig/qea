@@ -173,7 +173,7 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	 *         <code>false</code> otherwise
 	 */
 	protected boolean checkFinalAndStrongStates(NonDetConfig config, Object qVarValue) {
-
+		
 		boolean endConfigFinal = false;
 		boolean allNonFinalStrongState = true;
 		int[] configStates = config.getStates();

@@ -1,6 +1,7 @@
 package structure.impl.qeas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -143,8 +144,11 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 		end_states = ArrayUtil.resize(end_states, end_count);
 		end_bindings = ArrayUtil.resize(end_bindings,end_count);
 		
+		NonDetConfig next_config = new NonDetConfig(end_states, end_bindings);
 		
-		return new NonDetConfig(end_states, end_bindings);		
+		//System.err.println(config+" --"+eventName+Arrays.toString(args)+"--> "+next_config+" for "+qbinding);
+		
+		return next_config;
 	}
 
 	public void setupMatching() {
