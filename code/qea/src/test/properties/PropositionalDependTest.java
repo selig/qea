@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import properties.simple.DemoQEAs;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class PropositionalDependTest {
 

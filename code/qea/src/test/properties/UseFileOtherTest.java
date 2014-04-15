@@ -3,13 +3,14 @@ package test.properties;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 import static structure.impl.other.Verdict.*;
-
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import properties.papers.UseFileOtherQEA;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class UseFileOtherTest {
 

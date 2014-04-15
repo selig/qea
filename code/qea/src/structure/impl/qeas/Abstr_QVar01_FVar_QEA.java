@@ -5,6 +5,7 @@ import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
 import structure.intf.QEA;
+import structure.intf.QEA_single;
 import exceptions.ShouldNotHappenException;
 
 /**
@@ -13,7 +14,7 @@ import exceptions.ShouldNotHappenException;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public abstract class Abstr_QVar01_FVar_QEA extends QEA {
+public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 
 	protected boolean[] finalStates;
 

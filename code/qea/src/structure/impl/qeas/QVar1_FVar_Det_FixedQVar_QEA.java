@@ -5,6 +5,7 @@ import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
 import structure.intf.Guard;
+import structure.intf.QEA_det_free;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
@@ -23,7 +24,7 @@ import structure.intf.Guard;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
+public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA implements QEA_det_free {
 
 	private final QEAType qeaType = QEAType.QVAR1_FVAR_DET_FIXEDQVAR_QEA;
 
@@ -153,6 +154,11 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 	@Override
 	public QEAType getQEAType() {
 		return qeaType;
+	}
+
+	@Override
+	public Transition[][] getDelta() {
+		return delta;
 	}
 
 }

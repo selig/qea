@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import properties.papers.HasNextQEA;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class HasNextTest {
 
@@ -85,7 +86,6 @@ public class HasNextTest {
 		// Test incorrect behaviour with two iterators
 		Object i1 = new Object();
 		Object i2 = new Object();
-
 		assertEquals(monitor.step(HASNEXT_TRUE, i1), WEAK_SUCCESS);
 		assertEquals(monitor.step(NEXT, i1), WEAK_SUCCESS);
 		assertEquals(monitor.step(HASNEXT_TRUE, i2), WEAK_SUCCESS);

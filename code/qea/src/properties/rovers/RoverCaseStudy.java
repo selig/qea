@@ -924,6 +924,10 @@ public class RoverCaseStudy {
 				return newBinding;
 
 			}
+			@Override
+			public int[] vars() {
+				return new int[]{M,H};
+			}			
 		});
 		q.endTransition(2);
 

@@ -101,9 +101,8 @@ public class MonitorFactory {
 			}
 
 		case QVARN_FVAR_DET_QEA:
-			if(false) // replace with flag
-				return new Incr_Naive_Det_Monitor( // naive does not use restart or garbage
-						(QVarN_FVar_Det_QEA) qea);
+				///return new Incr_Naive_Det_Monitor( // naive does not use restart or garbage
+				//		(QVarN_FVar_Det_QEA) qea);
 				return new Incr_QVarN_Var_Det_QEAMonitor(restart,garbage,
 						(QVarN_FVar_Det_QEA) qea);
 			

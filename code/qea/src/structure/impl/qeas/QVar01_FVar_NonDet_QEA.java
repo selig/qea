@@ -6,6 +6,7 @@ import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
 import structure.intf.Guard;
+import structure.intf.QEA_nondet_free;
 import util.ArrayUtil;
 
 /**
@@ -23,7 +24,7 @@ import util.ArrayUtil;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
+public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements QEA_nondet_free {
 
 	private final QEAType qeaType = QEAType.QVAR01_FVAR_NONDET_QEA;
 
@@ -415,5 +416,10 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 	@Override
 	public QEAType getQEAType() {
 		return qeaType;
+	}
+
+	@Override
+	public Transition[][][] getDelta() {
+		return delta;
 	}
 }

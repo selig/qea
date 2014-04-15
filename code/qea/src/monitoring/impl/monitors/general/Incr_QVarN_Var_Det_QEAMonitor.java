@@ -340,9 +340,19 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 		}
 	}
 
+	private static final Object[] dummyArgs = new Object[]{};
 	@Override
 	public Verdict step(int eventName) {
-		throw new ShouldNotHappenException("We do not consider propositional events here yet");
+		for(Map.Entry<QBindingImpl,DetConfig> entry : mapping.entrySet()){
+			QBindingImpl binding = entry.getKey();
+			DetConfig config = entry.getValue();
+			int previous_state = config.getState();
+			qea.getNextConfig(binding, config, eventName, dummyArgs);
+			if(binding.isTotal()){
+				checker.update(binding, previous_state, config.getState());
+			}
+		}
+		return checker.verdict(false);
 	}
 
 	@Override

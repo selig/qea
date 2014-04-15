@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import properties.simple.SampleNonDetQEA;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class SampleNonDetTest {
 

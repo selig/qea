@@ -14,7 +14,7 @@ import java.util.Arrays;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Quantification;
 import structure.impl.other.Verdict;
-import structure.impl.qeas.Abstr_QVarN_FVar_QEA.QEntry;
+import structure.impl.qeas.Abstr_QVarN_QEA.QEntry;
 
 
 public abstract class IncrementalChecker {
