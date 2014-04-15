@@ -8,6 +8,7 @@ import monitoring.intf.Monitor;
 import org.junit.Test;
 
 import properties.simple.DemoQEAs;
+import test.TestSettings;
 
 public class DemoPropsTest {
 
@@ -130,7 +131,7 @@ public class DemoPropsTest {
 
 	@Test
 	public void test_seven() {
-
+		
 		int f = 1;
 		int g = 2;
 		int h = 3;

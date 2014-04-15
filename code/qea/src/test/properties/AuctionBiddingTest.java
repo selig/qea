@@ -12,6 +12,7 @@ import org.junit.Test;
 import properties.papers.AuctionBiddingNDQEA;
 import properties.papers.AuctionBiddingQEA;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class AuctionBiddingTest {
 

@@ -1,4 +1,4 @@
-package test.properties;
+package test.properties.rovers;
 
 import static org.junit.Assert.assertEquals;
 import static structure.impl.other.Verdict.FAILURE;
@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import properties.rovers.RoverCaseStudy;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class GrantCancelTest {
 

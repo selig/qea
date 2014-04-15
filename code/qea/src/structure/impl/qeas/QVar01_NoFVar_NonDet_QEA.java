@@ -3,6 +3,7 @@ package structure.impl.qeas;
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Quantification;
 import util.ArrayUtil;
+import exceptions.ShouldNotHappenException;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
@@ -22,11 +23,13 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 	private final QEAType qeaType = QEAType.QVAR01_NOFVAR_NONDET_QEA;
 
 	private int[][][] delta;
+	private int[] propEvents;
 
 	public QVar01_NoFVar_NonDet_QEA(int numStates, int numEvents,
 			int initialState, Quantification quantification) {
 		super(numStates, initialState, quantification);
 		delta = new int[numStates + 1][numEvents + 1][];
+		propEvents = new int[numEvents + 1];
 
 	}
 
@@ -40,7 +43,7 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 	 * @param endState
 	 *            End state for the transition
 	 */
-	public void addTransition(int startState, int event, int endState) {
+	public void addTransition(int startState, int event, int endState, boolean prop) {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = new int[] { endState };
 		} else {
@@ -49,6 +52,11 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 			delta[startState][event] = ArrayUtil.resize(
 					delta[startState][event], currentSize + 1);
 			delta[startState][event][currentSize] = endState;
+		}
+		if(prop){
+			if(propEvents[event]==2) 
+				throw new ShouldNotHappenException("An event cannot be propositional and not");
+			propEvents[event]=1;
 		}
 	}
 
@@ -62,7 +70,7 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 	 * @param endStates
 	 *            Array of end states for the transition
 	 */
-	public void addTransitions(int startState, int event, int[] endStates) {
+	public void addTransitions(int startState, int event, int[] endStates, boolean prop) {
 
 		if (delta[startState][event] == null) {
 			delta[startState][event] = endStates;
@@ -71,6 +79,11 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 			delta[startState][event] = ArrayUtil.concat(
 					delta[startState][event], endStates);
 		}
+		if(prop){
+			if(propEvents[event]==2) 
+				throw new ShouldNotHappenException("An event cannot be propositional and not");
+			propEvents[event]=1;
+		}		
 	}
 
 	/**
@@ -190,4 +203,11 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 		return qeaType;
 	}
 
+	public int[][][] getDelta() {
+		return delta;
+	}
+	public boolean isProp(int event){
+		return propEvents[event]==1;
+	}
+	
 }

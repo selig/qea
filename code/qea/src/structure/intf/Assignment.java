@@ -13,6 +13,13 @@ public abstract class Assignment {
 	 */
 	public abstract Binding apply(Binding binding,boolean copy);
 
+	/**
+	 * Get all variables used in this assignment
+	 * 
+	 * @return used variables
+	 */
+	public abstract int[] vars();
+	
 	private final String name;
 
 	public Assignment(String name) {
@@ -43,6 +50,10 @@ public abstract class Assignment {
 				newBinding.setValue(var0, val1);
 				return newBinding;
 			}
+			@Override
+			public int[] vars() {
+				return new int[]{var0,var1};
+			}
 		};
 	}
 
@@ -60,6 +71,10 @@ public abstract class Assignment {
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}
+			@Override
+			public int[] vars() {
+				return new int[]{varSet,varElement};
+			}			
 		};
 	}
 
@@ -85,6 +100,10 @@ public abstract class Assignment {
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}
+			@Override
+			public int[] vars() {
+				return new int[]{varSet,varElement};
+			}			
 		};
 	}
 
@@ -104,6 +123,10 @@ public abstract class Assignment {
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}
+			@Override
+			public int[] vars() {
+				return new int[]{varSet,varElement};
+			}			
 		};
 	}
 }

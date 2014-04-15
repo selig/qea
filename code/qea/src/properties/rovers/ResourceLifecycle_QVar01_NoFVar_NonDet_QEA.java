@@ -19,11 +19,11 @@ public class ResourceLifecycle_QVar01_NoFVar_NonDet_QEA extends
 		// Quantified variable
 		int R = -1;
 
-		addTransition(1, REQUEST, 2);
-		addTransition(2, DENY, 1);
-		addTransition(2, GRANT, 3);
-		addTransition(3, RESCIND, 3);
-		addTransition(3, CANCEL, 1);
+		addTransition(1, REQUEST, 2,false);
+		addTransition(2, DENY, 1,false);
+		addTransition(2, GRANT, 3,false);
+		addTransition(3, RESCIND, 3,false);
+		addTransition(3, CANCEL, 1,false);
 
 		// Final states. There are no strong states
 		setStatesAsFinal(1, 2);

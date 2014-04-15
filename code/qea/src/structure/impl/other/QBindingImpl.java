@@ -1,5 +1,6 @@
 package structure.impl.other;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import structure.intf.Binding;
@@ -58,6 +59,7 @@ public class QBindingImpl extends FBindingImpl {
 	@Override
 	public boolean update(int[] variableNames, Object[] args) {
 		assert(variableNames.length==args.length);
+		
 		for(int i=0;i<variableNames.length;i++){
 			int var = variableNames[i];
 			if(var<0){
