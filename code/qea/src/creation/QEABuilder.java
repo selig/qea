@@ -217,9 +217,11 @@ public class QEABuilder {
 			qea = makeProp(states, events);
 		}
 		// Single quantifier next
-		if (quants.size() == 1) {
+		else if (quants.size() == 1) {
 			qea = makeSingle(states, events);
 		}
+		else qea = makeGeneral(states,events);
+		
 
 		if (qea != null) {
 			qea.setName(name);
@@ -411,6 +413,7 @@ public class QEABuilder {
 	
 	private QEA makeProp(int states, int events) {
 		boolean[] strongStates = computeStrongStates();
+		
 		if(usesGlobalGuards()) throw new ShouldNotHappenException("Global guards not supported here yet");
 		if (noFreeVariables()) {
 			if (isEventDeterministic()) {
@@ -514,12 +517,12 @@ public class QEABuilder {
 				this_state.put(t.event_name, nextstates);
 			}
 			if(t.event_args==null || t.event_args.length==0)
-				prop[t.start][t.end]=true;			
+				prop[t.start][t.end]=true;	
 			nextstates.add(t.end);
 		}
-		for (int i = 0; i < actual_trans.length; i++) {
-			if (actual_trans[i] != null) {
-				for (Map.Entry<Integer, Set<Integer>> entry : actual_trans[i]
+		for (int start = 0; start < actual_trans.length; start++) {
+			if (actual_trans[start] != null) {
+				for (Map.Entry<Integer, Set<Integer>> entry : actual_trans[start]
 						.entrySet()) {
 					int[] nextstates = new int[entry.getValue().size()];
 					int j = 0;
@@ -527,10 +530,9 @@ public class QEABuilder {
 						nextstates[j] = s;
 						j++;
 					}
-					int start = (entry.getKey());
+					int event = (entry.getKey());
 					boolean p = prop[start][nextstates[0]];
-					System.err.println("p is "+p);
-					qea.addTransitions(i, start, nextstates,p);
+					qea.addTransitions(start, event, nextstates,p);
 				}
 			}
 		}
@@ -566,6 +568,7 @@ public class QEABuilder {
 	private QEA makeSingle(int states, int events) {
 		if(usesGlobalGuards()) throw new ShouldNotHappenException("Global guards not supported here yet");
 		boolean[] strongStates = computeStrongStates();
+		
 		Quantification q;
 		if (quants.get(0).universal) {
 			q = FORALL;
@@ -763,9 +766,9 @@ public class QEABuilder {
 				prop[t.start][t.end]=true;
 			nextstates.add(t.end);
 		}
-		for (int i = 0; i < actual_trans.length; i++) {
-			if (actual_trans[i] != null) {
-				for (Map.Entry<Integer, Set<Integer>> entry : actual_trans[i]
+		for (int start = 0; start < actual_trans.length; start++) {
+			if (actual_trans[start] != null) {
+				for (Map.Entry<Integer, Set<Integer>> entry : actual_trans[start]
 						.entrySet()) {
 					int[] nextstates = new int[entry.getValue().size()];
 					int j = 0;
@@ -773,9 +776,9 @@ public class QEABuilder {
 						nextstates[j] = s;
 						j++;
 					}
-					int start = (entry.getKey());
+					int event = (entry.getKey());
 					boolean p = prop[start][nextstates[0]];
-					qea.addTransitions(i, start, nextstates,p);
+					qea.addTransitions(start, event, nextstates,p);
 				}
 			}
 		}

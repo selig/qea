@@ -1,9 +1,7 @@
 package test.properties;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.WEAK_FAILURE;
-import static structure.impl.other.Verdict.WEAK_SUCCESS;
-import monitoring.impl.MonitorFactory;
+import static structure.impl.other.Verdict.*;
 import monitoring.intf.Monitor;
 
 import org.junit.Before;
@@ -58,7 +56,7 @@ public class AuctionBiddingTest {
 
 		assertEquals(monitorD.step(BID, i, 5), WEAK_SUCCESS);
 		assertEquals(monitorD.step(BID, i, 6), WEAK_SUCCESS);
-		assertEquals(monitorD.step(BID, i, 5), WEAK_FAILURE);
+		assertEquals(monitorD.step(BID, i, 5), FAILURE);
 
 	}
 
@@ -69,7 +67,7 @@ public class AuctionBiddingTest {
 
 		assertEquals(monitorND.step(BID, i, 5), WEAK_SUCCESS);
 		assertEquals(monitorND.step(BID, i, 6), WEAK_SUCCESS);
-		assertEquals(monitorND.step(BID, i, 5), WEAK_FAILURE);
+		assertEquals(monitorND.step(BID, i, 5), FAILURE);
 
 	}
 
