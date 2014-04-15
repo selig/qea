@@ -3,6 +3,7 @@ package util;
 import structure.impl.other.FBindingImpl;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Transition;
+import structure.intf.Binding;
 
 public class ArrayUtil {
 
@@ -53,6 +54,16 @@ public class ArrayUtil {
 			return array;
 		}
 		QBindingImpl[] resizedArray = new QBindingImpl[size];
+		int sizeToCopy = array.length < size ? array.length : size;
+		System.arraycopy(array, 0, resizedArray, 0, sizeToCopy);
+		return resizedArray;
+	}	
+
+	public static Binding[] resize(Binding[] array, int size) {
+		if (array.length == size) {
+			return array;
+		}
+		Binding[] resizedArray = new Binding[size];
 		int sizeToCopy = array.length < size ? array.length : size;
 		System.arraycopy(array, 0, resizedArray, 0, sizeToCopy);
 		return resizedArray;

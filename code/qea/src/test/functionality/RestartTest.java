@@ -71,15 +71,15 @@ public class RestartTest {
 				.create(RestartMode.ROLLBACK,DemoQEAs.makePropositionalDepend());
 
 		assertEquals(monitor.step(e, 5), WEAK_FAILURE);
-		System.out.println(monitor);
+		//System.out.println(monitor);
 		assertEquals(monitor.step(f, 4), WEAK_FAILURE);
-		System.out.println(monitor);
+		//System.out.println(monitor);
 		assertEquals(monitor.step(f, 6), SUCCESS);
-		System.out.println(monitor);
+		//System.out.println(monitor);
 		assertEquals(monitor.step(f, 3), WEAK_FAILURE);
-		System.out.println(monitor);
+		//System.out.println(monitor);
 		assertEquals(monitor.step(f, 7), SUCCESS);
-		System.out.println(monitor);		
+		//System.out.println(monitor);		
 
 	}		
 

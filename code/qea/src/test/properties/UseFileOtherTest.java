@@ -54,7 +54,7 @@ public class UseFileOtherTest {
 		assertEquals(monitor.step(close, file3),WEAK_FAILURE);
 		assertEquals(monitor.step(close, file2),WEAK_SUCCESS);
 
-		System.out.println(monitor);
+		//System.out.println(monitor);
 		
 		assertEquals(monitor.end(),SUCCESS);
 	}

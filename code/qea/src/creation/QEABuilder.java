@@ -529,6 +529,7 @@ public class QEABuilder {
 					}
 					int start = (entry.getKey());
 					boolean p = prop[start][nextstates[0]];
+					System.err.println("p is "+p);
 					qea.addTransitions(i, start, nextstates,p);
 				}
 			}

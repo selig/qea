@@ -1,25 +1,24 @@
 package monitoring.impl.monitors.general;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Arrays;
 
 import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.RestartMode;
 import monitoring.impl.configs.DetConfig;
+import monitoring.intf.Configuration;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Transition;
 import structure.impl.other.Verdict;
-import structure.impl.qeas.QVarN_FVar_Det_QEA;
-import exceptions.ShouldNotHappenException;
+import structure.impl.qeas.Abstr_QVarN_QEA;
 
 /**
- * A small-step monitor for the most general *deterministic* QEA
  *
  * We use the symbol-indexing concept
  *
@@ -28,34 +27,36 @@ import exceptions.ShouldNotHappenException;
  *
  * @author Giles Reger
  */
-public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar_Det_QEA> {
+public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA, C extends Configuration> extends IncrementalMonitor<Q> {
 
-	private static final boolean DEBUG = false;
+	protected static final boolean DEBUG = false;
 	
-	private final IncrementalChecker checker;
-	private final HashMap<QBindingImpl,DetConfig> mapping;
+	protected final IncrementalChecker checker;
+	protected final HashMap<QBindingImpl,C> mapping;	
 
-	private final QBindingImpl bottom;
+	protected final QBindingImpl bottom;
 	
-	private final BindingRecord[] empty_paths;
-	private final boolean[] empty_has_q_blanks;//true if event *must* bind a qvar with empty mask
-	private final HashMap<String,BindingRecord>[] maps;
+	protected final BindingRecord[] empty_paths;
+	protected final boolean[] empty_has_q_blanks;//true if event *must* bind a qvar with empty mask
+	protected final HashMap<String,BindingRecord>[] maps;
 
-	private static final String BLANK = "_";
+	protected static final String BLANK = "_";
 	//0 for value, 1 for qblank (only qvars), 2 for fblank (some fvars)
 	//Important - when creating masks if we have a choice between 1 and 2, pick 2
 	// masks should be ordered from specific to general
-	int[][][] masks;
+	protected int[][][] masks;
 
-	public Incr_QVarN_Var_Det_QEAMonitor(RestartMode restart, GarbageMode garbage, QVarN_FVar_Det_QEA qea) {
+	public Abstr_Incr_QVarN_FVar_QEAMonitor(RestartMode restart, GarbageMode garbage, Q qea) {
 		super(restart,garbage,qea);
 		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());		
-		mapping = new HashMap<QBindingImpl,DetConfig>();
 		qea.setupMatching();
 
-		DetConfig initial = new DetConfig(qea.getInitialState(),qea.newFBinding());		
+		//TODO update based on garbage - see UNSAFE_LAZY first
+		mapping = new HashMap<QBindingImpl,C>();
+		
+		C initial = initialConfig();	
 		bottom = qea.newQBinding();
-		if(bottom.isTotal()) checker.newBinding(qea.getInitialState());
+		if(bottom.isTotal()) checker.newBinding(bottom,qea.getInitialState());
 		mapping.put(bottom,initial);
 		
        //create a lookup map per event name
@@ -70,38 +71,39 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 		for(int i=0;i<num_events;i++){
 			empty_paths[i] = new BindingRecord(bottom);
 		}
-		
-		Transition[][] delta = qea.getTransitions();
-
-		//generate masks
 
 		masks = new int[num_events][][];
+		
+		//generate masks
+		int num_states = qea.getStates().length+1;
+
 		for(int e=0;e<num_events;e++){
 
                         // get the most general signature
                         int[] general_args = null;
-                        for(int s=1;s<delta.length;s++){
-                                Transition t = delta[s][e];
-                                if(t!=null){
-                                   int[] targs = t.getVariableNames();
-                                   if(general_args==null){
-                                     general_args = new int[targs.length];
-                                     for(int i=0;i<targs.length;i++){
-                                             // Update when we can have values here
-                                             if(targs[i]<0) general_args[i]=1;
-                                             else general_args[i]=2;
-                                     }
-                                   }
-                                   else{
-                                      // take max i.e. max(0,1)=1, max(1,2)=2
-                                      // currently could only be 1 or 2
-                                      for(int i=0;i<general_args.length;i++){
-                                             // At the moment only need to set to 2
-                                             // if required
-                                             if(targs[i]>0) general_args[i]=2;
-                                      }
-                                   }
-
+                        for(int s=1;s<num_states;s++){                    
+                                for(Transition t : getTransitions(s,e)){
+	                                if(t!=null){
+	                                   int[] targs = t.getVariableNames();
+	                                   if(general_args==null){
+	                                     general_args = new int[targs.length];
+	                                     for(int i=0;i<targs.length;i++){
+	                                             // Update when we can have values here
+	                                             if(targs[i]<0) general_args[i]=1;
+	                                             else general_args[i]=2;
+	                                     }
+	                                   }
+	                                   else{
+	                                      // take max i.e. max(0,1)=1, max(1,2)=2
+	                                      // currently could only be 1 or 2
+	                                      for(int i=0;i<general_args.length;i++){
+	                                             // At the moment only need to set to 2
+	                                             // if required
+	                                             if(targs[i]>0) general_args[i]=2;
+	                                      }
+	                                   }
+	
+	                                }
                                 }
                         }
                         if(general_args==null) general_args = new int[]{};
@@ -130,7 +132,14 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 
 	}
 
-        private void makeMasksLevel(int[] args,boolean [] used, int level,List<List<Integer>> masks, int taken){
+	/*
+	 * For the det case this will return a singleton array
+	 */
+        protected abstract Transition[] getTransitions(int s, int e);
+
+		protected abstract C initialConfig();
+
+		private void makeMasksLevel(int[] args,boolean [] used, int level,List<List<Integer>> masks, int taken){
               if(taken==level){
                       // make the mask
                       List<Integer> mask = new ArrayList<Integer>();
@@ -270,44 +279,16 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 			// If the binding hasn't already been encountered
 			if(used.add(binding)){
 
-				DetConfig config = mapping.get(binding);
-				int previous_state = config.getState();
-				
-				//Attempt extensions
-				QBindingImpl[] bs = qea.makeBindings(eventName, args);
-				for(QBindingImpl from_binding : bs){
-					// are binding and from_binding guaranteed to be consistent?
-					// - no!
-					if(binding.consistentWith(from_binding)){
-						QBindingImpl ext = binding.updateWith(from_binding);
-						if(!mapping.containsKey(ext)){
-							if(DEBUG) System.err.println("Adding new "+ext);
-							DetConfig next_config = config.copy();							
-							qea.getNextConfig(ext,next_config,eventName,args); 
-							mapping.put(ext,next_config);
-							add_to_maps(ext);
-							checker.newBinding(previous_state);
-							if(ext.isTotal()){
-								checker.update(ext,previous_state,next_config.getState());
-							}							
-						}
-					}
-				}	
-
-				//Update configurations - check relevance first
-				// will not be relevant if blanks refer only to quantified variables
-				if(!has_q_blanks){
-					qea.getNextConfig(binding,config,eventName,args); // config updated in-place as Det
-					if(binding.isTotal()){
-						checker.update(binding,previous_state,config.getState());
-					}					
-				}
+				processBinding(eventName, args, has_q_blanks, binding);
 			}
 		}
 		
 	}
 
-	private void add_to_maps(QBindingImpl ext) {
+	protected abstract void processBinding(int eventName, Object[] args,
+			boolean has_q_blanks, QBindingImpl binding);
+
+	protected void add_to_maps(QBindingImpl ext) {
 		int[][][] sigs = qea.getSigs();	
 		for(int e=1;e<sigs.length;e++){
 			Set<String> qs = new HashSet<String>();
@@ -340,20 +321,19 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 		}
 	}
 
-	private static final Object[] dummyArgs = new Object[]{};
+	protected static final Object[] dummyArgs = new Object[]{};
 	@Override
 	public Verdict step(int eventName) {
-		for(Map.Entry<QBindingImpl,DetConfig> entry : mapping.entrySet()){
+		for(Map.Entry<QBindingImpl,C> entry : mapping.entrySet()){
 			QBindingImpl binding = entry.getKey();
-			DetConfig config = entry.getValue();
-			int previous_state = config.getState();
-			qea.getNextConfig(binding, config, eventName, dummyArgs);
-			if(binding.isTotal()){
-				checker.update(binding, previous_state, config.getState());
-			}
+			C config = entry.getValue();
+			processPropositionalBinding(eventName, binding, config);
 		}
 		return checker.verdict(false);
 	}
+
+	protected abstract void processPropositionalBinding(int eventName,
+			QBindingImpl binding, C config);
 
 	@Override
 	public Verdict end() {
@@ -363,7 +343,7 @@ public class Incr_QVarN_Var_Det_QEAMonitor extends IncrementalMonitor<QVarN_FVar
 	@Override
 	public String getStatus() {
 		String ret = "mapping\n";
-		for(Map.Entry<QBindingImpl,DetConfig> entry : mapping.entrySet())
+		for(Map.Entry<QBindingImpl,C> entry : mapping.entrySet())
 			ret += entry.getKey()+"\t"+entry.getValue()+"\n";
 		ret+= "maps\n";
 		for(int e=1;e<maps.length;e++){

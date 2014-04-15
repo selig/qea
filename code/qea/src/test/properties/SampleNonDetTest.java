@@ -38,11 +38,11 @@ public class SampleNonDetTest {
 	public void test_one() {
 		// Test reach state 3
 		Object x = new Object();
-		printMonitor();
+		//printMonitor();
 		assertEquals(monitor.step(a, x), WEAK_FAILURE);
-		printMonitor();
+		//printMonitor();
 		assertEquals(monitor.step(c, x), WEAK_SUCCESS);
-		printMonitor();
+		//printMonitor();
 	}
 
 	@Test

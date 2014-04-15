@@ -48,7 +48,7 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 						config = mapping.get(b).copy();
 						mapping.put(b_extended,config);
 						B.add(b_extended);
-						checker.newBinding(config.getState());
+						checker.newBinding(b_extended,config.getState());
 					}
 					
 					int previous_state = config.getState();

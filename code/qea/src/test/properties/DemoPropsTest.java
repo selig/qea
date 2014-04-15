@@ -72,8 +72,6 @@ public class DemoPropsTest {
 		int b = 2;
 		int c = 3;
 		Monitor monitor = TestSettings.create(DemoQEAs.makeNonDetProp());
-
-		System.err.println(monitor.getClass());
 		
 		assertEquals(monitor.step(a), WEAK_FAILURE);
 		assertEquals(monitor.step(b), WEAK_FAILURE);
