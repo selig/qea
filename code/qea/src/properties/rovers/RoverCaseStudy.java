@@ -289,6 +289,20 @@ public class RoverCaseStudy {
 		q.addAssignment(Assignment.addElementToSet(RS, R2));
 		q.endTransition(2);
 
+		q.startTransition(1);
+		q.eventName(CONFLICT);
+		q.addVarArg(R2);
+		q.addVarArg(R1);
+		q.addAssignment(Assignment.createSetFromElement(RS, R2));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(CONFLICT);
+		q.addVarArg(R2);
+		q.addVarArg(R1);
+		q.addAssignment(Assignment.addElementToSet(RS, R2));
+		q.endTransition(2);		
+		
 		q.addTransition(2, GRANT, new int[] { R1 }, 3);
 		q.addTransition(3, CANCEL, new int[] { R1 }, 2);
 
@@ -301,7 +315,7 @@ public class RoverCaseStudy {
 		// Manual skip states
 		// q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
 		q.addTransition(1, GRANT, new int[] { R2 }, 1);
-		q.addTransition(2, GRANT, new int[] { R2 }, 2);
+		//q.addTransition(2, GRANT, new int[] { R2 }, 2);
 
 		q.startTransition(3);
 		q.eventName(GRANT);
@@ -781,6 +795,9 @@ public class RoverCaseStudy {
 
 		QEABuilder q = new QEABuilder("ExistsLeader");
 
+		if(true) return null; // Monitors do not currently
+							  // allow for non-normal qeas
+		
 		// Events
 		int PING = 1;
 		int ACK = 2;
@@ -791,9 +808,13 @@ public class RoverCaseStudy {
 		q.addQuantification(EXISTS, R1);
 		q.addQuantification(FORALL, R2);
 
+		
 		q.addTransition(1, PING, new int[] { R1, R2 }, 2);
 		q.addTransition(2, ACK, new int[] { R2, R1 }, 3);
 
+		// Add to alphabet
+		q.addTransition(4, PING, new int[]{ R2, R1}, 4);
+		
 		q.addFinalStates(3);
 		q.setSkipStates(1, 2, 3);
 

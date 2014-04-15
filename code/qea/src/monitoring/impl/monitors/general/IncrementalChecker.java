@@ -10,6 +10,8 @@ import static structure.impl.other.Verdict.WEAK_FAILURE;
 import static structure.impl.other.Verdict.WEAK_SUCCESS;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Quantification;
@@ -50,6 +52,10 @@ public abstract class IncrementalChecker {
 		if(q==NOT_EXISTS) 
 			return new AllExistentialChecker(true,finalStates,strongStates,lambda[1].guard);
 
+		if(lambda.length==3){
+			return new OneAlternationChecker(finalStates, strongStates, lambda[1], lambda[2]);
+		}
+		
 		throw new RuntimeException("Not implemented for general lambda "+Arrays.toString(lambda));
 	}
 
@@ -311,37 +317,155 @@ public abstract class IncrementalChecker {
 			}			
 			g1=one.guard;
 			g2=two.guard;
+			
 		}
 
+		//TODO - Important, when we turn garbage on these need to
+		//					be weak
+		//maps a value for q1 to the number of 
+		//		final values for q2 if q2 is existential
+		//		non-final values for q2	is universal	
+		private Map<Object,Integer> q2_map = new HashMap<Object,Integer>();
+		
+		// count is of non_final if universal
+		//      and of final if existential
+		private int no_q1_count = 0;
+		
+		
+		/*
+		 * based on no_q1_final, which should always be updated
+		 * based on q2_map
+		 * 
+		 * No strong verdicts as we have alternation
+		 */
 		@Override
 		public Verdict verdict(boolean at_end) {
-			// TODO Auto-generated method stub
-			return null;
+			Verdict result = null;
+			
+			boolean failing = q1?(no_q1_count >0) : (no_q1_count == 0);
+			if(failing){
+				if(at_end) result=  FAILURE;
+				else result=  WEAK_FAILURE;
+			}
+			else if(at_end) result=  SUCCESS;
+			else result= WEAK_SUCCESS;			
+			
+			if(negated1) return result.negated();
+			return result;
 		}
 
+		private boolean checkGuards(QBindingImpl binding){
+			if(g1!=null && !g1.check(binding)) return false;
+			if(g2!=null && g2.check(binding)) return false;
+			return true;
+		}
+		
 		@Override
-		public void newBinding(QBindingImpl binding, int start_state) {
-			// TODO Auto-generated method stub
-			
+		public void newBinding(QBindingImpl binding, int state) {
+			if(checkGuards(binding)){
+				Object one = binding.getValue(-1);
+				//Object two = binding.getValue(-2); Not needed?!
+				boolean isfinal = finalStates[state];
+				int add = q2 ? (isfinal ? 0 : 1) : (isfinal ? 1 : 0);
+				process(one, add);
+			}
 		}
 
+
 		@Override
-		public void newBinding(QBindingImpl binding, int[] start_states) {
-			// TODO Auto-generated method stub
-			
+		public void newBinding(QBindingImpl binding, int[] states) {
+			if(checkGuards(binding)){
+				Object one = binding.getValue(-1);
+				boolean isfinal = false;
+				for(int s : states)
+					if(finalStates[s]){
+						isfinal=true;
+						break;
+					}
+				
+				int add = q2 ? (isfinal ? 0 : 1) : (isfinal ? 1 : 0);
+				process(one,add);							
+			}
 		}
 
 		@Override
 		public void update(QBindingImpl binding, int last_state, int next_state) {
-			// TODO Auto-generated method stub
+			if(checkGuards(binding)){
+				Object one = binding.getValue(-1);
+				Object two = binding.getValue(-2);
 			
+				boolean last_final = finalStates[last_state];
+				boolean next_final = finalStates[next_state];
+				
+				int inc_final = (last_final && !next_final) ? -1 : 
+									((!last_final && next_final) ? 1 : 0);
+				
+				
+				int add = q2 ? -inc_final : inc_final;
+				process(one,add);				
+			}			
 		}
 
 		@Override
 		public void update(QBindingImpl binding, int[] last_states,
 				int[] next_states) {
-			// TODO Auto-generated method stub
+			if(checkGuards(binding)){
+				Object one = binding.getValue(-1);
+				Object two = binding.getValue(-2);
 			
+				boolean last_final=false;
+				boolean next_final=false;
+				for(int s : last_states)
+					if(finalStates[s]){last_final=true;break;}
+				for(int s : next_states)
+					if(finalStates[s]){next_final=true;break;}
+				
+				int inc_final = (last_final && !next_final) ? -1 : 
+					((!last_final && next_final) ? 1 : 0);
+
+
+				int add = q2 ? -inc_final : inc_final;
+				process(one,add);								
+			}
+		}
+		
+		private void process(Object one, int add) {
+			Integer last = q2_map.get(one);
+			if(last==null){ 
+				last = 0;
+				//this is the first one so we need to
+				// update no_q1_count
+				// in all cases letting last=0
+				// means that we assume that one has been counted
+				no_q1_count++;
+				
+			}
+			int next = last+add;
+			
+			// 0 if value for one not changed
+			// -1 if it has gone from true to false
+			// 1 if it has gone from false to true
+			int direction = 0;
+			if(q2){
+				if(last>0 && next==0) direction = 1;
+				else if(last==0 && next>0) direction = -1;
+			}
+			else{
+				if(last>0 && next==0) direction = -1;
+				else if(last==0 && next>0) direction = 1; 					
+			}
+			//based on q1 we update no_q1_count
+			if(q1) no_q1_count -= direction;
+			else no_q1_count += direction;
+			
+			q2_map.put(one,next);
+		}		
+		
+		public String toString(){
+			String res = "q1count\t"+no_q1_count+"\ncheck_map\n";
+			for(Map.Entry<Object,Integer> entry : q2_map.entrySet())
+				res += entry.getKey() + "\t" + entry.getValue() + "\n";
+			return res;
 		}
 		
 	}

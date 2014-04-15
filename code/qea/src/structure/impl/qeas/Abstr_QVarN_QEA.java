@@ -100,6 +100,10 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 	public boolean[] getFinalStates(){
 		return finalStates;
 	}	
+	public int getFreeVars(){
+		return freeVariableCount;
+	}
+	
 	public boolean[] getStrongStates(){
 		return strongStates;
 	}
@@ -217,19 +221,33 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 							Object v1 = b1.getValue(-q);
 							Object v2 = b2.getValue(-q);
 							if(v1!=null || v2!=null){
-								if(v1==null){
-									changing=true;
+								if(v1==null){									
 									QBindingImpl newone = (QBindingImpl) b1.copy();
-									newone.setValue(-q, v2);				
-									ArrayUtil.resize(add, add.length+1);
-									add[add.length-1]=newone;
+									newone.setValue(-q, v2);
+									boolean repeated=false;
+									for(QBindingImpl other : bs)
+										if(other.equals(newone)) repeated=true;
+									for(QBindingImpl other : add)
+										if(other.equals(newone)) repeated=true;
+									if(!repeated){
+										changing=true;
+										add=ArrayUtil.resize(add, add.length+1);
+										add[add.length-1]=newone;
+									}
 								}
 								else if(v2 == null){
-									changing=true;
 									QBindingImpl newone = (QBindingImpl) b2.copy();
 									newone.setValue(-q, v1);
-									ArrayUtil.resize(add, add.length+1);
-									add[add.length-1]=newone;
+									boolean repeated=false;
+									for(QBindingImpl other : bs)
+										if(other.equals(newone)) repeated=true;
+									for(QBindingImpl other : add)
+										if(other.equals(newone)) repeated=true;
+									if(!repeated){
+										changing=true;
+										add=ArrayUtil.resize(add, add.length+1);
+										add[add.length-1]=newone;
+									}
 
 								}
 							}

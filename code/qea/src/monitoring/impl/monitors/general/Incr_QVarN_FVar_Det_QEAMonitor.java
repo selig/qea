@@ -44,7 +44,8 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMon
 				if(!mapping.containsKey(ext)){
 					if(DEBUG) System.err.println("Adding new "+ext);
 					DetConfig next_config = config.copy();							
-					qea.getNextConfig(ext,next_config,eventName,args); 
+					qea.getNextConfig(ext,next_config,eventName,args);
+					addSupport(ext);
 					mapping.put(ext,next_config);
 					add_to_maps(ext);
 					if(ext.isTotal()){

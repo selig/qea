@@ -46,7 +46,8 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 						if(!mapping.containsKey(ext)){
 							if(DEBUG) System.err.println("Adding new "+ext);
 							NonDetConfig next_config = config.copy();							
-							next_config = qea.getNextConfig(ext,next_config,eventName,args); 
+							next_config = qea.getNextConfig(ext,next_config,eventName,args);
+							addSupport(ext);
 							mapping.put(ext,next_config);
 							add_to_maps(ext);							
 							if(ext.isTotal()){
