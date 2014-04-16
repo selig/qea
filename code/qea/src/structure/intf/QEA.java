@@ -78,6 +78,14 @@ public abstract class QEA {
 	public abstract boolean usesFreeVariables();
 
 	/**
+	 * Determines if the specified state is a skip state
+	 * 
+	 * @param state
+	 * @return true if the specified state is a skip state. Otherwise, false
+	 */
+	public abstract boolean isStateSkip(int state);	
+	
+	/**
 	 * Determines if the specified state is in the set of final states
 	 * 
 	 * @param state

@@ -73,8 +73,9 @@ public class QVarN_FVar_Det_QEA extends Abstr_QVarN_FVar_QEA implements QEA_det_
 		Transition transition = delta[start_state][eventName];
 
 		if (transition == null) {
-			// no transition - fail
-			config.setState(0);
+			// no transition - fail if not a skip state
+			if(!skipStates[start_state])
+				config.setState(0);
 			return;
 		}
 
@@ -105,9 +106,10 @@ public class QVarN_FVar_Det_QEA extends Abstr_QVarN_FVar_QEA implements QEA_det_
 				assignment.apply(binding, false);
 			}
 		}
-		// if we cannot go to state 0
+		// if we cannot go to state 0 unless a skip state
 		else {
-			config.setState(0);
+			if(!skipStates[start_state])
+				config.setState(0);
 		}
 
 	}

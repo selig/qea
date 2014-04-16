@@ -16,8 +16,8 @@ import exceptions.ShouldNotHappenException;
  */
 public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 
+	protected boolean[] skipStates;
 	protected boolean[] finalStates;
-
 	protected boolean[] strongStates;
 
 	protected final int initialState;
@@ -31,6 +31,7 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 
 	public Abstr_QVar01_FVar_QEA(int numStates, int initialState,
 			Quantification quantification, int freeVariablesCount) {
+		skipStates = new boolean[numStates + 1];
 		finalStates = new boolean[numStates + 1];
 		strongStates = new boolean[numStates + 1];
 		this.initialState = initialState;
@@ -67,6 +68,28 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 		}
 	}
 
+	/**
+	 * Adds the specified state to the set of skip states
+	 * 
+	 * @param state
+	 *            State name
+	 */
+	public void setStateAsSkip(int state) {
+		skipStates[state] = true;
+	}
+
+	/**
+	 * Adds the specified states to the set of skip states
+	 * 
+	 * @param states
+	 *            Names of states to add
+	 */
+	public void setStatesAsSkip(int... states) {
+		for (int state : states) {
+			skipStates[state] = true;
+		}
+	}	
+	
 	/**
 	 * Adds the specified state to the set of final states
 	 * 
@@ -154,6 +177,10 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 		return true;
 	}
 
+	@Override
+	public boolean isStateSkip(int state) {
+		return skipStates[state];
+	}	
 	@Override
 	public boolean isStateFinal(int state) {
 		return finalStates[state];

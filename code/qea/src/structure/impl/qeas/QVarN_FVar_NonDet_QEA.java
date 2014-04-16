@@ -70,6 +70,8 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 			int eventName, Object[] args) {
 
 		//This *must* copy config
+		//TODO - why? in other places we just update it, what
+		//   makes us have to copy it?
 		
 		int[] start_states = config.getStates();
 		Binding[] start_bindings = config.getBindings();
@@ -85,8 +87,24 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 			Transition[] transitions = delta[start_state][eventName];
 	
 			if (transitions == null) {
-				// no transition - fail and remove i.e.
-				continue;
+				// no transition
+				if(skipStates[start_state]){
+					//keep this, as a copy
+					int next_state = start_state;
+					Binding next_binding = binding.copy();
+					boolean repeated=false;
+					for(int i=0;i<end_states.length;i++){
+						if(end_states[i]==next_state &&
+								end_bindings[i].equals(next_binding))
+							repeated=true;
+					}
+					if(!repeated){
+						end_states[end_count] = next_state;
+						end_bindings[end_count] = next_binding;
+						end_count++;
+					}
+				}
+				else continue; //fail and remove
 			}
 			if(end_states==null){
 				end_states = new int[transitions.length];
@@ -98,7 +116,7 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 					end_bindings = ArrayUtil.resize(end_bindings,new_size);
 				}
 			}
-			
+			boolean transition_taken=false;
 			for(Transition transition : transitions){
 	
 				// if we bind new qvariables or clash with bindings in qbinding
@@ -106,7 +124,8 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 				Binding extend_with = qbinding.extend(transition.getVariableNames(),
 						args);
 				if (extend_with == null || !qbinding.equals(extend_with)) {
-					// not relevant, just return
+					// not relevant, - so not a failure,
+					// just shold not take
 					continue;
 				}
 		
@@ -135,13 +154,33 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 							repeated=true;
 					}
 					if(!repeated){
+						transition_taken=true;
+						end_states[end_count] = next_state;
+						end_bindings[end_count] = next_binding;
+						end_count++;
+					}
+				}								
+			}
+			if(!transition_taken){
+				//else if not a skip state don't do anything,
+				// as it would be a failing state, which we remove
+				if(skipStates[start_state]){
+					//keep this, as a copy
+					int next_state = start_state;
+					Binding next_binding = binding.copy();
+					boolean repeated=false;
+					for(int i=0;i<end_states.length;i++){
+						if(end_states[i]==next_state &&
+								end_bindings[i].equals(next_binding))
+							repeated=true;
+					}
+					if(!repeated){
 						end_states[end_count] = next_state;
 						end_bindings[end_count] = next_binding;
 						end_count++;
 					}
 				}
-				//else don't add anything, as it would be
-				//the failing state
+
 			}
 		}
 		

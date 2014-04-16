@@ -61,7 +61,12 @@ public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 	 *         function delta
 	 */
 	public int getNextState(int previousState, int event) {
-		return delta[previousState][event];
+		int next_state = delta[previousState][event];
+		
+		if(next_state==0 && skipStates[previousState]) 
+			return previousState;
+		
+		return next_state;		
 	}
 
 	/**

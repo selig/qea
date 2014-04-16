@@ -14,6 +14,7 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 
 	protected final int initialState;
 	protected final QEntry[] lambda; // indexed from 1, use -qvar
+	protected final boolean skipStates[];
 	protected final boolean finalStates[];
 	protected final boolean strongStates[];	
 
@@ -35,6 +36,7 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 			int qVariablesCount, int fVariablesCount) {
 		this.initialState = initialState;
 		lambda = new QEntry[qVariablesCount + 1];
+		skipStates = new boolean[numStates + 1];
 		finalStates = new boolean[numStates + 1];
 		strongStates = new boolean[numStates + 1];
 		freeVariableCount = fVariablesCount;
@@ -49,6 +51,16 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 	 * Adding stuff
 	 */
 
+	public void setStateAsSkip(int state) {
+		skipStates[state] = true;
+	}
+
+	public void setStatesAsSkip(int... states) {
+		for (int state : states) {
+			skipStates[state] = true;
+		}
+	}		
+	
 	public void setStatesAsFinal(int... states) {
 		for (int state : states) {
 			finalStates[state] = true;
@@ -113,6 +125,10 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 		return true;
 	}
 
+	@Override
+	public boolean isStateSkip(int state) {
+		return skipStates[state];
+	}
 	@Override
 	public boolean isStateFinal(int state) {
 		return finalStates[state];

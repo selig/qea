@@ -98,8 +98,10 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements QEA_de
 		// If the event is not defined for the current start state, return the
 		// failing state with an empty binding
 		if (transition == null) {
-			config.setState(0);
-			config.getBinding().setEmpty();
+			if(!skipStates[config.getState()]){
+				config.setState(0);
+				config.getBinding().setEmpty();
+			}
 			return config;
 		}
 
@@ -112,12 +114,14 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements QEA_de
 		updateBinding(binding, args, transition);
 
 		// If there is a guard and is not satisfied, rollback the binding and
-		// return the failing state
+		// return the failing state (if not skip)
 		if (transition.getGuard() != null) {
 			Guard guard = transition.getGuard();
 			if (isQVarValue && !guard.check(binding, -1, qVarValue)
 					|| !isQVarValue && !guard.check(binding)) {
-				config.setState(0); // Failing state
+				
+				if(!skipStates[config.getState()])
+					config.setState(0); // Failing state
 				return config;
 			}
 		}
