@@ -1,5 +1,6 @@
 package monitoring.impl.monitors.general;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import structure.impl.other.QBindingImpl;
 import structure.impl.other.Transition;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.Abstr_QVarN_QEA;
+import util.OurVeryWeakHashMap;
 import util.OurWeakHashMap;
 
 /**
@@ -33,14 +35,16 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 	
 	protected final IncrementalChecker checker;
 	protected final Map<QBindingImpl,C> mapping;	
-	protected final Map<Object,QBindingImpl> support;
-	private final int freevars;
+	protected final Map<Object,QBindingImpl> support_bindings;
+	protected final Map<QBindingImpl,String> support_queries;
+	private final int qvars;
+	private final boolean use_weak;
 
 	protected final QBindingImpl bottom;
 	
 	protected final BindingRecord[] empty_paths;
 	protected final boolean[] empty_has_q_blanks;//true if event *must* bind a qvar with empty mask
-	protected final HashMap<String,BindingRecord>[] maps;
+	protected final Map<String,BindingRecord>[] maps;
 
 	protected static final String BLANK = "_";
 	//0 for value, 1 for qblank (only qvars), 2 for fblank (some fvars)
@@ -52,16 +56,24 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		super(restart,garbage,qea);
 		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());		
 		qea.setupMatching();
-		freevars = qea.getFreeVars();
+		qvars = qea.getFullLambda().length;
+		int num_events = qea.getEventsAlphabet().length+1;
 		
 		//Remember that incremental_checker might contain references
 		// to objects if quantification is alternating
 		switch(garbage){
 			case NONE: 
 				mapping = new HashMap<QBindingImpl,C>();
-				support = null;
+				support_bindings = null;
+				support_queries=null;
+				use_weak=false;
+			    //create a lookup map per event name
+				maps = new HashMap[num_events];
+				for(int i=0;i<num_events;i++){
+					maps[i] = new HashMap<String,BindingRecord>();
+				}
 				break;
-			case OVERSAFE_LAZY:
+			case UNSAFE_LAZY:
 				/*
 				 * The idea is that the qbinding is pointed to by
 				 * the objects it contains.
@@ -69,7 +81,14 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 				 * that qbinding can be removed.
 				 */
 				mapping = new OurWeakHashMap<QBindingImpl,C>();
-				support = new OurWeakHashMap<Object,QBindingImpl>();
+				support_bindings = new OurVeryWeakHashMap<Object,QBindingImpl>();
+				support_queries = new OurWeakHashMap<QBindingImpl,String>();
+				use_weak=true;
+			    //create a lookup map per event name
+				maps = new OurWeakHashMap[num_events];
+				for(int i=0;i<num_events;i++){
+					maps[i] = new OurWeakHashMap<String,BindingRecord>();
+				}
 				break;
 		default: throw new RuntimeException("Garbage mode "+garbage+" not currently supported");
 		}
@@ -79,17 +98,11 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		if(bottom.isTotal()) checker.newBinding(bottom,qea.getInitialState());
 		mapping.put(bottom,initial);
 		
-       //create a lookup map per event name
-		int num_events = qea.getEventsAlphabet().length+1;
-		maps = new HashMap[num_events];
-		for(int i=0;i<num_events;i++){
-			maps[i] = new HashMap<String,BindingRecord>();
-		}
 		//make empty paths and empty_has_q_blanks
 		empty_paths = new BindingRecord[num_events];
 		empty_has_q_blanks = new boolean[num_events];
 		for(int i=0;i<num_events;i++){
-			empty_paths[i] = new BindingRecord(bottom);
+			empty_paths[i] = BindingRecord.make(bottom,use_weak);
 		}
 
 		masks = new int[num_events][][];
@@ -214,9 +227,12 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
                 return this_level;
         }
 
+        int rep = 0;
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
+		//if(rep++%1000==0) System.err.println(mapping.size()+", "+maps[1].size());		
+		
 		/*for(int e = 1; e<masks.length;e++){
 			System.out.println(e);
 			for(int[] m : masks[e])
@@ -233,7 +249,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		
 		// Look at the masks, as long as the map is non-empty
 		// TODO- is this empty check premature optimisation?
-		HashMap<String,BindingRecord> map = maps[eventName];
+		Map<String,BindingRecord> map = maps[eventName];
 		boolean used_full=false;
 		if(!map.isEmpty()){
 			int[][] eventMasks = masks[eventName];
@@ -289,10 +305,17 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		 * But these will be added to the end, so get num bindings
 		 * before we begin (although this shouldn't be needed)
 		 */
-		int numbindings = record.num_bindings;
+		int numbindings = record.num_bindings();
+		
+		if(numbindings==0){
+			// This record has become garbage, we should remove
+			// the associate entry in maps
+			//TODO
+			System.err.println("record garbage");
+		}
 		
 		for(int j=numbindings-1;j>=0;j--){
-			QBindingImpl binding = record.bindings[j];
+			QBindingImpl binding = record.get(j);
 
 			if(DEBUG) System.err.println(j+":"+binding);
 			
@@ -309,11 +332,11 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 			boolean has_q_blanks, QBindingImpl binding);
 
 	protected void addSupport(QBindingImpl binding){
-		if(support!=null){
-			for(int v=1;v<freevars;v++){
-				Object value = binding.getValue(v);
+		if(support_bindings!=null){
+			for(int v=1;v<qvars;v++){
+				Object value = binding.getValue(-v);
 				if(value!=null)
-					support.put(value,binding);
+					support_bindings.put(value,binding);
 			}
 		}
 	}
@@ -340,9 +363,11 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 				}
 				String q = b.toString();
 				if(qs.add(q)){
+					if(support_queries!=null)
+						support_queries.put(ext, q);
 					BindingRecord record = empty ? empty_paths[e] : maps[e].get(q);
 					if(record==null){ // empty must be false
-						record = new BindingRecord(ext);
+						record = BindingRecord.make(ext,use_weak);
 						maps[e].put(q,record);
 					}
 					else record.addBinding(ext);
@@ -391,7 +416,19 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 	 * So we should always iterate from the back
 	 * to get the newest (largest) bindings first
 	 */
-	public static class BindingRecord{
+	public static abstract class BindingRecord{
+		
+		public static BindingRecord make(QBindingImpl b, boolean weak){
+			if(weak) return new WeakBindingRecord(b);
+			return new StrongBindingRecord(b);
+		}
+		
+		public abstract QBindingImpl get(int j);
+		public abstract int num_bindings();
+		abstract void addBinding(QBindingImpl b);
+	}
+	
+	public static class StrongBindingRecord extends BindingRecord{
 		QBindingImpl[] bindings;
 		int num_bindings=0;
 		
@@ -399,7 +436,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 			return "record of "+Arrays.toString(bindings);
 		}
 		
-		BindingRecord(QBindingImpl b){
+		StrongBindingRecord(QBindingImpl b){
 			bindings =new QBindingImpl[2];
 			num_bindings=1;
 			bindings[0]=b;
@@ -414,9 +451,75 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 			bindings[num_bindings]=b;
 			num_bindings++;
 		}
+
+		@Override
+		public QBindingImpl get(int j) {
+			return bindings[j];
+		}
+
+		@Override
+		public int num_bindings() {
+			return num_bindings;
+		}
 		
 	}
 
+	public static class WeakBindingRecord extends BindingRecord{
+		WeakReference<QBindingImpl>[] bindings;
+		int num_bindings=0;
+		
+		public String toString(){
+			return "record of "+Arrays.toString(bindings);
+		}
+		
+		WeakBindingRecord(QBindingImpl b){
+			bindings = new WeakReference[2];
+			num_bindings=1;
+			bindings[0]= new WeakReference<QBindingImpl>(b);
+		}		
+		void addBinding(QBindingImpl b){
+			if(num_bindings==bindings.length){
+				//extend bindings
+				WeakReference<QBindingImpl> [] temp = new WeakReference[bindings.length*2];
+				System.arraycopy(bindings, 0, temp, 0, bindings.length);
+				bindings=temp;
+			}
+			bindings[num_bindings]= new WeakReference<QBindingImpl>(b);
+			num_bindings++;
+		}
+
+		/*
+		 * Invariant - num_bindings is always called before
+		 * iterating over the record, therefore we assume
+		 * that these are not null.
+		 * However, the code should be able to deal with the case
+		 * where they are null
+		 */
+		@Override
+		public QBindingImpl get(int j) {
+			return bindings[j].get();
+		}
+
+		@Override
+		public int num_bindings() {
+			//trim removed bindings at this point
+			int c = 0;
+			for(int i=0;i<num_bindings;i++){
+				if(bindings[i].get()!=null) c++;
+			}
+			WeakReference<QBindingImpl> [] temp = new WeakReference[c];
+			int p = 0;
+			for(int i=0;i<num_bindings;i++){
+				if(bindings[i].get()!=null) temp[p++] = bindings[i];
+			}			
+			bindings=temp;
+			num_bindings=c;
+			
+			return num_bindings;
+		}
+		
+	}	
+	
 	@Override
 	protected int removeStrongBindings() {
 		// TODO Auto-generated method stub

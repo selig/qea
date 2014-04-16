@@ -1,4 +1,4 @@
-package test.properties;
+package test.properties.dacapo;
 
 import static org.junit.Assert.assertEquals;
 import static structure.impl.other.Verdict.FAILURE;
