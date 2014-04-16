@@ -41,6 +41,8 @@ public class RespectConflictsTest {
 		monitor.step(CANCEL,r1);
 		monitor.step(GRANT,r2);
 		monitor.step(GRANT,r3);
+				
+		//System.err.println(monitor);
 		
 		assertEquals(SUCCESS,monitor.end());
 		
@@ -49,7 +51,7 @@ public class RespectConflictsTest {
 	@Test
 	public void test_one() {
 		do_test_one(monitorOne);
-		do_test_one(monitorTwo);
+		//do_test_one(monitorTwo);
 	}
 	public void do_test_two(Monitor monitor){
 		
@@ -64,6 +66,8 @@ public class RespectConflictsTest {
 		monitor.step(GRANT,r2);
 		monitor.step(GRANT,r3);
 		monitor.step(GRANT,r1);
+		
+		//System.err.println(monitor);
 		
 		assertEquals(FAILURE,monitor.end());
 		

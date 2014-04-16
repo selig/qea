@@ -290,6 +290,15 @@ public class QEABuilder {
 				"Could not make a QEA of that type");
 	}
 
+	public static QEA change(QEA qea, QEAType type){
+		QEABuilder b = deconstruct(qea);
+		QEA qea_new = b.make(type);
+		// copy
+		for(Map.Entry<String,Integer> entry : qea.get_name_lookup().entrySet())
+			qea_new.record_event_name(entry.getKey(),entry.getValue());
+		return qea_new;
+	}
+	
 	public static QEABuilder deconstruct(QEA qea){
 		QEABuilder q = new QEABuilder(qea.name());
 		/*

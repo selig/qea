@@ -10,14 +10,17 @@ import static structure.impl.other.Verdict.WEAK_FAILURE;
 import static structure.impl.other.Verdict.WEAK_SUCCESS;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Quantification;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.Abstr_QVarN_QEA.QEntry;
 import structure.intf.Guard;
+import util.OurWeakHashMap;
 
 
 public abstract class IncrementalChecker {
@@ -25,6 +28,17 @@ public abstract class IncrementalChecker {
 	protected final boolean [] finalStates;	
 	protected final boolean[] strongStates;
 	
+	/*
+	 * Should probably make it weak!
+	 */
+	protected Set<QBindingImpl> strong_bindings = 
+			Collections.newSetFromMap(
+			        new OurWeakHashMap<QBindingImpl, Boolean>());
+	
+	public Set<QBindingImpl> getStrongBindings(){ return strong_bindings;}
+	
+	//Used to update counts
+	public abstract void removeStrong(QBindingImpl binding);
 	
 	public IncrementalChecker(boolean[] finalStates,boolean[] strongStates) {
 		this.finalStates=finalStates;
@@ -120,6 +134,11 @@ public abstract class IncrementalChecker {
 			if(at_end || currently_strong) return SUCCESS;
 			return WEAK_SUCCESS;
 		}
+
+		@Override
+		public void removeStrong(QBindingImpl binding) {
+			// Does nothing as cannot have a strong binding			
+		}
 		
 	}
 	
@@ -163,7 +182,10 @@ public abstract class IncrementalChecker {
 				if(is_final && !previous_final) number_non_final--;
 				else if(!is_final && previous_final) number_non_final++;	
 				
-				if(strongStates[next] && !is_final) strong_reached=true;
+				if(strongStates[next] && !is_final){
+					strong_reached=true;
+					strong_bindings.add(binding);
+				}
 			}
 		}
 		public void update(QBindingImpl binding, int[] lasts, int[] nexts){			
@@ -189,7 +211,10 @@ public abstract class IncrementalChecker {
 				if(is_final && !previous_final) number_non_final--;
 				else if(!is_final && previous_final) number_non_final++;
 				
-				if(all_strong_nf) strong_reached=true;
+				if(all_strong_nf){
+					strong_reached=true;
+					strong_bindings.add(binding);
+				}
 			}
 	}		
 
@@ -205,6 +230,15 @@ public abstract class IncrementalChecker {
 			else result= WEAK_SUCCESS;
 			if(negated) result = result.negated();
 			return result;
+		}
+
+		@Override
+		public void removeStrong(QBindingImpl binding) {
+			strong_reached = false; //Assumption - all strongs will
+									// be being removed!
+			number_non_final--; // binding must have been non-final
+								// to be strong
+			
 		}
 		
 	}
@@ -249,7 +283,10 @@ public abstract class IncrementalChecker {
 				if(is_final && !previous_final) number_final++;
 				else if(!is_final && previous_final) number_final--;	
 				
-				if(strongStates[next] && is_final) strong_reached=true;	
+				if(strongStates[next] && is_final){
+					strong_reached=true;
+					strong_bindings.add(binding);
+				}
 			}
 		}
 		public void update(QBindingImpl binding, int[] lasts, int[] nexts){
@@ -258,7 +295,10 @@ public abstract class IncrementalChecker {
 				for(int s : nexts){
 					if(finalStates[s]){
 						is_final=true;
-						if(strongStates[s]) strong_reached=true;
+						if(strongStates[s]){
+							strong_reached=true;
+							strong_bindings.add(binding);
+						}
 					}
 				}
 				boolean previous_final=false;
@@ -286,6 +326,15 @@ public abstract class IncrementalChecker {
 			if(negated) result = result.negated();
 			return result;
 		}
+		
+		@Override
+		public void removeStrong(QBindingImpl binding) {
+			strong_reached = false; //Assumption - all strongs will
+									// be being removed!
+			number_final--; // binding must have been final
+							// to be strong
+			
+		}		
 		
 	}	
 	
@@ -325,7 +374,11 @@ public abstract class IncrementalChecker {
 		//maps a value for q1 to the number of 
 		//		final values for q2 if q2 is existential
 		//		non-final values for q2	is universal	
-		private Map<Object,Integer> q2_map = new HashMap<Object,Integer>();
+		
+		// Should probably make it weak
+		//TODO - what are the implications if the removed binding
+		// is in a failure state
+		private Map<Object,Integer> q2_map = new OurWeakHashMap<Object,Integer>();
 		
 		// count is of non_final if universal
 		//      and of final if existential
@@ -466,6 +519,12 @@ public abstract class IncrementalChecker {
 			for(Map.Entry<Object,Integer> entry : q2_map.entrySet())
 				res += entry.getKey() + "\t" + entry.getValue() + "\n";
 			return res;
+		}
+
+		@Override
+		public void removeStrong(QBindingImpl binding) {
+			// Does nothing as we cannot have strong bindings
+			
 		}
 		
 	}
