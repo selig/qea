@@ -13,6 +13,9 @@ import org.junit.Test;
 
 import properties.rovers.RoverCaseStudy;
 import properties.simple.DemoQEAs;
+import structure.impl.qeas.QEAType;
+import structure.intf.QEA;
+import creation.QEABuilder;
 
 public class RestartTest {
 
@@ -30,9 +33,9 @@ public class RestartTest {
 	 */
 	@Test
 	public void test_one() {
-
+		QEA qea = QEABuilder.change(RoverCaseStudy.makeGrantCancelSingle(),QEAType.QVARN_FVAR_NONDET_QEA);
 		Monitor monitor = MonitorFactory
-				.create(RestartMode.ROLLBACK,RoverCaseStudy.makeGrantCancelSingle());
+				.create(RestartMode.REMOVE,qea);
 
 		assertEquals(monitor.step(GRANT, task_one, resource_one),
 				WEAK_SUCCESS);
@@ -49,9 +52,10 @@ public class RestartTest {
 	@Test
 	public void test_two() {
 
+		QEA qea = QEABuilder.change(RoverCaseStudy.makeGrantCancelSingle(),QEAType.QVARN_FVAR_NONDET_QEA);
 		Monitor monitor = MonitorFactory
-				.create(RestartMode.REMOVE,RoverCaseStudy.makeGrantCancelSingle());
-
+				.create(RestartMode.REMOVE,qea);
+		
 		assertEquals(monitor.step(GRANT, task_one, resource_one),
 				WEAK_SUCCESS);
 		assertEquals(monitor.step(CANCEL, task_two, resource_two), FAILURE);
@@ -67,8 +71,9 @@ public class RestartTest {
 	@Test
 	public void test_three() {
 
+		QEA qea = QEABuilder.change(DemoQEAs.makePropositionalDepend(),QEAType.QVARN_FVAR_NONDET_QEA);
 		Monitor monitor = MonitorFactory
-				.create(RestartMode.ROLLBACK,DemoQEAs.makePropositionalDepend());
+				.create(RestartMode.REMOVE,qea);
 
 		assertEquals(monitor.step(e, 5), WEAK_FAILURE);
 		//System.out.println(monitor);

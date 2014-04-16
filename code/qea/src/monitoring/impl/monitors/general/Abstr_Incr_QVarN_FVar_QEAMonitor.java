@@ -621,8 +621,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 
 	@Override
 	protected int rollbackStrongBindings() {
-		Set<QBindingImpl> strong_bindings = checker.getStrongBindings();
-		return 0;
+		throw new RuntimeException("Rollback restart not implemented");
 	}
 
 	@Override
