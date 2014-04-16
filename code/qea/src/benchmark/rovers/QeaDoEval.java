@@ -23,13 +23,12 @@ public class QeaDoEval extends DoEval {
 		eval.eval_for_ResourceLifecycle(RoverCaseStudy.makeResourceLifecycle(),
 				"ResourceLifecycle");
 
-		// TODO Multiple quantified QEA not implemented yet
-		// eval.eval_for_ReleaseResource(RoverCaseStudy.makeReleaseResource(),
-		// "ReleaseResource");
+		 eval.eval_for_ReleaseResource(RoverCaseStudy.makeReleaseResource(),
+		 "ReleaseResource");
 
-		// TODO Fails due to free variables missing in the QEA
-		// eval.eval_for_RespectConflicts(
-		// RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");
+
+		 eval.eval_for_RespectConflicts(
+		 RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");
 
 		// TODO Implementation of eval_for_RespectPriorities and
 		// work_for_RespectPriorities is missing
@@ -44,19 +43,17 @@ public class QeaDoEval extends DoEval {
 		eval.eval_for_IncreasingCommand(RoverCaseStudy.makeIncreasingCommand(),
 				"IncreasingCommand");
 
-		// TODO Multiple quantified QEA not implemented yet
-		// eval.eval_for_NestedCommand(RoverCaseStudy.makeNestedCommand(),
-		// "NestedCommand");
+		eval.eval_for_NestedCommand(RoverCaseStudy.makeNestedCommand(),
+		 "NestedCommand");
 
-		// TODO OutOfMemory exception
-		// eval.eval_for_AcknowledgeCommands(
-		// RoverCaseStudy.makeAcknowledgeCommands(), "AcknowledgeCommands");
+		
+		 eval.eval_for_AcknowledgeCommands(
+		 RoverCaseStudy.makeAcknowledgeCommands(), "AcknowledgeCommands");
+	
+		 eval.eval_for_ExistsSatellite(
+		 RoverCaseStudy.makeExistsSatelliteSingle(), "ExistsSatellite");
 
-		// TODO Fails due to free variables missing in the QEA
-		// eval.eval_for_ExistsSatellite(
-		// RoverCaseStudy.makeExistsSatelliteSingle(), "ExistsSatellite");
-
-		// TODO Multiple quantified QEA not implemented yet
+		//TODO - check, this qea is not Normal
 		// eval.eval_for_ExistsLeader(RoverCaseStudy.makeExistsLeader(),
 		// "ExistsLeader");
 

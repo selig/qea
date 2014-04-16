@@ -462,15 +462,16 @@ abstract class DoWork<S> {
 				Object rr = res.remove();
 
 				ping(rr, sos[sat]);
-				sats_r.add(sat);
+				
 				Queue<Object> temp_q = map_r.get(sat);
 				if (temp_q == null) {
+					sats_r.add(sat);
 					temp_q = new LinkedList();
-					temp_q.add(rr);
+					map_r.put(sat, temp_q);
 				}
-				map_r.put(sat, temp_q);
+				temp_q.add(rr);				
 
-				if (res.size() == 1) {
+				if (res.peek()==null) {
 					map_p.remove(sat);
 					sats_p.remove(sat);
 				}
@@ -481,7 +482,7 @@ abstract class DoWork<S> {
 				Object rr = res.remove();
 				ack(sos[sat], rr);
 
-				if (res.size() == 1) {
+				if (res.peek()==null) {
 					map_r.remove(sat);
 					sats_r.remove(sat);
 				}
