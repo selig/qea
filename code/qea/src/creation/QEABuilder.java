@@ -294,6 +294,7 @@ public class QEABuilder {
 		QEABuilder b = deconstruct(qea);
 		QEA qea_new = b.make(type);
 		// copy
+		if(qea.get_name_lookup()!=null)
 		for(Map.Entry<String,Integer> entry : qea.get_name_lookup().entrySet())
 			qea_new.record_event_name(entry.getKey(),entry.getValue());
 		return qea_new;
