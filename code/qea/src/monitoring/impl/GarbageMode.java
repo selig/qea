@@ -10,6 +10,13 @@ public enum GarbageMode {
 	NONE, 
 	LAZY, 
 	EAGER, 
-	UNSAFE_LAZY,  //remove a binding if any member becomes garbage
-	OVERSAFE_LAZY // remove a binding if all members become garbage
+	UNSAFE_LAZY,  //remove a binding if all member becomes garbage
+				  // I think this is what JavaMOP does
+				  // it's technically unsafe as the binding might be
+				  // extended to change the verdict
+				  //
+				  // There are more unsafe versions ie. remove if any
+				  // member becomes garbage.
+	
+	OVERSAFE_LAZY // not sure yet
 }

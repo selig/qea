@@ -129,4 +129,51 @@ public abstract class Assignment {
 			}			
 		};
 	}
+	public static Assignment set(final int var0, final Object value) {
+		return new Assignment("x_"+var0+"="+value) {
+			@Override
+			public Binding apply(Binding binding,boolean copy) {
+				Binding newBinding = binding;
+				if(copy) newBinding = binding.copy();
+				newBinding.setValue(var0, value);
+				return newBinding;
+			}
+			@Override
+			public int[] vars() {
+				return new int[]{var0};
+			}
+		};
+	}
+	public static Assignment increment(final int var0) {
+		return new Assignment("x_"+var0+"++") {
+			@Override
+			public Binding apply(Binding binding,boolean copy) {
+				Integer val0 = (Integer) binding.getForced(var0);
+				Binding newBinding = binding;
+				if(copy) newBinding = binding.copy();
+				newBinding.setValue(var0, val0+1);
+				return newBinding;
+			}
+			@Override
+			public int[] vars() {
+				return new int[]{var0};
+			}
+		};
+	}
+	public static Assignment decrement(final int var0) {
+		return new Assignment("x_"+var0+"--") {
+			@Override
+			public Binding apply(Binding binding,boolean copy) {
+				Integer val0 = (Integer) binding.getForced(var0);
+				Binding newBinding = binding;
+				if(copy) newBinding = binding.copy();
+				newBinding.setValue(var0, val0-1);
+				return newBinding;
+			}
+			@Override
+			public int[] vars() {
+				return new int[]{var0};
+			}
+		};
+	}
 }

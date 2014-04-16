@@ -991,6 +991,7 @@ public class QEABuilder {
 				return "All states should be >0";
 			}
 			if (trans.event_name < 1) {
+				System.err.println(trans);
 				return "All event names should be >0";
 			}
 			if (trans.event_args != null) {
@@ -1121,6 +1122,18 @@ public class QEABuilder {
 		transitions.add(trans);
 	}
 
+	// add a single variable transition
+	public void addTransition(int start, int propname, int var, int end) {
+		TempTransition trans = new TempTransition();
+		trans.start = start;
+		trans.end = end;
+		trans.event_name = propname;
+		VarOrVal[] args = new VarOrVal[]{VarOrVal.makeVar(var)};
+		trans.event_args = args;
+		transitions.add(trans);
+		
+	}	
+	
 	// add a variable only transition
 	public void addTransition(int start, int propname, int[] vargs, int end) {
 		TempTransition trans = new TempTransition();
@@ -1345,5 +1358,6 @@ public class QEABuilder {
 
 		return strong;
 	}
+
 
 }

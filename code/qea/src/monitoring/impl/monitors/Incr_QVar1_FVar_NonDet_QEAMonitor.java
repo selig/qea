@@ -68,6 +68,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	public Incr_QVar1_FVar_NonDet_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_FVar_NonDet_QEA qea) {
 		super(restart,garbage,qea);
 		switch(garbage){
+			case UNSAFE_LAZY:
+			case OVERSAFE_LAZY:
 			case LAZY: bindings = new WeakIdentityHashMap<>(); break;
 			case EAGER: bindings = new EagerGarbageHashMap<>(); break;
 			case NONE: bindings = new IdentityHashMap<>();
