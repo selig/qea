@@ -100,7 +100,15 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 
 		if (config.getStates().length == 1) { // Only one state in the start
 												// configuration
-			config.setStates(delta[config.getStates()[0]][event]);
+			int[] next_states = delta[config.getStates()[0]][event];
+			if(next_states==null){
+				if(skipStates[config.getStates()[0]])
+					return config;
+				else{
+					config.setStates(new int[]{0});
+				}
+			}
+			config.setStates(next_states);
 
 		} else { // More than one state in the start configuration
 
@@ -127,6 +135,10 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 							endStatesCount++;
 						}
 					}
+				}else if(skipStates[startState]){
+					// if there are no transitions, but it's a
+					// skip state, then mark the startState
+					endStatesBool[startState]=true;
 				}
 			}
 

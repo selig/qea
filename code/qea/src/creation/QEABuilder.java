@@ -57,7 +57,7 @@ public class QEABuilder {
 	 * 
 	 * We use internal representations
 	 */
-	private static class VarOrVal {
+	public static class VarOrVal {
 		static Map<Integer,VarOrVal> var_cache = new HashMap<Integer,VarOrVal>();
 		static VarOrVal makeVar(int var){
 			VarOrVal v = var_cache.get(var);
@@ -84,7 +84,7 @@ public class QEABuilder {
 		public String toString(){ return (val==null) ? "x_"+var : "v_"+val;}
 	}
 
-	private static class TempTransition {
+	public static class TempTransition {
 		int start, end = -1;
 		int event_name = -1;
 		VarOrVal[] event_args;
@@ -133,7 +133,7 @@ public class QEABuilder {
 		}
 	}
 
-	private static class TempEvent {
+	public static class TempEvent {
 		int event_name = -1;
 		VarOrVal[] event_args = null;
 
@@ -172,11 +172,11 @@ public class QEABuilder {
 
 		@Override
 		public String toString() {
-			return event_name + "(" + Arrays.toString(event_args) + ")";
+			return event_name+ Arrays.toString(event_args);
 		}
 	}
 
-	private static class Quant {
+	public static class Quant {
 		boolean universal;
 		int var = 1;
 		Guard g;
@@ -187,6 +187,7 @@ public class QEABuilder {
 
 	Set<TempTransition> transitions = new HashSet<TempTransition>();
 	Set<Integer> finalstates = new HashSet<Integer>();
+	Set<Integer> skipstates = new HashSet<Integer>();
 	List<Quant> quants = new ArrayList<Quant>();
 
 	/*
@@ -478,6 +479,9 @@ public class QEABuilder {
 				}
 			}
 		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
+		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
 		}
@@ -496,6 +500,9 @@ public class QEABuilder {
 		for (TempTransition t : transitions) {
 			Transition trans = new Transition(t.var_args(), t.g, t.end);
 			qea.addTransition(t.start, t.event_name, trans);
+		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
@@ -546,6 +553,9 @@ public class QEABuilder {
 				}
 			}
 		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
+		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
 		}
@@ -563,6 +573,9 @@ public class QEABuilder {
 		for (TempTransition t : transitions) {
 			boolean prop = (t.event_args==null) || (t.event_args.length==0);
 			qea.addTransition(t.start, t.event_name, t.end,prop);
+		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
@@ -651,6 +664,9 @@ public class QEABuilder {
 				}
 			}
 		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
+		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
 		}
@@ -673,6 +689,9 @@ public class QEABuilder {
 			trans.setAssignment(t.a);
 			trans.setGuard(t.g);
 			qea.addTransition(t.start, t.event_name, trans);
+		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
@@ -722,6 +741,9 @@ public class QEABuilder {
 				}
 			}
 		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
+		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
 		}
@@ -742,6 +764,9 @@ public class QEABuilder {
 			Transition trans = new Transition(t.var_args(), t.g,
 					t.a, t.end);
 			qea.addTransition(t.start, t.event_name, trans);
+		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
@@ -792,6 +817,9 @@ public class QEABuilder {
 				}
 			}
 		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
+		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
 		}
@@ -810,6 +838,9 @@ public class QEABuilder {
 		for (TempTransition t : transitions) {
 			boolean prop = (t.event_args==null) || (t.event_args.length==0);
 			qea.addTransition(t.start, t.event_name, t.end,prop);
+		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
 			qea.setStateAsFinal(s);
@@ -878,6 +909,9 @@ public class QEABuilder {
 					}
 				}
 			}
+			for(Integer s : skipstates){
+				qea.setStateAsSkip(s);
+			}
 			for (Integer s : finalstates) {
 				qea.setStatesAsFinal(s);
 			}
@@ -906,6 +940,9 @@ public class QEABuilder {
 			trans.setAssignment(t.a);
 			trans.setGuard(t.g);
 			qea.addTransition(t.start, t.event_name, trans);
+		}
+		for(Integer s : skipstates){
+			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
 			qea.setStatesAsFinal(s);
@@ -1229,7 +1266,10 @@ public class QEABuilder {
 	 */
 	public void setSkipStates(int... states) {
 
-		Set<TempEvent> events = getEvents();
+		// Instead of closing we now just mark them as skip
+		for(int s: states) skipstates.add(s);
+		
+		/*Set<TempEvent> events = getEvents();
 
 		for (int state : states) {
 
@@ -1245,7 +1285,7 @@ public class QEABuilder {
 					addTransition(state, event, state);
 				}
 			}
-		}
+		}*/
 
 	}
 
@@ -1304,44 +1344,7 @@ public class QEABuilder {
 		// state 0 is always strong
 		strong[0] = true;
 
-		// reach[1][2] is true if state 2 is reachable from state 1
-		boolean[][] reach = new boolean[nstates + 1][nstates + 1];
-
-		Set<TempEvent> events = getEvents();
-		Set<TempEvent>[] used = new Set[nstates + 1];
-
-		for (int i = 1; i < reach.length; i++) {
-			reach[i][i] = true;
-			used[i] = new HashSet<TempEvent>();
-		}
-
-		for (TempTransition t : transitions) {
-			reach[t.start][t.end] = true;
-			used[t.start].add(t.temp_event);
-		}
-
-		for (int i = 1; i < reach.length; i++) {
-			if (used[i].size() != events.size()) {
-				reach[i][0] = true;
-			}
-		}
-
-		for (int i = 1; i < nstates; i++) {
-			for (int start = 1; start < (nstates + 1); start++) {
-				for (int middle = 1; middle < (nstates + 1); middle++) {
-					// for each entry in reach where start can reach middle
-					if (reach[start][middle]) {
-						// for every state end that middle can reach
-						for (int end = 1; end < (nstates + 1); end++) {
-							if (reach[middle][end]) {
-								// set that start can reach end
-								reach[start][end] = true;
-							}
-						}
-					}
-				}
-			}
-		}
+		boolean[][] reach = computeReach(nstates);
 
 		if (DEBUG) {
 			System.err.println("reach:");
@@ -1369,5 +1372,91 @@ public class QEABuilder {
 		return strong;
 	}
 
+	private boolean[][] computeReach(int nstates) {
+		// reach[1][2] is true if state 2 is reachable from state 1
+		boolean[][] reach = new boolean[nstates + 1][nstates + 1];
 
+		Set<TempEvent> events = getEvents();
+		Set<TempEvent>[] used = new Set[nstates + 1];
+
+		for (int i = 1; i < reach.length; i++) {
+			reach[i][i] = true;
+			used[i] = new HashSet<TempEvent>();
+		}
+
+		for (TempTransition t : transitions) {
+			reach[t.start][t.end] = true;
+			used[t.start].add(t.temp_event);
+		}
+		
+
+		for (int i = 1; i < reach.length; i++) {
+			if (used[i].size() != events.size()) {
+				// if there are unused events and this is not a skip state
+				// then we can reach the failing state
+				if(!skipstates.contains(i)) reach[i][0] = true;
+			}
+		}
+
+		for (int i = 1; i < nstates; i++) {
+			for (int start = 1; start < (nstates + 1); start++) {
+				for (int middle = 1; middle < (nstates + 1); middle++) {
+					// for each entry in reach where start can reach middle
+					if (reach[start][middle]) {
+						// for every state end that middle can reach
+						for (int end = 1; end < (nstates + 1); end++) {
+							if (reach[middle][end]) {
+								// set that start can reach end
+								reach[start][end] = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return reach;
+	}
+
+	public Map<TempEvent,Set<Set<TempEvent>>> computeEnableSets(){
+		
+		getEvents(); // ensures TempEvents are set
+		
+		// Computation in JavaMOP JSTTT paper, pg 30
+		Map<TempEvent,Set<Set<TempEvent>>> es = new HashMap<>();
+		Map<Integer,Set<Set<TempEvent>>> vs = new HashMap<>();
+		computeEnableSets(es,vs,1,new HashSet<TempEvent>());
+		
+		return es;
+	}
+
+	private void computeEnableSets(Map<TempEvent,Set<Set<TempEvent>>> es,Map<Integer,Set<Set<TempEvent>>> vs,
+					int state, Set<TempEvent> set){
+		
+		for(TempTransition t : transitions){
+			if(t.start==state){
+				TempEvent event = t.temp_event;
+				Set<Set<TempEvent>> event_es = es.get(event);
+				if(event_es==null){ 
+					event_es = new HashSet<>();
+					es.put(event,event_es);
+				}
+				event_es.add(set);
+				Set<TempEvent> set_ = new HashSet<>(set);
+				set_.add(event);
+				Set<Set<TempEvent>> state_vs = vs.get(state);
+				if(state_vs==null){
+					state_vs = new HashSet<>();
+					vs.put(state,state_vs);
+				}
+				if(!state_vs.contains(set_)){
+					state_vs.add(set_);
+					computeEnableSets(es,vs,t.end,set_);
+				}
+			
+			}
+			
+		}
+		
+	}
+	
 }

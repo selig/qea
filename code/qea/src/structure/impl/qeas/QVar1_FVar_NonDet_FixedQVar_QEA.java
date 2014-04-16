@@ -126,16 +126,26 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 	public NonDetConfig getNextConfig(NonDetConfig config, int event,
 			Object[] args, Object qVarValue) {
 
-		if (config.getStates().length == 1) { // Only one start state
+		int[] startStates = config.getStates();
+		if (startStates.length == 1) { // Only one start state
 
-			Transition[] transitions = delta[config.getStates()[0]][event];
+			int start_state = startStates[0];
+			Transition[] transitions = delta[start_state][event];
 
 			// If the event is not defined for the unique start state, return
 			// the failing state with an empty binding
+			// unless it is a skip state, in which case the config
+			// should remain unchanged, as there is only one entry
+			// we don't even need to copy it
 			if (transitions == null) {
-				config.setState(0, 0);
-				config.getBindings()[0].setEmpty();
-				return config;
+				if(skipStates[start_state]){
+					return config;
+				}else{
+					// again, only one config, no need to copy
+					config.setState(0, 0);
+					config.getBindings()[0].setEmpty();
+					return config;
+				}
 			}
 
 			// Check number of arguments vs. number of parameters of the event
@@ -154,11 +164,13 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 				}
 
 				// If there is a guard and is not satisfied, rollback the
-				// binding and return the failing state
+				// binding and return the failing state if the state
+				// is not a skip state
 				if (transition.getGuard() != null) {
 					Guard guard = transition.getGuard();
 					if (!guard.check(binding, -1, qVarValue)) {
-						config.setState(0, 0); // Failing state
+						if(!skipStates[start_state]) 
+							config.setState(0, 0); // Failing state
 						return config;
 					}
 				}
@@ -210,13 +222,15 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 						bindings[endStatesCount] = binding;
 
 						endStatesCount++;
-					}
+					}					
 				}
 
 				if (endStatesCount == 0) { // All end states are failing states
 
-					// Set failing state, leave binding as it is
-					config.setState(0, 0);
+					// Set failing state if not skip
+					// leave binding as it is
+					if(!skipStates[config.getStates()[0]])
+						config.setState(0, 0);
 					return config;
 				}
 
@@ -228,7 +242,6 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 
 		} else { // Multiple start states
 
-			int[] startStates = config.getStates();
 			int maxEndStates = 0;
 			boolean argsNumberChecked = false;
 			Transition[][] transitions = new Transition[startStates.length][];
@@ -247,7 +260,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 								transitions[i][0].getVariableNames().length);
 						argsNumberChecked = true;
 					}
-				}
+				}else if(skipStates[startStates[i]]) maxEndStates++;
 			}
 
 			// If the event is not defined for any of the current start states,
@@ -269,6 +282,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 			for (int i = 0; i < transitions.length; i++) {
 
 				if (transitions[i] != null) {
+					boolean transition_taken=false;
 					for (Transition transition : transitions[i]) {
 
 						// Copy the initial binding
@@ -298,7 +312,23 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 							bindings[endStatesCount] = binding;
 
 							endStatesCount++;
+							transition_taken=true;
 						}
+					}
+					if(!transition_taken){
+						if(skipStates[startStates[i]]){
+							endStates[endStatesCount] = startStates[i];
+							bindings[endStatesCount] = (FBindingImpl) config
+									.getBindings()[i].copy();
+							endStatesCount++;
+						}
+					}
+				}else {
+					if(skipStates[startStates[i]]){
+						endStates[endStatesCount] = startStates[i];
+						bindings[endStatesCount] = (FBindingImpl) config
+							.getBindings()[i].copy();
+						endStatesCount++;	
 					}
 				}
 			}
@@ -309,6 +339,8 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 				return config;
 			}
 
+			//TODO - should remove any repetitions here or as we go
+			
 			// Copy the states and bindings into the correct sized array if
 			// needed and update the configuration
 			config.setStates(ArrayUtil.resize(endStates, endStatesCount));

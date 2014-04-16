@@ -88,18 +88,8 @@ public class DemoPropsTest {
 		Monitor monitor = TestSettings.create(DemoQEAs
 				.makeSimulateQuantification());
 
-		Object o1 = new Object() {
-			@Override
-			public String toString() {
-				return "o1";
-			}
-		};
-		Object o2 = new Object() {
-			@Override
-			public String toString() {
-				return "o2";
-			}
-		};
+		Object o1 = TestSettings.object("o1");
+		Object o2 = TestSettings.object("o2");
 
 		assertEquals(monitor.step(a, o1), WEAK_FAILURE);
 		assertEquals(monitor.step(a, o2), WEAK_FAILURE);

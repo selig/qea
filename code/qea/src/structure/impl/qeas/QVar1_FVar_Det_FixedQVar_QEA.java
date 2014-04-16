@@ -100,8 +100,10 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA implemen
 		// If the event is not defined for the current start state, return the
 		// failing state with an empty binding
 		if (transition == null) {
-			config.setState(0);
-			config.getBinding().setEmpty();
+			if(!skipStates[config.getState()]){
+				config.setState(0);
+				config.getBinding().setEmpty();
+			}
 			return config;
 		}
 
@@ -117,11 +119,12 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA implemen
 		}
 
 		// If there is a guard and is not satisfied, rollback the binding and
-		// return the failing state
+		// return the failing state if not a skip state
 		if (transition.getGuard() != null) {
 			Guard guard = transition.getGuard();
 			if (!guard.check(binding, -1, qVarValue)) {
-				config.setState(0); // Failing state
+				if(!skipStates[config.getState()])
+					config.setState(0); // Failing state
 				return config;
 			}
 		}
