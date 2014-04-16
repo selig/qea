@@ -12,7 +12,7 @@ public class TestSettings {
 		standard,
 		general
 	}
-	public static TestMode mode = TestMode.general;
+	public static TestMode mode = TestMode.standard;
 	
 	public static Monitor create(QEA qea){
 		
