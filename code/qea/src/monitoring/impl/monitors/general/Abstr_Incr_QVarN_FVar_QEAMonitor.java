@@ -23,10 +23,7 @@ import util.OurWeakHashMap;
 /**
  *
  * We use the symbol-indexing concept
- *
- *
- * TODO - when we extend for garbage review every place we use System.identityHashCode
- *
+ 
  * @author Giles Reger
  */
 public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA, C extends Configuration> extends IncrementalMonitor<Q> {
@@ -38,6 +35,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 	protected final Map<Object,QBindingImpl> support_bindings;
 	protected final Map<QBindingImpl,String> support_queries;
 	private final int qvars;
+	private final int freevars;
 	private final boolean use_weak;
 
 	protected final QBindingImpl bottom;
@@ -57,6 +55,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());		
 		qea.setupMatching();
 		qvars = qea.getFullLambda().length;
+		freevars = qea.getFreeVars();
 		int num_events = qea.getEventsAlphabet().length+1;
 		
 		//Remember that incremental_checker might contain references
@@ -114,10 +113,15 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 
                         // get the most general signature
                         int[] general_args = null;
+                        boolean every_sig_has_qs=true;
                         for(int s=1;s<num_states;s++){                    
                                 for(Transition t : getTransitions(s,e)){
 	                                if(t!=null){
 	                                   int[] targs = t.getVariableNames();
+	                                   boolean some_q=false;
+	                                   for(int v : targs)
+	                                	   if(v<0) some_q=true;
+	                                   every_sig_has_qs &= some_q;
 	                                   if(general_args==null){
 	                                     general_args = new int[targs.length];
 	                                     for(int i=0;i<targs.length;i++){
@@ -141,10 +145,8 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
                         }
                         if(general_args==null) general_args = new int[]{};
                         
-                        // if general_args contains a qvar then empty_has_q_blanks should be true
-                        for(int m : general_args){
-                        	if(m==1) empty_has_q_blanks[e] = true;
-                        }
+                        empty_has_q_blanks[e] = every_sig_has_qs;
+                        
                         
                         //create versions of this signature - not the empty (i.e. all 0)
                         // order from most specific (no 0 replacements) to least
@@ -231,14 +233,20 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
+		if(DEBUG) System.err.println("=======> "+qea.get_event_name(eventName)+Arrays.toString(args));
+		
+		if(saved!=null){
+			if(!restart()) return saved;
+		}			
+		
 		//if(rep++%1000==0) System.err.println(mapping.size()+", "+maps[1].size());		
 		
 		/*for(int e = 1; e<masks.length;e++){
-			System.out.println(e);
+			System.err.println(e);
 			for(int[] m : masks[e])
-				System.out.println(Arrays.toString(m));
+				System.err.println(Arrays.toString(m));
 		}
-		System.out.println(Arrays.toString(empty_has_q_blanks));
+		System.err.println(Arrays.toString(empty_has_q_blanks));
 		System.exit(0);*/
 		
 		//retrieve consistent bindings in order of informativeness
@@ -273,7 +281,10 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 				
 				if(record!=null){
 					process_record(record,eventName,args,used,has_q_blanks);					
-					if(i==0){
+					if(i==0 && freevars==0){
+						// use_full not always viable
+						//only allow it if we have no free variables
+						// this is oversafe
 						used_full=true;
 						break; // for full optimisation
 					}
@@ -310,7 +321,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		if(numbindings==0){
 			// This record has become garbage, we should remove
 			// the associate entry in maps
-			//TODO
+			// - can this happen?
 			System.err.println("record garbage");
 		}
 		
@@ -340,8 +351,8 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 			}
 		}
 	}
-	
-	protected void add_to_maps(QBindingImpl ext) {
+	protected void add_to_maps(QBindingImpl ext){add_to_maps(ext,true);}
+	protected void add_to_maps(QBindingImpl ext,boolean add) {
 		int[][][] sigs = qea.getSigs();	
 		for(int e=1;e<sigs.length;e++){
 			Set<String> qs = new HashSet<String>();
@@ -362,15 +373,23 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 					}
 				}
 				String q = b.toString();
-				if(qs.add(q)){
-					if(support_queries!=null)
+				if(qs.add(q)){					
+					if(add && support_queries!=null)
 						support_queries.put(ext, q);
 					BindingRecord record = empty ? empty_paths[e] : maps[e].get(q);
-					if(record==null){ // empty must be false
+					if(add && record==null){ // empty must be false
 						record = BindingRecord.make(ext,use_weak);
 						maps[e].put(q,record);
 					}
-					else record.addBinding(ext);
+					else{
+						if(add) record.addBinding(ext);
+						else{
+							record.removeBinding(ext);
+							if(record.num_bindings()==0){
+								maps[e].remove(q);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -379,12 +398,17 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 	protected static final Object[] dummyArgs = new Object[]{};
 	@Override
 	public Verdict step(int eventName) {
+		if(saved!=null){
+			if(!restart()) return saved;
+		}	
 		for(Map.Entry<QBindingImpl,C> entry : mapping.entrySet()){
 			QBindingImpl binding = entry.getKey();
 			C config = entry.getValue();
 			processPropositionalBinding(eventName, binding, config);
 		}
-		return checker.verdict(false);
+		Verdict v = checker.verdict(false);
+		if(v.isStrong()) saved=v;
+		return v;
 	}
 
 	protected abstract void processPropositionalBinding(int eventName,
@@ -426,6 +450,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		public abstract QBindingImpl get(int j);
 		public abstract int num_bindings();
 		abstract void addBinding(QBindingImpl b);
+		abstract void removeBinding(QBindingImpl b);
 	}
 	
 	public static class StrongBindingRecord extends BindingRecord{
@@ -451,6 +476,24 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 			bindings[num_bindings]=b;
 			num_bindings++;
 		}
+		void removeBinding(QBindingImpl b){
+			// find binding
+			int index = -1;
+			for(int i=0;i<num_bindings;i++)
+				if(bindings[i].equals(b)){
+					index=i;
+					break;
+				}
+			if(index == -1) return; // not found
+			// move everything after index down
+			for(int i=index;i+1<num_bindings;i++){
+				bindings[i]=bindings[i+1];
+			}
+			// but if index is last element then null it
+			if(index == bindings.length-1)
+				bindings[bindings.length-1]=null;
+			num_bindings--;
+		}		
 
 		@Override
 		public QBindingImpl get(int j) {
@@ -487,6 +530,24 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 			bindings[num_bindings]= new WeakReference<QBindingImpl>(b);
 			num_bindings++;
 		}
+		void removeBinding(QBindingImpl b){
+			// find binding
+			int index = -1;
+			for(int i=0;i<num_bindings;i++)
+				if(bindings[i].equals(b)){
+					index=i;
+					break;
+				}
+			if(index == -1) return; // not found
+			// move everything after index down
+			for(int i=index;i+1<num_bindings;i++){
+				bindings[i]=bindings[i+1];
+			}
+			// but if index is last element then null it
+			if(index == bindings.length-1)
+				bindings[bindings.length-1]=null;
+			num_bindings--;
+		}			
 
 		/*
 		 * Invariant - num_bindings is always called before
@@ -520,22 +581,53 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		
 	}	
 	
+	protected boolean restart(){
+		switch(restart_mode){
+			case NONE:
+				return false;
+			
+			case REMOVE:
+				// remove the offending binding
+				removeStrongBindings();
+				return true;
+			case ROLLBACK:
+				//rollback the offending bindings to initial state
+				rollbackStrongBindings();
+				return true;
+			case IGNORE:
+				//set the offending bindings to be ignored in the future
+				//ignoreStrongBindings();
+				return false;
+		}
+		return false;
+	}	
+	
 	@Override
 	protected int removeStrongBindings() {
-		// TODO Auto-generated method stub
-		return 0;
+		Set<QBindingImpl> strong_bindings = checker.getStrongBindings();
+		for(QBindingImpl binding : strong_bindings){
+			// first remove from mapping
+			mapping.remove(binding);
+			// next remove references in maps
+			add_to_maps(binding,false);			
+			// finally, we need to update checker
+			checker.removeStrong(binding);
+		}
+		
+		int removed = strong_bindings.size();
+		strong_bindings.clear();
+		return removed;
 	}
 
 	@Override
 	protected int rollbackStrongBindings() {
-		// TODO Auto-generated method stub
+		Set<QBindingImpl> strong_bindings = checker.getStrongBindings();
 		return 0;
 	}
 
 	@Override
 	protected int ignoreStrongBindings() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new RuntimeException("Ignore restart not implemented");
 	}	
 	
 }

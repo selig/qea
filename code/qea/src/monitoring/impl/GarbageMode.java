@@ -14,6 +14,8 @@ public enum GarbageMode {
 				  // I think this is what JavaMOP does
 				  // it's technically unsafe as the binding might be
 				  // extended to change the verdict
+				  // But most IMPORTANTLY - if the binding is currently
+				  // effecting the verdict then we might get a strong result
 				  //
 				  // There are more unsafe versions ie. remove if any
 				  // member becomes garbage.

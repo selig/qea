@@ -47,6 +47,7 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 							if(DEBUG) System.err.println("Adding new "+ext);
 							NonDetConfig next_config = config.copy();							
 							next_config = qea.getNextConfig(ext,next_config,eventName,args);
+							if(DEBUG) System.err.println("New has configs "+next_config);
 							addSupport(ext);
 							mapping.put(ext,next_config);
 							add_to_maps(ext);							
@@ -61,7 +62,9 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 				//Update configurations - check relevance first
 				// will not be relevant if blanks refer only to quantified variables
 				if(!has_q_blanks){
+					if(DEBUG) System.err.println("Updating configs for "+binding);
 					NonDetConfig next_config = qea.getNextConfig(binding,config,eventName,args);
+					if(DEBUG) System.err.println("New configs are "+next_config);
 					mapping.put(binding,next_config);
 					if(binding.isTotal()){
 						checker.update(binding,previous_states,next_config.getStates());

@@ -12,7 +12,7 @@ public class TestSettings {
 		standard,
 		general
 	}
-	public static TestMode mode = TestMode.standard;
+	public static TestMode mode = TestMode.general;
 	
 	public static Monitor create(QEA qea){
 		
@@ -23,11 +23,10 @@ public class TestSettings {
 			
 			case general:
 				//To test QVarN versions
-				QEABuilder b = QEABuilder.deconstruct(qea);
 				try{
-					return MonitorFactory.create(b.make(QEAType.QVARN_FVAR_DET_QEA));
+					return MonitorFactory.create(QEABuilder.change(qea, QEAType.QVARN_FVAR_DET_QEA));
 				}catch(Exception e){
-					return MonitorFactory.create(b.make(QEAType.QVARN_FVAR_NONDET_QEA));
+					return MonitorFactory.create(QEABuilder.change(qea, QEAType.QVARN_FVAR_NONDET_QEA));
 				}
 		}
 		return null;

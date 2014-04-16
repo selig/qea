@@ -303,19 +303,36 @@ public class RoverCaseStudy {
 		q.addAssignment(Assignment.addElementToSet(RS, R2));
 		q.endTransition(2);		
 		
+		// All conflicts have been given
+		
+		// We can grant and cancel
 		q.addTransition(2, GRANT, new int[] { R1 }, 3);
 		q.addTransition(3, CANCEL, new int[] { R1 }, 2);
 
-		q.startTransition(3);
-		q.eventName(GRANT);
-		q.addVarArg(R2);
-		q.addGuard(Guard.setContainsElement(R2, RS));
-		q.endTransition(4);
+		// But if whilst granted we grant a conflicted
+		// resource go to a failure state (4)
+		// We don't actually need this transition - failure
+		// will occur as we can't take the skip transition
+		// defined below
+		//q.startTransition(3);
+		//q.eventName(GRANT);
+		//q.addVarArg(R2);
+		//q.addGuard(Guard.setContainsElement(R2, RS));
+		//q.endTransition(4);
 
 		// Manual skip states
 		// q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
 		q.addTransition(1, GRANT, new int[] { R2 }, 1);
+		
+		// This is tricky - the skip semantics are not
+		// as straight-forward as this
 		//q.addTransition(2, GRANT, new int[] { R2 }, 2);
+		// we need r2!=r1
+		q.startTransition(2);
+		q.eventName(GRANT);
+		q.addVarArg(R2);
+		q.addGuard(Guard.isNotEqual(R1, R2));
+		q.endTransition(2);
 
 		q.startTransition(3);
 		q.eventName(GRANT);
