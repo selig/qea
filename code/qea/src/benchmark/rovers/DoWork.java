@@ -77,6 +77,8 @@ abstract class DoWork<S> {
 	 */
 	public void work_for_ResourceLifecycle(int r, int u) {
 
+		System.err.println("Running "+r+", "+u);
+		
 		// Initialise resources array
 		Object[] ros = new Object[r];
 		for (int i = 0; i < r; i++) {
@@ -100,7 +102,7 @@ abstract class DoWork<S> {
 			// According to the state, generate event
 			switch (s) {
 			case 0:
-				request(ros[res]);
+				request(ros[res]);request(ros[res]);
 				sp = 1;
 				break;
 			case 1:
