@@ -54,6 +54,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		super(restart,garbage,qea);
 		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());		
 		qea.setupMatching();
+		qea.isNormal(); // make sure normal is set
 		qvars = qea.getFullLambda().length;
 		freevars = qea.getFreeVars();
 		int num_events = qea.getEventsAlphabet().length+1;

@@ -812,8 +812,9 @@ public class RoverCaseStudy {
 
 		QEABuilder q = new QEABuilder("ExistsLeader");
 
-		if(true) return null; // Monitors do not currently
-							  // allow for non-normal qeas
+		//System.err.println("*********************");
+		//System.err.println("WARNING: Not Normal - not sure if monitors work for this");
+		//System.err.println("*********************");
 		
 		// Events
 		int PING = 1;

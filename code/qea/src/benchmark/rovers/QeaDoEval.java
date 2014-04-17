@@ -13,6 +13,7 @@ public class QeaDoEval extends DoEval {
 
 		QeaDoEval eval = new QeaDoEval();
 
+		eval.hardest_only=true;
 		QeaDoWork.print = false;
 
 		// Internal Properties
@@ -23,12 +24,16 @@ public class QeaDoEval extends DoEval {
 		eval.eval_for_ResourceLifecycle(RoverCaseStudy.makeResourceLifecycle(),
 				"ResourceLifecycle");
 
-		 eval.eval_for_ReleaseResource(RoverCaseStudy.makeReleaseResource(),
-		 "ReleaseResource");
-
-
 		 eval.eval_for_RespectConflicts(
-		 RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");
+		 RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");		
+		
+			eval.eval_for_IncreasingCommand(RoverCaseStudy.makeIncreasingCommand(),
+					"IncreasingCommand");		 
+		 
+			 eval.eval_for_ExistsSatellite(
+					 RoverCaseStudy.makeExistsSatelliteSingle(), "ExistsSatellite");
+
+
 
 		// TODO Implementation of eval_for_RespectPriorities and
 		// work_for_RespectPriorities is missing
@@ -37,25 +42,24 @@ public class QeaDoEval extends DoEval {
 
 		// External properties
 
-		eval.eval_for_ExactlyOneSuccess(RoverCaseStudy.makeExactlyOneSuccess(),
-				"ExactlyOneSuccess");
+		 //Not used
+		//eval.eval_for_ExactlyOneSuccess(RoverCaseStudy.makeExactlyOneSuccess(),
+		//		"ExactlyOneSuccess");
 
-		eval.eval_for_IncreasingCommand(RoverCaseStudy.makeIncreasingCommand(),
-				"IncreasingCommand");
 
+
+		 eval.eval_for_AcknowledgeCommands(
+		 RoverCaseStudy.makeAcknowledgeCommands(), "AcknowledgeCommands");		 
+		 
+		 eval.eval_for_ReleaseResource(RoverCaseStudy.makeReleaseResource(),
+		 "ReleaseResource");		 
+		 
 		eval.eval_for_NestedCommand(RoverCaseStudy.makeNestedCommand(),
 		 "NestedCommand");
 
-		
-		 eval.eval_for_AcknowledgeCommands(
-		 RoverCaseStudy.makeAcknowledgeCommands(), "AcknowledgeCommands");
-	
-		 eval.eval_for_ExistsSatellite(
-		 RoverCaseStudy.makeExistsSatelliteSingle(), "ExistsSatellite");
-
 		//TODO - check, this qea is not Normal
 		// eval.eval_for_ExistsLeader(RoverCaseStudy.makeExistsLeader(),
-		// "ExistsLeader");
+		// "ExistsLeader");		
 
 		// TODO Multiple quantified QEA not implemented yet
 		// eval.eval_for_MessageHashCorrectInvInt(

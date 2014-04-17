@@ -23,9 +23,9 @@ abstract class DoWork<S> {
 		}
 		else if (name.equals("ExactlyOneSuccess")) {
 			work_for_ExactlyOneSuccess(args[0]);
-
 		}
 		else if (name.equals("AcknowledgeCommands")) {
+			work_for_AcknowledgeCommands(args[0]);
 		}
 		else if (name.equals("NestedCommand")) {
 			work_for_NestedCommand(args[0], args[1], args[2]);
