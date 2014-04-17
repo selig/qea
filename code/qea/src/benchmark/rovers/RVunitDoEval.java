@@ -73,10 +73,10 @@ public class RVunitDoEval extends DoEval<String> {
 	//SETUP for first-order resource lifecycle
 	
     private static final SMTPredicate id = new SMTPredicate("p", new Serializable() {
-        public SMTExpression<Void> p(RVunitDoWork work, Integer i) {
+        public SMTExpression<Void> p(RVunitDoWork work, Object o) {
             return new SMTOperator<>("eq", ImmutableList.<SMTExpression<Void>>of(
                     new SMTVariable<Void>("x"),
-                    new SMTInteger<Void>(i)));
+                    new SMTInteger<Void>(System.identityHashCode(o))));
         }
     });
     private static final Proposition<SMTExpression<Property>> propId = new Proposition<SMTExpression<Property>>(new SMTSymbol<Property>(id)); 
@@ -114,7 +114,11 @@ public class RVunitDoEval extends DoEval<String> {
 	@Test
 	@Monitors({"parametric_resourceLifecycle"})
 	public void testResourceLifecycle(){
-		eval_for_ResourceLifecycle("ResourceLifecycle","ResourceLifecycle");
+		//eval_for_ResourceLifecycle("ResourceLifecycle","ResourceLifecycle");
+		DoWork work = makeWork();
+		Object resource = new Object();
+		work.request(resource);
+		work.request(resource);
 	}
 
 	
