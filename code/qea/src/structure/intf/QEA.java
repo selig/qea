@@ -108,6 +108,19 @@ public abstract class QEA {
 	 */
 	public abstract QEAType getQEAType();
 
+	/**
+	 *  Returns whether the QEA is normal
+	 *  
+	 *  A QEA is normal iff
+	 *   - when innermost quantification is universal the initial state
+	 *     is final
+	 *   - when the innermost quantification is existential the intial
+	 *     state is non-final
+	 *  
+	 *  @return true if QEA normal
+	 */
+	public abstract boolean isNormal();
+	
 	private Map<String, Integer> name_lookup;
 
 	/**

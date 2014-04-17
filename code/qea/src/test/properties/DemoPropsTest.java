@@ -94,7 +94,7 @@ public class DemoPropsTest {
 		assertEquals(monitor.step(a, o1), WEAK_FAILURE);
 		assertEquals(monitor.step(a, o2), WEAK_FAILURE);
 		assertEquals(monitor.step(b, o1), WEAK_FAILURE);
-		assertEquals(monitor.step(b, o2), WEAK_FAILURE);
+		assertEquals(monitor.step(b, o2), WEAK_FAILURE);		
 		assertEquals(monitor.step(b, o1), SUCCESS);
 	}
 

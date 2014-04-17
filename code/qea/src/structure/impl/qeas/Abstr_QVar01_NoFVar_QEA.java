@@ -56,6 +56,10 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 		}
 	}
 
+	public boolean isNormal(){
+		return (quantificationUniversal == isStateFinal(initialState)); 
+	}	
+	
 	/**
 	 * Adds the specified state to the set of skip states
 	 * 

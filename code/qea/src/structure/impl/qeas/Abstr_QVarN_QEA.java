@@ -1,5 +1,7 @@
 package structure.impl.qeas;
 
+import java.util.Arrays;
+
 import structure.impl.other.FBindingImpl;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Quantification;
@@ -7,8 +9,6 @@ import structure.intf.Binding;
 import structure.intf.Guard;
 import structure.intf.QEA;
 import util.ArrayUtil;
-
-import java.util.Arrays;
 
 public abstract class Abstr_QVarN_QEA extends QEA {
 
@@ -21,6 +21,13 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 	protected final int freeVariableCount;
 	protected final int quantifiedVariableCount;	
 	
+	/*
+	 * If it is not normal we need to add sub-bindings for
+	 * all bindings as *all* bindings must be generated, even
+	 * if they are associated with the empty projection
+	 */
+	protected boolean normal;
+	
 	public static class QEntry{
 		public QEntry(Quantification quantification, int variable, Guard guard) {
 			this.quantification = quantification;
@@ -30,6 +37,11 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 		public final Quantification quantification;
 		public final int variable;
 		public final Guard guard;
+		
+		public String toString(){
+			return quantification + " x_"+variable + ((guard!=null) ? guard : "");
+		}
+		
 	}	
 	
 	public Abstr_QVarN_QEA(int numStates, int numEvents, int initialState,
@@ -42,6 +54,18 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 		freeVariableCount = fVariablesCount;
 		quantifiedVariableCount = qVariablesCount;
 	}	
+	
+	public boolean isNormal(){
+		
+		//System.err.println(Arrays.toString(lambda));
+		if(lambda.length==1) normal=true;
+		else{
+			boolean innermost_universal = 
+					(lambda[lambda.length-1].quantification.isUniversal());
+			normal = (innermost_universal == isStateFinal(initialState));
+		}
+		return normal;
+	}
 	
 	@Override
 	public int getInitialState() {
@@ -213,11 +237,23 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 		}
 		bs = ArrayUtil.resize(bs, use_next);
 		
+		if(!normal){
+			//if we're not normal then we need to add all submaps
+			QBindingImpl first = bs[0];
+			QBindingImpl [] subs = first.submaps();
+			for(int i=1;i<bs.length;i++){
+				QBindingImpl next = bs[i];
+				subs = ArrayUtil.concat(subs,next.submaps());				
+			}
+			bs = ArrayUtil.concat(bs, subs);
+		}
+		
 		//*** Now close ***
 		//not necessary if all used same vars i.e. a qvar is either
 		// not used are used in all bs
 		boolean disjoint = true;
 		for(int u : usedq) disjoint &= (u==0 || u==bs.length);
+				
 		
 		if(disjoint) return bs;	
 		

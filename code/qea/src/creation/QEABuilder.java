@@ -374,6 +374,12 @@ public class QEABuilder {
 		for(int s : qea.getStates()){
 			if(qea.isStateFinal(s)) q.addFinalStates(s);
 		}
+		/*
+		 * Skiptates
+		 */
+		for(int s : qea.getStates()){
+			if(qea.isStateSkip(s)) q.setSkipStates(s);
+		}		
 		
 		/*
 		 * Quantifications
@@ -1369,6 +1375,9 @@ public class QEABuilder {
 			System.err.println("\nStrong states: " + Arrays.toString(strong));
 		}
 
+		//System.err.println("=================");
+		//System.err.println(Arrays.toString(strong));		
+		
 		return strong;
 	}
 
@@ -1413,7 +1422,8 @@ public class QEABuilder {
 					}
 				}
 			}
-		}
+		}		
+		
 		return reach;
 	}
 

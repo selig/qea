@@ -2,7 +2,7 @@ package test.properties.rovers;
 
 import static org.junit.Assert.assertEquals;
 import static structure.impl.other.Verdict.FAILURE;
-import static structure.impl.other.Verdict.WEAK_SUCCESS;
+import static structure.impl.other.Verdict.SUCCESS;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 
@@ -20,7 +20,7 @@ public class ExistsLeaderTest {
 
 	@Before
 	public void setup() {
-		//monitor = TestSettings.create(qea);
+		monitor = TestSettings.create(qea);
 	}
 
 	static int PING = 1;
@@ -31,32 +31,32 @@ public class ExistsLeaderTest {
 	 */
 	@Test
 	public void test_one() {
-	/*	Object A = TestSettings.object("A");
+		Object A = TestSettings.object("A");
 		Object B = TestSettings.object("B");
 		Object C = TestSettings.object("C");
 
 		monitor.step(PING,A,B);
-		System.err.println("======================\n"+monitor);				
+		//System.err.println("======================\n"+monitor);	
 		monitor.step(PING,A,C);
-		System.err.println("======================\n"+monitor);
+		//System.err.println("======================\n"+monitor);
 		monitor.step(PING,A,A);
-		System.err.println("======================\n"+monitor);
+		//System.err.println("======================\n"+monitor);
 		monitor.step(ACK,B,A);
-		System.err.println("======================\n"+monitor);
+		//System.err.println("======================\n"+monitor);
 		monitor.step(ACK,A,A);
-		System.err.println("======================\n"+monitor);
+		//System.err.println("======================\n"+monitor);
 		monitor.step(ACK,C,A);
-		System.err.println("======================\n"+monitor);
+		//System.err.println("======================\n"+monitor);
 		
-		assertEquals(WEAK_SUCCESS,monitor.end());
-		*/
+		assertEquals(SUCCESS,monitor.end());
+		
 	}
 	/*
 	 * Check that x and y have same domain
 	 */
 	@Test
 	public void test_two() {
-		/*
+		
 		Object A = TestSettings.object("A");
 		Object B = TestSettings.object("B");
 		Object C = TestSettings.object("C");
@@ -66,6 +66,6 @@ public class ExistsLeaderTest {
 		monitor.step(ACK,B,A);
 		
 		assertEquals(FAILURE,monitor.end());
-		*/
+		
 	}
 }

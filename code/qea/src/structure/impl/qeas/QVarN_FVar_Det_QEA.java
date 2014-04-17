@@ -1,6 +1,7 @@
 package structure.impl.qeas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -85,7 +86,7 @@ public class QVarN_FVar_Det_QEA extends Abstr_QVarN_FVar_QEA implements QEA_det_
 				args);
 		if (extend_with == null || !qbinding.equals(extend_with)) {
 			// not relevant, just return
-			System.err.println("Not relevant: "+extend_with);
+			//System.err.println("Not relevant: "+qbinding+" for "+eventName+Arrays.toString(args));
 			return;
 		}
 
