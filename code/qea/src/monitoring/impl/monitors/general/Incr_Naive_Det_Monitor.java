@@ -26,7 +26,7 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 
 	@Override
 	protected void innerStep(int eventName, QBindingImpl[] qbindings, Object[] args) {			
-		
+		TreeSet<QBindingImpl> B_ = new TreeSet<QBindingImpl>(new QBindingImpl.QBindingImplComparator());
 		for(QBindingImpl b : B){
 			Set<QBindingImpl> consistent = null;
 			for(QBindingImpl other : qbindings){
@@ -47,7 +47,7 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 					if(config==null){
 						config = mapping.get(b).copy();
 						mapping.put(b_extended,config);
-						B.add(b_extended);
+						B_.add(b_extended);
 						checker.newBinding(b_extended,config.getState());
 					}
 					
@@ -62,7 +62,8 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 				}
 				
 			}
-		}			
+		}	
+		B.addAll(B_);
 	}
 
 	

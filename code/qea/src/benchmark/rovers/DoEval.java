@@ -43,7 +43,13 @@ abstract class DoEval<S> {
 	 */
 	public void run_eval(S spec, String name, int[] args, int w) {
 		warmup = w;
-		run_eval(spec, name, args);
+		try{
+			run_eval(spec, name, args);
+		}
+		catch(Exception e){
+			System.err.println("There was a problem:");
+			e.printStackTrace();
+		}
 		warmup = 5;
 	}
 

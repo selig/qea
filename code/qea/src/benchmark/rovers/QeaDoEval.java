@@ -20,7 +20,7 @@ public class QeaDoEval extends DoEval {
 		//Do the whole thing 5 times!
 		for(int i=0;i<5;i++){
 			//Force naive monitors
-			//QeaDoWork.category=Category.NAIVE;
+			QeaDoWork.category=Category.NAIVE;
 			System.err.println("Category: "+QeaDoWork.category);
 			do_the_eval();
 			//Force symbol-indexing

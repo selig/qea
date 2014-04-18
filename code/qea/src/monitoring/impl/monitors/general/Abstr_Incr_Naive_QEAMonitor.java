@@ -22,6 +22,7 @@ public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_FVar_QEA
 	public Abstr_Incr_Naive_QEAMonitor(Q qea) {
 		super(RestartMode.NONE,GarbageMode.NONE,qea);
 		qea.setupMatching();
+		qea.isNormal(); // set normal
 		bottom = qea.newQBinding();
 		dummyEmptyBinding[0]=bottom;	
 		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());

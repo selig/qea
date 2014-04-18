@@ -27,6 +27,7 @@ public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN
 	@Override
 	protected void innerStep(int eventName, QBindingImpl[] qbindings, Object[] args) {			
 		
+		TreeSet<QBindingImpl> B_ = new TreeSet<QBindingImpl>(new QBindingImpl.QBindingImplComparator());
 		for(QBindingImpl b : B){
 			Set<QBindingImpl> consistent = null;
 			for(QBindingImpl other : qbindings){
@@ -46,7 +47,7 @@ public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN
 					//The qea updates the config, so we should copy if extending
 					if(config==null){
 						config = mapping.get(b).copy();
-						B.add(b_extended);
+						B_.add(b_extended);
 						checker.newBinding(b_extended,config.getStates());
 					}
 					
@@ -61,7 +62,8 @@ public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN
 				}
 				
 			}
-		}			
+		}	
+		B.addAll(B_);
 	}
 
 	
