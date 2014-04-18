@@ -10,6 +10,8 @@ import monitoring.impl.monitors.Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_FVar_NonDet_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_NoFVar_Det_QEAMonitor;
 import monitoring.impl.monitors.Incr_QVar1_NoFVar_NonDet_QEAMonitor;
+import monitoring.impl.monitors.general.Incr_Naive_Det_Monitor;
+import monitoring.impl.monitors.general.Incr_Naive_NonDet_Monitor;
 import monitoring.impl.monitors.general.Incr_QVarN_FVar_Det_QEAMonitor;
 import monitoring.impl.monitors.general.Incr_QVarN_FVar_NonDet_QEAMonitor;
 import monitoring.intf.Monitor;
@@ -106,19 +108,33 @@ public class MonitorFactory {
 			}
 
 		case QVARN_FVAR_DET_QEA:
-				///return new Incr_Naive_Det_Monitor( // naive does not use restart or garbage
-				//		(QVarN_FVar_Det_QEA) qea);
 				return new Incr_QVarN_FVar_Det_QEAMonitor(restart,garbage,
 						(QVarN_FVar_Det_QEA) qea);
 			
 		case QVARN_FVAR_NONDET_QEA:		
 				return new Incr_QVarN_FVar_NonDet_QEAMonitor(restart,garbage,
 						(QVarN_FVar_NonDet_QEA) qea);
-			
+					
+				
 		default:
 			throw new ShouldNotHappenException("No monitor for "
 					+ qea.getClass());
 		}
 	}
 
+	public static Monitor createNaive(QEA qea){
+		switch(qea.getQEAType()){
+		case QVARN_FVAR_DET_QEA:
+			return new Incr_Naive_Det_Monitor( // naive does not use restart or garbage
+					(QVarN_FVar_Det_QEA) qea);
+		case QVARN_FVAR_NONDET_QEA:
+			return new Incr_Naive_NonDet_Monitor( // naive does not use restart or garbage
+					(QVarN_FVar_NonDet_QEA) qea);	
+
+		default:
+			throw new ShouldNotHappenException("No monitor for "
+					+ qea.getClass());
+		}
+	}
+	
 }

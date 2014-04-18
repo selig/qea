@@ -6,6 +6,7 @@ import java.util.Arrays;
 abstract class DoEval<S> {
 
 	public static boolean hardest_only = false;
+	public static boolean output = false;
 	
 	private static PrintStream old_out = System.out;
 	private static PrintStream null_out = null;
@@ -73,6 +74,7 @@ abstract class DoEval<S> {
 		old_out.println("==\t" + spec + ":" + Arrays.toString(args) + "\t==");
 
 		// Execute runs printing the time for each one
+		long[] times = new long[runs];
 		for (int i = 0; i < runs; i++) {
 			System.setOut(null_out);
 			System.gc();
@@ -81,9 +83,15 @@ abstract class DoEval<S> {
 			work.run_with_spec(spec, name, args);
 			long end = System.currentTimeMillis();
 			System.setOut(old_out);
-			System.out.println((end - start));
-
+			long time = end - start;
+			if(output) System.out.println(i+" took "+time);
+			times[i]=time;
 		}
+		//compute average time
+		long total = 0;
+		for(long time : times) total+=time;
+		double average = ((double) total) / runs;
+		System.out.println(average);
 
 	}
 
@@ -164,7 +172,8 @@ abstract class DoEval<S> {
 		run_eval(spec, name, new int[] { 10000 }, 0);
 		run_eval(spec, name, new int[] { 100000 }, 0);
 		}
-		run_eval(spec, name, new int[] { 1000000 }, 0);
+		System.err.println("AcknowledgeCommands turned down");
+		run_eval(spec, name, new int[] { 1000 }, 0);
 
 	}
 
