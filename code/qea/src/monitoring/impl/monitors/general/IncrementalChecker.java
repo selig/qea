@@ -483,6 +483,7 @@ public abstract class IncrementalChecker {
 		}
 		
 		private void process(Object one, int add) {
+			
 			Integer last = q2_map.get(one);
 			if(last==null){ 
 				last = 0;

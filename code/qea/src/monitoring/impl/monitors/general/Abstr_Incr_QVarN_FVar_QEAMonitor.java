@@ -328,6 +328,10 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		
 		for(int j=numbindings-1;j>=0;j--){
 			QBindingImpl binding = record.get(j);
+			if(binding==null){
+				System.err.println("record had an empty binding! "+record);
+				continue;
+			}
 
 			if(DEBUG) System.err.println(j+":"+binding);
 			

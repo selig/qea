@@ -32,6 +32,7 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMon
 	protected void processBinding(int eventName, Object[] args,
 			boolean has_q_blanks, QBindingImpl binding) {
 		DetConfig config = mapping.get(binding);
+		if(config==null) return; // The binding has gone!
 		int previous_state = config.getState();
 		
 		//Attempt extensions

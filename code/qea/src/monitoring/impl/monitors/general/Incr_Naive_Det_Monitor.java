@@ -39,6 +39,8 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 			if(consistent!=null)
 			for(QBindingImpl b_extended : consistent){
 				
+				if(b_extended==null) System.err.println("null binding!");
+				
 				DetConfig config = mapping.get(b_extended);
 				
 				if(config==null || b.equals(b_extended)){
@@ -48,7 +50,9 @@ public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FV
 						config = mapping.get(b).copy();
 						mapping.put(b_extended,config);
 						B_.add(b_extended);
-						checker.newBinding(b_extended,config.getState());
+						if(b_extended.isTotal()){
+							checker.newBinding(b_extended,config.getState());
+						}
 					}
 					
 					int previous_state = config.getState();
