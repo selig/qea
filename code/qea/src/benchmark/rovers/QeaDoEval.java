@@ -17,6 +17,25 @@ public class QeaDoEval extends DoEval {
 
 	public static void main(String[] args) {
 
+
+		QeaDoWork.print = false;
+		
+		/*
+		 * Questions to answer/fix
+		 * - Why is RespectConflicts slower for Symbol than Naive?
+		 */
+		
+		QeaDoEval eval = new QeaDoEval();
+		eval.hardest_only=true;		
+		QeaDoWork.category=Category.NAIVE;
+		System.err.println("Category: "+QeaDoWork.category);
+		for(int i=0;i<10;i++)
+			eval.eval_for_ExistsLeader(RoverCaseStudy.makeExistsLeader(),
+					 "ExistsLeader");		
+		
+		System.exit(0);
+		
+		
 		//Do the whole thing 5 times!
 		for(int i=0;i<5;i++){
 			//Force naive monitors
@@ -42,9 +61,7 @@ public class QeaDoEval extends DoEval {
 	public static void do_the_eval(){	
 		
 		QeaDoEval eval = new QeaDoEval();
-
 		eval.hardest_only=true;
-		QeaDoWork.print = false;
 
 		// Internal Properties
 

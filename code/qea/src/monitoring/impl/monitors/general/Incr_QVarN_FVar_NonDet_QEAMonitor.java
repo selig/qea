@@ -34,6 +34,7 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 			boolean has_q_blanks, QBindingImpl binding) {
 
 		NonDetConfig config = mapping.get(binding);
+		if(config==null) return; // the binding is gone!
 		int[] previous_states = config.getStates();		
 		
 		//Attempt extensions
