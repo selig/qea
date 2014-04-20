@@ -1,0 +1,28 @@
+GrantCancelMOP(Object t1, Object t2, Object r) {
+
+       event grant_t1 after(Object t1, Object r) :  call(void MopDoWork.grant(Object,Object)) && args(t1,r){}
+       event grant_t2 after(Object t2, Object r) :  call(void MopDoWork.grant(Object,Object)) && args(t2,r){}
+       event cancel_t1 after(Object t1, Object r) :  call(void MopDoWork.cancel(Object,Object)) && args(t1,r){}
+       event cancel_t2 after(Object t2, Object r) :  call(void MopDoWork.cancel(Object,Object)) && args(t2,r){}
+
+       fsm:
+       start [
+        grant_t1 -> granted_t1
+        grant_t2 -> granted_t2
+        cancel_t1 -> error
+        cancel_t2 -> error
+       ]
+       granted_t1 [
+	cancel_t1 -> start
+        grant_t2 -> error
+       ]
+       granted_t2 [
+	cancel_t2 -> start
+        grant_t1 -> error
+       ]
+       error [ ]
+     
+       @error{
+               System.err.println("a resource granted to more than one task");
+       }
+}
