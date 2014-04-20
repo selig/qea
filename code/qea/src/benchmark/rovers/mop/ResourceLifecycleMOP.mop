@@ -1,0 +1,25 @@
+ResourceLifecycleMOP(Object r) {
+
+       event request after(Object r) :  call(void MopDoWork.request(Object)) && args(r){}
+       event deny after(Object r) :  call(void MopDoWork.deny(Object)) && args(r){}
+       event grant after(Object r) :  call(void MopDoWork.grant(Object)) && args(r){}
+       event cancel after(Object r) :  call(void MopDoWork.cancel(Object)) && args(r){}
+       event rescind after(Object r) :  call(void MopDoWork.rescind(Object)) && args(r){}
+
+       fsm:
+       start [
+        request -> requested
+       ]
+       requested [
+	deny -> start
+	grant -> granted
+       ]
+       granted [
+	rescind -> granted
+	cancel -> start
+       ]
+
+       @fail{
+               System.err.println("A resource was used incorrectly");
+       }
+}

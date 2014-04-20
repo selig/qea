@@ -17,5 +17,7 @@
 	<classpathentry kind="lib" path="lib/z3-4.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/Z3Support-0.2-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="JUnitRV-0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="javamoprt.jar"/>
+	<classpathentry kind="con" path="org.eclipse.ajdt.core.ASPECTJRT_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
