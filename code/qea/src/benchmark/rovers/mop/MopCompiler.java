@@ -20,7 +20,12 @@ public class MopCompiler {
 		if((new File(params[1])).exists()){
 			Runtime.getRuntime().exec(params);
 		}
-		else System.err.println(property+" not found");
+		else{
+			String asp = dir+"/"+property+"MOPAspect.aj";
+			(new File(asp)).delete();
+			
+			System.err.println(property+" not found");
+		}
 	}
 	
 }

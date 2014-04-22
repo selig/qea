@@ -26,12 +26,22 @@ public class QeaDoEval extends DoEval {
 		 */
 		
 		QeaDoEval eval = new QeaDoEval();
-		eval.hardest_only=true;		
-		QeaDoWork.category=Category.NAIVE;
-		System.err.println("Category: "+QeaDoWork.category);
-		for(int i=0;i<10;i++)
-			eval.eval_for_ExistsLeader(RoverCaseStudy.makeExistsLeader(),
-					 "ExistsLeader");		
+		eval.hardest_only=true;			
+		//eval.output=true;
+		eval.csv_mode=true;
+		
+		//QeaDoWork.category=Category.NAIVE;
+		//System.err.println("Category: "+QeaDoWork.category);
+		// eval.eval_for_RespectConflicts(
+		// RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");		
+		//	QeaDoWork.category=Category.SYMBOL;
+		//	System.err.println("Category: "+QeaDoWork.category);
+		//	for(int i=0;i<100;i++)
+		//	 eval.eval_for_RespectConflicts(
+		//	 RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");		 
+		
+		eval.eval_for_RespectPriorities(RoverCaseStudy.makeRespectPriorities(),
+				 "RespectPriorities");	
 		
 		System.exit(0);
 		
@@ -62,6 +72,7 @@ public class QeaDoEval extends DoEval {
 		
 		QeaDoEval eval = new QeaDoEval();
 		eval.hardest_only=true;
+		eval.csv_mode=true;
 
 		// Internal Properties
 
@@ -96,7 +107,10 @@ public class QeaDoEval extends DoEval {
 			 "NestedCommand");
 	
 			eval.eval_for_ExistsLeader(RoverCaseStudy.makeExistsLeader(),
-			 "ExistsLeader");		
+			 "ExistsLeader");
+			
+			eval.eval_for_RespectPriorities(RoverCaseStudy.makeRespectPriorities(),
+					 "RespectPriorities");	
 		}
 
 	}
@@ -189,6 +203,8 @@ public class QeaDoEval extends DoEval {
 		public void handle(Verdict verdict) {
 			if (verdict == Verdict.FAILURE) {
 				System.err.println("warning: failure");
+				System.err.println(monitor);				
+				System.exit(0);
 			}
 		}
 

@@ -48,6 +48,9 @@ abstract class DoWork<S> {
 		else if (name.equals("MessageHashCorrectInvInt")) {
 			work_for_MessageHashCorrectInvInt(args[0], args[1]);
 		}
+		else if (name.equals("RespectPriorities")) {
+			work_for_RespectPriorities(args[0], args[1]);
+		}		
 		else System.err.println(name+" not found");
 	}
 
@@ -653,6 +656,130 @@ abstract class DoWork<S> {
 
 	}
 
+	private void make_res(Map<Object,Set<Object>> pmap, List<Object> resources, int r,Set<Object> parents){
+		
+		   if(resources.size()>=r) return;
+		   
+		   Set<Object> this_level = new HashSet<>();
+		   for(Object pr : parents){
+			   Set<Object> above_pr = new HashSet<>();
+			   for(Map.Entry<Object,Set<Object>> entry : pmap.entrySet()){
+				   if(entry.getValue().contains(pr))
+					   above_pr.add(entry.getKey());
+			   }
+			   if(resources.size() < r){
+				   Object c1 = new Object();
+				   this_level.add(c1);
+				   resources.add(c1);
+				   for(Object apr : above_pr){
+					   Set<Object> news = new HashSet<>(pmap.get(apr));
+					   news.add(c1);
+					   pmap.put(apr,news);
+				   }
+			   }
+			   //Do it again, i.e. binary tree
+			   if(resources.size() < r){
+				   Object c1 = new Object();
+				   this_level.add(c1);
+				   resources.add(c1);
+				   for(Object apr : above_pr){
+					   Set<Object> news = new HashSet<>(pmap.get(apr));
+					   news.add(c1);
+					   pmap.put(apr,news);
+				   }
+			   }			   
+		   }
+		   make_res(pmap,resources,r,this_level);
+	}
+	
+	public void work_for_RespectPriorities(int r, int e){
+		  // first create a tree-structure of r resources with priorities
+		Map<Object,Set<Object>> pmap = new HashMap<>();
+		 
+		List<Object> resources = new ArrayList<>();		
+		
+		 Object mom = new Object();
+		 resources.add(mom);
+		 Set<Object> moms = new HashSet<Object>();
+		 moms.add(mom);
+		 make_res(pmap,resources,r, moms);
+	    
+		 // submit those priorities to the monitor
+		int e_done = 0;
+		for(Map.Entry<Object,Set<Object>> entry : pmap.entrySet()){
+			Object r1 = entry.getKey();
+			Set<Object> rs = entry.getValue();
+			for(Object r2 : rs){
+				priority(r1,r2);
+				e_done++;
+			}
+		}
+			   
+		if(e_done>e){
+		  throw new RuntimeException("The number of events must be enough to allow the priorities to be given");
+		} 
+		//else System.err.println(e-e_done+" events left"); 
+		
+		 // now for the rest of the events select a random resource and do something with it, randomly
+		Random rand = new Random();
+		
+		Map<Object,Integer> rev = new HashMap<>();
+		for(int i=0;i<resources.size();i++){
+			rev.put(resources.get(i),i);
+		}
+		int[] status = new int[r+1];
+		// statuses
+		// 0 unrequested
+		// 1 requested
+		// 2 granted
+		
+		for(int i=e_done;i<e;i++){
+			int index = rand.nextInt(r);
+		    Object res = resources.get(index);
+			switch(status[index]){
+			
+		      case 0 :
+		    	  request(res);
+		    	  status[index]=1;
+		    	  break;
+		      // if requested we can either grant or deny, if we plan on granting it we need to make sure
+		      // that all conflicted resources with lower priority are rescinded
+		      // we can only grant if there is no resource with higher priority granted
+		      case 1 :
+		        boolean higher_g = false;
+		        for(Map.Entry<Object,Set<Object>> entry : pmap.entrySet()){
+		        	if(entry.getValue().contains(res)){
+		        		if(status[rev.get(entry.getKey())]==2) higher_g=true;
+		        	}
+		        }
+		        if(higher_g){
+		        	deny(res);
+		        	status[index]=0;
+		        }
+		        else{
+		          // let's try and grant it
+		          Set<Object> res_set = pmap.get(res);
+		          if(res_set!=null){
+		        	  for(Object lr : res_set){
+		        		  if(status[rev.get(lr)]==2){
+		        			  rescind(lr);
+		        			  cancel(lr);
+		        			  status[rev.get(lr)]=0;
+		        		  }
+		        	  }
+		          }
+		          grant(res);
+		          status[index]=2;
+		        }
+		        break;
+		      case 2 :
+		    	  cancel(res);
+		    	  status[index]=0;
+		    }
+		} 
+		 
+	}
+	
 	/*
 	 * The methods that we override to call the monitor. Events of the
 	 * properties
