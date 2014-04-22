@@ -1,14 +1,13 @@
 package monitoring.impl.monitors.general;
 
-import java.util.HashMap;
-
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
 import monitoring.impl.configs.DetConfig;
-import monitoring.impl.monitors.general.Abstr_Incr_QVarN_FVar_QEAMonitor.BindingRecord;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Transition;
-import structure.impl.qeas.QVarN_FVar_Det_QEA;
+import structure.impl.qeas.QEAType;
+import structure.impl.qeas.QVarN_Det_QEA;
+import exceptions.NotRelevantException;
 
 /**
  * A small-step monitor for the most general *deterministic* QEA
@@ -20,13 +19,15 @@ import structure.impl.qeas.QVarN_FVar_Det_QEA;
  *
  * @author Giles Reger
  */
-public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMonitor<QVarN_FVar_Det_QEA,DetConfig> {
+public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMonitor<QVarN_Det_QEA,DetConfig> {
 
 
 	
 	public Incr_QVarN_FVar_Det_QEAMonitor(RestartMode restart,
-			GarbageMode garbage, QVarN_FVar_Det_QEA qea) {
+			GarbageMode garbage, QVarN_Det_QEA qea) {
 		super(restart, garbage, qea);
+		if(qea.getQEAType()!=QEAType.QVARN_FVAR_DET_QEA)
+			System.err.println("Warning: Expected for use with free variables");
 	}
 
 	protected void processBinding(int eventName, Object[] args,
@@ -44,15 +45,27 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMon
 				QBindingImpl ext = binding.updateWith(from_binding);
 				if(!mapping.containsKey(ext)){
 					if(DEBUG) System.err.println("Adding new "+ext);
-					DetConfig next_config = config.copy();							
-					qea.getNextConfig(ext,next_config,eventName,args);
-					addSupport(ext);
-					mapping.put(ext,next_config);
-					add_to_maps(ext);
-					if(ext.isTotal()){
-						checker.newBinding(ext,previous_state);
-						checker.update(ext,previous_state,next_config.getState());
-					}							
+					DetConfig next_config = config.copy();		
+					try{
+						qea.getNextConfig(ext,next_config,eventName,args);
+						addSupport(ext);
+						mapping.put(ext,next_config);
+						add_to_maps(ext);
+						if(ext.isTotal()){
+							checker.newBinding(ext,previous_state);
+							checker.update(ext,previous_state,next_config.getState());
+						}	
+					}catch(NotRelevantException e){
+						if(!qea.isNormal()){
+							addSupport(ext);
+							mapping.put(ext,next_config);
+							add_to_maps(ext);
+							if(ext.isTotal()){
+								checker.newBinding(ext,previous_state);
+								checker.update(ext,previous_state,next_config.getState());
+							}	
+						}
+					}
 				}
 			}
 		}	
@@ -60,19 +73,33 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMon
 		//Update configurations - check relevance first
 		// will not be relevant if blanks refer only to quantified variables
 		if(!has_q_blanks){
-			qea.getNextConfig(binding,config,eventName,args); // config updated in-place as Det
-			if(binding.isTotal()){
-				checker.update(binding,previous_state,config.getState());
-			}					
+			try{
+				qea.getNextConfig(binding,config,eventName,args); // config updated in-place as Det
+				if(binding.isTotal()){
+					checker.update(binding,previous_state,config.getState());
+				}		
+			}catch(NotRelevantException e){				
+				if(!qea.isNormal() && binding.isTotal()){
+					//Shouldn't actually do anything!					
+					checker.update(binding,previous_state,config.getState());
+				}
+			}
 		}
 	}
 
 	protected void processPropositionalBinding(int eventName,
 			QBindingImpl binding, DetConfig config) {
 		int previous_state = config.getState();
-		qea.getNextConfig(binding, config, eventName, dummyArgs);
-		if(binding.isTotal()){
-			checker.update(binding, previous_state, config.getState());
+		try{
+			qea.getNextConfig(binding, config, eventName, dummyArgs);
+			if(binding.isTotal()){
+				checker.update(binding, previous_state, config.getState());
+			}
+		}catch(NotRelevantException e){
+			if(!qea.isNormal() && binding.isTotal()){
+				//Shouldn't actually do anything!
+				checker.update(binding, previous_state, config.getState());
+			}
 		}
 	}	
 	

@@ -1,7 +1,6 @@
 package structure.impl.qeas;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +12,7 @@ import structure.intf.Assignment;
 import structure.intf.Binding;
 import structure.intf.Guard;
 import structure.intf.QEA_det_free;
+import exceptions.NotRelevantException;
 
 /**
  * This class represents the most general deterministic Quantified Event
@@ -21,20 +21,14 @@ import structure.intf.QEA_det_free;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVarN_FVar_Det_QEA extends Abstr_QVarN_FVar_QEA implements QEA_det_free{
-
-	@Override
-	public QEAType getQEAType() {
-		return QEAType.QVARN_FVAR_DET_QEA;
-	}
-
+public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free{
 
 	private final Transition[][] delta;
 
 
-	public QVarN_FVar_Det_QEA(int numStates, int numEvents, int initialState,
-			int qVariablesCount, int fVariablesCount) {
-		super(numStates,numEvents,initialState,qVariablesCount,fVariablesCount);
+	public QVarN_Det_QEA(int numStates, int numEvents, int initialState,
+			int qVariablesCount, int fVariablesCount, QEAType type) {
+		super(numStates,numEvents,initialState,qVariablesCount,fVariablesCount,type);
 
 		delta = new Transition[numStates + 1][numEvents + 1];
 
@@ -63,8 +57,39 @@ public class QVarN_FVar_Det_QEA extends Abstr_QVarN_FVar_QEA implements QEA_det_
 		return a;
 	}
 	
-	public void getNextConfig(QBindingImpl qbinding, DetConfig config,
+	/*
+	 * MUST check for null - instead of NotRelevantException
+	 */
+	public Integer getNextConfig(QBindingImpl qbinding, Integer start_state,
 			int eventName, Object[] args) {
+		
+		
+		Transition transition = delta[start_state][eventName];
+
+		if (transition == null) {
+			// no transition - fail if not a skip state
+			if(!skipStates[start_state])
+				return 0;
+			return start_state;
+		}
+
+		// if we bind new qvariables or clash with bindings in qbinding
+		// then we return without making an update, as we are not relevant
+		Binding extend_with = qbinding.extend(transition.getVariableNames(),
+				args);
+		if (extend_with == null || !qbinding.equals(extend_with)) {
+			// not relevant, just return null
+			// MUST check for this
+			return null;
+		}
+		
+		//No guards or assignments - just return the end state
+		return transition.getEndState();
+		
+	}
+	
+	public void getNextConfig(QBindingImpl qbinding, DetConfig config,
+			int eventName, Object[] args) throws NotRelevantException {
 
 		// Remember we're deterministic - this means that we can update the
 		// DetConfig
@@ -87,7 +112,7 @@ public class QVarN_FVar_Det_QEA extends Abstr_QVarN_FVar_QEA implements QEA_det_
 		if (extend_with == null || !qbinding.equals(extend_with)) {
 			// not relevant, just return
 			//System.err.println("Not relevant: "+qbinding+" for "+eventName+Arrays.toString(args));
-			return;
+			throw new NotRelevantException();
 		}
 
 		// update binding based on args
@@ -148,6 +173,7 @@ public class QVarN_FVar_Det_QEA extends Abstr_QVarN_FVar_QEA implements QEA_det_
 	public Transition[][] getDelta() {
 		return delta;
 	}
+
 
 
 

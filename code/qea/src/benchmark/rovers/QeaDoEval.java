@@ -25,10 +25,10 @@ public class QeaDoEval extends DoEval {
 		 * - Why is RespectConflicts slower for Symbol than Naive?
 		 */
 		
-		QeaDoEval eval = new QeaDoEval();
-		eval.hardest_only=true;			
+		//QeaDoEval eval = new QeaDoEval();
+		//eval.hardest_only=true;			
 		//eval.output=true;
-		eval.csv_mode=true;
+		//eval.csv_mode=true;
 		
 		//QeaDoWork.category=Category.NAIVE;
 		//System.err.println("Category: "+QeaDoWork.category);
@@ -40,10 +40,10 @@ public class QeaDoEval extends DoEval {
 		//	 eval.eval_for_RespectConflicts(
 		//	 RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");		 
 		
-		eval.eval_for_RespectPriorities(RoverCaseStudy.makeRespectPriorities(),
-				 "RespectPriorities");	
+		//eval.eval_for_RespectPriorities(RoverCaseStudy.makeRespectPriorities(),
+		//		 "RespectPriorities");	
 		
-		System.exit(0);
+		//System.exit(0);
 		
 		
 		//Do the whole thing 5 times!
