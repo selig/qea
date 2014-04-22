@@ -55,12 +55,15 @@ public class OversafeGarbageTest {
 	
 		for(int rep=0;rep<1000000;rep++){
 			Object c = TestSettings.object("C");
-			Object i = TestSettings.object("I");
 			
-			assertEquals(WEAK_SUCCESS,monitor.step(ITERATOR,c,i));
-			assertEquals(WEAK_SUCCESS,monitor.step(USE,i));
-			assertEquals(WEAK_SUCCESS,monitor.step(UPDATE,c));
-			if(rep%999==0)System.gc();
+			for(int irep=0;irep<1000;irep++){
+				Object i = TestSettings.object("I");
+				
+				assertEquals(WEAK_SUCCESS,monitor.step(ITERATOR,c,i));
+				assertEquals(WEAK_SUCCESS,monitor.step(USE,i));
+				assertEquals(WEAK_SUCCESS,monitor.step(UPDATE,c));
+			}
+			if(rep%99==0)System.gc();
 			
 		}
 	}	

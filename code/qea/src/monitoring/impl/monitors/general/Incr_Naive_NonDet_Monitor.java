@@ -8,15 +8,16 @@ import java.util.TreeSet;
 
 import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.QBindingImpl;
-import structure.impl.qeas.QVarN_FVar_NonDet_QEA;
+import structure.impl.qeas.QVarN_NonDet_QEA;
+import exceptions.NotRelevantException;
 
-public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_FVar_NonDet_QEA>  {
+public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_NonDet_QEA>  {
 
 	private final HashMap<QBindingImpl,NonDetConfig> mapping = new HashMap<QBindingImpl,NonDetConfig>();
 	private final TreeSet<QBindingImpl> B = new TreeSet<QBindingImpl>(new QBindingImpl.QBindingImplComparator());
 
 	
-	public Incr_Naive_NonDet_Monitor(QVarN_FVar_NonDet_QEA qea) {
+	public Incr_Naive_NonDet_Monitor(QVarN_NonDet_QEA qea) {
 		super(qea);
 		
 		NonDetConfig initialConfig = new NonDetConfig(qea.getInitialState(),qea.newFBinding());;
@@ -52,11 +53,21 @@ public class Incr_Naive_NonDet_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN
 					}
 					
 					int[] previous_states = config.getStates();//safe as nondet will update
-					config = qea.getNextConfig(b_extended, config, eventName, args);
-					mapping.put(b_extended,config);
-					
-					if(b_extended.isTotal()){
-						checker.update(b_extended,previous_states,config.getStates());
+					try{
+						NonDetConfig next_config = qea.getNextConfig(b_extended, config, eventName, args);
+						mapping.put(b_extended,next_config);
+						
+						if(b_extended.isTotal()){
+							checker.update(b_extended,previous_states,config.getStates());
+						}
+					}catch(NotRelevantException e){
+						if(!qea.isNormal()){
+							mapping.put(b_extended,config);
+							
+							if(b_extended.isTotal()){
+								checker.update(b_extended,previous_states,config.getStates());
+							}
+						}
 					}
 	
 				}
