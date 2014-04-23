@@ -237,5 +237,22 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements QEA_nondet_free
 		return delta;
 	}	
 
+	@Override
+	public boolean can_leave(int state, int event) {
+		if(isNormal()){
+			//if no transition then this depends on whether state is skip
+			if(delta[state][event]==null) return !skipStates[state];
+			boolean all_loop = true;
+			for(Transition t : delta[state][event]){
+				//if t has any fvars then it's true as the config can get updated
+				for(int v : t.getVariableNames())
+					if(v > 0) return true;
+				//lastly check if we loop
+				all_loop &= t.getEndState() == state;
+			}
+			return !all_loop;
+		}
+		else return true;
+	}	
 	
 }

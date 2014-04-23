@@ -1,6 +1,8 @@
-package benchmark.rovers;
+package benchmark.rovers.junitrv;
 
-public class RVunitDoWork extends DoWork<String> {
+import benchmark.rovers.DoWork;
+
+public class JunitRVDoWork extends DoWork<String> {
 
 	@Override
 	public void run_with_spec(String spec, String name, int[] args) {
@@ -28,7 +30,6 @@ public class RVunitDoWork extends DoWork<String> {
 		if(print_events) System.err.println(last_event);
 	}
 
-	@Override
 	public void grant(Object o) {
 		last_event = "grant"+id(o);
 		if(print_events) System.err.println(last_event);
@@ -46,7 +47,6 @@ public class RVunitDoWork extends DoWork<String> {
 		if(print_events) System.err.println(last_event);
 	}
 
-	@Override
 	public void cancel(Object o) {
 		last_event = "cancel"+id(o);
 		if(print_events) System.err.println(last_event);
@@ -82,13 +82,11 @@ public class RVunitDoWork extends DoWork<String> {
 		if(print_events) System.err.println(last_event);
 	}
 
-	@Override
 	public void grant(Object a, Object b) {
 		last_event = "grant";
 		if(print_events) System.err.println(last_event);
 	}
 
-	@Override
 	public void cancel(Object a, Object b) {
 		last_event = "cancel";
 		if(print_events) System.err.println(last_event);
@@ -145,5 +143,55 @@ public class RVunitDoWork extends DoWork<String> {
 	public void priority(Object a, Object b) {
 		// TODO Is this method intercepted by AspectJ???
 	}
+	
+	@Override
+	public void grant_rl(Object o) {
+		grant(o);
+	}
+
+	@Override
+	public void grant_rc(Object o) {
+		grant(o);
+	}
+
+	@Override
+	public void grant_rp(Object o) {
+		grant(o);
+	}
+
+	@Override
+	public void cancel_rl(Object o) {
+		cancel(o);
+	}
+
+	@Override
+	public void cancel_rc(Object o) {
+		cancel(o);
+	}
+
+	@Override
+	public void cancel_rp(Object o) {
+		cancel(o);
+	}		
+	
+	@Override
+	public void grant_gc(Object a, Object b) {
+		grant(a,b);			
+	}
+
+	@Override
+	public void grant_rr(Object a, Object b) {
+		grant(a,b);
+	}
+
+	@Override
+	public void cancel_gc(Object a, Object b) {
+		cancel(a,b);
+	}
+
+	@Override
+	public void cancel_rr(Object a, Object b) {
+		cancel(a,b);
+	}		
 	
 }

@@ -1,5 +1,7 @@
-package benchmark.rovers;
+package benchmark.rovers.mop;
 
+import benchmark.rovers.DoEval;
+import benchmark.rovers.DoWork;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 import properties.rovers.RoverCaseStudy;
@@ -27,10 +29,20 @@ public class MopDoEval extends DoEval<String> {
 		MopDoEval eval = new MopDoEval();
 		eval.hardest_only=true;
 
-		// Internal Properties
-
 		eval.eval_for_GrantCancel("GrantCancel","GrantCancel");
 
+		eval.eval_for_ResourceLifecycle("ResourceLifecycle","ResourceLifecycle");
+
+		eval.eval_for_RespectConflicts("RespectConflicts", "RespectConflicts");		
+		
+		//eval.eval_for_IncreasingCommand("IncreasingCommand","IncreasingCommand");		 				
+
+		//eval.eval_for_AcknowledgeCommands("AcknowledgeCommands", "AcknowledgeCommands");		 
+			 
+		eval.eval_for_ReleaseResource("ReleaseResource","ReleaseResource");		 
+			 
+		eval.eval_for_NestedCommand("NestedCommand","NestedCommand");
+	
 
 	}
 
@@ -58,10 +70,6 @@ public class MopDoEval extends DoEval<String> {
 			last_event = "request";
 		}
 
-		@Override
-		public void grant(Object o) {
-			last_event = "grant";
-		}
 
 		@Override
 		public void deny(Object o) {
@@ -71,11 +79,6 @@ public class MopDoEval extends DoEval<String> {
 		@Override
 		public void rescind(Object o) {
 			last_event = "rescind";
-		}
-
-		@Override
-		public void cancel(Object o) {
-			last_event = "cancel";
 		}
 
 		@Override
@@ -104,14 +107,22 @@ public class MopDoEval extends DoEval<String> {
 		}
 
 		@Override
-		public void grant(Object a, Object b) {
+		public void grant_rr(Object a, Object b) {
 			last_event = "grant";
 		}
+		@Override
+		public void grant_gc(Object a, Object b) {
+			last_event = "grant";
+		}		
 
 		@Override
-		public void cancel(Object a, Object b) {
+		public void cancel_gc(Object a, Object b) {
 			last_event = "cancel";
 		}
+		@Override
+		public void cancel_rr(Object a, Object b) {
+			last_event = "cancel";
+		}		
 
 		@Override
 		public void schedule(Object a, Object b) {
@@ -150,12 +161,42 @@ public class MopDoEval extends DoEval<String> {
 
 		@Override
 		public void fail(Object o) {
-			// TODO Is this method intercepted by AspectJ???
+			last_event = "fail";
 		}
 
 		@Override
 		public void priority(Object a, Object b) {
-			// TODO Is this method intercepted by AspectJ???
+			last_event = "priority";
+		}
+
+		@Override
+		public void grant_rl(Object o) {
+			last_event = "grant";
+		}
+
+		@Override
+		public void grant_rc(Object o) {
+			last_event = "grant";
+		}
+
+		@Override
+		public void grant_rp(Object o) {
+			last_event = "grant";
+		}
+
+		@Override
+		public void cancel_rl(Object o) {
+			last_event = "cancel";
+		}
+
+		@Override
+		public void cancel_rc(Object o) {
+			last_event = "cancel";
+		}
+
+		@Override
+		public void cancel_rp(Object o) {
+			last_event = "cancel";
 		}
 	}
 	

@@ -34,10 +34,11 @@ public class DaCapo implements PropertyMaker {
 		b.addTransition(2, UPDATE, new int[]{c}, 3);
 		b.addTransition(3, UPDATE, new int[]{c}, 3);
 		
-		//sadly this is required - hopefully
+		//sadly these are required - hopefully
 		//  redundancy elimination will avoid creating
-		//  bindings for just c
+		//  bindings for just c or i
 		b.addTransition(1, UPDATE, new int[]{c},1);
+		b.addTransition(1, USE, new int[]{i},1);
 		
 		b.addFinalStates(1,2,3);
 		

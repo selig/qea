@@ -96,40 +96,62 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends Abstr_Incr_QVarN_QEAMonito
 	
 	protected void processBinding(int eventName, Object[] args,
 			boolean has_q_blanks, QBindingImpl binding) {
+		
 		Integer previous_state = mapping.get(binding);
 		
-		//Attempt extensions
-		QBindingImpl[] bs = qea.makeBindings(eventName, args);
-		for(QBindingImpl from_binding : bs){
-			// are binding and from_binding guaranteed to be consistent?
-			// - no!
-			if(binding.consistentWith(from_binding)){
-				QBindingImpl ext = binding.updateWith(from_binding);
-				if(!mapping.containsKey(ext)){
-					if(DEBUG) System.err.println("Adding new "+ext);						
-					Integer next_state = qea.getNextConfig(ext,previous_state,eventName,args);
-					if(next_state!=null){
-						addSupport(ext);
-						mapping.put(ext,next_state);
-						add_to_maps(ext);
-						if(ext.isTotal()){
-							checker.newBinding(ext,previous_state);
-							checker.update(ext,previous_state,next_state);
-						}
-					}else{
-						if(!qea.isNormal()){
-							addSupport(ext);
-							mapping.put(ext,previous_state);
-							add_to_maps(ext);
-							if(ext.isTotal()){
-								checker.newBinding(ext,previous_state);
-								checker.update(ext,previous_state,previous_state);
-							}					
+		//can previous_state be null?
+		//Shouldn't be!!
+		if(previous_state==null){
+			System.err.println("previous state null");
+			System.err.println("Binding: "+binding);
+			System.err.println("------------");
+			System.err.println(this);
+			
+			System.exit(0);
+		}
+		
+		// Whether we can use redundancy elimination here is based on the global
+		// option and whether the previous state is active		
+		boolean this_use_red = use_red && !checker.isActive(previous_state);
+		
+		//Attempt extensions only if we an extensions could be nontrivial
+		if(!this_use_red || could_leave[previous_state][eventName]){
+			QBindingImpl[] bs = qea.makeBindings(eventName, args);
+			for(QBindingImpl from_binding : bs){
+				// are binding and from_binding guaranteed to be consistent?
+				// - no!
+				if(binding.consistentWith(from_binding)){
+					QBindingImpl ext = binding.updateWith(from_binding);
+					if(!mapping.containsKey(ext)){
+						if(DEBUG) System.err.println("Adding new "+ext);						
+						Integer next_state = qea.getNextConfig(ext,previous_state,eventName,args);
+						if(next_state!=null){
+							//If next_state loops then it's trivial
+							// if in red_mode we ignore it
+							if(!this_use_red || next_state!=previous_state){							
+								addSupport(ext);
+								mapping.put(ext,next_state);
+								add_to_maps(ext);
+								if(ext.isTotal()){
+									checker.newBinding(ext,previous_state);
+									checker.update(ext,previous_state,next_state);
+								}
+							}
+						}else{
+							if(!qea.isNormal()){
+								addSupport(ext);
+								mapping.put(ext,previous_state);
+								add_to_maps(ext);
+								if(ext.isTotal()){
+									checker.newBinding(ext,previous_state);
+									checker.update(ext,previous_state,previous_state);
+								}					
+							}
 						}
 					}
 				}
 			}
-		}	
+		}
 
 		//Update configurations - check relevance first
 		// will not be relevant if blanks refer only to quantified variables
@@ -159,6 +181,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends Abstr_Incr_QVarN_QEAMonito
 
 	@Override
 	protected int removeStrongBindings() {
+		
 		Set<QBindingImpl> strong_bindings = checker.getStrongBindings();
 		for(QBindingImpl binding : strong_bindings){
 			// first remove from mapping
