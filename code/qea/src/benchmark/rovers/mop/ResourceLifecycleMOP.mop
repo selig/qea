@@ -1,10 +1,10 @@
 ResourceLifecycleMOP(Object r) {
 
-       event request after(Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.request(Object)) && args(r){}
-       event deny after(Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.deny(Object)) && args(r){}
-       event grant after(Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant(Object)) && args(r){}
-       event cancel after(Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel(Object)) && args(r){}
-       event rescind after(Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.rescind(Object)) && args(r){}
+       event request after(Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.request(Object)) && args(r){}
+       event deny after(Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.deny(Object)) && args(r){}
+       event grant after(Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.grant_rl(Object)) && args(r){}
+       event cancel after(Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.cancel_rl(Object)) && args(r){}
+       event rescind after(Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.rescind(Object)) && args(r){}
 
        fsm:
        start [

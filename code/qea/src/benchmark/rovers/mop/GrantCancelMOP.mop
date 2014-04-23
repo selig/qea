@@ -1,9 +1,9 @@
 GrantCancelMOP(Object t1, Object t2, Object r) {
 
-       event grant_t1 after(Object t1, Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant_gc(Object,Object)) && args(t1,r){}
-       event grant_t2 after(Object t2, Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant_gc(Object,Object)) && args(t2,r){}
-       event cancel_t1 after(Object t1, Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel_gc(Object,Object)) && args(t1,r){}
-       event cancel_t2 after(Object t2, Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel_gc(Object,Object)) && args(t2,r){}
+       event grant_t1 after(Object t1, Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.grant_gc(Object,Object)) && args(t1,r){}
+       event grant_t2 after(Object t2, Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.grant_gc(Object,Object)) && args(t2,r){}
+       event cancel_t1 after(Object t1, Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.cancel_gc(Object,Object)) && args(t1,r){}
+       event cancel_t2 after(Object t2, Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.cancel_gc(Object,Object)) && args(t2,r){}
 
        fsm:
        start [

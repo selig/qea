@@ -10,6 +10,10 @@ public class MopCompiler {
 	
 	public static void main(String[] args) throws IOException{
 		compile("GrantCancel");
+		compile("NestedCommand");
+		compile("ReleaseResource");
+		compile("ResourceLifecycle");
+		compile("RespectConflicts");
 	}
 
 	public static void compile(String property) throws IOException{

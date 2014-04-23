@@ -1,5 +1,7 @@
-package benchmark.rovers;
+package benchmark.rovers.qea;
 
+import benchmark.rovers.DoEval;
+import benchmark.rovers.DoWork;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 import properties.rovers.RoverCaseStudy;
@@ -135,7 +137,7 @@ public class QeaDoEval extends DoEval {
 		}
 	}
 	
-	static class QeaDoWork extends DoWork<QEA> {
+	public static class QeaDoWork extends DoWork<QEA> {
 
 		public static boolean print = false;
 		public static Category category = Category.NORMAL;
