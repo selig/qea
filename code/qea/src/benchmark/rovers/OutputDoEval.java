@@ -73,7 +73,6 @@ public class OutputDoEval extends DoEval {
 			output("request",id(o));
 		}
 
-		@Override
 		public void grant(Object o) {
 			output("grant",id(o));
 		}
@@ -88,7 +87,7 @@ public class OutputDoEval extends DoEval {
 			output("rescind",id(o));
 		}
 
-		@Override
+
 		public void cancel(Object o) {
 			output("cancel",id(o));
 		}
@@ -118,12 +117,10 @@ public class OutputDoEval extends DoEval {
 			output("ack",id(o),x+"");
 		}
 
-		@Override
 		public void grant(Object a, Object b) {
 			output("grant",id(a),id(b));
 		}
 
-		@Override
 		public void cancel(Object a, Object b) {
 			output("cancel",id(a),id(b));
 		}
@@ -174,6 +171,56 @@ public class OutputDoEval extends DoEval {
 			output("priority",id(a),id(b));
 		}
 
+		@Override
+		public void grant_rl(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void grant_rc(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void grant_rp(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void cancel_rl(Object o) {
+			cancel(o);
+		}
+
+		@Override
+		public void cancel_rc(Object o) {
+			cancel(o);
+		}
+
+		@Override
+		public void cancel_rp(Object o) {
+			cancel(o);
+		}		
+		
+		@Override
+		public void grant_gc(Object a, Object b) {
+			grant(a,b);			
+		}
+
+		@Override
+		public void grant_rr(Object a, Object b) {
+			grant(a,b);
+		}
+
+		@Override
+		public void cancel_gc(Object a, Object b) {
+			cancel(a,b);
+		}
+
+		@Override
+		public void cancel_rr(Object a, Object b) {
+			cancel(a,b);
+		}		
+		
 	}	
 	
 }

@@ -45,6 +45,11 @@ public abstract class IncrementalChecker {
 		this.strongStates=strongStates;
 	}
 
+	// Returns true if state could effect the outcome i.e.
+	// if quantification is all universal then a state is active
+	// iff it is non-final
+	public abstract boolean isActive(int state);	
+	
 	public static IncrementalChecker make(QEntry[] lambda, 
 			boolean[] finalStates,boolean[] strongStates) {
 				
@@ -138,6 +143,11 @@ public abstract class IncrementalChecker {
 		@Override
 		public void removeStrong(QBindingImpl binding) {
 			// Does nothing as cannot have a strong binding			
+		}
+
+		@Override
+		public boolean isActive(int state) {
+			return false;
 		}
 		
 	}
@@ -240,6 +250,11 @@ public abstract class IncrementalChecker {
 								// to be strong
 			
 		}
+
+		@Override
+		public boolean isActive(int state) {
+			return !finalStates[state];
+		}
 		
 	}
 	
@@ -334,6 +349,11 @@ public abstract class IncrementalChecker {
 			number_final--; // binding must have been final
 							// to be strong
 			
+		}
+
+		@Override
+		public boolean isActive(int state) {
+			return finalStates[state];
 		}		
 		
 	}	
@@ -527,7 +547,14 @@ public abstract class IncrementalChecker {
 			// Does nothing as we cannot have strong bindings
 			
 		}
+
+		@Override
+		public boolean isActive(int state) {
+			// Sadly, every state could effect the outcome
+			return true;
+		}
 		
 	}
+
 	
 }

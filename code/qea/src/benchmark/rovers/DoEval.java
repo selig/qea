@@ -3,7 +3,7 @@ package benchmark.rovers;
 import java.io.PrintStream;
 import java.util.Arrays;
 
-abstract class DoEval<S> {
+public abstract class DoEval<S> {
 
 	public static boolean hardest_only = false;
 	public static boolean output = false;

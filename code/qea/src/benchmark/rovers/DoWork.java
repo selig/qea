@@ -10,7 +10,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
-abstract class DoWork<S> {
+public abstract class DoWork<S> {
 
 	public abstract void run_with_spec(S spec, String name, int[] args);
 
@@ -108,7 +108,7 @@ abstract class DoWork<S> {
 				break;
 			case 1:
 				if (rand.nextBoolean()) {
-					grant(ros[res]);
+					grant_rl(ros[res]);
 					sp = 2;
 				} else {
 					deny(ros[res]);
@@ -121,7 +121,7 @@ abstract class DoWork<S> {
 					rescind(ros[res]);
 					sp = 2;
 				} else {
-					cancel(ros[res]);
+					cancel_rl(ros[res]);
 					sp = 0;
 				}
 				;
@@ -136,6 +136,8 @@ abstract class DoWork<S> {
 
 	public void work_for_ExactlyOneSuccess(int c) {
 
+		System.err.println("Warning: cannot be used for MOP currently");
+		
 		Object[] cos = new Object[c];
 		for (int i = 0; i < c; i++) {
 			cos[i] = new Object();
@@ -272,13 +274,13 @@ abstract class DoWork<S> {
 
 				// Choose a task randomly and grant the resource
 				task = rand.nextInt(t);
-				grant(tos[task], ros[res]);
+				grant_gc(tos[task], ros[res]);
 				owning[res] = task;
 
 			} else { // Some task owns the resource
 
 				// Release the resource
-				cancel(tos[task], ros[res]);
+				cancel_gc(tos[task], ros[res]);
 				owning[res] = -1;
 			}
 		}
@@ -337,7 +339,7 @@ abstract class DoWork<S> {
 						// remove resource
 						int rr = res.remove();
 						resources[rr] = -1;
-						cancel(tos[task], ros[rr]);
+						cancel_rr(tos[task], ros[rr]);
 						r_used--;
 					} else {
 						if (res.isEmpty() && rand.nextBoolean()) {
@@ -352,7 +354,7 @@ abstract class DoWork<S> {
 							}
 							r_used++;
 							resources[rr] = task;
-							grant(tos[task], ros[rr]);
+							grant_rr(tos[task], ros[rr]);
 							res.add(rr);
 						}
 					}
@@ -408,16 +410,16 @@ abstract class DoWork<S> {
 			for (int j = 0; j < t; j++) {
 				int res_id = rand.nextInt(r);
 				if (granted[res_id]) {
-					cancel(group.get(res_id));
+					cancel_rc(group.get(res_id));
 				} else {
-					grant(group.get(res_id));
+					grant_rc(group.get(res_id));
 				}
 				granted[res_id] = !granted[res_id];
 			}
 			// release any still granted resources
 			for (int j = 0; j < r; j++) {
 				if (granted[j]) {
-					cancel(group.get(j));
+					cancel_rc(group.get(j));
 				}
 			}
 		}
@@ -763,17 +765,17 @@ abstract class DoWork<S> {
 		        	  for(Object lr : res_set){
 		        		  if(status[rev.get(lr)]==2){
 		        			  rescind(lr);
-		        			  cancel(lr);
+		        			  cancel_rp(lr);
 		        			  status[rev.get(lr)]=0;
 		        		  }
 		        	  }
 		          }
-		          grant(res);
+		          grant_rp(res);
 		          status[index]=2;
 		        }
 		        break;
 		      case 2 :
-		    	  cancel(res);
+		    	  cancel_rp(res);
 		    	  status[index]=0;
 		    }
 		} 
@@ -785,17 +787,22 @@ abstract class DoWork<S> {
 	 * properties
 	 */
 
+	//not used?
 	public abstract void command(int x);
 
 	public abstract void request(Object o);
 
-	public abstract void grant(Object o);
+	public abstract void grant_rl(Object o);
+	public abstract void grant_rc(Object o);
+	public abstract void grant_rp(Object o);
 
 	public abstract void deny(Object o);
 
 	public abstract void rescind(Object o);
 
-	public abstract void cancel(Object o);
+	public abstract void cancel_rl(Object o);
+	public abstract void cancel_rc(Object o);
+	public abstract void cancel_rp(Object o);
 
 	public abstract void succeed(Object o);
 
@@ -805,11 +812,14 @@ abstract class DoWork<S> {
 
 	public abstract void command(Object a, Object b, Object c, int d);
 
+	//not used?
 	public abstract void ack(Object o, int x);
 
-	public abstract void grant(Object a, Object b);
+	public abstract void grant_gc(Object a, Object b);
+	public abstract void grant_rr(Object a, Object b);
 
-	public abstract void cancel(Object a, Object b);
+	public abstract void cancel_gc(Object a, Object b);
+	public abstract void cancel_rr(Object a, Object b);
 
 	public abstract void schedule(Object a, Object b);
 
@@ -818,7 +828,6 @@ abstract class DoWork<S> {
 	public abstract void conflict(Object a, Object b);
 
 	public abstract void ping(Object a, Object b);
-
 	public abstract void ack(Object a, Object b);
 
 	public abstract void ack(Object a, Object b, int c);

@@ -1,10 +1,10 @@
 RespectConflictsMOP(Object r1, Object r2) {
 
        event conflict after(Object r1, Object r2) : call(void MopDoWork.conflict(Object,Object)) && args(r1,r2)  { }
-       event grant_r1 after(Object r1) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant(Object)) && args(r1){}
-       event grant_r2 after(Object r2) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant(Object)) && args(r2){}
-       event release_r1 after(Object r1) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel(Object)) && args(r1){}
-       event release_r2 after(Object r2) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel(Object)) && args(r2){}
+       event grant_r1 after(Object r1) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant_rc(Object)) && args(r1){}
+       event grant_r2 after(Object r2) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant_rc(Object)) && args(r2){}
+       event release_r1 after(Object r1) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel_rc(Object)) && args(r1){}
+       event release_r2 after(Object r2) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel_rc(Object)) && args(r2){}
 
        fsm:
        start [

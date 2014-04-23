@@ -3,8 +3,8 @@ ReleaseResourceMOP(Object t, Object c, Object r) {
        String last_event;
 
        event schedule after(Object t,Object c) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.schedule(Object,Object)) && args(t,c){last_event="schedule";}
-       event grant after(Object t, Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant(Object,Object)) && args(t,r){last_event="grant";}
-       event cancel after(Object t,Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel(Object,Object)) && args(t,r){last_event="cancel";}
+       event grant after(Object t, Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.grant_rr(Object,Object)) && args(t,r){last_event="grant";}
+       event cancel after(Object t,Object r) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.cancel_rr(Object,Object)) && args(t,r){last_event="cancel";}
        event finish after(Object c) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.finish(Object)) && args(c){last_event="finish";}
 
        fsm:

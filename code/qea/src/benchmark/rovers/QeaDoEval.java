@@ -45,9 +45,14 @@ public class QeaDoEval extends DoEval {
 		
 		//System.exit(0);
 		
+		int rep = 5;
+		try{
+			rep = Integer.parseInt(args[0]);
+		}catch(Exception e){}
+		
 		
 		//Do the whole thing 5 times!
-		for(int i=0;i<5;i++){
+		for(int i=0;i<rep;i++){
 			//Force naive monitors
 			QeaDoWork.category=Category.NAIVE;
 			System.err.println("Category: "+QeaDoWork.category);
@@ -228,12 +233,10 @@ public class QeaDoEval extends DoEval {
 			handle(monitor.step(events[1], o));
 		}
 
-		@Override
 		public void grant(Object o) {
 			handle(monitor.step(events[2], o));
 		}
 
-		@Override
 		public void grant(Object a, Object b) {
 			handle(monitor.step(events[2], a, b));
 		}
@@ -248,12 +251,10 @@ public class QeaDoEval extends DoEval {
 			handle(monitor.step(events[4], o));
 		}
 
-		@Override
 		public void cancel(Object o) {
 			handle(monitor.step(events[5], o));
 		}
 
-		@Override
 		public void cancel(Object a, Object b) {
 			handle(monitor.step(events[5], a, b));
 		}
@@ -319,6 +320,57 @@ public class QeaDoEval extends DoEval {
 		public void priority(Object a, Object b) {
 			handle(monitor.step(events[15], a, b));
 		}
+		
+		@Override
+		public void grant_rl(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void grant_rc(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void grant_rp(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void cancel_rl(Object o) {
+			cancel(o);
+		}
+
+		@Override
+		public void cancel_rc(Object o) {
+			cancel(o);
+		}
+
+		@Override
+		public void cancel_rp(Object o) {
+			cancel(o);
+		}		
+		
+		@Override
+		public void grant_gc(Object a, Object b) {
+			grant(a,b);			
+		}
+
+		@Override
+		public void grant_rr(Object a, Object b) {
+			grant(a,b);
+		}
+
+		@Override
+		public void cancel_gc(Object a, Object b) {
+			cancel(a,b);
+		}
+
+		@Override
+		public void cancel_rr(Object a, Object b) {
+			cancel(a,b);
+		}				
+		
 	}
 
 	

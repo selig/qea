@@ -1,5 +1,7 @@
 ExactlyOneSuccessMOP(Object c) {
 
+	Currently conflicts with NestedCommand
+
        event command after(Object c) :  call(void MopDoWork.command(Object)) && args(c){}
        event succeed after(Object c) :  call(void MopDoWork.succeed(Object)) && args(c){}
        event failure after(Object c) :  call(void MopDoWork.fail(Object)) && args(c){}

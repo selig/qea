@@ -80,7 +80,7 @@ public class FBindingImpl extends Binding {
 			if (values[i] == null) {
 				out[i] = "-";
 			} else {
-				out[i] = values[i].toString();
+				out[i] = ""+System.identityHashCode(values[i]);//values[i].toString();
 			}
 		}
 		return Arrays.toString(out);
@@ -88,13 +88,24 @@ public class FBindingImpl extends Binding {
 
 	@Override
 	public int hashCode(){
-		return Arrays.hashCode(values);
+		//return Arrays.hashCode(values);
+		//The following is based on the above but with identity hash codes
+		if(values==null) return 0;
+		int result = 1;
+		for(Object element : values)
+			result = 31 * result + (element==null ? 0 : System.identityHashCode(element));
+		
+		return result;
 	}	
 	@Override
 	public boolean equals(Object other){
 		if(other instanceof FBindingImpl){
 			FBindingImpl otherB = (FBindingImpl) other;
-			return Arrays.equals(values, otherB.values);
+			//return Arrays.equals(values, otherB.values);
+			for(int i=0;i<values.length;i++)
+				if(values[i] != otherB.values[i])
+					return false;
+			return true;
 		}
 		return false;
 	}

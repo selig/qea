@@ -49,6 +49,10 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 	// masks should be ordered from specific to general
 	protected int[][][] masks;
 
+	// could_leave[state][eventname] is true if an event with eventname could leave state
+	// 
+	protected final boolean could_leave[][];
+	
 	public Abstr_Incr_QVarN_QEAMonitor(RestartMode restart, GarbageMode garbage, Q qea) {
 		super(restart,garbage,qea);
 		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());		
@@ -161,6 +165,18 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 
                 }
 
+		/*
+		 * Setup could leave
+		 * Note: if the QEA is not normal then the whole array should be true
+		 */
+		could_leave = new boolean[num_states][num_events];//nums already+1 above
+		for(int state=1;state<num_states;state++)
+			for(int event=1;event<num_events;event++)
+				could_leave[state][event] = qea.can_leave(state,event);
+		
+		//for(int state=1;state<num_states;state++)
+		//	System.err.println(Arrays.toString(could_leave[state]));
+		
 	}
 
 	/*
@@ -334,6 +350,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 			// If the binding hasn't already been encountered
 			if(used.add(binding)){
 
+				//It should be an invariant that binding is in mapping, check this								
 				processBinding(eventName, args, has_q_blanks, binding);
 			}
 		}
@@ -510,37 +527,48 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 			// find binding
 			int index = -1;
 			for(int i=0;i<num_bindings;i++)
-				if(bindings[i].equals(b)){
+				if(b.equals(bindings[i].get())){ // b is not null, so call on this
 					index=i;
 					break;
 				}
-			if(index == -1) return; // not found
-			// move everything after index down
-			for(int i=index;i+1<num_bindings;i++){
-				bindings[i]=bindings[i+1];
+			if(index == -1){
+				System.err.println("Failed removing "+b+" from "+this);								
+				return; // not found
 			}
-			// but if index is last element then null it
-			if(index == bindings.length-1)
-				bindings[bindings.length-1]=null;
+			// move everything after index down
+			// unless we're at the end
+			if((index+1) < num_bindings){
+				// minus 1 from num_bindings as we're dealing with indexes
+				int left = (num_bindings-1)-index;
+				System.arraycopy(bindings,index+1,bindings,index,left);
+			}
+
 			num_bindings--;
 		}	
 		// Invariant - indexes is ordered *in reverse order*
 		void removeIndexes(List<Integer> indexes){
-			num_bindings -= indexes.size();
+			
 			int removed=0;
+			int ep = num_bindings-1;
 			//iterate backwards as order is backwards
 			for(int i=indexes.size()-1;i>=0;i--){
 				int index = indexes.get(i);
-				//index+1 should be moved down removed+1 places 
-				// i.e. into index-removed
-				// unless index+1 is out of bounds
-				if(index<bindings.length){
-					bindings[index-removed]=bindings[index+1];
+				// The index has been shifted left removed times
+				int index_place = index-removed;
+				// move everything after index_place left one
+				// unless we've reached the end
+				if((index_place+1) < ep){
+					int left = ep - index_place;
+					System.arraycopy(bindings,index_place+1,bindings, index_place,left);				
 					removed++;
+					ep--;
 				}
 			}
 			// don't actually need to null anything later or resize
 			// as we use num_bindings to iterate over record :)
+			// ep will point to the last binding, as we're zero-indexed
+			// the actual number is one greater
+			num_bindings = ep+1;
 		}		
 
 		@Override

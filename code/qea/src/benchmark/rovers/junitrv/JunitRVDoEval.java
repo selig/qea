@@ -1,4 +1,4 @@
-package benchmark.rovers;
+package benchmark.rovers.junitrv;
 
 import static de.uni_luebeck.isp.rvtool.javamonitorinjection.api.syntax.Syntax.Always;
 import static de.uni_luebeck.isp.rvtool.javamonitorinjection.api.syntax.Syntax.X;
@@ -11,6 +11,9 @@ import java.io.Serializable;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import benchmark.rovers.DoEval;
+import benchmark.rovers.DoWork;
 
 import com.google.common.collect.ImmutableList;
 
@@ -37,11 +40,11 @@ import de.uni_luebeck.isp.rvtool.rvlib.syntax.smt.SMTSymbol;
 import de.uni_luebeck.isp.rvtool.rvlib.syntax.smt.SMTVariable;
 
 @RunWith(RVRunner.class)
-public class RVunitDoEval extends DoEval<String> {
+public class JunitRVDoEval extends DoEval<String> {
 	
 	@Override
 	public DoWork<String> makeWork() {
-		return new RVunitDoWork();
+		return new JunitRVDoWork();
 	}
 
 	private static final String dowork = "benchmark.rovers.RVunitDoWork";
@@ -73,7 +76,7 @@ public class RVunitDoEval extends DoEval<String> {
 	//SETUP for first-order resource lifecycle
 	
     private static final SMTPredicate id = new SMTPredicate("p", new Serializable() {
-        public SMTExpression<Void> p(RVunitDoWork work, Object o) {
+        public SMTExpression<Void> p(JunitRVDoWork work, Object o) {
             return new SMTOperator<>("eq", ImmutableList.<SMTExpression<Void>>of(
                     new SMTVariable<Void>("x"),
                     new SMTInteger<Void>(System.identityHashCode(o))));

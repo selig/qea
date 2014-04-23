@@ -324,4 +324,6 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 		return bs;
 	}
 	
+	public abstract boolean can_leave(int state, int event);
+	
 }
