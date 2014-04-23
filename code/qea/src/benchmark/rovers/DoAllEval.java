@@ -1,6 +1,7 @@
 package benchmark.rovers;
 
 import benchmark.rovers.mop.MopDoEval;
+import benchmark.rovers.qea.QeaDoEval;
 import benchmark.rovers.ruler.RuleRDoEval;
 
 public class DoAllEval {

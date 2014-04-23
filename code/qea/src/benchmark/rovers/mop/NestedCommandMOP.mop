@@ -5,10 +5,10 @@ NestedCommandMOP(Object x, Object y) {
        Object saved_y;
        String last_event = "";
 
-       event com_x after(Object x) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.command(Object)) && args(x){saved_x=x;last_event="com_x";}
-       event suc_x after(Object x) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.succeed(Object)) && args(x){last_event="suc_x";}
-       event com_y after(Object y) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.command(Object)) && args(y){saved_y=y;last_event="com_y";}
-       event suc_y after(Object y) :  execution(void benchmark.rovers.MopDoEval$MopDoWork.succeed(Object)) && args(y){last_event="suc_y";}
+       event com_x after(Object x) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.command(Object)) && args(x){saved_x=x;last_event="com_x";}
+       event suc_x after(Object x) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.succeed(Object)) && args(x){last_event="suc_x";}
+       event com_y after(Object y) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.command(Object)) && args(y){saved_y=y;last_event="com_y";}
+       event suc_y after(Object y) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.succeed(Object)) && args(y){last_event="suc_y";}
 
        fsm:
        start [
