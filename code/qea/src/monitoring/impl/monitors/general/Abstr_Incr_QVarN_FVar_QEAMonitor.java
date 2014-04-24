@@ -119,4 +119,10 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		throw new RuntimeException("Ignore restart not implemented");
 	}	
 	
+	@Override
+	protected void printMaps() {
+		System.err.println("Mapping: "+mapping.size());
+		for(int i=1;i<maps.length;i++) System.err.println("map "+i+": "+maps[i].size());
+	}	
+	
 }

@@ -1,3 +1,5 @@
+package benchmark.rovers.mop;
+
 
 NestedCommandMOP(Object x, Object y) {
 

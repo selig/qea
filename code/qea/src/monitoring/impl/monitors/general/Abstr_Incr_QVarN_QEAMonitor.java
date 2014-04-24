@@ -28,7 +28,7 @@ import util.OurWeakHashMap;
  */
 public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> extends IncrementalMonitor<Q> {
 
-	protected static final boolean DEBUG = false;
+	protected static boolean DEBUG = false;
 	
 	protected final IncrementalChecker checker;
 	protected final Map<Object,QBindingImpl> support_bindings;
@@ -243,13 +243,17 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
-		if(DEBUG) System.err.println("=======> "+qea.get_event_name(eventName)+Arrays.toString(args));
+		if(rep++%1000==0) DEBUG = true;
+		else DEBUG = false;
+		
+		if(DEBUG) System.err.println("********************\n\n********************\n=======> "+qea.get_event_name(eventName)+Arrays.toString(args));
+		if(DEBUG) printMaps();
 		
 		if(saved!=null){
 			if(!restart()) return saved;
 		}			
 		
-		//if(rep++%1000==0) System.err.println(mapping.size()+", "+maps[1].size());		
+				
 		
 		/*for(int e = 1; e<masks.length;e++){
 			System.err.println(e);
@@ -308,10 +312,16 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 			process_record(record,eventName,args,used,empty_has_q_blanks[eventName]);			
 		}
 		
-		Verdict result = checker.verdict(false);		
+		Verdict result = checker.verdict(false);
+		if(DEBUG) System.err.println("result: "+result);
 		if(result.isStrong()) saved=result;
 		
-		//System.err.println(getStatus());
+		if(DEBUG){
+			System.err.println("*******************************\n");
+			System.err.println(getStatus());
+			System.err.println("*******************************\n\n\n\n");
+			System.err.println("*******************************\n");
+		}
 		
 		return result;
 	}
@@ -333,13 +343,14 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 			// the associate entry in maps
 			// - can this happen?
 			System.err.println("record garbage");
+			if(DEBUG) System.err.println(record);
 		}
 		
 		List<Integer> null_indexes = null;
 		for(int j=numbindings-1;j>=0;j--){
 			QBindingImpl binding = record.get(j);
 			if(binding==null){
-				//System.err.println("record had an empty binding! "+record);
+				if(DEBUG) System.err.println("record had an empty binding! "+record);
 				if(null_indexes==null) null_indexes = new ArrayList<>();
 				null_indexes.add(j);
 				continue;
@@ -505,7 +516,10 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 		int num_bindings=0;
 		
 		public String toString(){
-			return "record of "+Arrays.toString(bindings);
+			String ret = "record of "+num_bindings+" ";
+			ret+=Arrays.toString(bindings);
+			if(bindings.length>20) ret+="\n----------------\n"; 
+			return ret;
 		}
 		
 		WeakBindingRecord(QBindingImpl b){
@@ -514,6 +528,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 			bindings[0]= new WeakReference<QBindingImpl>(b);
 		}		
 		void addBinding(QBindingImpl b){
+			if(DEBUG) System.err.println("Add "+b+" to "+this);
 			if(num_bindings==bindings.length){
 				//extend bindings
 				WeakReference<QBindingImpl> [] temp = new WeakReference[bindings.length*2];
@@ -547,6 +562,8 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 		}	
 		// Invariant - indexes is ordered *in reverse order*
 		void removeIndexes(List<Integer> indexes){
+			if(DEBUG) System.err.println("remove "+indexes+" from "+this);
+			System.err.println("Removing "+indexes.size()+" garbage in record");
 			
 			int removed=0;
 			int ep = num_bindings-1;
@@ -616,5 +633,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 		}
 		return false;
 	}	
+
+	protected abstract void printMaps();
 	
 }

@@ -64,7 +64,7 @@ public abstract class DoWork<S> {
 	public void work_for_IncreasingCommand(int c) {
 
 		for (int i = 0; i < c; i++) {
-			command(i);
+			command_int(i);
 		}
 
 	}
@@ -86,16 +86,24 @@ public abstract class DoWork<S> {
 			ros[i] = new Object();
 		}
 
-		int[] resources = new int[r];
+		int[] state = new int[r];
 
+		//Currently seems necessary to make MOP work... explore this more
+		// after paper is done!!
+		for(int i=0;i<ros.length;i++){
+			request(ros[i]);
+			deny(ros[i]);
+		}
+		
 		Random rand = new Random();
 		for (int i = 0; i < u; i++) {
 
 			// Choose a resource randomly
 			int res = rand.nextInt(r);
+			Object resource = ros[res];
 
 			// Get current state
-			int s = resources[res];
+			int s = state[res];
 
 			// Initialise next state
 			int sp = -1;
@@ -103,25 +111,25 @@ public abstract class DoWork<S> {
 			// According to the state, generate event
 			switch (s) {
 			case 0:
-				request(ros[res]);
+				request(resource);
 				sp = 1;
 				break;
 			case 1:
 				if (rand.nextBoolean()) {
-					grant_rl(ros[res]);
+					grant_rl(resource);
 					sp = 2;
 				} else {
-					deny(ros[res]);
+					deny(resource);
 					sp = 0;
 				}
 				;
 				break;
 			case 2:
 				if (rand.nextBoolean()) {
-					rescind(ros[res]);
+					rescind(resource);
 					sp = 2;
 				} else {
-					cancel_rl(ros[res]);
+					cancel_rl(resource);
 					sp = 0;
 				}
 				;
@@ -129,7 +137,7 @@ public abstract class DoWork<S> {
 			}
 
 			// Update state
-			resources[res] = sp;
+			state[res] = sp;
 		}
 
 	}
@@ -262,7 +270,7 @@ public abstract class DoWork<S> {
 		for (int i = 0; i < r; i++) {
 			owning[i] = -1;
 		}
-
+		
 		Random rand = new Random();
 		for (int i = 0; i < u; i++) {
 
@@ -788,7 +796,7 @@ public abstract class DoWork<S> {
 	 */
 
 	//not used?
-	public abstract void command(int x);
+	public abstract void command_int(int x);
 
 	public abstract void request(Object o);
 

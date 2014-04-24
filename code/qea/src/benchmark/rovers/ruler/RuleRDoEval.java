@@ -25,11 +25,11 @@ public class RuleRDoEval extends DoEval {
 		eval.hardest_only=true;
 		eval.csv_mode=true;
 
-		eval.eval_for_GrantCancel("GrantCancel","GrantCancel");
+		//eval.eval_for_GrantCancel("GrantCancel","GrantCancel");
 
-		eval.eval_for_ResourceLifecycle("ResourceLifecycle","ResourceLifecycle");
+		//eval.eval_for_ResourceLifecycle("ResourceLifecycle","ResourceLifecycle");
 
-		eval.eval_for_RespectConflicts("RespectConflicts", "RespectConflicts");		
+		//eval.eval_for_RespectConflicts("RespectConflicts", "RespectConflicts");		
 		
 		eval.eval_for_IncreasingCommand("IncreasingCommand","IncreasingCommand");		 
 		
@@ -56,7 +56,12 @@ public class RuleRDoEval extends DoEval {
 		@Override
 		public void run_with_spec(String spec_location, String name, int[] args) {
 
-			monitor = new RuleR("src/benchmark/rovers/ruler/"+spec_location,false);
+			try{
+				monitor = new RuleR("src/benchmark/rovers/ruler/"+spec_location,false);
+			}catch(Exception e){
+				monitor = new RuleR("ruler-specs/"+spec_location,false);
+			}
+			
 			dowork(name, args);
 			if (print) {
 				System.err.println(monitor);
@@ -87,7 +92,7 @@ public class RuleRDoEval extends DoEval {
 
 		private static final String command = "command";
 		@Override
-		public void command(int x) {
+		public void command_int(int x) {
 			handle(monitor.dispatch(command,wrap(x) ));
 		}
 

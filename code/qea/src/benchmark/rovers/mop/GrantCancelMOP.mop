@@ -1,3 +1,5 @@
+package benchmark.rovers.mop;
+
 GrantCancelMOP(Object t1, Object t2, Object r) {
 
        event grant_t1 after(Object t1, Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.grant_gc(Object,Object)) && args(t1,r){}
@@ -13,11 +15,11 @@ GrantCancelMOP(Object t1, Object t2, Object r) {
         cancel_t2 -> error
        ]
        granted_t1 [
-	cancel_t1 -> start
+		cancel_t1 -> start
         grant_t2 -> error
        ]
        granted_t2 [
-	cancel_t2 -> start
+		cancel_t2 -> start
         grant_t1 -> error
        ]
        error [ ]

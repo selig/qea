@@ -27,19 +27,20 @@ public class MopDoEval extends DoEval<String> {
 	public static void do_the_eval(){	
 		
 		MopDoEval eval = new MopDoEval();
-		eval.hardest_only=true;
+		DoEval.hardest_only=true;
+		DoEval.csv_mode=true;
 
 		eval.eval_for_GrantCancel("GrantCancel","GrantCancel");
-
+		
 		eval.eval_for_ResourceLifecycle("ResourceLifecycle","ResourceLifecycle");
-
+		
 		eval.eval_for_RespectConflicts("RespectConflicts", "RespectConflicts");		
 		
 		//eval.eval_for_IncreasingCommand("IncreasingCommand","IncreasingCommand");		 				
 
 		//eval.eval_for_AcknowledgeCommands("AcknowledgeCommands", "AcknowledgeCommands");		 
 			 
-		eval.eval_for_ReleaseResource("ReleaseResource","ReleaseResource");		 
+		//eval.eval_for_ReleaseResource("ReleaseResource","ReleaseResource");		 
 			 
 		eval.eval_for_NestedCommand("NestedCommand","NestedCommand");
 	
@@ -49,6 +50,8 @@ public class MopDoEval extends DoEval<String> {
 	
 	public static class MopDoWork extends DoWork<String> {
 
+		public boolean print = false;
+		
 		@Override
 		public void run_with_spec(String spec, String name, int[] args) {
 			// Doesn't do anything as we use aspects
@@ -61,24 +64,27 @@ public class MopDoEval extends DoEval<String> {
 		public static String last_event = "";
 
 		@Override
-		public void command(int x) {
-			last_event = "command";
+		public void command_int(int x) {
+			last_event = "command";			
 		}
 
 		@Override
 		public void request(Object o) {
 			last_event = "request";
+			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
 		}
 
 
 		@Override
 		public void deny(Object o) {
 			last_event = "deny";
+			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
 		}
 
 		@Override
 		public void rescind(Object o) {
 			last_event = "rescind";
+			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
 		}
 
 		@Override
@@ -172,6 +178,7 @@ public class MopDoEval extends DoEval<String> {
 		@Override
 		public void grant_rl(Object o) {
 			last_event = "grant";
+			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
 		}
 
 		@Override
@@ -187,6 +194,7 @@ public class MopDoEval extends DoEval<String> {
 		@Override
 		public void cancel_rl(Object o) {
 			last_event = "cancel";
+			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
 		}
 
 		@Override

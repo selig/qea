@@ -216,7 +216,7 @@ public class QeaDoEval extends DoEval {
 		}
 
 		@Override
-		public void command(int x) {
+		public void command_int(int x) {
 			handle(monitor.step(events[0], x));
 		}
 
