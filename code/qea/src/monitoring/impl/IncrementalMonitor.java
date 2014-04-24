@@ -18,6 +18,12 @@ import structure.intf.QEA;
 public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 
 	/**
+	 * Used to switch redundancy elimination techniques on and off
+	 * These are currently only used in Incr_QVarN_NoFVar_Det_QEAMonitor
+	 */
+	public static boolean use_red = true;
+	
+	/**
 	 * Number of bindings for this monitor that are in a final state
 	 */
 	protected int bindingsInFinalStateCount;

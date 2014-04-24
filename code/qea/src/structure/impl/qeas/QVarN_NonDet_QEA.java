@@ -1,7 +1,6 @@
 package structure.impl.qeas;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +13,7 @@ import structure.intf.Binding;
 import structure.intf.Guard;
 import structure.intf.QEA_nondet_free;
 import util.ArrayUtil;
+import exceptions.NotRelevantException;
 
 /**
  * This class represents the most general deterministic Quantified Event Automaton (QEA)
@@ -21,20 +21,17 @@ import util.ArrayUtil;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_nondet_free {
-
-	public QEAType getQEAType(){ return QEAType.QVARN_FVAR_NONDET_QEA;}	
-	
+public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements QEA_nondet_free {
 
 	private final Transition[][][] delta;
 
 	
-	public QVarN_FVar_NonDet_QEA(int numStates, int numEvents,
-			int initialState, int qVariablesCount, int fVariablesCount) {
-		super(numStates,numEvents,initialState,qVariablesCount,fVariablesCount);
+	public QVarN_NonDet_QEA(int numStates, int numEvents,
+			int initialState, int qVariablesCount, int fVariablesCount,
+			QEAType type) {
+		super(numStates,numEvents,initialState,qVariablesCount,fVariablesCount,type);
 		
 		this.delta = new Transition[numStates+1][numEvents+1][];
-
 	}
 
 	public void addTransitions(int startState, int event, Transition[] transitions) {
@@ -67,11 +64,13 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 	}
 
 	public NonDetConfig getNextConfig(QBindingImpl qbinding, NonDetConfig config,
-			int eventName, Object[] args) {
+			int eventName, Object[] args) throws NotRelevantException {
 
 		//This *must* copy config
 		//TODO - why? in other places we just update it, what
 		//   makes us have to copy it?
+		
+		int failures=0;
 		
 		int[] start_states = config.getStates();
 		Binding[] start_bindings = config.getBindings();
@@ -93,18 +92,24 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 					int next_state = start_state;
 					Binding next_binding = binding.copy();
 					boolean repeated=false;
-					for(int i=0;i<end_states.length;i++){
-						if(end_states[i]==next_state &&
-								end_bindings[i].equals(next_binding))
-							repeated=true;
+					if(end_states!=null){
+						for(int i=0;i<end_states.length;i++){
+							if(end_states[i]==next_state &&
+									end_bindings[i].equals(next_binding))
+								repeated=true;
+						}
 					}
 					if(!repeated){
+						if(end_states==null){
+							end_states = new int[1];
+							end_bindings = new Binding[1];
+						}
 						end_states[end_count] = next_state;
 						end_bindings[end_count] = next_binding;
 						end_count++;
 					}
-				}
-				else continue; //fail and remove
+				} else failures++;
+				continue;
 			}
 			if(end_states==null){
 				end_states = new int[transitions.length];
@@ -120,12 +125,12 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 			for(Transition transition : transitions){
 	
 				// if we bind new qvariables or clash with bindings in qbinding
-				// e are not relevant
+				// we are not relevant
 				Binding extend_with = qbinding.extend(transition.getVariableNames(),
 						args);
 				if (extend_with == null || !qbinding.equals(extend_with)) {
 					// not relevant, - so not a failure,
-					// just shold not take
+					// just should not take
 					continue;
 				}
 		
@@ -180,13 +185,17 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 						end_count++;
 					}
 				}
+				else failures++;
 
 			}
 		}
 		
-		//if everything has been zero
-		if(end_count==0)
-			return new NonDetConfig(0,newFBinding());		
+		//if everything has been zero then *either* no transitions
+		// have been relevant *or* all transitions have failed
+		if(end_count==0){
+			if(failures>0) return new NonDetConfig(0,newFBinding());
+			else throw new NotRelevantException();
+		}
 		
 		end_states = ArrayUtil.resize(end_states, end_count);
 		end_bindings = ArrayUtil.resize(end_bindings,end_count);
@@ -228,5 +237,22 @@ public class QVarN_FVar_NonDet_QEA extends Abstr_QVarN_FVar_QEA implements QEA_n
 		return delta;
 	}	
 
+	@Override
+	public boolean can_leave(int state, int event) {
+		if(isNormal()){
+			//if no transition then this depends on whether state is skip
+			if(delta[state][event]==null) return !skipStates[state];
+			boolean all_loop = true;
+			for(Transition t : delta[state][event]){
+				//if t has any fvars then it's true as the config can get updated
+				for(int v : t.getVariableNames())
+					if(v > 0) return true;
+				//lastly check if we loop
+				all_loop &= t.getEndState() == state;
+			}
+			return !all_loop;
+		}
+		else return true;
+	}	
 	
 }

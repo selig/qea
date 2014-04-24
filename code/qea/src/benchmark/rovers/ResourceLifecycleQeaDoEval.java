@@ -4,7 +4,7 @@ import properties.rovers.ResourceLifecycle_QVar01_FVar_Det_QEA;
 import properties.rovers.ResourceLifecycle_QVar01_FVar_NonDet_QEA;
 import properties.rovers.ResourceLifecycle_QVar01_NoFVar_NonDet_QEA;
 import properties.rovers.RoverCaseStudy;
-import benchmark.rovers.QeaDoEval.QeaDoWork;
+import benchmark.rovers.qea.QeaDoEval.QeaDoWork;
 
 public class ResourceLifecycleQeaDoEval extends DoEval {
 

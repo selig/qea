@@ -524,6 +524,7 @@ public class RoverCaseStudy {
 		q.endTransition(10);
 
 		q.addFinalStates(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		q.setSkipStates(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 		QEA qea = q.make();
 

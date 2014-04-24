@@ -1,10 +1,14 @@
-package benchmark.rovers;
+package benchmark.rovers.qea;
 
+import benchmark.rovers.DoEval;
+import benchmark.rovers.DoWork;
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 import properties.rovers.RoverCaseStudy;
 import structure.impl.other.Verdict;
+import structure.impl.qeas.QEAType;
 import structure.intf.QEA;
+import creation.QEABuilder;
 
 public class QeaDoEval extends DoEval {
 
@@ -15,10 +19,67 @@ public class QeaDoEval extends DoEval {
 
 	public static void main(String[] args) {
 
-		QeaDoEval eval = new QeaDoEval();
 
-		eval.hardest_only=true;
 		QeaDoWork.print = false;
+		
+		/*
+		 * Questions to answer/fix
+		 * - Why is RespectConflicts slower for Symbol than Naive?
+		 */
+		
+		//QeaDoEval eval = new QeaDoEval();
+		//eval.hardest_only=true;			
+		//eval.output=true;
+		//eval.csv_mode=true;
+		
+		//QeaDoWork.category=Category.NAIVE;
+		//System.err.println("Category: "+QeaDoWork.category);
+		// eval.eval_for_RespectConflicts(
+		// RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");		
+		//	QeaDoWork.category=Category.SYMBOL;
+		//	System.err.println("Category: "+QeaDoWork.category);
+		//	for(int i=0;i<100;i++)
+		//	 eval.eval_for_RespectConflicts(
+		//	 RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");		 
+		
+		//eval.eval_for_RespectPriorities(RoverCaseStudy.makeRespectPriorities(),
+		//		 "RespectPriorities");	
+		
+		//System.exit(0);
+		
+		int rep = 5;
+		try{
+			rep = Integer.parseInt(args[0]);
+		}catch(Exception e){}
+		
+		
+		//Do the whole thing 5 times!
+		for(int i=0;i<rep;i++){
+			//Force naive monitors
+			QeaDoWork.category=Category.NAIVE;
+			System.err.println("Category: "+QeaDoWork.category);
+			do_the_eval();
+			//Force symbol-indexing
+			QeaDoWork.category=Category.SYMBOL;
+			System.err.println("Category: "+QeaDoWork.category);
+			do_the_eval();
+			//Force most general structured
+			QeaDoWork.category=Category.GENERAL_STRUCT;
+			System.err.println("Category: "+QeaDoWork.category);
+			do_the_eval();
+			//Use default monitors
+			QeaDoWork.category=Category.NORMAL;
+			System.err.println("Category: "+QeaDoWork.category);
+			do_the_eval();
+		}
+		
+	}	
+		
+	public static void do_the_eval(){	
+		
+		QeaDoEval eval = new QeaDoEval();
+		eval.hardest_only=true;
+		eval.csv_mode=true;
 
 		// Internal Properties
 
@@ -28,56 +89,75 @@ public class QeaDoEval extends DoEval {
 		eval.eval_for_ResourceLifecycle(RoverCaseStudy.makeResourceLifecycle(),
 				"ResourceLifecycle");
 
+		//System.err.println("Turn respect conflicts back on");
 		 eval.eval_for_RespectConflicts(
 		 RoverCaseStudy.makeRespectConflictsSingle(), "RespectConflicts");		
 		
+		
 			eval.eval_for_IncreasingCommand(RoverCaseStudy.makeIncreasingCommand(),
 					"IncreasingCommand");		 
-		 
+		
+			//System.err.println("Turn exists sat back on");
 			 eval.eval_for_ExistsSatellite(
 					 RoverCaseStudy.makeExistsSatelliteSingle(), "ExistsSatellite");
 
 
+		if(QeaDoWork.category.isGeneral()){
 
-		// TODO Implementation of eval_for_RespectPriorities and
-		// work_for_RespectPriorities is missing
-		// eval.eval_for_RespectPriorities(RoverCaseStudy.makeRespectPriorities(),
-		// "RespectPriorities");
+			 eval.eval_for_AcknowledgeCommands(
+			 RoverCaseStudy.makeAcknowledgeCommands(), "AcknowledgeCommands");		 
+			 
+			 eval.eval_for_ReleaseResource(RoverCaseStudy.makeReleaseResource(),
+			 "ReleaseResource");		 
+			 
+			eval.eval_for_NestedCommand(RoverCaseStudy.makeNestedCommand(),
+			 "NestedCommand");
+	
+			eval.eval_for_ExistsLeader(RoverCaseStudy.makeExistsLeader(),
+			 "ExistsLeader");
+			
+			eval.eval_for_RespectPriorities(RoverCaseStudy.makeRespectPriorities(),
+					 "RespectPriorities");	
+		}
 
-		// External properties
+	}
 
-		 //Not used
-		//eval.eval_for_ExactlyOneSuccess(RoverCaseStudy.makeExactlyOneSuccess(),
-		//		"ExactlyOneSuccess");
+	public static enum Category{
+		NORMAL,
+		NAIVE,
+		SYMBOL,
+		GENERAL_STRUCT;
 
-
-
-		 eval.eval_for_AcknowledgeCommands(
-		 RoverCaseStudy.makeAcknowledgeCommands(), "AcknowledgeCommands");		 
-		 
-		 eval.eval_for_ReleaseResource(RoverCaseStudy.makeReleaseResource(),
-		 "ReleaseResource");		 
-		 
-		eval.eval_for_NestedCommand(RoverCaseStudy.makeNestedCommand(),
-		 "NestedCommand");
-
-		//TODO - check, this qea is not Normal
-		// eval.eval_for_ExistsLeader(RoverCaseStudy.makeExistsLeader(),
-		// "ExistsLeader");		
-
-		// TODO Multiple quantified QEA not implemented yet
-		// eval.eval_for_MessageHashCorrectInvInt(
-		// RoverCaseStudy.makeMessageHashCorrect(),
-		// "MessageHashCorrectInvInt");
+		public boolean isGeneral() {
+			switch(this){
+			case SYMBOL: return true;
+			case NAIVE: return true;
+			}
+			return false;
+		}
 	}
 	
-	static class QeaDoWork extends DoWork<QEA> {
+	public static class QeaDoWork extends DoWork<QEA> {
 
 		public static boolean print = false;
+		public static Category category = Category.NORMAL;
 
 		@Override
 		public void run_with_spec(QEA qea, String name, int[] args) {
 
+			switch(category){
+			case NORMAL : break;
+			case GENERAL_STRUCT : 
+				qea = QEABuilder.change(qea, QEAType.QVAR01_FVAR_NONDET_QEA); break;
+			case NAIVE:
+			case SYMBOL:
+				try{
+					qea = QEABuilder.change(qea, QEAType.QVARN_FVAR_DET_QEA); break;
+				}catch(Exception e){
+					qea = QEABuilder.change(qea, QEAType.QVARN_FVAR_NONDET_QEA); break;
+				}
+			}
+			
 			setup(qea);
 			dowork(name, args);
 			if (print) {
@@ -97,7 +177,10 @@ public class QeaDoEval extends DoEval {
 		 *            QEA property
 		 */
 		private void setup(QEA qea) {
-			monitor = MonitorFactory.create(qea);
+			if(category==Category.NAIVE)
+				monitor = MonitorFactory.createNaive(qea);
+			else
+				monitor = MonitorFactory.create(qea);
 			events = new int[16];
 
 			events[0] = qea.get_event_id("command");
@@ -127,11 +210,13 @@ public class QeaDoEval extends DoEval {
 		public void handle(Verdict verdict) {
 			if (verdict == Verdict.FAILURE) {
 				System.err.println("warning: failure");
+				System.err.println(monitor);				
+				System.exit(0);
 			}
 		}
 
 		@Override
-		public void command(int x) {
+		public void command_int(int x) {
 			handle(monitor.step(events[0], x));
 		}
 
@@ -150,12 +235,10 @@ public class QeaDoEval extends DoEval {
 			handle(monitor.step(events[1], o));
 		}
 
-		@Override
 		public void grant(Object o) {
 			handle(monitor.step(events[2], o));
 		}
 
-		@Override
 		public void grant(Object a, Object b) {
 			handle(monitor.step(events[2], a, b));
 		}
@@ -170,12 +253,10 @@ public class QeaDoEval extends DoEval {
 			handle(monitor.step(events[4], o));
 		}
 
-		@Override
 		public void cancel(Object o) {
 			handle(monitor.step(events[5], o));
 		}
 
-		@Override
 		public void cancel(Object a, Object b) {
 			handle(monitor.step(events[5], a, b));
 		}
@@ -241,6 +322,57 @@ public class QeaDoEval extends DoEval {
 		public void priority(Object a, Object b) {
 			handle(monitor.step(events[15], a, b));
 		}
+		
+		@Override
+		public void grant_rl(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void grant_rc(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void grant_rp(Object o) {
+			grant(o);
+		}
+
+		@Override
+		public void cancel_rl(Object o) {
+			cancel(o);
+		}
+
+		@Override
+		public void cancel_rc(Object o) {
+			cancel(o);
+		}
+
+		@Override
+		public void cancel_rp(Object o) {
+			cancel(o);
+		}		
+		
+		@Override
+		public void grant_gc(Object a, Object b) {
+			grant(a,b);			
+		}
+
+		@Override
+		public void grant_rr(Object a, Object b) {
+			grant(a,b);
+		}
+
+		@Override
+		public void cancel_gc(Object a, Object b) {
+			cancel(a,b);
+		}
+
+		@Override
+		public void cancel_rr(Object a, Object b) {
+			cancel(a,b);
+		}				
+		
 	}
 
 	

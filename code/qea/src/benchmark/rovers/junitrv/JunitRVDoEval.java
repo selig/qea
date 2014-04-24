@@ -1,4 +1,4 @@
-package benchmark.rovers;
+package benchmark.rovers.junitrv;
 
 import static de.uni_luebeck.isp.rvtool.javamonitorinjection.api.syntax.Syntax.Always;
 import static de.uni_luebeck.isp.rvtool.javamonitorinjection.api.syntax.Syntax.X;
@@ -11,6 +11,9 @@ import java.io.Serializable;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import benchmark.rovers.DoEval;
+import benchmark.rovers.DoWork;
 
 import com.google.common.collect.ImmutableList;
 
@@ -29,7 +32,6 @@ import de.uni_luebeck.isp.rvtool.rvlib.syntax.ltl.NOT;
 import de.uni_luebeck.isp.rvtool.rvlib.syntax.ltl.OR;
 import de.uni_luebeck.isp.rvtool.rvlib.syntax.ltl.Proposition;
 import de.uni_luebeck.isp.rvtool.rvlib.syntax.ltl.R;
-import de.uni_luebeck.isp.rvtool.rvlib.syntax.ltl.U;
 import de.uni_luebeck.isp.rvtool.rvlib.syntax.ltl.X;
 import de.uni_luebeck.isp.rvtool.rvlib.syntax.smt.SMTExpression;
 import de.uni_luebeck.isp.rvtool.rvlib.syntax.smt.SMTInteger;
@@ -38,11 +40,11 @@ import de.uni_luebeck.isp.rvtool.rvlib.syntax.smt.SMTSymbol;
 import de.uni_luebeck.isp.rvtool.rvlib.syntax.smt.SMTVariable;
 
 @RunWith(RVRunner.class)
-public class RVunitDoEval extends DoEval<String> {
+public class JunitRVDoEval extends DoEval<String> {
 	
 	@Override
 	public DoWork<String> makeWork() {
-		return new RVunitDoWork();
+		return new JunitRVDoWork();
 	}
 
 	private static final String dowork = "benchmark.rovers.RVunitDoWork";
@@ -74,7 +76,7 @@ public class RVunitDoEval extends DoEval<String> {
 	//SETUP for first-order resource lifecycle
 	
     private static final SMTPredicate id = new SMTPredicate("p", new Serializable() {
-        public SMTExpression<Void> p(RVunitDoWork work, Object o) {
+        public SMTExpression<Void> p(JunitRVDoWork work, Object o) {
             return new SMTOperator<>("eq", ImmutableList.<SMTExpression<Void>>of(
                     new SMTVariable<Void>("x"),
                     new SMTInteger<Void>(System.identityHashCode(o))));
@@ -89,30 +91,15 @@ public class RVunitDoEval extends DoEval<String> {
     private static final LTL<SMTExpression<Property>> rescind_f = new AND<>(ImmutableList.<LTL<SMTExpression<Property>>>of(propId, new Proposition< SMTExpression< Property>>(new SMTSymbol<Property>(rescind))));
     
 	private static final LTL<SMTExpression<Property>> request_next = new OR<>(ImmutableList.of(new NOT<>(request_f), 
-			new U<>(
-					new NOT<>(new OR<>(ImmutableList.of(request_f,cancel_f,rescind_f))),
-					new OR<>(ImmutableList.of(deny_f,grant_f))
-					)));    
+			new X<>(new OR<>(ImmutableList.of(deny_f,grant_f)))));    
 	private static final LTL<SMTExpression<Property>> grant_next = new OR<>(ImmutableList.of(new NOT<>(grant_f), 
-			new U<>(
-					new NOT<>(new OR<>(ImmutableList.of(request_f,grant_f,deny_f))),
-					new OR<>(ImmutableList.of(cancel_f,rescind_f))
-					))); 
+			new X<>(new OR<>(ImmutableList.of(cancel_f,rescind_f)))));
 	private static final LTL<SMTExpression<Property>> deny_next = new OR<>(ImmutableList.of(new NOT<>(deny_f), 
-			new U<>(
-					new NOT<>(new OR<>(ImmutableList.of(deny_f,grant_f,cancel_f,rescind_f))),
-					new OR<>(ImmutableList.of(request_f))
-					))); 
+			new X<>(new OR<>(ImmutableList.of(request_f)))));
 	private static final LTL<SMTExpression<Property>> cancel_next = new OR<>(ImmutableList.of(new NOT<>(cancel_f), 
-			new U<>(
-					new NOT<>(new OR<>(ImmutableList.of(deny_f,grant_f,cancel_f,rescind_f))),
-					new OR<>(ImmutableList.of(request_f))
-					))); 
+			new X<>(new OR<>(ImmutableList.of(request_f))))); 
 	private static final LTL<SMTExpression<Property>> rescind_next = new OR<>(ImmutableList.of(new NOT<>(rescind_f), 
-			new U<>(
-					new NOT<>(new OR<>(ImmutableList.of(deny_f,grant_f,request_f))),
-					new OR<>(ImmutableList.of(rescind_f,cancel_f))
-					))); 
+			new X<>(new OR<>(ImmutableList.of(cancel_f,rescind_f)))));
 	
 	private static final AND<SMTExpression<Property>> all_together = 
 		new AND<>(ImmutableList.of(
@@ -130,14 +117,11 @@ public class RVunitDoEval extends DoEval<String> {
 	@Test
 	@Monitors({"parametric_resourceLifecycle"})
 	public void testResourceLifecycle(){
-		//this.hardest_only=true;
 		//eval_for_ResourceLifecycle("ResourceLifecycle","ResourceLifecycle");
 		DoWork work = makeWork();
-		Object resource1 = new Object();
-		Object resource2 = new Object();
-		work.request(resource1);
-		//work.request(resource1);
-		work.request(resource2);
+		Object resource = new Object();
+		work.request(resource);
+		work.request(resource);
 	}
 
 	

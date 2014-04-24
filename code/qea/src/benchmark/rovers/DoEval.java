@@ -3,9 +3,11 @@ package benchmark.rovers;
 import java.io.PrintStream;
 import java.util.Arrays;
 
-abstract class DoEval<S> {
+public abstract class DoEval<S> {
 
 	public static boolean hardest_only = false;
+	public static boolean output = false;
+	public static boolean csv_mode = false;
 	
 	private static PrintStream old_out = System.out;
 	private static PrintStream null_out = null;
@@ -42,7 +44,13 @@ abstract class DoEval<S> {
 	 */
 	public void run_eval(S spec, String name, int[] args, int w) {
 		warmup = w;
-		run_eval(spec, name, args);
+		try{
+			run_eval(spec, name, args);
+		}
+		catch(Exception e){
+			System.err.println("There was a problem:");
+			e.printStackTrace();
+		}
 		warmup = 5;
 	}
 
@@ -70,9 +78,13 @@ abstract class DoEval<S> {
 		}
 
 		// Print name of the property and arguments
-		old_out.println("==\t" + spec + ":" + Arrays.toString(args) + "\t==");
+		if(csv_mode){
+			old_out.print(spec + ":" + Arrays.toString(args).replace(',',':') + ",");
+		}
+		else old_out.println("==\t" + spec + ":" + Arrays.toString(args) + "\t==");
 
 		// Execute runs printing the time for each one
+		long[] times = new long[runs];
 		for (int i = 0; i < runs; i++) {
 			System.setOut(null_out);
 			System.gc();
@@ -81,9 +93,16 @@ abstract class DoEval<S> {
 			work.run_with_spec(spec, name, args);
 			long end = System.currentTimeMillis();
 			System.setOut(old_out);
-			System.out.println((end - start));
-
+			long time = end - start;
+			if(output && !csv_mode) System.out.println(i+" took "+time);
+			if(csv_mode) System.out.print(time+",");
+			times[i]=time;
 		}
+		//compute average time
+		long total = 0;
+		for(long time : times) total+=time;
+		double average = ((double) total) / runs;
+		System.out.println(average);
 
 	}
 
@@ -164,7 +183,8 @@ abstract class DoEval<S> {
 		run_eval(spec, name, new int[] { 10000 }, 0);
 		run_eval(spec, name, new int[] { 100000 }, 0);
 		}
-		run_eval(spec, name, new int[] { 1000000 }, 0);
+		//System.err.println("AcknowledgeCommands turned down");
+		run_eval(spec, name, new int[] { 10000 }, 0);
 
 	}
 
@@ -173,6 +193,7 @@ abstract class DoEval<S> {
 		if(!hardest_only){
 		run_eval(spec, name, new int[] { 2, 2, 10 });
 		run_eval(spec, name, new int[] { 3, 3, 10 }, 0);
+		run_eval(spec, name, new int[] { 2, 2, 100 }, 0);
 		}
 		run_eval(spec, name, new int[] { 2, 2, 100 }, 0);
 
@@ -195,8 +216,9 @@ abstract class DoEval<S> {
 		run_eval(spec, name, new int[] { 100, 100, 1000 }, 0);
 		run_eval(spec, name, new int[] { 100, 100, 10000 }, 0);
 		run_eval(spec, name, new int[] { 1000, 1000, 1000 });
-		}
 		run_eval(spec, name, new int[] { 1000, 1000, 10000 }, 0);
+		}
+		run_eval(spec, name, new int[] { 1000, 1000, 100000 }, 0);
 
 	}
 
@@ -246,8 +268,9 @@ abstract class DoEval<S> {
 		run_eval(spec, name, new int[] { 5 });
 		run_eval(spec, name, new int[] { 10 }, 0);
 		run_eval(spec, name, new int[] { 15 }, 0);
-		}
 		run_eval(spec, name, new int[] { 20 }, 0);
+		}
+		run_eval(spec, name, new int[] { 30 }, 0);
 
 	}
 
@@ -266,7 +289,10 @@ abstract class DoEval<S> {
 	}
 
 	public void eval_for_RespectPriorities(S spec, String name) {
-		// TODO Implement this!
-		throw new RuntimeException("Not implemented");
+		if(!hardest_only){
+			//none here!
+		}
+		//run_eval(spec, name, new int[]{5,100});
+		run_eval(spec, name, new int[]{20,100000});
 	}
 }
