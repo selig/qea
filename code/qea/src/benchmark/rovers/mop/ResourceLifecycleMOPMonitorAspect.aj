@@ -1,4 +1,4 @@
-
+package benchmark.rovers.mop;
 import java.util.*;
 import javamoprt.*;
 import java.lang.ref.*;
@@ -259,6 +259,7 @@ class ResourceLifecycleMOPMonitor extends javamoprt.MOPMonitor implements Clonea
 	public final void Prop_1_handler_fail (Object r){
 		{
 			System.err.println("A resource was used incorrectly");
+			System.exit(0);
 		}
 
 	}

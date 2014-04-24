@@ -1,3 +1,5 @@
+package benchmark.rovers.mop;
+
 RespectConflictsMOP(Object r1, Object r2) {
 
        event conflict after(Object r1, Object r2) : execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.conflict(Object,Object)) && args(r1,r2)  { }

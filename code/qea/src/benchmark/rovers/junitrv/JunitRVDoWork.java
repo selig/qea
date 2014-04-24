@@ -19,7 +19,7 @@ public class JunitRVDoWork extends DoWork<String> {
 	public static boolean print_events = true;
 
 	@Override
-	public void command(int x) {
+	public void command_int(int x) {
 		last_event = "command";
 		if(print_events) System.err.println(last_event);
 	}

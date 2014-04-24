@@ -64,7 +64,7 @@ public class OutputDoEval extends DoEval {
 		}
 		
 		@Override
-		public void command(int x) {
+		public void command_int(int x) {
 			output("command",x+"");
 		}
 

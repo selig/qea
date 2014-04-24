@@ -195,7 +195,7 @@ public abstract class DoEval<S> {
 		run_eval(spec, name, new int[] { 3, 3, 10 }, 0);
 		run_eval(spec, name, new int[] { 2, 2, 100 }, 0);
 		}
-		run_eval(spec, name, new int[] { 3, 3, 100 }, 0);
+		run_eval(spec, name, new int[] { 2, 2, 100 }, 0);
 
 	}
 

@@ -1,3 +1,5 @@
+package benchmark.rovers.mop;
+
 ReleaseResourceMOP(Object t, Object c, Object r) {
 
        String last_event;
