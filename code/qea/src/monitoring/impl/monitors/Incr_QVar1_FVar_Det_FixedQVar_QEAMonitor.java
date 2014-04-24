@@ -172,16 +172,22 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 		}
 		strong.clear();
 		return rolled;
-	}		
+	}	
+	//TODO - fixed an issue encounted for DaCapo - need to fix this
+	//		across all monitors. The issue is that strong bindings may
+	//		have become garbage so are no longer in bindings
 	@Override
 	protected int ignoreStrongBindings() {
 		int ignored = 0;
 		for(Object o : strong){
-			int state = bindings.get(o).getState();
-			if(qea.isStateFinal(state)==finalStrongState){			
-				((IgnoreWrapper) bindings).ignore(o);
-				ignored++;
-			}					
+			DetConfig config = bindings.get(o);
+			if(config!=null){
+				int state = config.getState();
+				if(qea.isStateFinal(state)==finalStrongState){			
+					((IgnoreWrapper) bindings).ignore(o);
+					ignored++;
+				}		
+			}else ignored++; //we still want to remove it
 		}
 		strong.clear();
 		return ignored;
