@@ -1,16 +1,13 @@
 package monitoring.impl.monitors.general;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.RestartMode;
 import structure.impl.other.QBindingImpl;
 import structure.impl.other.Verdict;
-import structure.impl.qeas.Abstr_QVarN_FVar_QEA;
+import structure.impl.qeas.Abstr_QVarN_QEA;
 
-public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_FVar_QEA> extends IncrementalMonitor<Q>  {
+public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_QEA> extends IncrementalMonitor<Q>  {
 
 	protected final QBindingImpl bottom;
 	protected final QBindingImpl[] dummyEmptyBinding = new QBindingImpl[1];
@@ -22,6 +19,7 @@ public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_FVar_QEA
 	public Abstr_Incr_Naive_QEAMonitor(Q qea) {
 		super(RestartMode.NONE,GarbageMode.NONE,qea);
 		qea.setupMatching();
+		qea.isNormal(); // set normal
 		bottom = qea.newQBinding();
 		dummyEmptyBinding[0]=bottom;	
 		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());

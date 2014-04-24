@@ -23,8 +23,8 @@ import structure.impl.qeas.QVar01_NoFVar_Det_QEA;
 import structure.impl.qeas.QVar01_NoFVar_NonDet_QEA;
 import structure.impl.qeas.QVar1_FVar_Det_FixedQVar_QEA;
 import structure.impl.qeas.QVar1_FVar_NonDet_FixedQVar_QEA;
-import structure.impl.qeas.QVarN_FVar_Det_QEA;
-import structure.impl.qeas.QVarN_FVar_NonDet_QEA;
+import structure.impl.qeas.QVarN_Det_QEA;
+import structure.impl.qeas.QVarN_NonDet_QEA;
 import structure.intf.Assignment;
 import structure.intf.Guard;
 import structure.intf.QEA;
@@ -874,8 +874,8 @@ public class QEABuilder {
 
 	private QEA makeGeneralFreeNondet(int states, int events,
 			boolean[] strongStates, int frees) {
-		QVarN_FVar_NonDet_QEA qea = new QVarN_FVar_NonDet_QEA(
-					states, events, 1, quants.size(),frees);
+		QVarN_NonDet_QEA qea = new QVarN_NonDet_QEA(
+					states, events, 1, quants.size(),frees,QEAType.QVARN_FVAR_NONDET_QEA);
 		
 		//Add quantifications
 		for(Quant q : quants){
@@ -931,8 +931,12 @@ public class QEABuilder {
 
 	private QEA makeGeneralFreeDet(int states, int events,
 			boolean[] strongStates, int frees) {
-		QVarN_FVar_Det_QEA qea = new QVarN_FVar_Det_QEA(states,
-				events, 1, quants.size(),frees);
+		
+		QEAType type = (frees==0) ? 
+				QEAType.QVARN_NOFVAR_DET_QEA : QEAType.QVARN_FVAR_DET_QEA;
+		
+		QVarN_Det_QEA qea = new QVarN_Det_QEA(states,
+				events, 1, quants.size(),frees,type);
 
 		
 		//Add quantifications

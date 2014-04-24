@@ -1,0 +1,24 @@
+ruler ReleaseResource{
+  observes
+    schedule(obj,obj), grant(obj,obj), 
+    cancel(obj,obj), finish(obj);
+
+  always Start(){ 
+    schedule(t:obj,c:obj) -> S(t,c);
+  }  
+  state S(t:obj,c:obj){
+    grant(t,r:obj) -> G(t,c,r), S(t,c);
+    finish(c) -> Ok;
+  }
+  state G(t:obj,c:obj,r:obj){
+    cancel(t,r) -> Ok;
+  }
+
+  assert Start, S, G;
+  initials Start;  
+}
+
+monitor{
+  uses M : ReleaseResource;
+  run M .
+}

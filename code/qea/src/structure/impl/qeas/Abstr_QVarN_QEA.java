@@ -22,6 +22,16 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 	protected final int quantifiedVariableCount;	
 	
 	/*
+	 * The underlying structure is either Det or NonDet but the contents
+	 * can either use free variables or not
+	 * 
+	 * Both Det and NonDet versions have free and non-free next config options
+	 * Therefore, they can have one of two types
+	 */
+	private final QEAType type;
+	public QEAType getQEAType(){ return type;}	
+	
+	/*
 	 * If it is not normal we need to add sub-bindings for
 	 * all bindings as *all* bindings must be generated, even
 	 * if they are associated with the empty projection
@@ -45,7 +55,7 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 	}	
 	
 	public Abstr_QVarN_QEA(int numStates, int numEvents, int initialState,
-			int qVariablesCount, int fVariablesCount) {
+			int qVariablesCount, int fVariablesCount,QEAType type) {
 		this.initialState = initialState;
 		lambda = new QEntry[qVariablesCount + 1];
 		skipStates = new boolean[numStates + 1];
@@ -53,6 +63,7 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 		strongStates = new boolean[numStates + 1];
 		freeVariableCount = fVariablesCount;
 		quantifiedVariableCount = qVariablesCount;
+		this.type=type;
 	}	
 	
 	public boolean isNormal(){
@@ -312,5 +323,7 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 		
 		return bs;
 	}
+	
+	public abstract boolean can_leave(int state, int event);
 	
 }

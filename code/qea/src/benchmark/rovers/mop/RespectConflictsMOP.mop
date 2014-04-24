@@ -1,0 +1,33 @@
+package benchmark.rovers.mop;
+
+RespectConflictsMOP(Object r1, Object r2) {
+
+       event conflict after(Object r1, Object r2) : execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.conflict(Object,Object)) && args(r1,r2)  { }
+       event grant_r1 after(Object r1) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.grant_rc(Object)) && args(r1){}
+       event grant_r2 after(Object r2) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.grant_rc(Object)) && args(r2){}
+       event release_r1 after(Object r1) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.cancel_rc(Object)) && args(r1){}
+       event release_r2 after(Object r2) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.cancel_rc(Object)) && args(r2){}
+
+       fsm:
+       start [
+        conflict -> conflicted
+       ]
+       conflicted [
+	conflict -> conflicted
+        grant_r1 -> r1_granted
+        grant_r2 -> r2_granted
+       ]
+       r1_granted [
+        release_r1 -> conflicted
+        grant_r2 -> error
+       ]
+       r2_granted [
+        release_r2 -> conflicted
+        grant_r1 -> error
+       ]
+       error [ ]
+     
+       @error{
+               System.err.println("conflicted resources granted at the same time");
+       }
+}

@@ -46,7 +46,8 @@ public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 			if(propEvents[event]==2) 
 				throw new ShouldNotHappenException("An event cannot be propositional and not");
 			propEvents[event]=1;
-		}		
+		}	
+		else propEvents[event]=2;
 	}
 
 	/**
