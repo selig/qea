@@ -93,6 +93,7 @@ public abstract class Binding {
 	 * @return
 	 */
 	public Binding extend(int[] variableNames, Object[] args) {
+		assert(variableNames.length==args.length);
 		Binding binding = this.copy();
 		boolean okay = binding.update(variableNames,args);
 		if(!okay) return null;

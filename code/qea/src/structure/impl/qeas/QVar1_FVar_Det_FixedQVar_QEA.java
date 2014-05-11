@@ -5,6 +5,7 @@ import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
 import structure.intf.Guard;
+import structure.intf.QEA_det_free;
 
 /**
  * This class represents a Quantified Event Automaton (QEA) with the following
@@ -23,7 +24,7 @@ import structure.intf.Guard;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
+public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA implements QEA_det_free {
 
 	private final QEAType qeaType = QEAType.QVAR1_FVAR_DET_FIXEDQVAR_QEA;
 
@@ -99,8 +100,10 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 		// If the event is not defined for the current start state, return the
 		// failing state with an empty binding
 		if (transition == null) {
-			config.setState(0);
-			config.getBinding().setEmpty();
+			if(!skipStates[config.getState()]){
+				config.setState(0);
+				config.getBinding().setEmpty();
+			}
 			return config;
 		}
 
@@ -116,11 +119,12 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 		}
 
 		// If there is a guard and is not satisfied, rollback the binding and
-		// return the failing state
+		// return the failing state if not a skip state
 		if (transition.getGuard() != null) {
 			Guard guard = transition.getGuard();
 			if (!guard.check(binding, -1, qVarValue)) {
-				config.setState(0); // Failing state
+				if(!skipStates[config.getState()])
+					config.setState(0); // Failing state
 				return config;
 			}
 		}
@@ -153,6 +157,11 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA {
 	@Override
 	public QEAType getQEAType() {
 		return qeaType;
+	}
+
+	@Override
+	public Transition[][] getDelta() {
+		return delta;
 	}
 
 }

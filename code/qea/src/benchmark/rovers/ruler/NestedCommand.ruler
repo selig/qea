@@ -1,0 +1,24 @@
+ruler NestedCommand{
+  observes
+    command(obj),succeed(obj);
+
+  always Start(){ 
+    command(x:obj), !C(x) -> C(x);
+  }  
+  state C(x:obj){
+    command(y:obj), !D(x,y) -> D(x,y), C(x);
+    succeed(x), !D(x,y:obj) -> Ok;
+  }  
+  state D(x:obj,y:obj){
+    succeed(y) -> Ok;
+  }
+
+  assert Start, C, D;
+  initials Start;
+  forbidden C;
+}
+
+monitor{
+  uses M : NestedCommand;
+  run M .
+}

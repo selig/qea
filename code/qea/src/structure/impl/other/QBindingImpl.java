@@ -1,5 +1,6 @@
 package structure.impl.other;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import structure.intf.Binding;
@@ -58,6 +59,9 @@ public class QBindingImpl extends FBindingImpl {
 	@Override
 	public boolean update(int[] variableNames, Object[] args) {
 		assert(variableNames.length==args.length);
+		
+		//System.err.println(Arrays.toString(variableNames)+" with "+Arrays.toString(args));
+		
 		for(int i=0;i<variableNames.length;i++){
 			int var = variableNames[i];
 			if(var<0){
@@ -138,6 +142,36 @@ public class QBindingImpl extends FBindingImpl {
 			return 0;
 		}
 		
+	}
+
+	public QBindingImpl[] submaps() {
+		// first get boolean map of contained values
+		boolean[] contains = new boolean[values.length];
+		int contains_count=0;
+		for(int i=0;i<contains.length;i++){
+			if(values[i]!=null){
+				contains[i]=true;
+				contains_count++;
+			}
+		}
+		// if we are singleton then there's only one sub
+		if(contains_count==1) return new QBindingImpl[]{};
+		// if we are double then there's two
+		if(contains_count==2){
+			QBindingImpl[] ret = new QBindingImpl[2];
+			int p = 0;
+			for(int i=0;i<contains.length;i++){
+				if(contains[i]){
+					ret[p] = new QBindingImpl(values.length);
+					ret[p].values[i]=this.values[i];		
+					p++;		
+				}
+			}
+			
+			return ret;
+		}
+		//do the rest when we need them!!
+		throw new RuntimeException("Not implemented yet - only required for non-normal qeas");
 	}	
 	
 }

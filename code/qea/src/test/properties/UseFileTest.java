@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import properties.papers.UseFileQEA;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class UseFileTest {
 
@@ -25,7 +26,7 @@ public class UseFileTest {
 
 	@Before
 	public void setup() {
-		monitor = MonitorFactory.create(qea);
+		monitor = TestSettings.create(qea);
 	}
 
 	@Test

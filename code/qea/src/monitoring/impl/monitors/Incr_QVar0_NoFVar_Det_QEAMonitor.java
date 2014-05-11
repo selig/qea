@@ -70,7 +70,7 @@ public class Incr_QVar0_NoFVar_Det_QEAMonitor extends
 	 *         failure indicates that the verdict can change
 	 */
 	private Verdict computeVerdict(boolean end) {
-
+			
 		if (qea.isStateFinal(config.getState())) {
 			if (end || qea.isStateStrong(config.getState())) {
 				return Verdict.SUCCESS;

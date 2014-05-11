@@ -1,0 +1,15 @@
+ruler IncreasingCommand{
+  observes command(int);
+
+  state C(x:int){
+    command(y:int), y>x -> C(y);
+  }
+
+  assert C;
+  initials C(0);  
+}
+
+monitor{
+  uses M : IncreasingCommand;
+  run M .
+}

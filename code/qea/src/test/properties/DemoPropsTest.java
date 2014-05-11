@@ -8,6 +8,7 @@ import monitoring.intf.Monitor;
 import org.junit.Test;
 
 import properties.simple.DemoQEAs;
+import test.TestSettings;
 
 public class DemoPropsTest {
 
@@ -20,7 +21,7 @@ public class DemoPropsTest {
 
 		int e = 1;
 		int f = 2;
-		Monitor monitor = MonitorFactory
+		Monitor monitor = TestSettings
 				.create(DemoQEAs.makeDemoNonDetChoice());
 
 		Object x = new Object() {
@@ -35,6 +36,7 @@ public class DemoPropsTest {
 				return "B";
 			}
 		};
+		
 		assertEquals(monitor.step(e, x, y), FAILURE);
 		assertEquals(monitor.step(f, y), FAILURE);
 		assertEquals(monitor.step(f, x), FAILURE);
@@ -45,7 +47,7 @@ public class DemoPropsTest {
 
 		int f = 1;
 		int g = 2;
-		Monitor monitor = MonitorFactory.create(DemoQEAs.detFreeWithOneProp());
+		Monitor monitor = TestSettings.create(DemoQEAs.detFreeWithOneProp());
 
 		assertEquals(monitor.step(f), WEAK_FAILURE);
 		assertEquals(monitor.step(g, 6), SUCCESS);
@@ -56,7 +58,7 @@ public class DemoPropsTest {
 
 		int f = 1;
 		int g = 2;
-		Monitor monitor = MonitorFactory.create(DemoQEAs
+		Monitor monitor = TestSettings.create(DemoQEAs
 				.detOneFreeWithOneProp());
 
 		assertEquals(monitor.step(f), WEAK_SUCCESS);
@@ -70,9 +72,7 @@ public class DemoPropsTest {
 		int a = 1;
 		int b = 2;
 		int c = 3;
-		Monitor monitor = MonitorFactory.create(DemoQEAs.makeNonDetProp());
-
-		System.err.println(monitor.getClass());
+		Monitor monitor = TestSettings.create(DemoQEAs.makeNonDetProp());
 		
 		assertEquals(monitor.step(a), WEAK_FAILURE);
 		assertEquals(monitor.step(b), WEAK_FAILURE);
@@ -85,26 +85,16 @@ public class DemoPropsTest {
 		int a = 1;
 		int b = 2;
 		int c = 3;
-		Monitor monitor = MonitorFactory.create(DemoQEAs
+		Monitor monitor = TestSettings.create(DemoQEAs
 				.makeSimulateQuantification());
 
-		Object o1 = new Object() {
-			@Override
-			public String toString() {
-				return "o1";
-			}
-		};
-		Object o2 = new Object() {
-			@Override
-			public String toString() {
-				return "o2";
-			}
-		};
+		Object o1 = TestSettings.object("o1");
+		Object o2 = TestSettings.object("o2");
 
 		assertEquals(monitor.step(a, o1), WEAK_FAILURE);
 		assertEquals(monitor.step(a, o2), WEAK_FAILURE);
 		assertEquals(monitor.step(b, o1), WEAK_FAILURE);
-		assertEquals(monitor.step(b, o2), WEAK_FAILURE);
+		assertEquals(monitor.step(b, o2), WEAK_FAILURE);		
 		assertEquals(monitor.step(b, o1), SUCCESS);
 	}
 
@@ -114,7 +104,7 @@ public class DemoPropsTest {
 		int f = 1;
 		int g = 2;
 		int h = 3;
-		Monitor monitor = MonitorFactory.create(DemoQEAs
+		Monitor monitor = TestSettings.create(DemoQEAs
 				.detSingleNonFixedWithProp());
 
 		//System.err.println(monitor.getClass());
@@ -130,11 +120,11 @@ public class DemoPropsTest {
 
 	@Test
 	public void test_seven() {
-
+		
 		int f = 1;
 		int g = 2;
 		int h = 3;
-		Monitor monitor = MonitorFactory
+		Monitor monitor = TestSettings
 				.create(DemoQEAs.detSingleWithPropNoF());
 
 		Object x = new Object();

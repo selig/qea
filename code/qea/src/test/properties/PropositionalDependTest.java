@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import properties.simple.DemoQEAs;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class PropositionalDependTest {
 
@@ -21,7 +22,7 @@ public class PropositionalDependTest {
 
 	@Before
 	public void setup() {
-		monitor = MonitorFactory.create(qea);
+		monitor = TestSettings.create(qea);
 	}
 
 	/*
@@ -31,11 +32,11 @@ public class PropositionalDependTest {
 	public void test_one() {
 
 		assertEquals(monitor.step(e, 5), WEAK_FAILURE);
-		System.out.println(monitor);
+		//System.out.println(monitor);
 		assertEquals(monitor.step(f, 4), WEAK_FAILURE);
-		System.out.println(monitor);
+		//System.out.println(monitor);
 		assertEquals(monitor.step(f, 6), SUCCESS);
-		System.out.println(monitor);
+		//System.out.println(monitor);
 	}
 
 }
