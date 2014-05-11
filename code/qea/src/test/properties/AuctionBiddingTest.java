@@ -1,9 +1,7 @@
 package test.properties;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.WEAK_FAILURE;
-import static structure.impl.other.Verdict.WEAK_SUCCESS;
-import monitoring.impl.MonitorFactory;
+import static structure.impl.other.Verdict.*;
 import monitoring.intf.Monitor;
 
 import org.junit.Before;
@@ -12,6 +10,7 @@ import org.junit.Test;
 import properties.papers.AuctionBiddingNDQEA;
 import properties.papers.AuctionBiddingQEA;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class AuctionBiddingTest {
 
@@ -24,8 +23,8 @@ public class AuctionBiddingTest {
 
 	@Before
 	public void setup() {
-		monitorD = MonitorFactory.create(qeaD);
-		monitorND = MonitorFactory.create(qeaND);
+		monitorD = TestSettings.create(qeaD);
+		monitorND = TestSettings.create(qeaND);
 	}
 
 	@Test
@@ -57,7 +56,7 @@ public class AuctionBiddingTest {
 
 		assertEquals(monitorD.step(BID, i, 5), WEAK_SUCCESS);
 		assertEquals(monitorD.step(BID, i, 6), WEAK_SUCCESS);
-		assertEquals(monitorD.step(BID, i, 5), WEAK_FAILURE);
+		assertEquals(monitorD.step(BID, i, 5), FAILURE);
 
 	}
 
@@ -68,7 +67,7 @@ public class AuctionBiddingTest {
 
 		assertEquals(monitorND.step(BID, i, 5), WEAK_SUCCESS);
 		assertEquals(monitorND.step(BID, i, 6), WEAK_SUCCESS);
-		assertEquals(monitorND.step(BID, i, 5), WEAK_FAILURE);
+		assertEquals(monitorND.step(BID, i, 5), FAILURE);
 
 	}
 

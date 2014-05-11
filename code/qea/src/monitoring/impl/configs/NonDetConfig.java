@@ -33,7 +33,7 @@ public class NonDetConfig implements Configuration {
 		bindings[0] = binding;
 	}
 
-	private NonDetConfig(int[] states, Binding[] bindings) {
+	public NonDetConfig(int[] states, Binding[] bindings) {
 		this.states = states;
 		this.bindings = bindings;
 	}

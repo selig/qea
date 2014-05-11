@@ -6,6 +6,7 @@ import structure.impl.other.Quantification;
 import structure.impl.other.Transition;
 import structure.intf.Binding;
 import structure.intf.Guard;
+import structure.intf.QEA_nondet_free;
 import util.ArrayUtil;
 
 /**
@@ -23,7 +24,7 @@ import util.ArrayUtil;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
+public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements QEA_nondet_free {
 
 	private final QEAType qeaType = QEAType.QVAR01_FVAR_NONDET_QEA;
 
@@ -132,8 +133,10 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 			// If the event is not defined for the unique start state, return
 			// the failing state with an empty binding
 			if (transitions == null) {
-				config.setState(0, 0);
-				config.getBindings()[0].setEmpty();
+				if(!skipStates[config.getStates()[0]]){
+					config.setState(0, 0);
+					config.getBindings()[0].setEmpty();
+				}
 				return config;
 			}
 
@@ -168,12 +171,13 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 		updateBinding(binding, args, transition);
 
 		// If there is a guard and is not satisfied, rollback the binding and
-		// return the failing state
+		// return the failing state (if not skip)
 		if (transition.getGuard() != null) {
 			Guard guard = transition.getGuard();
 			if (isQVarValue && !guard.check(binding, -1, qVarValue)
 					|| !isQVarValue && !guard.check(binding)) {
-				config.setState(0, 0); // Failing state
+				if(!skipStates[config.getStates()[0]]) 
+					config.setState(0, 0); // Failing state
 				return config;
 			}
 		}
@@ -199,7 +203,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 		// Initialise end states count
 		int endStatesCount = 0;
-
+	
 		// Iterate over the transitions
 		for (Transition transition : transitions) {
 
@@ -235,11 +239,15 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 
 		if (endStatesCount == 0) { // All end states are failing
 
-			// Set failing state, leave binding as it is
-			config.setState(0, 0);
+			// Set failing state if not skip
+			//leave binding as it is			
+			if(!skipStates[config.getStates()[0]])
+				config.setState(0, 0);
 			return config;
 		}
 
+		//TODO - check for repetitions?
+		
 		config.setStates(ArrayUtil.resize(endStates, endStatesCount));
 		config.setBindings(ArrayUtil.resize(bindings, endStatesCount));
 
@@ -269,7 +277,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 							transitions[i][0].getVariableNames().length);
 					argsNumberChecked = true;
 				}
-			}
+			}else if(skipStates[startStates[i]]) maxEndStates++;
 		}
 
 		// If the event is not defined for any of the current start states,
@@ -290,6 +298,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 		// Iterate over the transitions
 		for (int i = 0; i < transitions.length; i++) {
 			if (transitions[i] != null) {
+				boolean taken_transition=false;
 				for (Transition transition : transitions[i]) {
 
 					// Check the transition matches the value of the QVar
@@ -329,8 +338,24 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 							bindings[endStatesCount] = binding;
 
 							endStatesCount++;
-						}
+							taken_transition=true;
+						}						
 					}
+				}
+				if(!taken_transition){
+						if(skipStates[startStates[i]]){
+							endStates[endStatesCount] = startStates[i];
+							bindings[endStatesCount] =  (FBindingImpl) config
+									.getBindings()[i].copy();;
+							endStatesCount++;
+						}
+				}
+			}else{
+				if(skipStates[startStates[i]]){
+					endStates[endStatesCount] = startStates[i];
+					bindings[endStatesCount] =  (FBindingImpl) config
+							.getBindings()[i].copy();;
+					endStatesCount++;
 				}
 			}
 		}
@@ -415,5 +440,10 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA {
 	@Override
 	public QEAType getQEAType() {
 		return qeaType;
+	}
+
+	@Override
+	public Transition[][][] getDelta() {
+		return delta;
 	}
 }

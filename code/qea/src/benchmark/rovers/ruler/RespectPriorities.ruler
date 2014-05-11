@@ -1,0 +1,31 @@
+ruler RespectPriorities{
+  observes
+    priority(obj,obj),
+    request(obj), grant(obj), 
+    cancel(obj), rescind(obj), blank;
+
+  always Start(){ 
+    priority(x:obj,y:obj) 
+         -> P(x,y);
+    grant(x:obj) -> G(x);
+  }  
+  state P(x:obj,y:obj){ blank -> Ok;}
+  always G(x:obj){
+    cancel(x) -> !G(x);
+    request(y:obj), P(y,x)
+    {:
+      P(z:obj,y),G(z) -> Ok;
+      default -> Res(x,y);
+    :}
+  }
+  state Res(x:obj,y:obj){
+   rescind(x) -> Ok;  
+   grant(y) -> Fail;
+  }
+  initials Start;
+}
+
+monitor{
+  uses M : RespectPriorities;
+  run M .
+}

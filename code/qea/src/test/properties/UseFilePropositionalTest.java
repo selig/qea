@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import properties.papers.UseFilePropositionalQEA;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class UseFilePropositionalTest {
 
@@ -25,7 +26,7 @@ public class UseFilePropositionalTest {
 
 	@Before
 	public void setup() {
-		monitor = MonitorFactory.create(qea);
+		monitor = TestSettings.create(qea);
 	}
 
 	@Test
@@ -44,18 +45,18 @@ public class UseFilePropositionalTest {
 		// if considered propositionally
 
 		assertEquals(monitor.step(OPEN), WEAK_FAILURE);
-		assertEquals(monitor.step(OPEN), WEAK_FAILURE); // failure happens here
+		assertEquals(monitor.step(OPEN), FAILURE); // failure happens here
 														// - two opens
-		assertEquals(monitor.step(USE), WEAK_FAILURE);
-		assertEquals(monitor.step(CLOSE), WEAK_FAILURE);
-		assertEquals(monitor.step(USE), WEAK_FAILURE);
-		assertEquals(monitor.step(OPEN), WEAK_FAILURE);
-		assertEquals(monitor.step(USE), WEAK_FAILURE);
-		assertEquals(monitor.step(CLOSE), WEAK_FAILURE);
-		assertEquals(monitor.step(CLOSE), WEAK_FAILURE);
-		assertEquals(monitor.step(OPEN), WEAK_FAILURE);
-		assertEquals(monitor.step(USE), WEAK_FAILURE);
-		assertEquals(monitor.step(CLOSE), WEAK_FAILURE);
+		assertEquals(monitor.step(USE), FAILURE);
+		assertEquals(monitor.step(CLOSE), FAILURE);
+		assertEquals(monitor.step(USE), FAILURE);
+		assertEquals(monitor.step(OPEN), FAILURE);
+		assertEquals(monitor.step(USE), FAILURE);
+		assertEquals(monitor.step(CLOSE), FAILURE);
+		assertEquals(monitor.step(CLOSE), FAILURE);
+		assertEquals(monitor.step(OPEN), FAILURE);
+		assertEquals(monitor.step(USE), FAILURE);
+		assertEquals(monitor.step(CLOSE), FAILURE);
 		assertEquals(monitor.end(), FAILURE);
 	}
 
@@ -64,7 +65,7 @@ public class UseFilePropositionalTest {
 		// Test incorrect behaviour
 		// use before opening
 
-		assertEquals(monitor.step(USE), WEAK_FAILURE);
+		assertEquals(monitor.step(USE), FAILURE);
 		assertEquals(monitor.end(), FAILURE);
 	}
 
@@ -84,11 +85,11 @@ public class UseFilePropositionalTest {
 		// Test incorrect behaviour
 		// close twice
 		Object f = new Object();
-
+		
 		assertEquals(monitor.step(OPEN), WEAK_FAILURE);
 		assertEquals(monitor.step(USE), WEAK_FAILURE);
 		assertEquals(monitor.step(CLOSE), WEAK_SUCCESS);
-		assertEquals(monitor.step(CLOSE), WEAK_FAILURE);
+		assertEquals(monitor.step(CLOSE), FAILURE);
 		assertEquals(monitor.end(), FAILURE);
 	}
 

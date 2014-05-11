@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import properties.simple.SampleNonDetQEA;
 import structure.intf.QEA;
+import test.TestSettings;
 
 public class SampleNonDetTest {
 
@@ -26,7 +27,7 @@ public class SampleNonDetTest {
 
 	@Before
 	public void setup() {
-		monitor = MonitorFactory.create(qea);
+		monitor = TestSettings.create(qea);
 	}
 
 	private void printMonitor() {
@@ -37,11 +38,11 @@ public class SampleNonDetTest {
 	public void test_one() {
 		// Test reach state 3
 		Object x = new Object();
-		printMonitor();
+		//printMonitor();
 		assertEquals(monitor.step(a, x), WEAK_FAILURE);
-		printMonitor();
+		//printMonitor();
 		assertEquals(monitor.step(c, x), WEAK_SUCCESS);
-		printMonitor();
+		//printMonitor();
 	}
 
 	@Test

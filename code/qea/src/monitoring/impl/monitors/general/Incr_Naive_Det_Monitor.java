@@ -6,58 +6,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import monitoring.impl.GarbageMode;
-import monitoring.impl.IncrementalMonitor;
-import monitoring.impl.RestartMode;
 import monitoring.impl.configs.DetConfig;
 import structure.impl.other.QBindingImpl;
-import structure.impl.other.Verdict;
-import structure.impl.qeas.QVarN_FVar_Det_QEA;
+import structure.impl.qeas.QVarN_Det_QEA;
+import exceptions.NotRelevantException;
 
-public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QEA>  {
+public class Incr_Naive_Det_Monitor extends Abstr_Incr_Naive_QEAMonitor<QVarN_Det_QEA>  {
 
 	private final HashMap<QBindingImpl,DetConfig> mapping = new HashMap<QBindingImpl,DetConfig>();
 	private final TreeSet<QBindingImpl> B = new TreeSet<QBindingImpl>(new QBindingImpl.QBindingImplComparator());
-	private final QBindingImpl bottom;
-	private final Set<QBindingImpl> dummyEmptyBinding = new HashSet<QBindingImpl>();
-	private final Object[] emptyArgs = new Object[0];
-	
-	private final IncrementalChecker checker;
 
 	
-	
-	public Incr_Naive_Det_Monitor(QVarN_FVar_Det_QEA qea) {
-		super(RestartMode.NONE,GarbageMode.NONE,qea);
-		qea.setupMatching();
-		bottom = qea.newQBinding();
-		dummyEmptyBinding.add(bottom);
+	public Incr_Naive_Det_Monitor(QVarN_Det_QEA qea) {
+		super(qea);
+		
 		DetConfig initialConfig = new DetConfig(qea.getInitialState(),qea.newFBinding());;
 		mapping.put(bottom, initialConfig);
 		B.add(bottom);
-		checker = IncrementalChecker.make(qea.lambda);
-		if(bottom.isTotal()) checker.newBinding(qea.isStateFinal(qea.getInitialState()));
 	}
 
 	@Override
-	public Verdict step(int eventName, Object[] args) {
-		Set<QBindingImpl> qbindings = qea.makeBindings(eventName,args);
-		innerStep(eventName,qbindings,args);
-		Verdict result = checker.verdict(false);		
-		if(result.isStrong()) saved=result;
-		return result;
-	}
-
-
-	@Override
-	public Verdict step(int eventName) {
-		innerStep(eventName,dummyEmptyBinding,emptyArgs);
-		Verdict result = checker.verdict(false);		
-		if(result.isStrong()) saved=result;
-		return result;
-	}
-	
-	private void innerStep(int eventName, Set<QBindingImpl> qbindings, Object[] args) {			
-		
+	protected void innerStep(int eventName, QBindingImpl[] qbindings, Object[] args) {			
+		TreeSet<QBindingImpl> B_ = new TreeSet<QBindingImpl>(new QBindingImpl.QBindingImplComparator());
 		for(QBindingImpl b : B){
 			Set<QBindingImpl> consistent = null;
 			for(QBindingImpl other : qbindings){
@@ -70,6 +40,8 @@ public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QE
 			if(consistent!=null)
 			for(QBindingImpl b_extended : consistent){
 				
+				if(b_extended==null) System.err.println("null binding!");
+				
 				DetConfig config = mapping.get(b_extended);
 				
 				if(config==null || b.equals(b_extended)){
@@ -77,29 +49,38 @@ public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QE
 					//The qea updates the config, so we should copy if extending
 					if(config==null){
 						config = mapping.get(b).copy();
+						//shouldn't actually do this as may not be relevant
+						// but as this is efficiency issue doesn't matter in naive version.
 						mapping.put(b_extended,config);
-						B.add(b_extended);
-						checker.newBinding(qea.isStateFinal(config.getState()));
+						B_.add(b_extended);
+						if(b_extended.isTotal()){
+							checker.newBinding(b_extended,config.getState());
+						}
 					}
 					
-					boolean previous_final = qea.isStateFinal(config.getState());
-					qea.getNextConfig(b_extended, config, eventName, args);
-					
-					if(b_extended.isTotal()){
-						boolean this_final = qea.isStateFinal(config.getState());
-						checker.update(b_extended,this_final,previous_final);
+					int previous_state = config.getState();
+					try{
+						qea.getNextConfig(b_extended, config, eventName, args);
+						
+						if(b_extended.isTotal()){
+							checker.update(b_extended,previous_state, config.getState());
+						}
+					}
+					catch(NotRelevantException e){
+						if(!qea.isNormal()){
+							if(b_extended.isTotal()){								
+								checker.update(b_extended,previous_state, config.getState());
+							}
+						}
 					}
 	
 				}
 				
 			}
-		}			
+		}	
+		B.addAll(B_);
 	}
 
-	@Override
-	public Verdict end() {
-		return checker.verdict(true);
-	}
 	
 	@Override
 	public String getStatus() {
@@ -109,24 +90,6 @@ public class Incr_Naive_Det_Monitor extends IncrementalMonitor<QVarN_FVar_Det_QE
 		}
 		
 		return ret;
-	}
-
-	@Override
-	protected int removeStrongBindings() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	protected int rollbackStrongBindings() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	protected int ignoreStrongBindings() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }

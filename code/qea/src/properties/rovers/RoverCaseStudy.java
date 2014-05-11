@@ -289,19 +289,50 @@ public class RoverCaseStudy {
 		q.addAssignment(Assignment.addElementToSet(RS, R2));
 		q.endTransition(2);
 
+		q.startTransition(1);
+		q.eventName(CONFLICT);
+		q.addVarArg(R2);
+		q.addVarArg(R1);
+		q.addAssignment(Assignment.createSetFromElement(RS, R2));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(CONFLICT);
+		q.addVarArg(R2);
+		q.addVarArg(R1);
+		q.addAssignment(Assignment.addElementToSet(RS, R2));
+		q.endTransition(2);		
+		
+		// All conflicts have been given
+		
+		// We can grant and cancel
 		q.addTransition(2, GRANT, new int[] { R1 }, 3);
 		q.addTransition(3, CANCEL, new int[] { R1 }, 2);
 
-		q.startTransition(3);
-		q.eventName(GRANT);
-		q.addVarArg(R2);
-		q.addGuard(Guard.setContainsElement(R2, RS));
-		q.endTransition(4);
+		// But if whilst granted we grant a conflicted
+		// resource go to a failure state (4)
+		// We don't actually need this transition - failure
+		// will occur as we can't take the skip transition
+		// defined below
+		//q.startTransition(3);
+		//q.eventName(GRANT);
+		//q.addVarArg(R2);
+		//q.addGuard(Guard.setContainsElement(R2, RS));
+		//q.endTransition(4);
 
 		// Manual skip states
 		// q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
 		q.addTransition(1, GRANT, new int[] { R2 }, 1);
-		q.addTransition(2, GRANT, new int[] { R2 }, 2);
+		
+		// This is tricky - the skip semantics are not
+		// as straight-forward as this
+		//q.addTransition(2, GRANT, new int[] { R2 }, 2);
+		// we need r2!=r1
+		q.startTransition(2);
+		q.eventName(GRANT);
+		q.addVarArg(R2);
+		q.addGuard(Guard.isNotEqual(R1, R2));
+		q.endTransition(2);
 
 		q.startTransition(3);
 		q.eventName(GRANT);
@@ -493,6 +524,7 @@ public class RoverCaseStudy {
 		q.endTransition(10);
 
 		q.addFinalStates(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		q.setSkipStates(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 		QEA qea = q.make();
 
@@ -781,6 +813,10 @@ public class RoverCaseStudy {
 
 		QEABuilder q = new QEABuilder("ExistsLeader");
 
+		//System.err.println("*********************");
+		//System.err.println("WARNING: Not Normal - not sure if monitors work for this");
+		//System.err.println("*********************");
+		
 		// Events
 		int PING = 1;
 		int ACK = 2;
@@ -791,9 +827,13 @@ public class RoverCaseStudy {
 		q.addQuantification(EXISTS, R1);
 		q.addQuantification(FORALL, R2);
 
+		
 		q.addTransition(1, PING, new int[] { R1, R2 }, 2);
 		q.addTransition(2, ACK, new int[] { R2, R1 }, 3);
 
+		// Add to alphabet
+		q.addTransition(4, PING, new int[]{ R2, R1}, 4);
+		
 		q.addFinalStates(3);
 		q.setSkipStates(1, 2, 3);
 
@@ -924,6 +964,10 @@ public class RoverCaseStudy {
 				return newBinding;
 
 			}
+			@Override
+			public int[] vars() {
+				return new int[]{M,H};
+			}			
 		});
 		q.endTransition(2);
 

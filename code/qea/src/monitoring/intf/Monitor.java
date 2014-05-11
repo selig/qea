@@ -7,6 +7,9 @@ import structure.intf.QEA;
  * Superclass for all QEA monitors. A monitor object takes an event consisting
  * of a name and, optionally, one or more arguments and produces a verdict
  * 
+ *  TODO - We should really have step methods synchronized or enforce
+ *  		a monitor lock in some ways
+ * 
  * @author Giles Reger
  * @author Helena Cuenca
  * 

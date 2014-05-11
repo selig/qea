@@ -35,5 +35,6 @@ public class AuctionBiddingQEA extends QVar1_FVar_Det_FixedQVar_QEA {
 						NEW_AMOUNT), 2));
 
 		setStatesAsFinal(1, 2);
+		setStateAsStrong(0);
 	}
 }
