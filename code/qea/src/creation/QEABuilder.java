@@ -1192,7 +1192,7 @@ public class QEABuilder {
 	}	
 	
 	// add a variable only transition
-	public void addTransition(int start, int propname, int[] vargs, int end) {
+	public void addTransition(int start, int propname, int[] vargs, Guard guard, Assignment ass, int end) {
 		TempTransition trans = new TempTransition();
 		trans.start = start;
 		trans.end = end;
@@ -1202,8 +1202,19 @@ public class QEABuilder {
 			args[i] = VarOrVal.makeVar(vargs[i]);
 		}
 		trans.event_args = args;
+		trans.g=guard;
+		trans.a=ass;
 		transitions.add(trans);
 	}
+	public void addTransition(int start, int propname, int[] vargs, int end) {
+		addTransition(start,propname,vargs,null,null,end);
+	}	
+	public void addTransition(int start, int propname, int[] vargs, Guard guard, int end) {
+		addTransition(start,propname,vargs,guard,null,end);
+	}
+	public void addTransition(int start, int propname, int[] vargs, Assignment ass, int end) {
+		addTransition(start,propname,vargs,null,ass,end);
+	}	
 
 	// incremental transition adding
 

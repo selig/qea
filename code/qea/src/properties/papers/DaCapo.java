@@ -50,6 +50,50 @@ public class DaCapo implements PropertyMaker {
 		
 		return qea;
 	}
+public static QEA makeUnsafeMapIter(){
+		
+		QEABuilder b = new QEABuilder("unsafe_map_iterator");
+		
+		int m = -1;
+		int c = -2;
+		int i = -3;
+		
+		int CREATE = 1;
+		int ITERATOR = 2;
+		int USE = 3;
+		int UPDATE = 4;
+		
+		b.addQuantification(FORALL, m);
+		b.addQuantification(FORALL, c);
+		b.addQuantification(FORALL, i);
+		
+		b.addTransition(1, CREATE, new int[]{m,c}, 2);
+		b.addTransition(2, ITERATOR, new int[]{c,i}, 3);
+		b.addTransition(3, USE, new int[]{i}, 3);
+		b.addTransition(3, UPDATE, new int[]{m}, 4);
+		b.addTransition(4, UPDATE, new int[]{m}, 4);
+		
+		//sadly these are required - hopefully
+		//  redundancy elimination will avoid creating
+		//  bindings for just c or i
+		b.addTransition(1, UPDATE, new int[]{m},1);
+		b.addTransition(2, UPDATE, new int[]{m},2);
+		b.addTransition(1, USE, new int[]{i},1);
+		b.addTransition(1, ITERATOR, new int[]{c,i},1);
+		// TODO make all skip states
+		
+		
+		b.addFinalStates(1,2,3);
+		
+		QEA qea = b.make();
+		
+		qea.record_event_name("create", CREATE);
+		qea.record_event_name("iterator", ITERATOR);
+		qea.record_event_name("use",USE);
+		qea.record_event_name("update",UPDATE);
+		
+		return qea;
+	}	
 	
 	public static QEA makeSafeIterator(){
 		QEABuilder b = new QEABuilder("safe_iterator");
