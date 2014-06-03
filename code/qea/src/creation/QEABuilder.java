@@ -504,7 +504,7 @@ public class QEABuilder {
 		QVar01_FVar_Det_QEA qea = new QVar01_FVar_Det_QEA(states,
 				events, 1, NONE, fvars);
 		for (TempTransition t : transitions) {
-			Transition trans = new Transition(t.var_args(), t.g, t.end);
+			Transition trans = new Transition(t.var_args(), t.g, t.a, t.end);
 			qea.addTransition(t.start, t.event_name, trans);
 		}
 		for(Integer s : skipstates){
