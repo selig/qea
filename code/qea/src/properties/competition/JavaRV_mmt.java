@@ -133,6 +133,7 @@ public class JavaRV_mmt implements PropertyMaker {
 		q.addTransition(2, LOCK_TRUE, new int[] { i }, 3);
 		q.addTransition(3, UNLOCK, new int[] { i }, 2);
 		q.addTransition(3, ACTION, new int[] { i }, 3);
+		// TODO Can we delete this transition?
 		q.addTransition(3, LOCK_TRUE, new int[] { j }, 4);
 
 		q.addFinalStates(1, 2, 3);
@@ -201,8 +202,8 @@ public class JavaRV_mmt implements PropertyMaker {
 			@Override
 			public Binding apply(Binding binding, boolean copy) {
 
-				int newPosVal = binding.getForcedAsInteger(newPos);
-				int newTimeVal = binding.getForcedAsInteger(newTime);
+				double newPosVal = (double) binding.getForced(newPos);
+				double newTimeVal = (double) binding.getForced(newTime);
 				Binding newBinding = binding;
 				if (copy) {
 					newBinding = binding.copy();
