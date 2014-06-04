@@ -129,7 +129,7 @@ public class JavaRV_mmt implements PropertyMaker {
 		q.addQuantification(FORALL, i);
 
 		q.addTransition(1, RUN, new int[] { i }, 2);
-		q.addTransition(1, RUN, new int[] { i }, 2);
+		q.addTransition(1, UNLOCK, new int[] { i }, 2);
 		q.addTransition(2, LOCK_TRUE, new int[] { i }, 3);
 		q.addTransition(3, UNLOCK, new int[] { i }, 2);
 		q.addTransition(3, ACTION, new int[] { i }, 3);
