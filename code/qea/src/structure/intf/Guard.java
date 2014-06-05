@@ -16,6 +16,7 @@ public abstract class Guard {
 	public abstract boolean check(Binding binding, int qvar, Object firstQval);
 
 	public abstract boolean usesQvars();
+
 	public abstract int[] vars();
 
 	public Guard replace(int var, Object val) {
@@ -48,7 +49,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				boolean val0 = (Boolean)((var0 == qvar) ? firstQval : binding
+				boolean val0 = (Boolean) ((var0 == qvar) ? firstQval : binding
 						.getForced(var0));
 				return val0;
 			}
@@ -57,11 +58,14 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0;
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{var0};}
+			public int[] vars() {
+				return new int[] { var0 };
+			}
 		};
-	}	
-	
+	}
+
 	/*
 	 * Produce a guard capturing binding(var0) == binding(var1)
 	 * 
@@ -89,8 +93,38 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{var0,var1};}
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};
+	}
+
+	public static Guard varIsEqualToIntVal(final int var, final int val) {
+		return new Guard("x_" + var + " == " + val) {
+			@Override
+			public boolean check(Binding binding) {
+				int varVal = binding.getForcedAsInteger(var);
+				return varVal == val;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				int varVal = (Integer) ((var == qvar) ? firstQval : binding
+						.getForced(var));
+				return varVal == val;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var };
+			}
 		};
 	}
 
@@ -113,11 +147,14 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0;
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{var0};}
+			public int[] vars() {
+				return new int[] { var0 };
+			}
 		};
-	}	
-	
+	}
+
 	/*
 	 * Produce a guard capturing binding(var0) != binding(var1)
 	 * 
@@ -145,8 +182,11 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{var0,var1};}			
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
 		};
 	}
 
@@ -177,8 +217,11 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{var0,var1};}			
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
 		};
 	}
 
@@ -209,8 +252,11 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{var0,var1};}			
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
 
 			/*
 			 * public Guard replace(final int var, final Object val){
@@ -222,6 +268,34 @@ public abstract class Guard {
 			 * 
 			 * @Override public boolean usesQvars() { return false; } }; }
 			 */
+		};
+	}
+
+	public static Guard varIsGreaterThanVal(final int var, final int val) {
+		return new Guard("x_" + var + " > " + val) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { var };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer varVal = (Integer) ((var == qvar) ? firstQval : binding
+						.getForced(var));
+				return varVal > val;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				int varVal = binding.getForcedAsInteger(var);
+				return varVal > val;
+			}
 		};
 	}
 
@@ -252,8 +326,11 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{var0,var1};}			
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
 		};
 	}
 
@@ -279,9 +356,10 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+
 			@Override
-			public int[] vars(){
-				return new int[]{var0,var1};
+			public int[] vars() {
+				return new int[] { var0, var1 };
 			}
 		};
 	}
@@ -292,7 +370,8 @@ public abstract class Guard {
 			public boolean check(Binding binding) {
 				Object val0 = binding.getForcedAsInteger(var0);
 				Object val1 = binding.getForcedAsInteger(var1);
-				return (System.identityHashCode(val0) < System.identityHashCode(val1));
+				return (System.identityHashCode(val0) < System
+						.identityHashCode(val1));
 			}
 
 			@Override
@@ -301,20 +380,22 @@ public abstract class Guard {
 						.getForced(var0));
 				Object val1 = (Integer) ((var1 == qvar) ? firstQval : binding
 						.getForced(var1));
-				return (System.identityHashCode(val0) < System.identityHashCode(val1));
+				return (System.identityHashCode(val0) < System
+						.identityHashCode(val1));
 			}
 
 			@Override
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+
 			@Override
-			public int[] vars(){
-				return new int[]{var0,var1};
+			public int[] vars() {
+				return new int[] { var0, var1 };
 			}
 		};
-	}	
-	
+	}
+
 	public static Guard isGreaterThanOrEqualTo(final int var0, final int var1) {
 		return new Guard("x_" + var0 + " >= x_" + var1) {
 			@Override
@@ -337,10 +418,11 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0 || var1 < 0;
 			}
+
 			@Override
-			public int[] vars(){
-				return new int[]{var0,var1};
-			}			
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
 		};
 	}
 
@@ -363,8 +445,11 @@ public abstract class Guard {
 			public boolean usesQvars() {
 				return var0 < 0;
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{var0};}			
+			public int[] vars() {
+				return new int[] { var0 };
+			}
 		};
 	}
 
@@ -380,7 +465,8 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 				Object oset = binding.getValue(varSet);
-				if(oset==null) return false;				
+				if (oset == null)
+					return false;
 				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
 						: oset);
 				Object element = (varElement == qvar) ? firstQval : binding
@@ -391,19 +477,23 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding) {
 				Object oset = binding.getValue(varSet);
-				if(oset==null) return false;
+				if (oset == null)
+					return false;
 				HashSet<Object> set = (HashSet<Object>) oset;
 				Object element = binding.getForced(varElement);
 				return set.contains(element);
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{varElement,varSet};}			
+			public int[] vars() {
+				return new int[] { varElement, varSet };
+			}
 		};
 	}
 
 	public static Guard setNotContainsElement(final int varElement,
 			final int varSet) {
-		return not(setContainsElement(varElement,varSet));
+		return not(setContainsElement(varElement, varSet));
 	}
 
 	public static Guard setContainsOnlyElement(final int varElement,
@@ -418,7 +508,8 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 				Object oset = binding.getValue(varSet);
-				if(oset==null) return false;
+				if (oset == null)
+					return false;
 				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
 						: oset);
 				Object element = (varElement == qvar) ? firstQval : binding
@@ -429,13 +520,17 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding) {
 				Object oset = binding.getValue(varSet);
-				if(oset==null) return false;
+				if (oset == null)
+					return false;
 				HashSet<Object> set = (HashSet<Object>) oset;
 				Object element = binding.getForced(varElement);
 				return set.size() == 1 && set.contains(element);
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{varElement,varSet};}				
+			public int[] vars() {
+				return new int[] { varElement, varSet };
+			}
 		};
 	}
 
@@ -452,7 +547,8 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 				Object oset = binding.getValue(varSet);
-				if(oset==null) return false;
+				if (oset == null)
+					return false;
 				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
 						: oset);
 				Object element = (varElement == qvar) ? firstQval : binding
@@ -463,18 +559,22 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding) {
 				Object oset = binding.getValue(varSet);
-				if(oset==null) return false;
+				if (oset == null)
+					return false;
 				HashSet<Object> set = (HashSet<Object>) oset;
 				Object element = binding.getForced(varElement);
 				return set.size() > 1 && set.contains(element);
 			}
+
 			@Override
-			public int[] vars(){ return new int[]{varElement,varSet};}				
+			public int[] vars() {
+				return new int[] { varElement, varSet };
+			}
 		};
 	}
-	
-	public static Guard and(final Guard g1, final Guard g2){ 
-		return new Guard(g1+" and "+g2){
+
+	public static Guard and(final Guard g1, final Guard g2) {
+		return new Guard(g1 + " and " + g2) {
 
 			@Override
 			public boolean check(Binding binding) {
@@ -483,7 +583,8 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object qval) {
-				return g1.check(binding,qvar,qval) && g2.check(binding,qvar,qval);
+				return g1.check(binding, qvar, qval)
+						&& g2.check(binding, qvar, qval);
 			}
 
 			@Override
@@ -495,7 +596,7 @@ public abstract class Guard {
 			public int[] vars() {
 				int[] g1v = g1.vars();
 				int[] g2v = g2.vars();
-				int[] both = new int[g1v.length+g2v.length];
+				int[] both = new int[g1v.length + g2v.length];
 				// we should probably filter out duplicates
 				// but we don't yet!
 				System.arraycopy(g1v, 0, both, 0, g1v.length);
@@ -504,8 +605,9 @@ public abstract class Guard {
 			}
 		};
 	}
-	public static Guard not(final Guard g1){ 
-		return new Guard("not "+g1){
+
+	public static Guard not(final Guard g1) {
+		return new Guard("not " + g1) {
 
 			@Override
 			public boolean check(Binding binding) {
@@ -514,7 +616,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object qval) {
-				return !g1.check(binding,qvar,qval);
+				return !g1.check(binding, qvar, qval);
 			}
 
 			@Override
@@ -527,6 +629,6 @@ public abstract class Guard {
 				return g1.vars();
 			}
 		};
-	}	
-	
+	}
+
 }
