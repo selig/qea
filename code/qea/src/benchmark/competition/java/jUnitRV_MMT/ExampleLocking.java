@@ -11,6 +11,7 @@ import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 import properties.Property;
 import properties.competition.JavaRV_mmt;
+import structure.impl.other.Verdict;
 import structure.intf.QEA;
 
 // Java - Team3 - Bench3
@@ -48,10 +49,9 @@ public class ExampleLocking implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println(this.id + " " + monitor.step(RUN, this.id));
+		System.out.println(this.id + " " + check(RUN, this.id));
 		for (int i = 0; i < 1000;) {
-			if (lock()) {
-				System.out.println(this.id + " " + monitor.step(LOCK_TRUE, this.id));
+			if (lock()) {				
 				try {
 					action();
 					Thread.sleep(5);
@@ -65,23 +65,43 @@ public class ExampleLocking implements Runnable {
 	}
 
 	public boolean lock() {
-		return lock.tryLock();
+		boolean result = false;
+		synchronized(lock){
+			result = lock.tryLock();
+			if(result) System.out.println(this.id + " " + check(LOCK_TRUE, this.id));
+		}		
+		return result;
 	}
 
 	public void action() {
-		System.out.println(id);
-		System.out.println(this.id + " " + monitor.step(ACTION, this.id));
+		//System.out.println(id);
+		System.out.println(this.id + " " + check(ACTION, this.id));
 	}
 
 	public void unlock() {
-		lock.unlock();
-		System.out.println(this.id + " " + monitor.step(UNLOCK, this.id));
+		synchronized(lock){
+			System.out.println(this.id + " " + check(UNLOCK, this.id));
+			lock.unlock();		
+		}
 	}
 
 	private static final Lock lock = new ReentrantLock();
 
 	private final int id;
 
+	private static Verdict check(int action, int id){
+		Verdict v = null;
+		synchronized(monitor){
+			v = monitor.step(action,id);
+			//System.out.println(monitor);
+		}
+		if(v == Verdict.FAILURE){
+			System.err.println("We failed");
+			System.exit(0);
+		}
+		return v;
+	}
+	
 	public static void setUpQEAMonitoring() {
 		qea = new JavaRV_mmt().make(Property.JAVARV_MMT_THREE);
 		monitor = MonitorFactory.create(qea);

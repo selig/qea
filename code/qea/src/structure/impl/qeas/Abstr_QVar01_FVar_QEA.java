@@ -217,6 +217,26 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 		return negatedQuantification;
 	}	
 
+	/*
+	 * Checks that a transition and a set of arguments would not produce a binding
+	 * that clashes with a quantified variable
+	 */
+	protected boolean qVarMatchesBinding(Object qVarValue, Object[] args,
+			Transition transition) {
+
+		for (int i = 0; i < args.length; i++) {
+			if (transition.getVariableNames()[i] < 0) {
+				if (args[i] == qVarValue) {
+					return true;
+				}
+				return false;
+			}
+		}
+
+		// There's no quantified variable
+		return true;
+	}	
+	
 	/**
 	 * Checks if the specified numbers are equal. In case they are not, throws a
 	 * <code>ShouldNotHappenException</code> exception

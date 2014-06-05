@@ -165,7 +165,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements QEA
 	private NonDetConfig getNextConfig1StartState1Transition(
 			NonDetConfig config, Object[] args, Transition transition,
 			Object qVarValue, boolean isQVarValue) {
-
+		
 		// Update binding for free variables
 		Binding binding = config.getBindings()[0];
 		updateBinding(binding, args, transition);
@@ -373,21 +373,6 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements QEA
 		return config;
 	}
 
-	private boolean qVarMatchesBinding(Object qVarValue, Object[] args,
-			Transition transition) {
-
-		for (int i = 0; i < args.length; i++) {
-			if (transition.getVariableNames()[i] < 0) {
-				if (args[i] == qVarValue) {
-					return true;
-				}
-				return false;
-			}
-		}
-
-		// There's no quantified variable
-		return true;
-	}
 
 	/**
 	 * Determines if the set of states in the specified configuration contains
