@@ -1,5 +1,6 @@
 package monitoring.impl.monitors;
 
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -142,6 +143,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
+		//System.out.println(">>>"+eventName+Arrays.toString(args));
+		
 		if(saved!=null){
 			if(!restart()) return saved;
 		}		
@@ -150,6 +153,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 
 		if (onlyFVarSignature[eventName]) {
 
+			//System.out.println(">>>"+eventName+" has onlyFVar signature");
+			
 			// Update propositional configuration
 			emptyBindingConfig = qea.getNextConfig(emptyBindingConfig,
 					eventName, args, null, false);

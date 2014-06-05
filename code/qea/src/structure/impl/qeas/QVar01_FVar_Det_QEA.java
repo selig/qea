@@ -110,6 +110,11 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements QEA_de
 
 		Binding binding = config.getBinding();
 
+		if(!qVarMatchesBinding(qVarValue,args,transition)){
+			// We did not actually match
+			return config;
+		}
+		
 		// Update binding for free variables
 		updateBinding(binding, args, transition);
 

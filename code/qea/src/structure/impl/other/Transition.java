@@ -44,7 +44,7 @@ public class Transition {
 		String res = Arrays.toString(variableNames);
 		if(guard!=null) res+="-"+guard;
 		if(assignment!=null) res+="-"+assignment;
-		return res+"-"+endState;
+		return res+"->"+endState;
 	}
 	
 	public Transition(int varName, int endState) {
