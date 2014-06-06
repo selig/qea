@@ -133,26 +133,29 @@ public class JavaRV_mmt implements PropertyMaker {
 		q.addTransition(2, LOCK_TRUE, new int[] { i }, 3);
 		q.addTransition(3, UNLOCK, new int[] { i }, 2);
 		q.addTransition(3, ACTION, new int[] { i }, 3);
-		
-		// This transition is required to capture the second requirement of the spec
-		// i.e. A call to lock only returns true, if no thread is currently holding the lock.
-		// This is achieved by ensuring that when the lock is held by thread i there does
-		// not exist another thread j that succesfully takes the lock
+
+		// This transition is required to capture the second requirement of the
+		// spec i.e. A call to lock only returns true, if no thread is currently
+		// holding the lock.
+		// This is achieved by ensuring that when the lock is held by thread i
+		// there does not exist another thread j that succesfully takes the lock
 		q.addTransition(3, LOCK_TRUE, new int[] { j }, 4);
 
 		// As we have added LOCK_TRUE (j) to the alphabet our next states may
-		// now cause errors on state 2, one option is to add a looping transition
-		//q.addTransition(2, LOCK_TRUE, new int[]{ j },Guard.isNotEqual(i, j),2);
-		// however, my preference is to make it a skip state
+		// now cause errors on state 2, one option is to add a looping
+		// transition q.addTransition(2, LOCK_TRUE, new int[]{ j
+		// },Guard.isNotEqual(i, j),2); however, my preference is to make it a
+		// skip state
 		q.setSkipStates(2);
 		// But this requires us to add some failing transitions for the previous
 		// implicit transitions given by the next state
-		q.addTransition(2,RUN, new int[]{i}, 4);
-		q.addTransition(2,UNLOCK, new int[]{i}, 4);
-		q.addTransition(2,ACTION, new int[]{i}, 4);
-		// Doing this with a skip state allows the monitor to remain 'deterministic'
-		// as the non-deterministic looping transition is captured by the skip behaviour
-		
+		q.addTransition(2, RUN, new int[] { i }, 4);
+		q.addTransition(2, UNLOCK, new int[] { i }, 4);
+		q.addTransition(2, ACTION, new int[] { i }, 4);
+		// Doing this with a skip state allows the monitor to remain
+		// 'deterministic' as the non-deterministic looping transition is
+		// captured by the skip behaviour
+
 		q.addFinalStates(1, 2, 3);
 
 		QEA qea = q.make();
@@ -260,8 +263,7 @@ public class JavaRV_mmt implements PropertyMaker {
 		final int r2y2 = 8;
 
 		q.addQuantification(FORALL, r1);
-		q.addQuantification(FORALL, r2);
-		// TODO How to express the condition r1 != r2?
+		q.addQuantification(FORALL, r2, Guard.isNotEqual(r1, r2));
 
 		q.addTransition(1, BLOCK_ROUTE,
 				new int[] { r1, r1x1, r1y1, r1x2, r1y2 }, 2);
