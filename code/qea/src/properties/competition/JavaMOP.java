@@ -15,15 +15,15 @@ public class JavaMOP implements PropertyMaker {
 	@Override
 	public QEA make(Property property) {
 		switch (property) {
-		case STEPR_ONE:
+		case JAVAMOP_ONE:
 			return makeOne();
-		case STEPR_TWO:
+		case JAVAMOP_TWO:
 			return makeTwo();
-		case STEPR_THREE:
+		case JAVAMOP_THREE:
 			return makeThree();
-		case STEPR_FOUR:
+		case JAVAMOP_FOUR:
 			return makeFour();
-		case STEPR_FIVE:
+		case JAVAMOP_FIVE:
 			return makeFive();
 		}
 		return null;

@@ -20,6 +20,13 @@ public enum Property {
 	JAVARV_MMT_FOUR,
 	JAVARV_MMT_FIVE,
 	
+	// JavaMOP properties
+	JAVAMOP_ONE,
+	JAVAMOP_TWO,
+	JAVAMOP_THREE,
+	JAVAMOP_FOUR,
+	JAVAMOP_FIVE,
+	
 	//Stepr properties
 	STEPR_ONE,
 	STEPR_TWO,
