@@ -27,6 +27,14 @@ public enum Property {
 	JAVAMOP_FOUR,
 	JAVAMOP_FIVE,
 	
+	// prm4j
+	PRM4J_ONE,
+	PRM4J_TWO,
+	PRM4J_THREE,
+	PRM4J_FOUR,
+	PRM4J_FIVE,
+	PRM4J_SIX,
+	
 	//Stepr properties
 	STEPR_ONE,
 	STEPR_TWO,
