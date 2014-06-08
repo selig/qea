@@ -13,6 +13,13 @@ public enum Property {
 	JAVARV_FOUR,
 	JAVARV_FIVE,	
 	
+	// Larva properties
+	LARVA_ONE,
+	LARVA_TWO,
+	LARVA_THREE,
+	LARVA_FOUR,
+	LARVA_FIVE,
+	
 	//JavaRV_MMT properties
 	JAVARV_MMT_ONE,
 	JAVARV_MMT_TWO,
@@ -34,6 +41,12 @@ public enum Property {
 	PRM4J_FOUR,
 	PRM4J_FIVE,
 	PRM4J_SIX,
+	
+	// QEA
+	QEA_ONE,
+	QEA_TWO,
+	QEA_THREE,
+	QEA_FOUR,
 	
 	//Stepr properties
 	STEPR_ONE,
