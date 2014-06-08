@@ -171,6 +171,7 @@ public class Prm4j implements PropertyMaker {
 
 		q.startTransition(3);
 		q.eventName(ITERATOR);
+		q.addVarArg(i);
 		q.addGuard(new Guard("!Thread.holdsLock(c)") {
 
 			@Override
@@ -195,8 +196,76 @@ public class Prm4j implements PropertyMaker {
 						"This guard needs a quantified variable to be checked");
 			}
 		});
+		q.endTransition(4);
+		
+		q.startTransition(3);
+		q.eventName(ITERATOR);
+		q.addVarArg(i);
+		q.addGuard(new Guard("Thread.holdsLock(c)") {
 
-		return null;
+			@Override
+			public int[] vars() {
+				return new int[] { c };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return true;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				// TODO How to express the condition: Thread.holdsLock(c)
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				throw new ShouldNotHappenException(
+						"This guard needs a quantified variable to be checked");
+			}
+		});
+		q.endTransition(5);
+		
+		q.startTransition(5);
+		q.eventName(USE);
+		q.addVarArg(i);
+		q.addGuard(new Guard("!Thread.holdsLock(c)") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { c };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return true;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				// TODO How to express the condition: !Thread.holdsLock(c)
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				throw new ShouldNotHappenException(
+						"This guard needs a quantified variable to be checked");
+			}
+		});
+		q.endTransition(6);
+		
+		q.addFinalStates(1,2,3,5);
+		q.setSkipStates(1,2,3,5);
+		
+		QEA qea = q.make();
+		
+		qea.record_event_name("create", 1);
+		qea.record_event_name("iterator", 2);
+		qea.record_event_name("use", 3);
+		
+		return qea;
 	}
 
 	public QEA makeFour() {
