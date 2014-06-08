@@ -22,7 +22,8 @@ import structure.intf.QEA_det_free;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements QEA_det_free {
+public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements
+		QEA_det_free {
 
 	private final QEAType qeaType = QEAType.QVAR01_FVAR_DET_QEA;
 
@@ -98,7 +99,7 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements QEA_de
 		// If the event is not defined for the current start state, return the
 		// failing state with an empty binding
 		if (transition == null) {
-			if(!skipStates[config.getState()]){
+			if (!skipStates[config.getState()]) {
 				config.setState(0);
 				config.getBinding().setEmpty();
 			}
@@ -108,13 +109,13 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements QEA_de
 		// Check number of arguments vs. number of parameters of the event
 		checkArgParamLength(args.length, transition.getVariableNames().length);
 
-		Binding binding = config.getBinding();
-
-		if(!qVarMatchesBinding(qVarValue,args,transition)){
+		if (!qVarMatchesBinding(qVarValue, args, transition)) {
 			// We did not actually match
 			return config;
 		}
-		
+
+		Binding binding = config.getBinding();
+
 		// Update binding for free variables
 		updateBinding(binding, args, transition);
 
@@ -124,8 +125,8 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements QEA_de
 			Guard guard = transition.getGuard();
 			if (isQVarValue && !guard.check(binding, -1, qVarValue)
 					|| !isQVarValue && !guard.check(binding)) {
-				
-				if(!skipStates[config.getState()])
+
+				if (!skipStates[config.getState()])
 					config.setState(0); // Failing state
 				return config;
 			}
@@ -133,7 +134,7 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements QEA_de
 
 		// If there is an assignment, execute it
 		if (transition.getAssignment() != null) {
-			config.setBinding(transition.getAssignment().apply(binding,false));
+			config.setBinding(transition.getAssignment().apply(binding, false));
 		}
 
 		// Set the end state
