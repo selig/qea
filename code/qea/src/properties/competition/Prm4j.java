@@ -34,11 +34,11 @@ public class Prm4j implements PropertyMaker {
 		}
 	}
 
-	private QEA makeOne() {
+	public QEA makeOne() {
 		return new HasNextQEA();
 	}
 
-	private QEA makeTwo() {
+	public QEA makeTwo() {
 
 		QEABuilder q = new QEABuilder("SafeSyncCollection");
 
@@ -149,7 +149,7 @@ public class Prm4j implements PropertyMaker {
 		return qea;
 	}
 
-	private QEA makeThree() {
+	public QEA makeThree() {
 
 		QEABuilder q = new QEABuilder("SafeSyncMap");
 
@@ -199,17 +199,17 @@ public class Prm4j implements PropertyMaker {
 		return null;
 	}
 
-	private QEA makeFour() {
+	public QEA makeFour() {
 		// Taken from Giles' thesis, A.16
 		return DaCapo.makeUnsafeIter();
 	}
 
-	private QEA makeFive() {
+	public QEA makeFive() {
 		// Similar to Giles' thesis A.17
 		return DaCapo.makeUnsafeMapIter();
 	}
 
-	private QEA makeSix() {
+	public QEA makeSix() {
 		// TODO Auto-generated method stub
 		return null;
 	}
