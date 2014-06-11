@@ -44,8 +44,6 @@ public class JavaRV_mmt implements PropertyMaker {
 		final int counterOld = 1;
 		final int counterNew = 2;
 
-		// TODO Should we add a guard here to specify that the counter must
-		// start in 1?
 		q.addTransition(1, STEP, new int[] { counterOld }, 2);
 
 		q.startTransition(2);
