@@ -19,6 +19,11 @@ public enum Property {
 	LARVA_THREE,
 	LARVA_FOUR,
 	LARVA_FIVE,
+	LARVA_SIX,
+	LARVA_SEVEN,
+	LARVA_EIGHT,
+	LARVA_NINE,
+	LARVA_TEN,
 	
 	//JavaRV_MMT properties
 	JAVARV_MMT_ONE,
