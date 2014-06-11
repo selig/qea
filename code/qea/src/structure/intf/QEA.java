@@ -35,7 +35,7 @@ public abstract class QEA {
 	}
 
 	/**
-	 * Retrieives the initial state
+	 * Retrieves the initial state
 	 * 
 	 * @return The initial state
 	 */
