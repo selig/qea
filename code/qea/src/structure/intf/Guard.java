@@ -225,6 +225,33 @@ public abstract class Guard {
 		};
 	}
 
+	public static Guard varIsEqualSemToVal(final int var, final Object val) {
+		return new Guard("x_" + var + " equals " + val) {
+			@Override
+			public boolean check(Binding binding) {
+				Object varVal = binding.getForced(var);
+				return varVal.equals(val);
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Object varVal = (var == qvar) ? firstQval : binding
+						.getForced(var);
+				return varVal.equals(val);
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var };
+			}
+		};
+	}
+
 	/*
 	 * Produce a guard capturing binding(var0) > binding(var1)
 	 * 
@@ -268,6 +295,34 @@ public abstract class Guard {
 			 * 
 			 * @Override public boolean usesQvars() { return false; } }; }
 			 */
+		};
+	}
+
+	public static Guard varIsLessThanVal(final int var, final int val) {
+		return new Guard("x_" + var + " < " + val) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { var };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer varVal = (Integer) ((var == qvar) ? firstQval : binding
+						.getForced(var));
+				return varVal < val;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				int varVal = binding.getForcedAsInteger(var);
+				return varVal < val;
+			}
 		};
 	}
 
