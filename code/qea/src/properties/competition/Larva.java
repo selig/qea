@@ -48,7 +48,7 @@ public class Larva implements PropertyMaker {
 		q.startTransition(1);
 		q.eventName(MAKE_GOLD_USER);
 		q.addVarArg(country);
-		q.addGuard(Guard.varIsEqualSemToVal(country, "Argentina"));
+		q.addGuard(Guard.varIsNotEqualSemToVal(country, "Argentina"));
 		q.endTransition(2);
 
 		q.addFinalStates(1);
