@@ -3,27 +3,13 @@ package benchmark.competition.java.javaMop;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
-import properties.Property;
-import properties.competition.JavaMOP;
-import structure.impl.other.Verdict;
-import structure.intf.QEA;
-
 // Java - Team4 - Bench2
 
 public class LockTest {
 
-	private static QEA qea;
-	private static Monitor monitor;
-	public static int LOCK;
-	public static int UNLOCK;
-
 	public static int sum = 0;
 
 	public static void main(String[] args) {
-		
-		setUpQEAMonitoring();
 
 		int depth = Integer.parseInt(args[0]);
 
@@ -58,23 +44,6 @@ public class LockTest {
 		System.out.println("The result is " + sum);
 
 	}
-
-	public static void setUpQEAMonitoring() {
-		qea = new JavaMOP().make(Property.JAVAMOP_TWO);
-		monitor = MonitorFactory.create(qea);
-		LOCK = qea.get_event_id("lock");
-		UNLOCK = qea.get_event_id("unlock");
-	}
-
-	public static Verdict check(int event, Object[] params) {
-		Verdict v = null;
-		synchronized (monitor) {
-			v = monitor.step(event, params);
-		}
-		System.out.println(v);
-		return v;
-	}
-
 }
 
 class CThread extends Thread {
@@ -94,26 +63,22 @@ class CThread extends Thread {
 		if (depth == 1) {
 			try {
 				lo.lock();
-				LockTest.check(LockTest.LOCK, new Object[] { tNum, lo });
 				LockTest.sum += this.tNum;
 				Thread.sleep(1000);
 			} catch (Exception e) {
 				System.err.println(e);
 			} finally {
 				lo.unlock();
-				LockTest.check(LockTest.UNLOCK, new Object[] { tNum, lo });
 			}
 		} else {
 			try {
 				depth--;
 				lo.lock();
-				LockTest.check(LockTest.LOCK, new Object[] { tNum, lo });
 				doSomething();
 			} catch (Exception e) {
 				System.err.println(e);
 			} finally {
 				lo.unlock();
-				LockTest.check(LockTest.UNLOCK, new Object[] { tNum, lo });
 			}
 		}
 
@@ -140,7 +105,6 @@ class WThread1 extends Thread {
 		if (depth == 1) {
 			try {
 				lo.lock();
-				LockTest.check(LockTest.LOCK, new Object[] { tNum, lo });
 				LockTest.sum += this.tNum;
 				System.out.println("Oops,thread " + this.tNum
 						+ " may cause deadlock!");
@@ -152,13 +116,11 @@ class WThread1 extends Thread {
 			try {
 				depth--;
 				lo.lock();
-				LockTest.check(LockTest.LOCK, new Object[] { tNum, lo });
 				doSomething();
 			} catch (Exception e) {
 				System.err.println(e);
 			} finally {
 				lo.unlock();
-				LockTest.check(LockTest.UNLOCK, new Object[] { tNum, lo });
 			}
 		}
 

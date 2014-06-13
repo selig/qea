@@ -1,25 +1,10 @@
 package benchmark.competition.java.javaMop;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
-import properties.Property;
-import properties.competition.JavaMOP;
-import structure.impl.other.Verdict;
-import structure.intf.QEA;
-
 // Java - Team4 - Bench3
 
 public class SRSTest {
 
-	private static QEA qea;
-	private static Monitor monitor;
-	public static int A;
-	public static int B;
-	public static int C;
-
 	public static void main(String[] args) {
-
-		setUpQEAMonitoring();
 
 		int times = Integer.parseInt(args[0]);
 
@@ -37,23 +22,6 @@ public class SRSTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void setUpQEAMonitoring() {
-		qea = new JavaMOP().make(Property.JAVAMOP_THREE);
-		monitor = MonitorFactory.create(qea);
-		A = qea.get_event_id("a");
-		B = qea.get_event_id("b");
-		C = qea.get_event_id("c");
-	}
-
-	public static Verdict check(int event) {
-		Verdict v = null;
-		synchronized (monitor) {
-			v = monitor.step(event);
-		}
-		System.out.println(v);
-		return v;
 	}
 }
 
@@ -101,17 +69,14 @@ class CThread2 extends Thread {
 
 	public void A() {
 		System.out.println("A()");
-		SRSTest.check(SRSTest.A);
 	}
 
 	public void B() {
 		System.out.println("B()");
-		SRSTest.check(SRSTest.B);
 	}
 
 	public void C() {
 		System.out.println("C()");
-		SRSTest.check(SRSTest.C);
 	}
 
 }
