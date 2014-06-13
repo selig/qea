@@ -226,7 +226,7 @@ public abstract class Guard {
 	}
 
 	public static Guard varIsEqualSemToVal(final int var, final Object val) {
-		return new Guard("x_" + var + " equals " + val) {
+		return new Guard("x_" + var + " == " + val) {
 			@Override
 			public boolean check(Binding binding) {
 				Object varVal = binding.getForced(var);
@@ -238,6 +238,33 @@ public abstract class Guard {
 				Object varVal = (var == qvar) ? firstQval : binding
 						.getForced(var);
 				return varVal.equals(val);
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var };
+			}
+		};
+	}
+
+	public static Guard varIsNotEqualSemToVal(final int var, final Object val) {
+		return new Guard("x_" + var + " != " + val) {
+			@Override
+			public boolean check(Binding binding) {
+				Object varVal = binding.getForced(var);
+				return !varVal.equals(val);
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Object varVal = (var == qvar) ? firstQval : binding
+						.getForced(var);
+				return !varVal.equals(val);
 			}
 
 			@Override
