@@ -10,7 +10,8 @@ import exceptions.ShouldNotHappenException;
 public abstract class Abstr_Incr_QVar1_NoFVar_QEAMonitor<Q extends Abstr_QVar01_NoFVar_QEA>
 		extends IncrementalMonitor<Q> {
 
-	public Abstr_Incr_QVar1_NoFVar_QEAMonitor(RestartMode restart, GarbageMode garbage, Q q) {
+	public Abstr_Incr_QVar1_NoFVar_QEAMonitor(RestartMode restart,
+			GarbageMode garbage, Q q) {
 		super(restart, garbage, q);
 	}
 
@@ -51,22 +52,21 @@ public abstract class Abstr_Incr_QVar1_NoFVar_QEAMonitor<Q extends Abstr_QVar01_
 
 		boolean universal = qea.isQuantificationUniversal();
 		Verdict result = null;
-		
+
 		if ((universal && allBindingsInFinalState())
-				|| (!qea.isQuantificationUniversal() && existsOneBindingInFinalState())) {
+				|| (!universal && existsOneBindingInFinalState())) {
 			if (end || (finalStrongState && !universal)) {
 				saved = Verdict.SUCCESS;
 				result = Verdict.SUCCESS;
-			}
-			else result = Verdict.WEAK_SUCCESS;
-		}
-		else if (end || (nonFinalStrongState && universal)) {
+			} else
+				result = Verdict.WEAK_SUCCESS;
+		} else if (end || (nonFinalStrongState && universal)) {
 			saved = Verdict.FAILURE;
 			result = Verdict.FAILURE;
-		}
-		else result = Verdict.WEAK_FAILURE;
-		
-		if(qea.isQuantificationNegated())
+		} else
+			result = Verdict.WEAK_FAILURE;
+
+		if (qea.isQuantificationNegated())
 			result = result.negated();
 		return result;
 	}
