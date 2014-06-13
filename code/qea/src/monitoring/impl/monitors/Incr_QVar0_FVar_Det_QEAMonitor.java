@@ -21,24 +21,27 @@ public class Incr_QVar0_FVar_Det_QEAMonitor extends
 	 */
 	private DetConfig config;
 
-	public Incr_QVar0_FVar_Det_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_FVar_Det_QEA qea) {
-		super(restart,garbage,qea);
+	public Incr_QVar0_FVar_Det_QEAMonitor(RestartMode restart,
+			GarbageMode garbage, QVar01_FVar_Det_QEA qea) {
+		super(restart, garbage, qea);
 		config = new DetConfig(qea.getInitialState(), qea.newBinding());
 	}
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
-		if(saved!=null){
-			if(!restart()) return saved;
+		if (saved != null) {
+			if (!restart())
+				return saved;
 		}
-		
+
 		// Update configuration
 		config = qea.getNextConfig(config, eventName, args, null, false);
 		return computeVerdict(false);
 	}
 
-	private static final Object[] dummyargs = new Object[]{};
+	private static final Object[] dummyargs = new Object[] {};
+
 	@Override
 	public Verdict step(int eventName) {
 		return step(eventName, dummyargs);
@@ -72,11 +75,13 @@ public class Incr_QVar0_FVar_Det_QEAMonitor extends
 
 		if (qea.isStateFinal(config.getState())) {
 			if (end || qea.isStateStrong(config.getState())) {
+				saved = Verdict.SUCCESS;
 				return Verdict.SUCCESS;
 			}
 			return Verdict.WEAK_SUCCESS;
 		} else {
 			if (end || qea.isStateStrong(config.getState())) {
+				saved = Verdict.FAILURE;
 				return Verdict.FAILURE;
 			}
 			return Verdict.WEAK_FAILURE;
@@ -90,20 +95,21 @@ public class Incr_QVar0_FVar_Det_QEAMonitor extends
 
 	@Override
 	protected int removeStrongBindings() {
-		//Not applicable to this monitor
+		// Not applicable to this monitor
 		return 0;
 	}
+
 	@Override
 	protected int ignoreStrongBindings() {
-		//Not applicable to this monitor
+		// Not applicable to this monitor
 		return 0;
-	}	
+	}
 
 	@Override
 	protected int rollbackStrongBindings() {
 		config = new DetConfig(qea.getInitialState(), qea.newBinding());
 		return 1;
-		
+
 	}
 
 }
