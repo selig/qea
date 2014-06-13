@@ -109,7 +109,7 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements
 		// Check number of arguments vs. number of parameters of the event
 		checkArgParamLength(args.length, transition.getVariableNames().length);
 
-		if (!qVarMatchesBinding(qVarValue, args, transition)) {
+		if (isQVarValue && !qVarMatchesBinding(qVarValue, args, transition)) {
 			// We did not actually match
 			return config;
 		}
