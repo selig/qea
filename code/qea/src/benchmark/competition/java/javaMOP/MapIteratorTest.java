@@ -1,4 +1,4 @@
-package benchmark.competition.java.javaMop;
+package benchmark.competition.java.javaMOP;
 
 import java.util.HashMap;
 import java.util.Iterator;
