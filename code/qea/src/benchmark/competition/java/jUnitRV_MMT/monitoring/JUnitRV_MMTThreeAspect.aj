@@ -22,7 +22,7 @@ public aspect JUnitRV_MMTThreeAspect {
 		monitor = MonitorFactory.create(qea);
 	}
 
-	pointcut run(ExampleLocking t) : call(void *.run())
+	pointcut run(ExampleLocking t) : execution(void ExampleLocking.run())
 		&& target(t);
 
 	pointcut lockEvent(ExampleLocking t) : call(boolean ExampleLocking.lock())
