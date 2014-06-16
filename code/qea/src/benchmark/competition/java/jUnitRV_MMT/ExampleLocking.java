@@ -1,3 +1,5 @@
+package benchmark.competition.java.jUnitRV_MMT;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,5 +61,9 @@ public class ExampleLocking implements Runnable {
 	private static final Lock lock = new ReentrantLock();
 
 	private final int id;
+
+	public int getId() {
+		return id;
+	}
 
 }
