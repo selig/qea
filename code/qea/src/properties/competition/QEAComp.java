@@ -1,6 +1,9 @@
 package properties.competition;
 
 import static structure.impl.other.Quantification.FORALL;
+
+import java.util.Collection;
+
 import properties.Property;
 import properties.PropertyMaker;
 import properties.papers.HasNextQEA;
@@ -39,18 +42,17 @@ public class QEAComp implements PropertyMaker {
 		int ITERATOR = 1;
 		int NEXT = 2;
 
-		final int c = -1;
-		final int i = -2;
+		final int i = -1;
 		final int s = 1;
+		final int c = 2;
 
-		q.addQuantification(FORALL, c);
 		q.addQuantification(FORALL, i);
 
 		q.startTransition(1);
 		q.eventName(ITERATOR);
 		q.addVarArg(c);
 		q.addVarArg(i);
-		q.addAssignment(new Assignment("s = c.size()") {
+		q.addAssignment(new Assignment("x_" + s + " = x_ " + c + ".size()") {
 
 			@Override
 			public int[] vars() {
@@ -59,8 +61,10 @@ public class QEAComp implements PropertyMaker {
 
 			@Override
 			public Binding apply(Binding binding, boolean copy) {
-				// TODO We need the value of the qVar c here!
-				return null;
+				Collection cVal = (Collection) binding.getForced(c);
+				Binding result = copy ? binding.copy() : binding;
+				result.setValue(s, cVal.size());
+				return result;
 			}
 		});
 		q.endTransition(2);
