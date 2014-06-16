@@ -380,6 +380,34 @@ public abstract class Guard {
 			}
 		};
 	}
+	
+	public static Guard doubleVarIsGreaterThanOrEqualToVal(final int var, final double val) {
+		return new Guard("x_" + var + " >= " + val) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { var };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				double varVal = (double) ((var == qvar) ? firstQval : binding
+						.getForced(var));
+				return varVal >= val;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				double varVal = (double) binding.getForced(var);
+				return varVal >= val;
+			}
+		};
+	}
 
 	/*
 	 * Produce a guard capturing binding(var0) <= binding(var1)
