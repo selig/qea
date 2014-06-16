@@ -72,7 +72,6 @@ public class JavaMOP implements PropertyMaker {
 	}
 
 	public QEA makeThree() {
-		// TODO - the A^n B^n C^n one
 
 		QEABuilder q = new QEABuilder("A^n B^n C^n");
 
