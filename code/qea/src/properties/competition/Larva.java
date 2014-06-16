@@ -84,7 +84,24 @@ public class Larva implements PropertyMaker {
 	public QEA makeThree() {
 		// TODO Ask about this property! The balance is checked before or after
 		// the transaction?
-		return null;
+		QEABuilder q = new QEABuilder("NonNegativeBalance");
+
+		int TRANSACTION = 1;
+		int balance = 1;
+
+		q.startTransition(1);
+		q.eventName(TRANSACTION);
+		q.addVarArg(balance);
+		q.addGuard(Guard.doubleVarIsGreaterThanOrEqualToVal(balance, 0));
+		q.endTransition(1);
+
+		q.addFinalStates(1);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("transaction", 1);
+
+		return qea;
 	}
 
 	public QEA makeFour() {
@@ -128,8 +145,10 @@ public class Larva implements PropertyMaker {
 
 		q.addQuantification(FORALL, u);
 
+		q.addTransition(1, ACTIVATE, new int[] { u }, 1); // TODO Added
 		q.addTransition(1, WITHDRAW, new int[] { u }, 1);
 		q.addTransition(1, DISABLE, new int[] { u }, 2);
+		q.addTransition(2, DISABLE, new int[] { u }, 2); // TODO Added
 		q.addTransition(2, ACTIVATE, new int[] { u }, 1);
 
 		q.addFinalStates(1, 2);
@@ -154,6 +173,7 @@ public class Larva implements PropertyMaker {
 		int u = -1;
 
 		q.addTransition(1, TRANSFER, new int[] { u }, 1);
+		q.addTransition(1, WHITE_LIST, new int[] { u }, 1);
 		q.addTransition(1, GREY_LIST, new int[] { u }, 2);
 		q.addTransition(2, TRANSFER, new int[] { u }, 3);
 		q.addTransition(3, TRANSFER, new int[] { u }, 4);
@@ -229,9 +249,11 @@ public class Larva implements PropertyMaker {
 
 			@Override
 			public Binding apply(Binding binding, boolean copy) {
+
+				double amountVal = (double) binding.getForced(amount);
 				Binding result = copy ? binding.copy() : binding;
 				result.setValue(count, 1);
-				result.setValue(total, amount);
+				result.setValue(total, amountVal);
 				return result;
 			}
 		});
