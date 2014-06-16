@@ -24,7 +24,7 @@ import exceptions.ShouldNotHappenException;
  * 
  */
 
-public class FileMonitor {
+public class CSVFileMonitor {
 
 	private Monitor monitor;
 	private BufferedReader trace;
@@ -36,7 +36,7 @@ public class FileMonitor {
 	private int[][] expansions_int;
 	private String[][] expansions_str;
 	
-	public FileMonitor(String tracename, QEA qea) throws FileNotFoundException {
+	public CSVFileMonitor(String tracename, QEA qea) throws FileNotFoundException {
 		monitor = MonitorFactory.create(qea);
 		trace = new BufferedReader(new FileReader(tracename));
 		
@@ -164,7 +164,7 @@ public class FileMonitor {
 	//A test
 	public static void main(String[] args) throws IOException{
 		
-		FileMonitor f = new FileMonitor("traces/RespectConflicts.trace",
+		CSVFileMonitor f = new CSVFileMonitor("traces/RespectConflicts.trace",
 										RoverCaseStudy.makeRespectConflictsSingle());
 		
 		long start = System.currentTimeMillis();
