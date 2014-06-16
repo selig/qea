@@ -146,6 +146,7 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements QEA_nondet_free
 				}
 				if (guard == null || guard.check(extended_guard)) {
 					int next_state = transition.getEndState();
+					//TODO : assignment can now have qvars
 					Assignment assignment = transition.getAssignment();
 					// we've copied the binding, so the assignment doesn't
 					// need to
