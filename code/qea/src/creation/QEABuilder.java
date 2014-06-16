@@ -1080,22 +1080,7 @@ public class QEABuilder {
 	 * arguments either use a value or a quantified variable
 	 */
 	private boolean noFreeVariables() {
-		Set<Integer> qvars = new HashSet<Integer>();
-		for (Quant q : quants) {
-			qvars.add(q.var);
-		}
-
-		for (TempTransition t : transitions) {
-			if (t.event_args != null) {
-				for (int i = 0; i < t.event_args.length; i++) {
-					if (t.event_args[i].val == null
-							&& !(qvars.contains(t.event_args[i].var))) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
+		return countFreeVars() == 0;
 	}
 
 	/*
