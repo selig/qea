@@ -80,12 +80,6 @@ public class Larva implements PropertyMaker {
 
 		return qea;
 	}
-
-	public static void main(String[] args){ 
-		QEABuilder.DEBUG = true;
-		QEA qea = new Larva().makeThree(); 
-		
-	}
 	
 	public QEA makeThree() {
 		// TODO Ask about this property! The balance is checked before or after
@@ -177,6 +171,7 @@ public class Larva implements PropertyMaker {
 		int WHITE_LIST = 3;
 
 		int u = -1;
+		q.addQuantification(FORALL, u);
 
 		q.addTransition(1, TRANSFER, new int[] { u }, 1);
 		q.addTransition(1, WHITE_LIST, new int[] { u }, 1);
