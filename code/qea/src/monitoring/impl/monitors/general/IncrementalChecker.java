@@ -57,19 +57,25 @@ public abstract class IncrementalChecker {
 		if(lambda.length==0 || lambda.length==1) return new EmptyChecker(finalStates,strongStates);
 		
 		Quantification q= lambda[1].quantification;
+		Guard all_guards = lambda[1].guard;
 		
 		for(int i=2;i<lambda.length;i++){
 			if(q!=lambda[i].quantification) q=null;
+			if(lambda[i].guard!=null){
+				if(all_guards==null) all_guards=lambda[i].guard;
+				else all_guards = Guard.and(all_guards, lambda[i].guard);
+			}
 		}
 		
+		
 		if(q==FORALL) 
-			return new AllUniversalChecker(false,finalStates,strongStates,lambda[1].guard);
+			return new AllUniversalChecker(false,finalStates,strongStates,all_guards);
 		if(q==NOT_FORALL) 
-			return new AllUniversalChecker(true,finalStates,strongStates,lambda[1].guard);
+			return new AllUniversalChecker(true,finalStates,strongStates,all_guards);
 		if(q==EXISTS) 
-			return new AllExistentialChecker(false,finalStates,strongStates,lambda[1].guard);
+			return new AllExistentialChecker(false,finalStates,strongStates,all_guards);
 		if(q==NOT_EXISTS) 
-			return new AllExistentialChecker(true,finalStates,strongStates,lambda[1].guard);
+			return new AllExistentialChecker(true,finalStates,strongStates,all_guards);
 
 		if(lambda.length==3){
 			return new OneAlternationChecker(finalStates, strongStates, lambda[1], lambda[2]);
