@@ -81,6 +81,12 @@ public class Larva implements PropertyMaker {
 		return qea;
 	}
 
+	public static void main(String[] args){ 
+		QEABuilder.DEBUG = true;
+		QEA qea = new Larva().makeThree(); 
+		
+	}
+	
 	public QEA makeThree() {
 		// TODO Ask about this property! The balance is checked before or after
 		// the transaction?

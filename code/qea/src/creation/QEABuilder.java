@@ -49,7 +49,7 @@ import exceptions.ShouldNotHappenException;
 
 public class QEABuilder {
 
-	private static final boolean DEBUG = false;
+	public static boolean DEBUG = false;
 
 	/*
 	 * To create a QEA we need - a set of transitions - a set of final stats - a
@@ -1410,6 +1410,10 @@ public class QEABuilder {
 
 		for (TempTransition t : transitions) {
 			reach[t.start][t.end] = true;
+			if(t.g!=null && !skipstates.contains(t.start)){
+				// A next state with a transition using a guard can reach the failure state
+				reach[t.start][0] = true;
+			}
 			used[t.start].add(t.temp_event);
 		}
 		
@@ -1418,6 +1422,7 @@ public class QEABuilder {
 			if (used[i].size() != events.size()) {
 				// if there are unused events and this is not a skip state
 				// then we can reach the failing state
+				System.out.println("state "+i+" does not use all events");
 				if(!skipstates.contains(i)) reach[i][0] = true;
 			}
 		}
