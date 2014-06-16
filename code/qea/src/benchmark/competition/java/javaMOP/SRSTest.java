@@ -1,4 +1,4 @@
-package benchmark.competition.java.javaMop;
+package benchmark.competition.java.javaMOP;
 
 // Java - Team4 - Bench3
 

@@ -1,4 +1,4 @@
-package benchmark.competition.java.javaMop;
+package benchmark.competition.java.javaMOP;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
