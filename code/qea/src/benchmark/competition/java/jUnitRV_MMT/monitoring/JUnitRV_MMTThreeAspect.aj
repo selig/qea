@@ -1,5 +1,7 @@
 package benchmark.competition.java.jUnitRV_MMT.monitoring;
 
+import java.util.concurrent.locks.Lock;
+
 import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 import properties.Property;
@@ -22,68 +24,78 @@ public aspect JUnitRV_MMTThreeAspect {
 		monitor = MonitorFactory.create(qea);
 	}
 
-	pointcut run(ExampleLocking t) : execution(void ExampleLocking.run())
-		&& target(t);
+	pointcut run(ExampleLocking thread) : execution(void ExampleLocking.run())
+		&& target(thread);
 
-	pointcut lockEvent(ExampleLocking t) : call(boolean ExampleLocking.lock())
-		&& target(t);
+	pointcut action(ExampleLocking thread) : call(void ExampleLocking.action())
+		&& target(thread);
 
-	pointcut unlockEvent(ExampleLocking t) :
-		call(void ExampleLocking.unlock()) && target(t);
-
-	pointcut action(ExampleLocking t) : call(void ExampleLocking.action())
-		&& target(t);
-
-	before(ExampleLocking t) : run(t) {
+	before(ExampleLocking thread) : run(thread) {
 		Verdict verdict = null;
 		synchronized (monitor) {
-			verdict = monitor.step(RUN, t.getId());
+			verdict = monitor.step(RUN, thread);
 		}
 		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
 			System.err
-					.println("Violation in JUnitRV (MMT) 3. [id="
-							+ t.getId()
+					.println("Violation in JUnitRV (MMT) 3. [thread="
+							+ thread
 							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
 		}
 	};
 
-	after(ExampleLocking t) returning(boolean result) : lockEvent(t) {
+	boolean around(Lock lockObj, ExampleLocking thread) :
+			call(boolean Lock.tryLock())
+			&& cflow(call(boolean ExampleLocking.lock())) && target(lockObj)
+			&& this(thread) {
+
+		boolean result = false;
+		synchronized (lockObj) {
+			result = proceed(lockObj, thread); // TODO Not sure if this is right
+		}
 		if (result) {
 			Verdict verdict = null;
 			synchronized (monitor) {
-				verdict = monitor.step(LOCK_TRUE, t.getId());
+				verdict = monitor.step(LOCK_TRUE, thread);
 			}
 			if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
 				System.err
-						.println("Violation in JUnitRV (MMT) 3. [id="
-								+ t.getId()
+						.println("Violation in JUnitRV (MMT) 3. [thread="
+								+ thread
 								+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
 			}
+
 		}
+		return result;
 	};
 
-	before(ExampleLocking t) : unlockEvent(t) {
+	void around(Lock lockObj, ExampleLocking thread) :
+		call(void Lock.unlock()) && cflow(call(void ExampleLocking.unlock()))
+		&& target(lockObj) && this(thread) {
+
+		synchronized (lockObj) {
+			proceed(lockObj, thread); // TODO Not sure if this is right
+		}
 		Verdict verdict = null;
 		synchronized (monitor) {
-			verdict = monitor.step(UNLOCK, t.getId());
+			verdict = monitor.step(LOCK_TRUE, thread);
 		}
 		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
 			System.err
-					.println("Violation in JUnitRV (MMT) 3. [id="
-							+ t.getId()
+					.println("Violation in JUnitRV (MMT) 3. [thread="
+							+ thread
 							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
 		}
 	};
 
-	before(ExampleLocking t) : action(t) {
+	before(ExampleLocking thread) : action(thread) {
 		Verdict verdict = null;
 		synchronized (monitor) {
-			verdict = monitor.step(ACTION, t.getId());
+			verdict = monitor.step(ACTION, thread);
 		}
 		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
 			System.err
 					.println("Violation in JUnitRV (MMT) 3. [id="
-							+ t.getId()
+							+ thread
 							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
 		}
 	};
