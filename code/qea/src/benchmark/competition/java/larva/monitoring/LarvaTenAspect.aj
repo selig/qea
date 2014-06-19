@@ -31,7 +31,7 @@ public aspect LarvaTenAspect {
 		call(void UserSession.log(String)) && target(session);
 
 	before(UserSession session) : openSession(session) {
-		System.out.println(">> openSession(" + session.getOwner() + ")");
+//		System.out.println(">> openSession(" + session.getOwner() + ")");
 		Verdict verdict = monitor.step(OPEN_SESSION, session.getOwner());
 		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
 			System.err.println("Violation in Larva 10. [userId="
@@ -41,7 +41,7 @@ public aspect LarvaTenAspect {
 	};
 
 	before(UserSession session) : closeSession(session) {
-		System.out.println(">> closeSession(" + session.getOwner() + ")");
+//		System.out.println(">> closeSession(" + session.getOwner() + ")");
 		Verdict verdict = monitor.step(CLOSE_SESSION, session.getOwner());
 		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
 			System.err.println("Violation in Larva 10. [userId="
@@ -51,7 +51,7 @@ public aspect LarvaTenAspect {
 	};
 
 	before(UserSession session) : log(session) {
-		System.out.println(">> log(" + session.getOwner() + ")");
+//		System.out.println(">> log(" + session.getOwner() + ")");
 		Verdict verdict = monitor.step(LOG, session.getOwner());
 		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
 			System.err.println("Violation in Larva 10. [userId="
