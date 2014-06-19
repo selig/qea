@@ -62,8 +62,4 @@ public class ExampleLocking implements Runnable {
 
 	private final int id;
 
-	public int getId() {
-		return id;
-	}
-
 }
