@@ -1407,7 +1407,7 @@ public class QEABuilder {
 			if (used[i].size() != events.size()) {
 				// if there are unused events and this is not a skip state
 				// then we can reach the failing state
-				System.out.println("state "+i+" does not use all events");
+//				System.out.println("state "+i+" does not use all events");
 				if(!skipstates.contains(i)) reach[i][0] = true;
 			}
 		}
