@@ -49,21 +49,24 @@ public aspect JUnitRV_MMTThreeAspect {
 			&& this(thread) {
 
 		boolean result = false;
+		// We perform the lock and the monitor step as an atomic action
+		// i.e. whilst holding the lockObj, so that we cannot be interrupted
 		synchronized (lockObj) {
-			result = proceed(lockObj, thread); // TODO Not sure if this is right
-		}
-		if (result) {
-			Verdict verdict = null;
-			synchronized (monitor) {
-				verdict = monitor.step(LOCK_TRUE, thread);
+			result = proceed(lockObj, thread);		
+			if (result) {
+				Verdict verdict = null;
+				// Ordering between lockObj and monitor important
+				synchronized (monitor) {
+					verdict = monitor.step(LOCK_TRUE, thread);
+				}
+				if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+					System.err
+							.println("Violation in JUnitRV (MMT) 3. [thread="
+									+ thread
+									+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
+				}
+	
 			}
-			if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-				System.err
-						.println("Violation in JUnitRV (MMT) 3. [thread="
-								+ thread
-								+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
-			}
-
 		}
 		return result;
 	};
@@ -72,12 +75,15 @@ public aspect JUnitRV_MMTThreeAspect {
 		call(void Lock.unlock()) && cflow(call(void ExampleLocking.unlock()))
 		&& target(lockObj) && this(thread) {
 
-		synchronized (lockObj) {
-			proceed(lockObj, thread); // TODO Not sure if this is right
-		}
+		// We perform the unlock and the monitor step as an atomic action
+		// i.e. whilst holding the lockObj, so that we cannot be interrupted
 		Verdict verdict = null;
-		synchronized (monitor) {
-			verdict = monitor.step(LOCK_TRUE, thread);
+		synchronized (lockObj) {
+			proceed(lockObj, thread);	
+			// Ordering between lockObj and monitor important
+			synchronized (monitor) {
+				verdict = monitor.step(LOCK_TRUE, thread);
+			}
 		}
 		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
 			System.err
