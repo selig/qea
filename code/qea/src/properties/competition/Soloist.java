@@ -1,41 +1,676 @@
 package properties.competition;
 
+import java.util.HashSet;
+import java.util.Iterator;
+
 import properties.Property;
 import properties.PropertyMaker;
+import structure.intf.Assignment;
+import structure.intf.Binding;
+import structure.intf.Guard;
 import structure.intf.QEA;
+import creation.QEABuilder;
 
 public class Soloist implements PropertyMaker {
 
 	@Override
 	public QEA make(Property property) {
-		switch(property){
-			case SOLOIST_ONE : return makeOne();
-			case SOLOIST_TWO : return makeTwo();
-			case SOLOIST_THREE : return makeThree();
-			case SOLOIST_FOUR : return makeFour();
-			case SOLOIST_FIVE : return makeFive();
+		switch (property) {
+		case SOLOIST_ONE:
+			return makeOneSimple();
+		case SOLOIST_TWO:
+			return makeTwo();
+		case SOLOIST_THREE:
+			return makeThree();
+		case SOLOIST_FOUR:
+			return makeFour();
 		}
 		return null;
 	}
 
-	public QEA makeOne(){
-		return null;
+	public QEA makeOneNegatedLimit3() {
+
+		QEABuilder q = new QEABuilder("SOLOIST_ONE");
+
+		// TODO Make this a negated QEA
+		int WITHDRAW = 1;
+		int LOGOFF = 2;
+
+		int t1 = 1;
+		int t2 = 2;
+		int t3 = 3;
+		int t4 = 4;
+		int t = 5;
+
+		// Transitions from state 1
+
+		q.addTransition(1, WITHDRAW, new int[] { t1 }, 1);
+		q.addTransition(1, WITHDRAW, new int[] { t1 }, 2);
+
+		// Transitions from state 2
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t2);
+		q.addGuard(lessOrEqualToDiff(t1, t2, 600));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t2);
+		q.addGuard(lessOrEqualToDiff(t1, t2, 600));
+		q.endTransition(3);
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t2);
+		q.addGuard(moreThanDiff(t1, t2, 600));
+		q.endTransition(6);
+
+		// Transitions from state 3
+
+		q.startTransition(3);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t3);
+		q.addGuard(lessOrEqualToDiff(t1, t3, 600));
+		q.endTransition(3);
+
+		q.startTransition(3);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t3);
+		q.addGuard(lessOrEqualToDiff(t1, t3, 600));
+		q.endTransition(4);
+
+		q.startTransition(3);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t3);
+		q.addGuard(moreThanDiff(t1, t3, 600));
+		q.endTransition(6);
+
+		// Transitions from state 4
+
+		q.startTransition(4);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t3);
+		q.addGuard(lessOrEqualToDiff(t1, t3, 600));
+		q.endTransition(4);
+
+		q.startTransition(4);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t3);
+		q.addGuard(lessOrEqualToDiff(t1, t3, 600));
+		q.endTransition(5);
+
+		q.startTransition(4);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t3);
+		q.addGuard(moreThanDiff(t1, t3, 600));
+		q.endTransition(6);
+
+		// Transitions from state 5
+
+		q.startTransition(5);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t4);
+		q.addGuard(moreThanDiff(t1, t3, 600));
+		q.endTransition(6);
+
+		q.startTransition(5);
+		q.eventName(LOGOFF);
+		q.addVarArg(t);
+		q.addGuard(lessOrEqualToDiff(t1, t, 600));
+		q.endTransition(7);
+
+		q.addFinalStates(7);
+		q.setSkipStates(1, 2, 3, 4, 5, 6, 7);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("repwidraw", 1);
+		qea.record_event_name("recvlogoff", 2);
+
+		return qea;
 	}
-	
-	public QEA makeTwo(){
-		return null;
+
+	private static Guard lessOrEqualToDiff(final int var0, final int var1,
+			final int diff) {
+		return new Guard("x_" + var1 + " - x_" + var0 + " <= " + diff) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+
+				int var0Val = (Integer) ((var0 == qvar) ? firstQval : binding
+						.getForced(var0));
+				int var1Val = (Integer) ((var1 == qvar) ? firstQval : binding
+						.getForced(var1));
+				return var1Val - var0Val <= diff;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int var0Val = binding.getForcedAsInteger(var0);
+				int var1Val = binding.getForcedAsInteger(var1);
+				return var1Val - var0Val <= diff;
+			}
+		};
 	}
-	
-	public QEA makeThree(){
-		return null;
+
+	private static Guard moreThanDiff(final int var0, final int var1,
+			final int diff) {
+		return new Guard("x_" + var1 + " - x_" + var0 + " > " + diff) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+
+				int var0Val = (Integer) ((var0 == qvar) ? firstQval : binding
+						.getForced(var0));
+				int var1Val = (Integer) ((var1 == qvar) ? firstQval : binding
+						.getForced(var1));
+				return var1Val - var0Val > diff;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int var0Val = binding.getForcedAsInteger(var0);
+				int var1Val = binding.getForcedAsInteger(var1);
+				return var1Val - var0Val > diff;
+			}
+		};
 	}
-	
-	public QEA makeFour(){
-		return null;
+
+	public QEA makeOneNegatedLimitN() {
+
+		QEABuilder q = new QEABuilder("SOLOIST_ONE");
+
+		// TODO Make this a negated QEA
+		int WITHDRAW = 1;
+		int LOGOFF = 2;
+
+		int count = 1;
+		int t1 = 2;
+		int t2 = 3;
+		int _ = 4;
+		int t = 5;
+
+		// Max number of withdrawal operations performed within 10 minutes
+		// before logoff
+		int LIMIT = 3;
+
+		q.startTransition(1);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t1);
+		q.addAssignment(Assignment.set(count, 1));
+		q.endTransition(2);
+
+		q.addTransition(1, WITHDRAW, new int[] { _ }, 1);
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t2);
+		q.addGuard(Guard.and(lessOrEqualToDiff(t1, t2, 600),
+				Guard.varIsLessThanVal(count, LIMIT)));
+		q.addAssignment(Assignment.increment(count));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t2);
+		q.addGuard(Guard.and(lessOrEqualToDiff(t1, t2, 600),
+				Guard.varIsEqualToIntVal(count, LIMIT)));
+		q.addAssignment(Assignment.increment(count));
+		q.endTransition(3);
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t2);
+		q.addGuard(moreThanDiff(t1, t2, 600));
+		q.endTransition(4);
+
+		q.startTransition(3);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t);
+		q.addGuard(moreThanDiff(t1, t, 600));
+		q.endTransition(4);
+
+		q.startTransition(3);
+		q.eventName(LOGOFF);
+		q.addVarArg(t);
+		q.addGuard(lessOrEqualToDiff(t1, t, 600));
+		q.endTransition(5);
+
+		q.addFinalStates(5);
+		q.setSkipStates(1, 2, 3, 4, 5);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("repwidraw", 1);
+		qea.record_event_name("recvlogoff", 2);
+
+		return qea;
 	}
-	
-	public QEA makeFive(){
-		return null;
-	}	
-	
+
+	public QEA makeOneSimple() {
+
+		QEABuilder q = new QEABuilder("SOLOIST_ONE");
+
+		int WITHDRAW = 1;
+		int LOGOFF = 2;
+
+		final int t = 1;
+		final int set = 2;
+
+		// Max number of withdrawal operations performed within 10 minutes
+		// before logoff
+		final int LIMIT = 3;
+
+		q.startTransition(1);
+		q.eventName(WITHDRAW);
+		q.addVarArg(t);
+		q.addAssignment(new Assignment("x_" + set + " += x_" + t
+				+ "; remove any x_" + t + " from x_" + set
+				+ " if it was more than 10m ago") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { t, set };
+			}
+
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+
+				Binding result = copy ? binding.copy() : binding;
+				int tVal = binding.getForcedAsInteger(t);
+				HashSet<Integer> valSet;
+				if (binding.getValue(set) != null) {
+
+					valSet = (HashSet<Integer>) binding.getValue(set);
+
+					// Remove all times that were more than 10 minutes ago
+					for (Iterator iterator = valSet.iterator(); iterator
+							.hasNext();) {
+						Integer time = (Integer) iterator.next();
+						if (tVal - time > 600) {
+							valSet.remove(time);
+						}
+					}
+				} else {
+					valSet = new HashSet<Integer>();
+				}
+
+				// Add the current time to the set
+				valSet.add(tVal);
+				return result;
+			}
+		});
+		q.endTransition(1);
+
+		q.startTransition(1);
+		q.eventName(LOGOFF);
+		q.addVarArg(t);
+		q.addGuard(new Guard("size of x_" + set + " < " + LIMIT) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { set };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				HashSet setVal = (HashSet) binding.getForced(set);
+				return setVal.size() < LIMIT;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		});
+		q.endTransition(1);
+
+		q.addFinalStates(1);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("repwidraw", 1);
+		qea.record_event_name("recvlogoff", 2);
+
+		return qea;
+	}
+
+	public QEA makeTwo() {
+
+		// TODO Make this QEA negated
+
+		QEABuilder q = new QEABuilder("SOLOIST_TWO");
+
+		int INVCHECKACCESS_START = 1;
+		int INVCHECKACCESS_COMPLETE = 2;
+
+		final int t = 1;
+		final int _ = 2;
+		final int currStartTime = 3;
+		final int totalTime = 4;
+		final int execCount = 5;
+		final int wdwStartTime = 6;
+
+		q.addTransition(1, INVCHECKACCESS_START, new int[] { _ }, 1);
+
+		q.startTransition(1);
+		q.eventName(INVCHECKACCESS_START);
+		q.addVarArg(t);
+		q.addAssignment(new Assignment("x_" + currStartTime + " = x_" + t
+				+ "; x_" + totalTime + " = 0; x_" + execCount + " = 0; x_"
+				+ wdwStartTime + " = x_" + t) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { currStartTime, t, totalTime, execCount,
+						wdwStartTime };
+			}
+
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+
+				Binding result = copy ? binding.copy() : binding;
+				int tVal = binding.getForcedAsInteger(t);
+
+				result.setValue(currStartTime, tVal);
+				result.setValue(totalTime, 0);
+				result.setValue(execCount, 0);
+				result.setValue(wdwStartTime, tVal);
+
+				return result;
+			}
+		});
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(INVCHECKACCESS_COMPLETE);
+		q.addVarArg(t);
+		q.addAssignment(new Assignment("x_" + totalTime + " += x_" + t
+				+ " - x_" + currStartTime + "; x_" + execCount + "++") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { totalTime, t, currStartTime, execCount };
+			}
+
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+
+				Binding result = copy ? binding.copy() : binding;
+
+				int totalTimeVal = binding.getForcedAsInteger(totalTime);
+				int tVal = binding.getForcedAsInteger(t);
+				int currStartTimeVal = binding
+						.getForcedAsInteger(currStartTime);
+				int execCountVal = binding.getForcedAsInteger(execCount);
+
+				result.setValue(totalTime, totalTimeVal + tVal
+						- currStartTimeVal);
+				result.setValue(execCount, execCountVal + 1);
+
+				return result;
+			}
+		});
+		q.endTransition(3);
+
+		q.startTransition(2);
+		q.eventName(INVCHECKACCESS_COMPLETE);
+		q.addVarArg(t);
+		q.addGuard(new Guard("x_" + t + " - x_" + wdwStartTime
+				+ " >= 15m and (x_" + totalTime + " + (x_" + t + " - x_"
+				+ currStartTime + ")) / ((x_" + execCount + " + 1) >= 5") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { t, wdwStartTime, totalTime, currStartTime,
+						execCount };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int tVal = binding.getForcedAsInteger(t);
+				double tDoubleVal = (double) tVal;
+				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
+				double totalTimeDoubleVal = (double) binding
+						.getForcedAsInteger(totalTime);
+				double currStartTimeDoubleVal = (double) binding
+						.getForcedAsInteger(currStartTime);
+				double execCountDoubleVal = (double) binding
+						.getForcedAsInteger(execCount);
+
+				double avg = (totalTimeDoubleVal + (tDoubleVal - currStartTimeDoubleVal))
+						/ (execCountDoubleVal + 1);
+
+				return tVal - wdwStartTimeVal >= 900 && avg >= 5;
+			}
+		});
+		q.endTransition(5);
+
+		q.startTransition(2);
+		q.eventName(INVCHECKACCESS_COMPLETE);
+		q.addVarArg(t);
+		q.addGuard(new Guard("x_" + t + " - x_" + wdwStartTime + " >= 15m") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { t, wdwStartTime };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int tVal = binding.getForcedAsInteger(t);
+				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
+
+				return tVal - wdwStartTimeVal >= 900;
+			}
+		});
+		q.endTransition(4);
+
+		q.startTransition(3);
+		q.eventName(INVCHECKACCESS_START);
+		q.addVarArg(t);
+		q.addAssignment(Assignment.set(currStartTime, t));
+		q.endTransition(2);
+
+		q.startTransition(3);
+		q.eventName(INVCHECKACCESS_START);
+		q.addVarArg(t);
+		q.addGuard(new Guard("x_" + t + " - x_" + wdwStartTime
+				+ " >= 15m and x_" + totalTime + "/x_" + execCount + " >= 5") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { t, wdwStartTime, totalTime, execCount };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int tVal = binding.getForcedAsInteger(t);
+				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
+				double totalTimeDoubleVal = (double) binding
+						.getForcedAsInteger(totalTime);
+				double execCountDoubleVal = (double) binding
+						.getForcedAsInteger(execCount);
+				double avg = totalTimeDoubleVal / execCountDoubleVal;
+
+				return tVal - wdwStartTimeVal >= 900 && avg >= 5;
+			}
+		});
+		q.endTransition(5);
+
+		q.startTransition(3);
+		q.eventName(INVCHECKACCESS_START);
+		q.addVarArg(t);
+		q.addGuard(new Guard("x_" + t + " - x_" + wdwStartTime + " >= 15m") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { t, wdwStartTime };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int tVal = binding.getForcedAsInteger(t);
+				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
+				return tVal - wdwStartTimeVal >= 900;
+			}
+		});
+		q.endTransition(4);
+
+		q.addFinalStates(5);
+		q.setSkipStates(1, 2, 3, 4, 5);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("invcheckaccess_start", 1);
+		qea.record_event_name("invcheckaccess_complete", 2);
+
+		return qea;
+	}
+
+	public QEA makeThree() {
+
+		QEABuilder q = new QEABuilder("SOLOIST_THREE");
+
+		int INVCHECKACCESS_COMPLETE = 1;
+		int REPLOGON = 2;
+
+		q.addTransition(1, INVCHECKACCESS_COMPLETE, 2);
+		q.addTransition(2, REPLOGON, 1);
+		q.addTransition(2, INVCHECKACCESS_COMPLETE, 2);
+
+		q.addFinalStates(1, 2);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("invcheckaccess_complete", 1);
+		qea.record_event_name("replogon", 2);
+
+		return qea;
+	}
+
+	public QEA makeFour() {
+
+		QEABuilder q = new QEABuilder("SOLOIST_FOUR");
+
+		int INVCHECKACCESS_START = 1;
+		int INVCHECKACCESS_COMPLETE = 2;
+
+		final int t1 = 1;
+		final int t2 = 2;
+
+		q.addTransition(1, INVCHECKACCESS_START, new int[] { t1 }, 2);
+
+		q.startTransition(2);
+		q.eventName(INVCHECKACCESS_COMPLETE);
+		q.addVarArg(t2);
+		q.addGuard(new Guard("x_" + t2 + " - x_" + t1 + " <= 10") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { t1, t2 };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				int t1Val = binding.getForcedAsInteger(t1);
+				int t2Val = binding.getForcedAsInteger(t2);
+				return t2Val - t1Val <= 10;
+			}
+		});
+		q.endTransition(1);
+
+		q.addFinalStates(1);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("invcheckaccess_start", 1);
+		qea.record_event_name("invcheckaccess_complete", 2);
+
+		return qea;
+	}
 }
