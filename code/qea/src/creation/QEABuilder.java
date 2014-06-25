@@ -1352,6 +1352,8 @@ public class QEABuilder {
 
 		boolean[][] reach = computeReach(nstates);
 
+		DEBUG=true;
+		
 		if (DEBUG) {
 			System.err.println("reach:");
 			for (int i = 1; i < reach.length; i++) {
@@ -1418,7 +1420,7 @@ public class QEABuilder {
 					// for each entry in reach where start can reach middle
 					if (reach[start][middle]) {
 						// for every state end that middle can reach
-						for (int end = 1; end < (nstates + 1); end++) {
+						for (int end = 0; end < (nstates + 1); end++) {
 							if (reach[middle][end]) {
 								// set that start can reach end
 								reach[start][end] = true;
