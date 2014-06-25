@@ -11,7 +11,7 @@ public enum Property {
 	JAVARV_TWO,
 	JAVARV_THREE,
 	JAVARV_FOUR,
-	JAVARV_FIVE,	
+	JAVARV_FIVE,
 	
 	// Larva properties
 	LARVA_ONE,
@@ -65,5 +65,12 @@ public enum Property {
 	SOLOIST_TWO,
 	SOLOIST_THREE,
 	SOLOIST_FOUR,
-	SOLOIST_FIVE		
+	SOLOIST_FIVE,
+	
+	// MonPoly properties
+	MONPOLY_ONE,
+	MONPOLY_TWO,
+	MONPOLY_THREE,
+	MONPOLY_FOUR,
+	MONPOLY_FIVE
 }
