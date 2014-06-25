@@ -380,8 +380,9 @@ public abstract class Guard {
 			}
 		};
 	}
-	
-	public static Guard doubleVarIsGreaterThanOrEqualToVal(final int var, final double val) {
+
+	public static Guard doubleVarIsGreaterThanOrEqualToVal(final int var,
+			final double val) {
 		return new Guard("x_" + var + " >= " + val) {
 
 			@Override
