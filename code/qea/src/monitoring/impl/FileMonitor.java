@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Map;
 
-import monitoring.intf.Monitor;
+import monitoring.impl.translators.OfflineTranslator;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import exceptions.ShouldNotHappenException;
@@ -19,8 +19,8 @@ import exceptions.ShouldNotHappenException;
  */
 public abstract class FileMonitor {
 
-	protected Monitor monitor;
 	protected BufferedReader trace;
+	protected OfflineTranslator translator;
 
 	private int[] event_lookup;
 
@@ -28,9 +28,10 @@ public abstract class FileMonitor {
 	private int[][] expansions_int;
 	private String[][] expansions_str;
 
-	public FileMonitor(String tracename, QEA qea) throws FileNotFoundException {
+	public FileMonitor(String tracename, QEA qea, OfflineTranslator translator)
+			throws FileNotFoundException {
 
-		monitor = MonitorFactory.create(qea);
+		translator.setMonitor(MonitorFactory.create(qea));
 		trace = new BufferedReader(new FileReader(tracename));
 
 		event_lookup = new int[26];

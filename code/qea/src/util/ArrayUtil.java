@@ -29,6 +29,17 @@ public class ArrayUtil {
 		return resizedArray;
 	}
 
+	public static String[] resize(String[] array, int size) {
+		if (array.length == size) {
+			return array;
+		}
+		String[] resizedArray = new String[size];
+		int sizeToCopy = array.length < size ? array.length : size;
+		System.arraycopy(array, 0, resizedArray, 0, sizeToCopy);
+		return resizedArray;
+	}
+
+	
 	public static int[] resize(int[] array, int size) {
 		if (array.length == size) {
 			return array;

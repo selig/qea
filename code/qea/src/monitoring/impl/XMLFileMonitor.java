@@ -7,6 +7,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import monitoring.impl.translators.OfflineTranslator;
+import monitoring.impl.translators.OfflineTranslator_SOLOIST_ONE;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -15,7 +18,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import properties.Property;
-import properties.competition.Larva;
+import properties.competition.Soloist;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import util.ArrayUtil;
@@ -52,7 +55,8 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 	public static void main(String[] args) throws IOException,
 			ParserConfigurationException, SAXException {
 		XMLFileMonitor fileMonitor = new XMLFileMonitor("goldUserTrace.xml",
-				new Larva().make(Property.LARVA_ONE));
+				new Soloist().make(Property.SOLOIST_ONE),
+				new OfflineTranslator_SOLOIST_ONE());
 		System.out.println(fileMonitor.monitor());
 	}
 
@@ -107,10 +111,10 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 	 *            QEA property
 	 * @throws FileNotFoundException
 	 */
-	public XMLFileMonitor(String traceFileName, QEA qea)
-			throws FileNotFoundException {
+	public XMLFileMonitor(String traceFileName, QEA qea,
+			OfflineTranslator translator) throws FileNotFoundException {
 
-		super(traceFileName, qea);
+		super(traceFileName, qea, translator);
 		fieldNames = new String[MAX_FIELD_COUNT];
 		fieldValues = new String[MAX_FIELD_COUNT];
 	}
@@ -124,7 +128,7 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 		XMLReader xmlReader = saxParser.getXMLReader();
 		xmlReader.setContentHandler(this);
 		xmlReader.parse(new InputSource(trace));
-		return monitor.end();
+		return translator.getMonitor().end();
 	}
 
 	@Override
@@ -204,11 +208,11 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 
 	private Verdict step() {
 
-		int event = translate(eventName);
+		// int event = translate(eventName);
 		if (fieldCount == 0) {
-			return monitor.step(event);
+			return translator.translateAndStep(eventName);
 		} else {
-			return monitor.step(event,
+			return translator.translateAndStep(eventName,
 					ArrayUtil.resize(fieldValues, fieldCount));
 		}
 	}
