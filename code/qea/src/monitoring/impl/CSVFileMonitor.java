@@ -3,6 +3,7 @@ package monitoring.impl;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import monitoring.impl.translators.OfflineTranslator;
 import properties.rovers.RoverCaseStudy;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
@@ -20,9 +21,9 @@ import structure.intf.QEA;
 
 public class CSVFileMonitor extends FileMonitor {
 
-	public CSVFileMonitor(String tracename, QEA qea)
-			throws FileNotFoundException {
-		super(tracename, qea);
+	public CSVFileMonitor(String tracename, QEA qea,
+			OfflineTranslator translator) throws FileNotFoundException {
+		super(tracename, qea, translator);
 	}
 
 	@Override
@@ -42,24 +43,26 @@ public class CSVFileMonitor extends FileMonitor {
 			}
 		}
 		System.err.println(events + " events");
-		return monitor.end();
+		return translator.getMonitor().end();
 	}
 
 	private Verdict step(String line) {
 
 		String[] parts = line.split(",|=");
-		int name = translate(parts[0]);
+		// int name = translate(parts[0]);
 		if (parts.length == 3) {
-			return monitor.step(name, format(parts[2]));
+			return translator.translateAndStep(parts[0],
+					new String[] { parts[2] });
 		} else if (parts.length == 5) {
-			return monitor.step(name, format(parts[2]), format(parts[4]));
+			return translator.translateAndStep(parts[0], new String[] {
+					parts[2], parts[4] });
 		} else {
 			int noargs = (parts.length - 1) / 2;
-			Object[] args = new Object[noargs];
+			String[] args = new String[noargs];
 			for (int i = 1; i < noargs; i += 2) {
-				args[i] = format(parts[i]);
+				args[i] = parts[i];
 			}
-			return monitor.step(name, args);
+			return translator.translateAndStep(parts[0], args);
 		}
 	}
 
@@ -71,7 +74,7 @@ public class CSVFileMonitor extends FileMonitor {
 	public static void main(String[] args) throws IOException {
 
 		CSVFileMonitor f = new CSVFileMonitor("traces/RespectConflicts.trace",
-				RoverCaseStudy.makeRespectConflictsSingle());
+				RoverCaseStudy.makeRespectConflictsSingle(), null);
 
 		long start = System.currentTimeMillis();
 		System.err.println(f.monitor());
