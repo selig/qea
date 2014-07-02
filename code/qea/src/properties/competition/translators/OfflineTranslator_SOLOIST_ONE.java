@@ -1,5 +1,6 @@
-package monitoring.impl.translators;
+package properties.competition.translators;
 
+import monitoring.impl.translators.OfflineTranslator;
 import structure.impl.other.Verdict;
 
 /**
