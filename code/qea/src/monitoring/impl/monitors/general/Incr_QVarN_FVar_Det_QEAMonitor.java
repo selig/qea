@@ -43,6 +43,7 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMon
 			// - no!
 			if(binding.consistentWith(from_binding)){
 				QBindingImpl ext = binding.updateWith(from_binding);
+				//TODO - no redundancy checking here!!
 				if(!mapping.containsKey(ext)){
 					if(DEBUG) System.err.println("Adding new "+ext);
 					DetConfig next_config = config.copy();		
@@ -55,6 +56,7 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends Abstr_Incr_QVarN_FVar_QEAMon
 							checker.newBinding(ext,previous_state);
 							checker.update(ext,previous_state,next_config.getState());
 						}	
+						//TODO - how common is this exception? Exceptions are bad!
 					}catch(NotRelevantException e){
 						if(!qea.isNormal()){
 							addSupport(ext);
