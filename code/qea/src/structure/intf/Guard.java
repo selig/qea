@@ -353,6 +353,34 @@ public abstract class Guard {
 		};
 	}
 
+	public static Guard varIsLessThanOrEqualToVal(final int var, final int val) {
+		return new Guard("x_" + var + " <= " + val) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { var };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer varVal = (Integer) ((var == qvar) ? firstQval : binding
+						.getForced(var));
+				return varVal <= val;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				int varVal = binding.getForcedAsInteger(var);
+				return varVal <= val;
+			}
+		};
+	}
+
 	public static Guard varIsGreaterThanVal(final int var, final int val) {
 		return new Guard("x_" + var + " > " + val) {
 

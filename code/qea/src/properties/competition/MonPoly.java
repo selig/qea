@@ -1,8 +1,10 @@
 package properties.competition;
 
+import static structure.impl.other.Quantification.EXISTS;
 import static structure.impl.other.Quantification.FORALL;
 import properties.Property;
 import properties.PropertyMaker;
+import structure.intf.Assignment;
 import structure.intf.Binding;
 import structure.intf.Guard;
 import structure.intf.QEA;
@@ -75,13 +77,14 @@ public class MonPoly implements PropertyMaker {
 
 				int t1Val = binding.getForcedAsInteger(t1);
 				int t2Val = binding.getForcedAsInteger(t2);
-				return t2 - t1 < 432000; // TODO Check time units of timestamp
+				// Timestamp unit is second
+				return t2Val - t1Val < 432000;
 			}
 		});
 		q.endTransition(3);
 
 		q.addFinalStates(1, 3);
-		q.setSkipStates(1, 2);
+		q.setSkipStates(1);
 
 		QEA qea = q.make();
 
@@ -144,7 +147,7 @@ public class MonPoly implements PropertyMaker {
 		q.endTransition(3);
 
 		q.addFinalStates(1, 3);
-		q.setSkipStates(1, 2, 3);
+		q.setSkipStates(1, 3);
 
 		QEA qea = q.make();
 
@@ -155,18 +158,319 @@ public class MonPoly implements PropertyMaker {
 	}
 
 	public QEA makeThree() {
-		// TODO Auto-generated method stub
-		return null;
+
+		QEABuilder q = new QEABuilder("MONPOLY_THREE");
+
+		final int ACC_S = 1;
+		final int ACC_F = 2;
+		final int MGR_S = 3;
+		final int MGR_F = 4;
+		final int APPROVE = 5;
+		final int PUBLISH = 6;
+
+		final int f = -1;
+		final int a = -2;
+		final int m = 1;
+		final int ts = 2;
+		final int ts2 = 3;
+		final int M = 4;
+
+		q.addQuantification(FORALL, f);
+		q.addQuantification(FORALL, a);
+
+		q.addTransition(1, ACC_S, new int[] { a }, 2);
+
+		q.startTransition(1);
+		q.eventName(MGR_S);
+		q.addVarArg(m);
+		q.addVarArg(a);
+		q.addAssignment(Assignment.addElementToSet(M, m));
+		q.endTransition(1);
+
+		q.startTransition(1);
+		q.eventName(MGR_F);
+		q.addVarArg(m);
+		q.addVarArg(a);
+		q.addAssignment(Assignment.removeElementFromSet(M, m));
+		q.endTransition(1);
+
+		q.startTransition(1);
+		q.eventName(APPROVE);
+		q.addVarArg(m);
+		q.addVarArg(f);
+		q.addVarArg(ts);
+		q.addGuard(Guard.setContainsElement(m, M));
+		q.endTransition(1);
+
+		q.addTransition(2, ACC_F, new int[] { a }, 1);
+
+		q.startTransition(2);
+		q.eventName(MGR_S);
+		q.addVarArg(m);
+		q.addVarArg(a);
+		q.addAssignment(Assignment.addElementToSet(M, m));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(MGR_F);
+		q.addVarArg(m);
+		q.addVarArg(a);
+		q.addAssignment(Assignment.removeElementFromSet(M, m));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(APPROVE);
+		q.addVarArg(m);
+		q.addVarArg(f);
+		q.addVarArg(ts);
+		q.addGuard(Guard.setContainsElement(m, M));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(PUBLISH);
+		q.addVarArg(a);
+		q.addVarArg(f);
+		q.addVarArg(ts2);
+		q.addGuard(new Guard("x_" + ts + " exists && x_" + ts2 + " - x_" + ts
+				+ " <= 10 days") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { ts, ts2 };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				Object tsObjVal = binding.getValue(ts);
+				if (tsObjVal != null) {
+					int tsVal = (int) tsObjVal;
+					int ts2Val = binding.getForcedAsInteger(ts2);
+					// Timestamp unit is second
+					return ts2Val - tsVal <= 864000;
+				}
+				return false;
+			}
+		});
+		q.endTransition(2);
+
+		q.addFinalStates(1, 2);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("acc_S", 1);
+		qea.record_event_name("acc_F", 2);
+		qea.record_event_name("mgr_S", 3);
+		qea.record_event_name("mgr_F", 4);
+		qea.record_event_name("approve", 5);
+		qea.record_event_name("publish", 6);
+
+		return qea;
 	}
 
 	public QEA makeFour() {
-		// TODO Auto-generated method stub
-		return null;
+
+		QEABuilder q = new QEABuilder("MONPOLY_FOUR");
+
+		final int WITHDRAW = 1;
+
+		final int u = -1;
+		final int a = 1;
+		final int ts = 2;
+		final int ts2 = 3;
+		final int s = 4;
+
+		// TODO Make this QEA negated
+		q.addQuantification(EXISTS, u);
+
+		q.startTransition(1);
+		q.eventName(WITHDRAW);
+		q.addVarArg(u);
+		q.addVarArg(a);
+		q.addVarArg(ts);
+		q.addAssignment(Assignment.store(s, a));
+		q.endTransition(1);
+
+		q.startTransition(1);
+		q.eventName(WITHDRAW);
+		q.addVarArg(u);
+		q.addVarArg(a);
+		q.addVarArg(ts);
+		q.addAssignment(Assignment.store(s, a));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(u);
+		q.addVarArg(a);
+		q.addVarArg(ts2);
+		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " <= 28 days && x_"
+				+ s + " + x_" + a + " <= 10000") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { ts2, ts, s, a };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int ts2Val = binding.getForcedAsInteger(ts2);
+				int tsVal = binding.getForcedAsInteger(ts);
+				double sVal = (double) binding.getForced(s);
+				double aVal = (double) binding.getForced(a);
+
+				// Timestamp unit is second
+				return ts2Val - tsVal <= 6912000 && sVal + aVal <= 10000;
+			}
+		});
+		q.addAssignment(new Assignment("x_" + s + " += x_" + a) {
+
+			@Override
+			public int[] vars() {
+				return new int[] { s, a };
+			}
+
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+
+				double sVal = (double) binding.getForced(s);
+				double aVal = (double) binding.getForced(a);
+
+				Binding result = copy ? binding.copy() : binding;
+				result.setValue(s, sVal + aVal);
+				return result;
+			}
+		});
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(u);
+		q.addVarArg(a);
+		q.addVarArg(ts2);
+		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " <= 28 days && x_"
+				+ s + " + x_" + a + " > 10000") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { ts2, ts, s, a };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int ts2Val = binding.getForcedAsInteger(ts2);
+				int tsVal = binding.getForcedAsInteger(ts);
+				double sVal = (double) binding.getForced(s);
+				double aVal = (double) binding.getForced(a);
+
+				// Timestamp unit is second
+				return ts2Val - tsVal <= 6912000 && sVal + aVal > 10000;
+			}
+		});
+		q.endTransition(3);
+
+		q.addFinalStates(3);
+		q.setSkipStates(1, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("withdraw", 1);
+
+		return qea;
 	}
 
 	public QEA makeFive() {
-		// TODO Auto-generated method stub
-		return null;
+
+		QEABuilder q = new QEABuilder("MONPOLY_FIVE");
+
+		final int INSERT_DB2 = 1;
+		final int INSERT_DB3 = 2;
+
+		final int d = -1;
+		final int p = -2;
+		final int ts = 1;
+		final int ts2 = 2;
+
+		q.addQuantification(FORALL, d,
+				Guard.varIsNotEqualSemToVal(d, "[unknown]"));
+		q.addQuantification(FORALL, p);
+
+		q.addTransition(1, INSERT_DB2, new int[] { p, d, ts }, 2);
+
+		q.startTransition(2);
+		q.eventName(INSERT_DB3);
+		q.addVarArg(p);
+		q.addVarArg(d);
+		q.addVarArg(ts2);
+		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " <= 60") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { ts2, ts };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int tsVal = binding.getForcedAsInteger(ts);
+				int ts2Val = binding.getForcedAsInteger(ts2);
+
+				return ts2Val - tsVal <= 60;
+			}
+		});
+		q.endTransition(3);
+
+		q.addFinalStates(1, 3);
+		q.setSkipStates(1, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("insert_db2", 1);
+		qea.record_event_name("insert_db3", 2);
+
+		return qea;
 	}
 
 }
