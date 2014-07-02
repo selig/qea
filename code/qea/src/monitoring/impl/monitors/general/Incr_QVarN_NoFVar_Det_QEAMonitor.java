@@ -53,6 +53,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends Abstr_Incr_QVarN_QEAMonito
 	protected static final Object[] dummyArgs = new Object[]{};
 	@Override
 	public Verdict step(int eventName) {
+		// There are no parameters, so this event applies to all bindings
 		if(saved!=null){
 			if(!restart()) return saved;
 		}	
@@ -117,6 +118,11 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends Abstr_Incr_QVarN_QEAMonito
 		if(DEBUG) System.err.println("this_use_red: "+this_use_red);
 		
 		//Attempt extensions only if we an extensions could be nontrivial
+		//
+		// ***This is the redundancy elimination discussed in the paper
+		// TODO - is it implemented in the fvar case?
+		// TODO - does it fully reflect the redundancy elimination discussed in paper?
+		//
 		if(!this_use_red || could_leave[previous_state][eventName]){
 			QBindingImpl[] bs = qea.makeBindings(eventName, args);
 			if(DEBUG) System.err.println("bs: "+Arrays.toString(bs));

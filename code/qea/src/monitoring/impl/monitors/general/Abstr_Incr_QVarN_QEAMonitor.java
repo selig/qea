@@ -373,6 +373,11 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 	protected abstract void processBinding(int eventName, Object[] args,
 			boolean has_q_blanks, QBindingImpl binding);
 
+	/*
+	 * addSupport for binding b maps v to b in support_bindings
+	 * for all (x->v) in b.
+	 * This is for the purpose of garbage collection
+	 */
 	protected void addSupport(QBindingImpl binding){
 		if(support_bindings!=null){
 			for(int v=1;v<qvars;v++){
@@ -382,6 +387,12 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA> ext
 			}
 		}
 	}
+	/*
+	 * The purpose of add_to_maps is to consistently add a generated
+	 * binding to the support maps
+	 * 
+	 * if add if false then this acts like 'remove' from maps
+	 */
 	protected void add_to_maps(QBindingImpl ext){add_to_maps(ext,true);}
 	protected void add_to_maps(QBindingImpl ext,boolean add) {
 		int[][][] sigs = qea.getSigs();	
