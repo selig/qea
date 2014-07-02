@@ -67,6 +67,13 @@ public enum Property {
 	SOLOIST_FOUR,
 	SOLOIST_FIVE,
 	
+	// RiTHM properties
+	RITHM_ONE,
+	RITHM_TWO,
+	RITHM_THREE,
+	RITHM_FOUR,
+	RITHM_FIVE,
+	
 	// MonPoly properties
 	MONPOLY_ONE,
 	MONPOLY_TWO,
