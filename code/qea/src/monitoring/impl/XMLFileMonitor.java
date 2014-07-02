@@ -8,7 +8,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import monitoring.impl.translators.OfflineTranslator;
-import monitoring.impl.translators.OfflineTranslator_SOLOIST_ONE;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -19,6 +18,7 @@ import org.xml.sax.XMLReader;
 
 import properties.Property;
 import properties.competition.Soloist;
+import properties.competition.translators.OfflineTranslator_SOLOIST_ONE;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import util.ArrayUtil;
