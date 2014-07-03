@@ -80,18 +80,27 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 	 */
 	private Verdict computeVerdict(boolean end) {
 
+		Verdict result;
+
 		if (qea.containsFinalState(config)) {
 			if (end || finalStrongState) {
 				saved = Verdict.SUCCESS;
-				return Verdict.SUCCESS;
+				result = Verdict.SUCCESS;
+			} else {
+				result = Verdict.WEAK_SUCCESS;
 			}
-			return Verdict.WEAK_SUCCESS;
 		}
 		if (end || nonFinalStrongState) {
 			saved = Verdict.FAILURE;
-			return Verdict.FAILURE;
+			result = Verdict.FAILURE;
+		} else {
+			result = Verdict.WEAK_FAILURE;
 		}
-		return Verdict.WEAK_FAILURE;
+
+		if (qea.isNegated()) {
+			result = result.negated();
+		}
+		return result;
 	}
 
 	@Override

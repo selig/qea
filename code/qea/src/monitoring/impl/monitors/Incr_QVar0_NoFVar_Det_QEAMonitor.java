@@ -73,19 +73,28 @@ public class Incr_QVar0_NoFVar_Det_QEAMonitor extends
 	 */
 	private Verdict computeVerdict(boolean end) {
 
+		Verdict result;
+
 		if (qea.isStateFinal(config.getState())) {
 			if (end || qea.isStateStrong(config.getState())) {
 				saved = Verdict.SUCCESS;
-				return Verdict.SUCCESS;
+				result = Verdict.SUCCESS;
+			} else {
+				result = Verdict.WEAK_SUCCESS;
 			}
-			return Verdict.WEAK_SUCCESS;
 		} else {
 			if (end || qea.isStateStrong(config.getState())) {
 				saved = Verdict.FAILURE;
-				return Verdict.FAILURE;
+				result = Verdict.FAILURE;
+			} else {
+				result = Verdict.WEAK_FAILURE;
 			}
-			return Verdict.WEAK_FAILURE;
 		}
+
+		if (qea.isNegated()) {
+			result = result.negated();
+		}
+		return result;
 	}
 
 	@Override

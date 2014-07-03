@@ -10,8 +10,9 @@ import util.ArrayUtil;
 public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FVar_QEA>
 		extends IncrementalMonitor<Q> {
 
-	public Abstr_Incr_QVar1_FVar_QEAMonitor(RestartMode restart, GarbageMode garbage, Q q) {
-		super(restart, garbage,q);
+	public Abstr_Incr_QVar1_FVar_QEAMonitor(RestartMode restart,
+			GarbageMode garbage, Q q) {
+		super(restart, garbage, q);
 	}
 
 	@Override
@@ -116,24 +117,25 @@ public abstract class Abstr_Incr_QVar1_FVar_QEAMonitor<Q extends Abstr_QVar01_FV
 
 		boolean universal = qea.isQuantificationUniversal();
 		Verdict result = null;
-		
+
 		if ((universal && allBindingsInFinalState())
 				|| (!universal && existsOneBindingInFinalState())) {
 			if (end || (finalStrongState && !universal)) {
 				saved = Verdict.SUCCESS;
 				result = Verdict.SUCCESS;
+			} else {
+				result = Verdict.WEAK_SUCCESS;
 			}
-			else result = Verdict.WEAK_SUCCESS;
-		}
-		else if (end || (nonFinalStrongState && universal)) {
+		} else if (end || (nonFinalStrongState && universal)) {
 			saved = Verdict.FAILURE;
 			result = Verdict.FAILURE;
+		} else {
+			result = Verdict.WEAK_FAILURE;
 		}
-		else result = Verdict.WEAK_FAILURE;
-				
-		
-		if(qea.isQuantificationNegated())
+
+		if (qea.isNegated()) {
 			result = result.negated();
+		}
 		return result;
 	}
 

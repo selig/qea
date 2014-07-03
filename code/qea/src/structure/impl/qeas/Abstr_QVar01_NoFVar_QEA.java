@@ -16,7 +16,6 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 	protected final boolean isPropositional;
 
 	protected final boolean quantificationUniversal;
-	protected final boolean negatedQuantification;	
 
 	public Abstr_QVar01_NoFVar_QEA(int numStates, int initialState,
 			Quantification quantification) {
@@ -27,28 +26,15 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 		switch (quantification) {
 		case FORALL:
 			quantificationUniversal = true;
-			negatedQuantification = false;
 			isPropositional = false;
 			break;
-		case NOT_FORALL:
-			quantificationUniversal = true;
-			negatedQuantification = false;
-			isPropositional = false;
-			break;		
 		case EXISTS:
 			quantificationUniversal = false;
 			isPropositional = false;
-			negatedQuantification = false;			
 			break;
-		case NOT_EXISTS:
-			quantificationUniversal = false;
-			isPropositional = false;
-			negatedQuantification = true;			
-			break;			
 		case NONE:
 			quantificationUniversal = false;
 			isPropositional = true;
-			negatedQuantification = false;	
 			break;
 		default:
 			throw new ShouldNotHappenException("Unknown quantification "
@@ -56,10 +42,10 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 		}
 	}
 
-	public boolean isNormal(){
-		return (quantificationUniversal == isStateFinal(initialState)); 
-	}	
-	
+	public boolean isNormal() {
+		return (quantificationUniversal == isStateFinal(initialState));
+	}
+
 	/**
 	 * Adds the specified state to the set of skip states
 	 * 
@@ -71,7 +57,7 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 	}
 
 	/**
-	 * Adds the specified states to the set of skip statess
+	 * Adds the specified states to the set of skip states
 	 * 
 	 * @param states
 	 *            Names of states to add
@@ -80,8 +66,8 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 		for (int state : states) {
 			skipStates[state] = true;
 		}
-	}		
-	
+	}
+
 	/**
 	 * Adds the specified state to the set of final states
 	 * 
@@ -163,8 +149,8 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 	@Override
 	public boolean isStateSkip(int state) {
 		return skipStates[state];
-	}	
-	
+	}
+
 	/**
 	 * Determines if the specified state is in the set of final states
 	 * 
@@ -194,12 +180,5 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 	public boolean isQuantificationUniversal() {
 		return quantificationUniversal;
 	}
-	/**
-	 * @return <code>true</code> if the quantification for the variable of this
-	 *         QEA is negated; <code>false</code> if not
-	 */
-	public boolean isQuantificationNegated() {
-		return negatedQuantification;
-	}	
-	
+
 }
