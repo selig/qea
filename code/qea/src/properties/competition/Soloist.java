@@ -17,7 +17,7 @@ public class Soloist implements PropertyMaker {
 	public QEA make(Property property) {
 		switch (property) {
 		case SOLOIST_ONE:
-			return makeOneNegatedLimit3();
+			return makeOneSimple();
 		case SOLOIST_TWO:
 			return makeTwo();
 		case SOLOIST_THREE:
@@ -302,25 +302,26 @@ public class Soloist implements PropertyMaker {
 
 				Binding result = copy ? binding.copy() : binding;
 				int tVal = binding.getForcedAsInteger(t);
-				HashSet<Integer> valSet;
+				HashSet<Integer> setVal;
 				if (binding.getValue(set) != null) {
 
-					valSet = (HashSet<Integer>) binding.getValue(set);
+					setVal = (HashSet<Integer>) binding.getValue(set);
 
 					// Remove all times that were more than 10 minutes ago
-					for (Iterator<Integer> iterator = valSet.iterator(); iterator
+					for (Iterator iterator = setVal.iterator(); iterator
 							.hasNext();) {
 						Integer time = (Integer) iterator.next();
 						if (tVal - time > 600) {
-							valSet.remove(time);
+							iterator.remove();
 						}
 					}
 				} else {
-					valSet = new HashSet<Integer>();
+					setVal = new HashSet<Integer>();
 				}
 
 				// Add the current time to the set
-				valSet.add(tVal);
+				setVal.add(tVal);
+				result.setValue(set, setVal);
 				return result;
 			}
 		});
@@ -349,12 +350,22 @@ public class Soloist implements PropertyMaker {
 			@Override
 			public boolean check(Binding binding) {
 
+				int count = 0;
 				if (binding.getValue(set) != null) {
 					HashSet<Integer> setVal = (HashSet<Integer>) binding
 							.getValue(set);
-					return setVal.size() <= LIMIT;
+					int tVal = binding.getForcedAsInteger(t);
+
+					// Count number of elements within the last 10 minutes
+					for (Iterator iterator = setVal.iterator(); iterator
+							.hasNext();) {
+						int time = (Integer) iterator.next();
+						if (tVal - time <= 600) {
+							count++;
+						}
+					}
 				}
-				return true;
+				return count <= LIMIT;
 			}
 		});
 		q.endTransition(1);
