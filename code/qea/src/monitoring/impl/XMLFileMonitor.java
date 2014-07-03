@@ -54,7 +54,7 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 
 	public static void main(String[] args) throws IOException,
 			ParserConfigurationException, SAXException {
-		XMLFileMonitor fileMonitor = new XMLFileMonitor("goldUserTrace.xml",
+		XMLFileMonitor fileMonitor = new XMLFileMonitor("traces/Team1/B5.xml",
 				new Soloist().make(Property.SOLOIST_ONE),
 				new OfflineTranslator_SOLOIST_ONE());
 		System.out.println(fileMonitor.monitor());
@@ -94,13 +94,13 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 	 * Enumeration representing the possible stages of XML processing
 	 */
 	private enum Status {
-		INSIDE_EVENT, EXPECTING_EVENT_NAME, INSIDE_FIELD, EXPECTING_FIELD_NAME, EXPECTING_FIELD_VALUE
+		START, INSIDE_EVENT, EXPECTING_EVENT_NAME, INSIDE_FIELD, EXPECTING_FIELD_NAME, EXPECTING_FIELD_VALUE
 	}
 
 	/**
 	 * Stores the current processing status
 	 */
-	private Status status;
+	private Status status = Status.START;
 
 	/**
 	 * Creates an XML file monitor for the specified trace and QEA property
@@ -138,6 +138,8 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 		switch (qName) {
 
 		case "log":
+			break;
+
 		case "field":
 			status = Status.INSIDE_FIELD;
 			break;
