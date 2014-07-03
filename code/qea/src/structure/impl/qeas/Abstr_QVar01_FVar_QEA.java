@@ -25,7 +25,6 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 	protected final boolean isPropositional;
 
 	protected final boolean quantificationUniversal;
-	protected final boolean negatedQuantification;
 
 	protected final int freeVariablesCount;
 
@@ -39,28 +38,15 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 		switch (quantification) {
 		case FORALL:
 			quantificationUniversal = true;
-			negatedQuantification = false;
 			isPropositional = false;
 			break;
-		case NOT_FORALL:
-			quantificationUniversal = true;
-			negatedQuantification = false;
-			isPropositional = false;
-			break;		
 		case EXISTS:
 			quantificationUniversal = false;
 			isPropositional = false;
-			negatedQuantification = false;			
 			break;
-		case NOT_EXISTS:
-			quantificationUniversal = false;
-			isPropositional = false;
-			negatedQuantification = true;			
-			break;			
 		case NONE:
 			quantificationUniversal = false;
 			isPropositional = true;
-			negatedQuantification = false;	
 			break;
 		default:
 			throw new ShouldNotHappenException("Unknown quantification "
@@ -68,10 +54,10 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 		}
 	}
 
-	public boolean isNormal(){
-		return (quantificationUniversal == isStateFinal(initialState)); 
+	public boolean isNormal() {
+		return (quantificationUniversal == isStateFinal(initialState));
 	}
-	
+
 	/**
 	 * Adds the specified state to the set of skip states
 	 * 
@@ -92,8 +78,8 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 		for (int state : states) {
 			skipStates[state] = true;
 		}
-	}	
-	
+	}
+
 	/**
 	 * Adds the specified state to the set of final states
 	 * 
@@ -184,7 +170,8 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 	@Override
 	public boolean isStateSkip(int state) {
 		return skipStates[state];
-	}	
+	}
+
 	@Override
 	public boolean isStateFinal(int state) {
 		return finalStates[state];
@@ -208,18 +195,10 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 	public boolean isQuantificationUniversal() {
 		return quantificationUniversal;
 	}
-	
-	/**
-	 * @return <code>true</code> if the quantification for the variable of this
-	 *         QEA is negated; <code>false</code> if not
-	 */
-	public boolean isQuantificationNegated() {
-		return negatedQuantification;
-	}	
 
 	/*
-	 * Checks that a transition and a set of arguments would not produce a binding
-	 * that clashes with a quantified variable
+	 * Checks that a transition and a set of arguments would not produce a
+	 * binding that clashes with a quantified variable
 	 */
 	protected boolean qVarMatchesBinding(Object qVarValue, Object[] args,
 			Transition transition) {
@@ -235,8 +214,8 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 
 		// There's no quantified variable
 		return true;
-	}	
-	
+	}
+
 	/**
 	 * Checks if the specified numbers are equal. In case they are not, throws a
 	 * <code>ShouldNotHappenException</code> exception
