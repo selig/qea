@@ -281,6 +281,7 @@ public class MonPoly implements PropertyMaker {
 	public QEA makeFour() {
 
 		QEABuilder q = new QEABuilder("MONPOLY_FOUR");
+		q.setNegated(true);
 
 		final int WITHDRAW = 1;
 
@@ -290,7 +291,6 @@ public class MonPoly implements PropertyMaker {
 		final int ts2 = 3;
 		final int s = 4;
 
-		// TODO Make this QEA negated
 		q.addQuantification(EXISTS, u);
 
 		q.startTransition(1);

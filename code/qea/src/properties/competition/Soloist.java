@@ -31,8 +31,8 @@ public class Soloist implements PropertyMaker {
 	public QEA makeOneNegatedLimit3() {
 
 		QEABuilder q = new QEABuilder("SOLOIST_ONE");
+		q.setNegated(true);
 
-		// TODO Make this a negated QEA
 		int WITHDRAW = 1;
 		int LOGOFF = 2;
 
@@ -203,8 +203,8 @@ public class Soloist implements PropertyMaker {
 	public QEA makeOneNegatedLimitN() {
 
 		QEABuilder q = new QEABuilder("SOLOIST_ONE");
+		q.setNegated(true);
 
-		// TODO Make this a negated QEA
 		int WITHDRAW = 1;
 		int LOGOFF = 2;
 
@@ -371,9 +371,8 @@ public class Soloist implements PropertyMaker {
 
 	public QEA makeTwo() {
 
-		// TODO Make this QEA negated
-
 		QEABuilder q = new QEABuilder("SOLOIST_TWO");
+		q.setNegated(true);
 
 		int INVCHECKACCESS_START = 1;
 		int INVCHECKACCESS_COMPLETE = 2;
