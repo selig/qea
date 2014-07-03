@@ -32,6 +32,7 @@ public abstract class FileMonitor {
 			throws FileNotFoundException {
 
 		translator.setMonitor(MonitorFactory.create(qea));
+		this.translator = translator;
 		trace = new BufferedReader(new FileReader(tracename));
 
 		event_lookup = new int[26];
