@@ -5,13 +5,18 @@ import java.util.Map;
 
 import structure.impl.qeas.QEAType;
 
-/*
- * A QEA object is a specification
+/**
+ * Provides the base implementation of a QEA property. A QEA object is a
+ * specification
+ * 
+ * @author Giles Reger
+ * @author Helena Cuenca
  */
-
 public abstract class QEA {
 
 	private String name;
+
+	private boolean negated;
 
 	public QEA() {
 		name = "No-name";
@@ -29,6 +34,14 @@ public abstract class QEA {
 		return name;
 	}
 
+	public boolean isNegated() {
+		return negated;
+	}
+
+	public void setNegated(boolean negated) {
+		this.negated = negated;
+	}
+
 	@Override
 	public String toString() {
 		return name;
@@ -40,7 +53,7 @@ public abstract class QEA {
 	 * @return The initial state
 	 */
 	public abstract int getInitialState();
-	
+
 	/**
 	 * Retrieves the set of states Q for this QEA
 	 * 
@@ -83,8 +96,8 @@ public abstract class QEA {
 	 * @param state
 	 * @return true if the specified state is a skip state. Otherwise, false
 	 */
-	public abstract boolean isStateSkip(int state);	
-	
+	public abstract boolean isStateSkip(int state);
+
 	/**
 	 * Determines if the specified state is in the set of final states
 	 * 
@@ -109,18 +122,16 @@ public abstract class QEA {
 	public abstract QEAType getQEAType();
 
 	/**
-	 *  Returns whether the QEA is normal
-	 *  
-	 *  A QEA is normal iff
-	 *   - when innermost quantification is universal the initial state
-	 *     is final
-	 *   - when the innermost quantification is existential the intial
-	 *     state is non-final
-	 *  
-	 *  @return true if QEA normal
+	 * Returns whether the QEA is normal
+	 * 
+	 * A QEA is normal iff - when innermost quantification is universal the
+	 * initial state is final - when the innermost quantification is existential
+	 * the intial state is non-final
+	 * 
+	 * @return true if QEA normal
 	 */
 	public abstract boolean isNormal();
-	
+
 	private Map<String, Integer> name_lookup;
 
 	/**
@@ -149,14 +160,17 @@ public abstract class QEA {
 		}
 		return id;
 	}
-	
-	public Map<String,Integer> get_name_lookup(){ return name_lookup;}
 
-	public String get_event_name(int id){
-		for(Map.Entry<String,Integer> entry : name_lookup.entrySet()){
-			if(entry.getValue().equals(id)) return entry.getKey();
+	public Map<String, Integer> get_name_lookup() {
+		return name_lookup;
+	}
+
+	public String get_event_name(int id) {
+		for (Map.Entry<String, Integer> entry : name_lookup.entrySet()) {
+			if (entry.getValue().equals(id))
+				return entry.getKey();
 		}
 		return "NotFound";
 	}
-	
+
 }
