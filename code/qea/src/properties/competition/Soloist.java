@@ -17,7 +17,7 @@ public class Soloist implements PropertyMaker {
 	public QEA make(Property property) {
 		switch (property) {
 		case SOLOIST_ONE:
-			return makeOneSimple();
+			return makeOneNegatedLimit3();
 		case SOLOIST_TWO:
 			return makeTwo();
 		case SOLOIST_THREE:
@@ -308,7 +308,7 @@ public class Soloist implements PropertyMaker {
 					valSet = (HashSet<Integer>) binding.getValue(set);
 
 					// Remove all times that were more than 10 minutes ago
-					for (Iterator iterator = valSet.iterator(); iterator
+					for (Iterator<Integer> iterator = valSet.iterator(); iterator
 							.hasNext();) {
 						Integer time = (Integer) iterator.next();
 						if (tVal - time > 600) {
@@ -329,7 +329,7 @@ public class Soloist implements PropertyMaker {
 		q.startTransition(1);
 		q.eventName(LOGOFF);
 		q.addVarArg(t);
-		q.addGuard(new Guard("size of x_" + set + " < " + LIMIT) {
+		q.addGuard(new Guard("size of x_" + set + " <= " + LIMIT) {
 
 			@Override
 			public int[] vars() {
@@ -343,14 +343,18 @@ public class Soloist implements PropertyMaker {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				HashSet setVal = (HashSet) binding.getForced(set);
-				return setVal.size() < LIMIT;
+				return check(binding);
 			}
 
 			@Override
 			public boolean check(Binding binding) {
-				// TODO Auto-generated method stub
-				return false;
+
+				if (binding.getValue(set) != null) {
+					HashSet<Integer> setVal = (HashSet<Integer>) binding
+							.getValue(set);
+					return setVal.size() <= LIMIT;
+				}
+				return true;
 			}
 		});
 		q.endTransition(1);
