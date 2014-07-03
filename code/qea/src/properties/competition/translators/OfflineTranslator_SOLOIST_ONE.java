@@ -20,9 +20,9 @@ public class OfflineTranslator_SOLOIST_ONE extends OfflineTranslator {
 	public Verdict translateAndStep(String eventName, String[] params) {
 		switch (eventName) {
 		case WITHDRAW_STR:
-			return monitor.step(WITHDRAW, params[0]);
+			return monitor.step(WITHDRAW, Integer.valueOf(params[0]));
 		case LOGOFF_STR:
-			return monitor.step(LOGOFF, params[0]);
+			return monitor.step(LOGOFF, Integer.valueOf(params[0]));
 		default:
 			return null;
 		}
