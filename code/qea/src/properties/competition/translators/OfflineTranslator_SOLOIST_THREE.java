@@ -1,0 +1,44 @@
+package properties.competition.translators;
+
+import monitoring.impl.translators.OfflineTranslator;
+import structure.impl.other.Verdict;
+
+/**
+ * Translator for the property ZOT+SOLOIST 3
+ * 
+ * @author Helena Cuenca
+ * @author Giles Reger
+ */
+public class OfflineTranslator_SOLOIST_THREE extends OfflineTranslator {
+
+	private final int INVCHECKACCESS_COMPLETE = 1;
+	private final int REPLOGON = 2;
+	private final String INVCHECKACCESS_STR = "invcheckaccess";
+	private final String EVENT_TYPE_COMPLETE_STR = "complete";
+	private final String REPLOGON_STR = "replogon";
+
+	@Override
+	public Verdict translateAndStep(String eventName, String[] params) {
+
+		switch (eventName) {
+		case INVCHECKACCESS_STR:
+			if (params[1].equals(EVENT_TYPE_COMPLETE_STR)) {
+				return monitor.step(INVCHECKACCESS_COMPLETE);
+			}
+			return null;
+
+		case REPLOGON_STR:
+			return monitor.step(REPLOGON);
+
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	public Verdict translateAndStep(String eventName) {
+		// No event without parameters is relevant for this property
+		return null;
+	}
+
+}
