@@ -2,8 +2,6 @@ package monitoring.impl.monitors.general;
 
 import static structure.impl.other.Quantification.EXISTS;
 import static structure.impl.other.Quantification.FORALL;
-import static structure.impl.other.Quantification.NOT_EXISTS;
-import static structure.impl.other.Quantification.NOT_FORALL;
 import static structure.impl.other.Verdict.FAILURE;
 import static structure.impl.other.Verdict.SUCCESS;
 import static structure.impl.other.Verdict.WEAK_FAILURE;
@@ -70,12 +68,12 @@ public abstract class IncrementalChecker {
 		
 		if(q==FORALL) 
 			return new AllUniversalChecker(false,finalStates,strongStates,all_guards);
-		if(q==NOT_FORALL) 
-			return new AllUniversalChecker(true,finalStates,strongStates,all_guards);
+//		if(q==NOT_FORALL) // TODO Fix negated quantification
+//			return new AllUniversalChecker(true,finalStates,strongStates,all_guards);
 		if(q==EXISTS) 
 			return new AllExistentialChecker(false,finalStates,strongStates,all_guards);
-		if(q==NOT_EXISTS) 
-			return new AllExistentialChecker(true,finalStates,strongStates,all_guards);
+//		if(q==NOT_EXISTS) // TODO Fix negated quantification
+//			return new AllExistentialChecker(true,finalStates,strongStates,all_guards);
 
 		if(lambda.length==3){
 			return new OneAlternationChecker(finalStates, strongStates, lambda[1], lambda[2]);
@@ -378,16 +376,16 @@ public abstract class IncrementalChecker {
 			super(finalStates, strongStates);
 			switch(one.quantification){
 			case FORALL : q1=true;negated1=false;break;
-			case NOT_FORALL : q1=true;negated1=true;break;
+//			case NOT_FORALL : q1=true;negated1=true;break; // TODO Fix negated quantification
 			case EXISTS: q1=false;negated1=false;break;
-			case NOT_EXISTS: q1=false;negated1=true;break;
+//			case NOT_EXISTS: q1=false;negated1=true;break; // TODO Fix negated quantification
 			default : throw new RuntimeException("Unexpected quantification "+one.quantification);
 			}
 			switch(two.quantification){
 			case FORALL : q2=true;negated2=false;break;
-			case NOT_FORALL : q2=true;negated2=true;break;
+//			case NOT_FORALL : q2=true;negated2=true;break; // TODO Fix negated quantification
 			case EXISTS: q2=false;negated2=false;break;
-			case NOT_EXISTS: q2=false;negated2=true;break;
+//			case NOT_EXISTS: q2=false;negated2=true;break; // TODO Fix negated quantification
 			default : throw new RuntimeException("Unexpected quantification "+two.quantification);
 			}			
 			g1=one.guard;
