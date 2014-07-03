@@ -58,30 +58,37 @@ public class QEABuilder {
 	 * We use internal representations
 	 */
 	public static class VarOrVal {
-		static Map<Integer,VarOrVal> var_cache = new HashMap<Integer,VarOrVal>();
-		static VarOrVal makeVar(int var){
+		static Map<Integer, VarOrVal> var_cache = new HashMap<Integer, VarOrVal>();
+
+		static VarOrVal makeVar(int var) {
 			VarOrVal v = var_cache.get(var);
-			if(v==null){
-				v=new VarOrVal();
-				v.var=var;
-				var_cache.put(var,v);
+			if (v == null) {
+				v = new VarOrVal();
+				v.var = var;
+				var_cache.put(var, v);
 			}
 			return v;
 		}
-		static Map<Object,VarOrVal> val_cache = new HashMap<Object,VarOrVal>();
-		static VarOrVal makeVal(Object val){
+
+		static Map<Object, VarOrVal> val_cache = new HashMap<Object, VarOrVal>();
+
+		static VarOrVal makeVal(Object val) {
 			VarOrVal v = val_cache.get(val);
-			if(v==null){
-				v=new VarOrVal();
-				v.val=val;
-				val_cache.put(val,v);
+			if (v == null) {
+				v = new VarOrVal();
+				v.val = val;
+				val_cache.put(val, v);
 			}
 			return v;
-		}		
+		}
+
 		static int nonvar = -1000;
 		int var = nonvar;
 		Object val;
-		public String toString(){ return (val==null) ? "x_"+var : "v_"+val;}
+
+		public String toString() {
+			return (val == null) ? "x_" + var : "v_" + val;
+		}
 	}
 
 	public static class TempTransition {
@@ -93,13 +100,15 @@ public class QEABuilder {
 
 		TempEvent temp_event = null;
 
-		public TempTransition(){}
+		public TempTransition() {
+		}
+
 		public TempTransition(int s, int e, Transition transition) {
-			start=s;
-			event_name=e;
+			start = s;
+			event_name = e;
 			int[] vargs = transition.getVariableNames();
 			event_args = new VarOrVal[vargs.length];
-			for(int i=0;i<vargs.length;i++) 
+			for (int i = 0; i < vargs.length; i++)
 				event_args[i] = VarOrVal.makeVar(vargs[i]);
 			g = transition.getGuard();
 			a = transition.getAssignment();
@@ -107,10 +116,11 @@ public class QEABuilder {
 		}
 
 		public TempTransition(int s, int n, int e) {
-			start=s;
-			event_name=n;
+			start = s;
+			event_name = n;
 			end = e;
 		}
+
 		public int[] var_args() {
 			if (event_args == null) {
 				return new int[] {};
@@ -172,7 +182,7 @@ public class QEABuilder {
 
 		@Override
 		public String toString() {
-			return event_name+ Arrays.toString(event_args);
+			return event_name + Arrays.toString(event_args);
 		}
 	}
 
@@ -180,8 +190,9 @@ public class QEABuilder {
 		boolean universal;
 		int var = 1;
 		Guard g;
-		public String toString(){
-			return (universal ? "F" : "E")+var+(g==null ? "" : "g");
+
+		public String toString() {
+			return (universal ? "F" : "E") + var + (g == null ? "" : "g");
 		}
 	}
 
@@ -199,20 +210,26 @@ public class QEABuilder {
 		this.name = name;
 	}
 
+	boolean negated = false;
+
+	public void setNegated(boolean negated) {
+		this.negated = negated;
+	}
+
 	public QEA make() {
 		String error = wellFormed();
 		if (error != null) {
 			throw new ShouldNotHappenException(error);
 		}
-		if(inctrans!=null)
-			throw new ShouldNotHappenException("Unclosed transition");		
+		if (inctrans != null)
+			throw new ShouldNotHappenException("Unclosed transition");
 
 		// first get number of states and events
 		int states = countStates();
 		int events = countEvents();
 
 		QEA qea = null;
-		
+
 		// Propositional first
 		if (quants.size() == 0) {
 			qea = makeProp(states, events);
@@ -220,12 +237,12 @@ public class QEABuilder {
 		// Single quantifier next
 		else if (quants.size() == 1) {
 			qea = makeSingle(states, events);
-		}
-		else qea = makeGeneral(states,events);
-		
+		} else
+			qea = makeGeneral(states, events);
 
 		if (qea != null) {
 			qea.setName(name);
+			qea.setNegated(negated);
 			return qea;
 		}
 
@@ -238,179 +255,195 @@ public class QEABuilder {
 		if (error != null) {
 			throw new ShouldNotHappenException(error);
 		}
-		if(inctrans!=null)
+		if (inctrans != null)
 			throw new ShouldNotHappenException("Unclosed transition");
 
 		// first get number of states and events
 		int states = countStates();
-		int events = countEvents();		
+		int events = countEvents();
 		// next get other expected info
 		boolean[] strong = computeStrongStates();
 		int fvars = countFreeVars();
 		boolean det = isEventDeterministic();
-		boolean nofree = fvars==0;
+		boolean nofree = fvars == 0;
 		int qs = quants.size();
 		Quantification[] qqs = new Quantification[qs];
-		for(int i=0;i<qs;i++){
+		for (int i = 0; i < qs; i++) {
 			Quant q = quants.get(i);
 			qqs[i] = q.universal ? FORALL : EXISTS;
 		}
 		boolean ggs = usesGlobalGuards();
-		
-		switch(type){
-			case QVAR01_FVAR_DET_QEA : 
-				if(qs==0 && det && !ggs) return makePropFreeDet(states,events,strong);
-				if(qs==1 && det && !ggs) return makeSingleFreeDet(states,events,strong,qqs[0],fvars);
-				break;
-			case QVAR01_FVAR_NONDET_QEA : 
-				if(qs==0 && !ggs) return makePropFreeNondet(states,events,strong);
-				if(qs==1 && !ggs) return makeSingleFreeNondet(states,events,strong,qqs[0],fvars);
-				break;
-			case QVAR01_NOFVAR_DET_QEA : 
-				if(qs==0 && det && nofree && !ggs) return makePropNofreeDet(states,events,strong);
-				if(qs==1 && det && nofree && !ggs) return makeSingleNofreeDet(states,events,strong,qqs[0]);
-				break;
-			case QVAR01_NOFVAR_NONDET_QEA : 
-				if(qs==0 && nofree && !ggs) return makePropNofreeNondet(states,events,strong);
-				if(qs==1 && nofree && !ggs) return makeSingleNofreeNondet(states,events,strong,qqs[0]);
-				break;
-			case QVAR1_FVAR_DET_FIXEDQVAR_QEA : 
-				if(qs==1 && fixedQVar() && det && !ggs) return makeSingleFreeDetFixed(states,events,strong,qqs[0],fvars);
-				break;
-			case QVAR1_FVAR_NONDET_FIXEDQVAR_QEA : 
-				if(qs==1 && fixedQVar() && !ggs) return makeSingleFreeNondetFixed(states,events,strong,qqs[0],fvars);
-				break;
-			case QVARN_FVAR_DET_QEA :
-				if(det) return makeGeneralFreeDet(states,events,strong,fvars);
-				break;
-			case QVARN_FVAR_NONDET_QEA : 
-				return makeGeneralFreeNondet(states,events,strong,fvars);			
+
+		switch (type) {
+		case QVAR01_FVAR_DET_QEA:
+			if (qs == 0 && det && !ggs)
+				return makePropFreeDet(states, events, strong);
+			if (qs == 1 && det && !ggs)
+				return makeSingleFreeDet(states, events, strong, qqs[0], fvars);
+			break;
+		case QVAR01_FVAR_NONDET_QEA:
+			if (qs == 0 && !ggs)
+				return makePropFreeNondet(states, events, strong);
+			if (qs == 1 && !ggs)
+				return makeSingleFreeNondet(states, events, strong, qqs[0],
+						fvars);
+			break;
+		case QVAR01_NOFVAR_DET_QEA:
+			if (qs == 0 && det && nofree && !ggs)
+				return makePropNofreeDet(states, events, strong);
+			if (qs == 1 && det && nofree && !ggs)
+				return makeSingleNofreeDet(states, events, strong, qqs[0]);
+			break;
+		case QVAR01_NOFVAR_NONDET_QEA:
+			if (qs == 0 && nofree && !ggs)
+				return makePropNofreeNondet(states, events, strong);
+			if (qs == 1 && nofree && !ggs)
+				return makeSingleNofreeNondet(states, events, strong, qqs[0]);
+			break;
+		case QVAR1_FVAR_DET_FIXEDQVAR_QEA:
+			if (qs == 1 && fixedQVar() && det && !ggs)
+				return makeSingleFreeDetFixed(states, events, strong, qqs[0],
+						fvars);
+			break;
+		case QVAR1_FVAR_NONDET_FIXEDQVAR_QEA:
+			if (qs == 1 && fixedQVar() && !ggs)
+				return makeSingleFreeNondetFixed(states, events, strong,
+						qqs[0], fvars);
+			break;
+		case QVARN_FVAR_DET_QEA:
+			if (det)
+				return makeGeneralFreeDet(states, events, strong, fvars);
+			break;
+		case QVARN_FVAR_NONDET_QEA:
+			return makeGeneralFreeNondet(states, events, strong, fvars);
 		}
 
-		throw new ShouldNotHappenException(
-				"Could not make a QEA of that type");
+		throw new ShouldNotHappenException("Could not make a QEA of that type");
 	}
 
-	public static QEA change(QEA qea, QEAType type){
+	public static QEA change(QEA qea, QEAType type) {
 		QEABuilder b = deconstruct(qea);
 		QEA qea_new = b.make(type);
 		// copy
-		if(qea.get_name_lookup()!=null)
-		for(Map.Entry<String,Integer> entry : qea.get_name_lookup().entrySet())
-			qea_new.record_event_name(entry.getKey(),entry.getValue());
+		if (qea.get_name_lookup() != null)
+			for (Map.Entry<String, Integer> entry : qea.get_name_lookup()
+					.entrySet())
+				qea_new.record_event_name(entry.getKey(), entry.getValue());
 		return qea_new;
 	}
-	
-	public static QEABuilder deconstruct(QEA qea){
+
+	public static QEABuilder deconstruct(QEA qea) {
 		QEABuilder q = new QEABuilder(qea.name());
 		/*
 		 * Sort out transitions first
 		 */
-		if(qea instanceof QEA_det_free){
+		if (qea instanceof QEA_det_free) {
 			Transition[][] ts = ((QEA_det_free) qea).getDelta();
-			for(int s = 1;s<ts.length;s++){
-				for(int e = 1;e<ts[0].length;e++){
-					if(ts[s][e]!=null && ts[s][e].getEndState()>0){
-						TempTransition tt = new TempTransition(s,e,ts[s][e]);
+			for (int s = 1; s < ts.length; s++) {
+				for (int e = 1; e < ts[0].length; e++) {
+					if (ts[s][e] != null && ts[s][e].getEndState() > 0) {
+						TempTransition tt = new TempTransition(s, e, ts[s][e]);
 						q.addTransition(tt);
 					}
 				}
-			}				
-		}
-		else if(qea instanceof QEA_nondet_free){
+			}
+		} else if (qea instanceof QEA_nondet_free) {
 			Transition[][][] ts = ((QEA_nondet_free) qea).getDelta();
-			for(int s = 1;s<ts.length;s++){
-				for(int e = 1;e<ts[0].length;e++){
-					if(ts[s][e]!=null)
-					for(Transition t : ts[s][e]){
-						if(t!=null && t.getEndState()>0){
-							TempTransition tt = new TempTransition(s,e,t);
-							q.addTransition(tt);
+			for (int s = 1; s < ts.length; s++) {
+				for (int e = 1; e < ts[0].length; e++) {
+					if (ts[s][e] != null)
+						for (Transition t : ts[s][e]) {
+							if (t != null && t.getEndState() > 0) {
+								TempTransition tt = new TempTransition(s, e, t);
+								q.addTransition(tt);
+							}
 						}
-					}
 				}
-			}			
-		}
-		else if(qea instanceof QVar01_NoFVar_Det_QEA){
+			}
+		} else if (qea instanceof QVar01_NoFVar_Det_QEA) {
 			int[][] ts = ((QVar01_NoFVar_Det_QEA) qea).getDelta();
-			for(int s = 1;s<ts.length;s++){
-				for(int e = 1;e<ts[0].length;e++){
-					if(ts[s][e]>0){						
-						TempTransition tt = new TempTransition(s,e,ts[s][e]);
-						if(!((QVar01_NoFVar_Det_QEA) qea).isProp(e)){
-							tt.event_args = new VarOrVal[]{VarOrVal.makeVar(-1)};
+			for (int s = 1; s < ts.length; s++) {
+				for (int e = 1; e < ts[0].length; e++) {
+					if (ts[s][e] > 0) {
+						TempTransition tt = new TempTransition(s, e, ts[s][e]);
+						if (!((QVar01_NoFVar_Det_QEA) qea).isProp(e)) {
+							tt.event_args = new VarOrVal[] { VarOrVal
+									.makeVar(-1) };
 						}
 						q.addTransition(tt);
 					}
 				}
-			}			
-		}
-		else if(qea instanceof QVar01_NoFVar_NonDet_QEA){
+			}
+		} else if (qea instanceof QVar01_NoFVar_NonDet_QEA) {
 			int[][][] ts = ((QVar01_NoFVar_NonDet_QEA) qea).getDelta();
-			for(int s = 1;s<ts.length;s++){
-				for(int e = 1;e<ts[0].length;e++){
-					if(ts[s][e]!=null)
-					for(int t : ts[s][e]){
-						if(t>0){
-							TempTransition tt = new TempTransition(s,e,t);
-							if(!((QVar01_NoFVar_NonDet_QEA) qea).isProp(e)){
-								tt.event_args = new VarOrVal[]{VarOrVal.makeVar(-1)};
-							}							
-							q.addTransition(tt);
+			for (int s = 1; s < ts.length; s++) {
+				for (int e = 1; e < ts[0].length; e++) {
+					if (ts[s][e] != null)
+						for (int t : ts[s][e]) {
+							if (t > 0) {
+								TempTransition tt = new TempTransition(s, e, t);
+								if (!((QVar01_NoFVar_NonDet_QEA) qea).isProp(e)) {
+									tt.event_args = new VarOrVal[] { VarOrVal
+											.makeVar(-1) };
+								}
+								q.addTransition(tt);
+							}
 						}
-					}
 				}
-			}			
-		}
-		else 
-			throw new ShouldNotHappenException("Cannot currently deconstruct qea of type "+qea.getClass());
-		
-		//for(TempTransition tt : q.transitions)
-		//	System.err.println(tt);
-		
+			}
+		} else
+			throw new ShouldNotHappenException(
+					"Cannot currently deconstruct qea of type "
+							+ qea.getClass());
+
+		// for(TempTransition tt : q.transitions)
+		// System.err.println(tt);
+
 		/*
 		 * FinalStates
 		 */
-		for(int s : qea.getStates()){
-			if(qea.isStateFinal(s)) q.addFinalStates(s);
+		for (int s : qea.getStates()) {
+			if (qea.isStateFinal(s))
+				q.addFinalStates(s);
 		}
 		/*
 		 * Skiptates
 		 */
-		for(int s : qea.getStates()){
-			if(qea.isStateSkip(s)) q.setSkipStates(s);
-		}		
-		
+		for (int s : qea.getStates()) {
+			if (qea.isStateSkip(s))
+				q.setSkipStates(s);
+		}
+
 		/*
 		 * Quantifications
 		 */
-		if(qea.getLambda().length==0){
-			//do nothing
-		}
-		else if(qea.getLambda().length==1){
-			if(((QEA_single) qea).isQuantificationUniversal())
+		if (qea.getLambda().length == 0) {
+			// do nothing
+		} else if (qea.getLambda().length == 1) {
+			if (((QEA_single) qea).isQuantificationUniversal())
 				q.addQuantification(FORALL, -1);
 			else
 				q.addQuantification(EXISTS, -1);
-		}
-		else{
-			try{
+		} else {
+			try {
 				QEntry[] entry = ((Abstr_QVarN_QEA) qea).getFullLambda();
-				for(int i=1;i<entry.length;i++){
-					q.addQuantification(entry[i].quantification,-i,entry[i].guard);
+				for (int i = 1; i < entry.length; i++) {
+					q.addQuantification(entry[i].quantification, -i,
+							entry[i].guard);
 				}
-			}
-			catch(ClassCastException e){
-				throw new ShouldNotHappenException("deconstruct needs to be expanded to account for "+qea.getClass());
+			} catch (ClassCastException e) {
+				throw new ShouldNotHappenException(
+						"deconstruct needs to be expanded to account for "
+								+ qea.getClass());
 			}
 		}
-		
-		//for(Quant qq : q.quants)
-		//	System.err.println(qq);
-		
+
+		// for(Quant qq : q.quants)
+		// System.err.println(qq);
+
 		return q;
 	}
-	
+
 	private void addTransition(TempTransition tt) {
 		transitions.add(tt);
 	}
@@ -425,13 +458,15 @@ public class QEABuilder {
 		int states = countStates();
 		int events = countEvents();
 
-		return makeGeneral(states,events);
-	}	
-	
+		return makeGeneral(states, events);
+	}
+
 	private QEA makeProp(int states, int events) {
 		boolean[] strongStates = computeStrongStates();
-		
-		if(usesGlobalGuards()) throw new ShouldNotHappenException("Global guards not supported here yet");
+
+		if (usesGlobalGuards())
+			throw new ShouldNotHappenException(
+					"Global guards not supported here yet");
 		if (noFreeVariables()) {
 			if (isEventDeterministic()) {
 				return makePropNofreeDet(states, events, strongStates);
@@ -452,8 +487,8 @@ public class QEABuilder {
 	private QEA makePropFreeNondet(int states, int events,
 			boolean[] strongStates) {
 		int frees = countFreeVars();
-		QVar01_FVar_NonDet_QEA qea = new QVar01_FVar_NonDet_QEA(states,
-				events, 1, NONE, frees);
+		QVar01_FVar_NonDet_QEA qea = new QVar01_FVar_NonDet_QEA(states, events,
+				1, NONE, frees);
 		Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
 		for (TempTransition t : transitions) {
 			Map<Integer, Set<Transition>> this_state = actual_trans[t.start];
@@ -467,15 +502,14 @@ public class QEABuilder {
 				nextstates = new HashSet<Transition>();
 				this_state.put(t.event_name, nextstates);
 			}
-			nextstates
-					.add(new Transition(t.var_args(), t.g, t.a, t.end));
+			nextstates.add(new Transition(t.var_args(), t.g, t.a, t.end));
 		}
 		for (int i = 0; i < actual_trans.length; i++) {
 			if (actual_trans[i] != null) {
 				for (Map.Entry<Integer, Set<Transition>> entry : actual_trans[i]
 						.entrySet()) {
-					Transition[] nextstates = new Transition[entry
-							.getValue().size()];
+					Transition[] nextstates = new Transition[entry.getValue()
+							.size()];
 					int j = 0;
 					for (Transition s : entry.getValue()) {
 						nextstates[j] = s;
@@ -485,7 +519,7 @@ public class QEABuilder {
 				}
 			}
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -501,13 +535,13 @@ public class QEABuilder {
 
 	private QEA makePropFreeDet(int states, int events, boolean[] strongStates) {
 		int fvars = countFreeVars();
-		QVar01_FVar_Det_QEA qea = new QVar01_FVar_Det_QEA(states,
-				events, 1, NONE, fvars);
+		QVar01_FVar_Det_QEA qea = new QVar01_FVar_Det_QEA(states, events, 1,
+				NONE, fvars);
 		for (TempTransition t : transitions) {
 			Transition trans = new Transition(t.var_args(), t.g, t.a, t.end);
 			qea.addTransition(t.start, t.event_name, trans);
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -523,10 +557,10 @@ public class QEABuilder {
 
 	private QEA makePropNofreeNondet(int states, int events,
 			boolean[] strongStates) {
-		QVar01_NoFVar_NonDet_QEA qea = new QVar01_NoFVar_NonDet_QEA(
-				states, events, 1, NONE);
+		QVar01_NoFVar_NonDet_QEA qea = new QVar01_NoFVar_NonDet_QEA(states,
+				events, 1, NONE);
 		Map<Integer, Set<Integer>>[] actual_trans = new Map[states + 1];
-		boolean[][] prop = new boolean[states+1][states+1];
+		boolean[][] prop = new boolean[states + 1][states + 1];
 		for (TempTransition t : transitions) {
 			Map<Integer, Set<Integer>> this_state = actual_trans[t.start];
 			if (this_state == null) {
@@ -539,8 +573,8 @@ public class QEABuilder {
 				nextstates = new HashSet<Integer>();
 				this_state.put(t.event_name, nextstates);
 			}
-			if(t.event_args==null || t.event_args.length==0)
-				prop[t.start][t.end]=true;	
+			if (t.event_args == null || t.event_args.length == 0)
+				prop[t.start][t.end] = true;
 			nextstates.add(t.end);
 		}
 		for (int start = 0; start < actual_trans.length; start++) {
@@ -555,11 +589,11 @@ public class QEABuilder {
 					}
 					int event = (entry.getKey());
 					boolean p = prop[start][nextstates[0]];
-					qea.addTransitions(start, event, nextstates,p);
+					qea.addTransitions(start, event, nextstates, p);
 				}
 			}
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -574,13 +608,13 @@ public class QEABuilder {
 	}
 
 	private QEA makePropNofreeDet(int states, int events, boolean[] strongStates) {
-		QVar01_NoFVar_Det_QEA qea = new QVar01_NoFVar_Det_QEA(states,
-				events, 1, NONE);
+		QVar01_NoFVar_Det_QEA qea = new QVar01_NoFVar_Det_QEA(states, events,
+				1, NONE);
 		for (TempTransition t : transitions) {
-			boolean prop = (t.event_args==null) || (t.event_args.length==0);
-			qea.addTransition(t.start, t.event_name, t.end,prop);
+			boolean prop = (t.event_args == null) || (t.event_args.length == 0);
+			qea.addTransition(t.start, t.event_name, t.end, prop);
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -595,9 +629,11 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingle(int states, int events) {
-		if(usesGlobalGuards()) throw new ShouldNotHappenException("Global guards not supported here yet");
+		if (usesGlobalGuards())
+			throw new ShouldNotHappenException(
+					"Global guards not supported here yet");
 		boolean[] strongStates = computeStrongStates();
-		
+
 		Quantification q;
 		if (quants.get(0).universal) {
 			q = FORALL;
@@ -635,8 +671,8 @@ public class QEABuilder {
 
 	private QEA makeSingleFreeNondet(int states, int events,
 			boolean[] strongStates, Quantification q, int frees) {
-		QVar01_FVar_NonDet_QEA qea = new QVar01_FVar_NonDet_QEA(
-				states, events, 1, q, frees);
+		QVar01_FVar_NonDet_QEA qea = new QVar01_FVar_NonDet_QEA(states, events,
+				1, q, frees);
 		Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
 		for (TempTransition t : transitions) {
 			Map<Integer, Set<Transition>> this_state = actual_trans[t.start];
@@ -645,32 +681,29 @@ public class QEABuilder {
 			}
 			this_state = actual_trans[t.start];
 
-			Set<Transition> nextstates = this_state
-					.get(t.event_name);
+			Set<Transition> nextstates = this_state.get(t.event_name);
 			if (nextstates == null) {
 				nextstates = new HashSet<Transition>();
 				this_state.put(t.event_name, nextstates);
 			}
-			nextstates.add(new Transition(t.var_args(), t.g, t.a,
-					t.end));
+			nextstates.add(new Transition(t.var_args(), t.g, t.a, t.end));
 		}
 		for (int i = 0; i < actual_trans.length; i++) {
 			if (actual_trans[i] != null) {
 				for (Map.Entry<Integer, Set<Transition>> entry : actual_trans[i]
 						.entrySet()) {
-					Transition[] nextstates = new Transition[entry
-							.getValue().size()];
+					Transition[] nextstates = new Transition[entry.getValue()
+							.size()];
 					int j = 0;
 					for (Transition s : entry.getValue()) {
 						nextstates[j] = s;
 						j++;
 					}
-					qea.addTransitions(i, (entry.getKey()),
-							nextstates);
+					qea.addTransitions(i, (entry.getKey()), nextstates);
 				}
 			}
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -686,17 +719,16 @@ public class QEABuilder {
 
 	private QEA makeSingleFreeDet(int states, int events,
 			boolean[] strongStates, Quantification q, int frees) {
-		QVar01_FVar_Det_QEA qea = new QVar01_FVar_Det_QEA(states,
-				events, 1, q, frees);
+		QVar01_FVar_Det_QEA qea = new QVar01_FVar_Det_QEA(states, events, 1, q,
+				frees);
 
 		for (TempTransition t : transitions) {
-			Transition trans = new Transition(t.var_args(), t.g,
-					t.a, t.end);
+			Transition trans = new Transition(t.var_args(), t.g, t.a, t.end);
 			trans.setAssignment(t.a);
 			trans.setGuard(t.g);
 			qea.addTransition(t.start, t.event_name, trans);
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -722,32 +754,29 @@ public class QEABuilder {
 			}
 			this_state = actual_trans[t.start];
 
-			Set<Transition> nextstates = this_state
-					.get(t.event_name);
+			Set<Transition> nextstates = this_state.get(t.event_name);
 			if (nextstates == null) {
 				nextstates = new HashSet<Transition>();
 				this_state.put(t.event_name, nextstates);
 			}
-			nextstates.add(new Transition(t.var_args(), t.g, t.a,
-					t.end));
+			nextstates.add(new Transition(t.var_args(), t.g, t.a, t.end));
 		}
 		for (int i = 0; i < actual_trans.length; i++) {
 			if (actual_trans[i] != null) {
 				for (Map.Entry<Integer, Set<Transition>> entry : actual_trans[i]
 						.entrySet()) {
-					Transition[] nextstates = new Transition[entry
-							.getValue().size()];
+					Transition[] nextstates = new Transition[entry.getValue()
+							.size()];
 					int j = 0;
 					for (Transition s : entry.getValue()) {
 						nextstates[j] = s;
 						j++;
 					}
-					qea.addTransitions(i, (entry.getKey()),
-							nextstates);
+					qea.addTransitions(i, (entry.getKey()), nextstates);
 				}
 			}
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -767,11 +796,10 @@ public class QEABuilder {
 				states, events, 1, q, frees);
 
 		for (TempTransition t : transitions) {
-			Transition trans = new Transition(t.var_args(), t.g,
-					t.a, t.end);
+			Transition trans = new Transition(t.var_args(), t.g, t.a, t.end);
 			qea.addTransition(t.start, t.event_name, trans);
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -787,10 +815,10 @@ public class QEABuilder {
 
 	private QEA makeSingleNofreeNondet(int states, int events,
 			boolean[] strongStates, Quantification q) {
-		QVar01_NoFVar_NonDet_QEA qea = new QVar01_NoFVar_NonDet_QEA(
-				states, events, 1, q);
+		QVar01_NoFVar_NonDet_QEA qea = new QVar01_NoFVar_NonDet_QEA(states,
+				events, 1, q);
 		Map<Integer, Set<Integer>>[] actual_trans = new Map[states + 1];
-		boolean[][] prop = new boolean[states+1][states+1];
+		boolean[][] prop = new boolean[states + 1][states + 1];
 		for (TempTransition t : transitions) {
 			Map<Integer, Set<Integer>> this_state = actual_trans[t.start];
 			if (this_state == null) {
@@ -803,8 +831,8 @@ public class QEABuilder {
 				nextstates = new HashSet<Integer>();
 				this_state.put(t.event_name, nextstates);
 			}
-			if(t.event_args==null || t.event_args.length==0)
-				prop[t.start][t.end]=true;
+			if (t.event_args == null || t.event_args.length == 0)
+				prop[t.start][t.end] = true;
 			nextstates.add(t.end);
 		}
 		for (int start = 0; start < actual_trans.length; start++) {
@@ -819,11 +847,11 @@ public class QEABuilder {
 					}
 					int event = (entry.getKey());
 					boolean p = prop[start][nextstates[0]];
-					qea.addTransitions(start, event, nextstates,p);
+					qea.addTransitions(start, event, nextstates, p);
 				}
 			}
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -839,13 +867,13 @@ public class QEABuilder {
 
 	private QEA makeSingleNofreeDet(int states, int events,
 			boolean[] strongStates, Quantification q) {
-		QVar01_NoFVar_Det_QEA qea = new QVar01_NoFVar_Det_QEA(states,
-				events, 1, q);
+		QVar01_NoFVar_Det_QEA qea = new QVar01_NoFVar_Det_QEA(states, events,
+				1, q);
 		for (TempTransition t : transitions) {
-			boolean prop = (t.event_args==null) || (t.event_args.length==0);
-			qea.addTransition(t.start, t.event_name, t.end,prop);
+			boolean prop = (t.event_args == null) || (t.event_args.length == 0);
+			qea.addTransition(t.start, t.event_name, t.end, prop);
 		}
-		for(Integer s : skipstates){
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -864,94 +892,53 @@ public class QEABuilder {
 
 		int frees = countFreeVars();
 		if (isEventDeterministic()) {
-					return makeGeneralFreeDet(states, events, strongStates,
-							frees);
+			return makeGeneralFreeDet(states, events, strongStates, frees);
 		} else {
-				return makeGeneralFreeNondet(states, events, strongStates,
-						frees);
+			return makeGeneralFreeNondet(states, events, strongStates, frees);
 		}
 	}
 
 	private QEA makeGeneralFreeNondet(int states, int events,
 			boolean[] strongStates, int frees) {
-		QVarN_NonDet_QEA qea = new QVarN_NonDet_QEA(
-					states, events, 1, quants.size(),frees,QEAType.QVARN_FVAR_NONDET_QEA);
-		
-		//Add quantifications
-		for(Quant q : quants){
-			qea.addQuantification(q.var, (q.universal ? FORALL : EXISTS), q.g);
-		}				
-		
-			Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
-			for (TempTransition t : transitions) {
-				Map<Integer, Set<Transition>> this_state = actual_trans[t.start];
-				if (this_state == null) {
-					actual_trans[t.start] = new HashMap<Integer, Set<Transition>>();
-				}
-				this_state = actual_trans[t.start];
+		QVarN_NonDet_QEA qea = new QVarN_NonDet_QEA(states, events, 1,
+				quants.size(), frees, QEAType.QVARN_FVAR_NONDET_QEA);
 
-				Set<Transition> nextstates = this_state
-						.get(t.event_name);
-				if (nextstates == null) {
-					nextstates = new HashSet<Transition>();
-					this_state.put(t.event_name, nextstates);
-				}
-				nextstates.add(new Transition(t.var_args(), t.g, t.a,
-						t.end));
-			}
-			for (int i = 0; i < actual_trans.length; i++) {
-				if (actual_trans[i] != null) {
-					for (Map.Entry<Integer, Set<Transition>> entry : actual_trans[i]
-							.entrySet()) {
-						Transition[] nextstates = new Transition[entry
-								.getValue().size()];
-						int j = 0;
-						for (Transition s : entry.getValue()) {
-							nextstates[j] = s;
-							j++;
-						}
-						qea.addTransitions(i, (entry.getKey()),
-								nextstates);
-					}
-				}
-			}
-			for(Integer s : skipstates){
-				qea.setStateAsSkip(s);
-			}
-			for (Integer s : finalstates) {
-				qea.setStatesAsFinal(s);
-			}
-			for (int i = 0; i < strongStates.length; i++) {
-				if (strongStates[i]) {
-					qea.setStatesAsStrong(i);
-				}
-			}
-			return qea;
-	}
-
-	private QEA makeGeneralFreeDet(int states, int events,
-			boolean[] strongStates, int frees) {
-		
-		QEAType type = (frees==0) ? 
-				QEAType.QVARN_NOFVAR_DET_QEA : QEAType.QVARN_FVAR_DET_QEA;
-		
-		QVarN_Det_QEA qea = new QVarN_Det_QEA(states,
-				events, 1, quants.size(),frees,type);
-
-		
-		//Add quantifications
-		for(Quant q : quants){
+		// Add quantifications
+		for (Quant q : quants) {
 			qea.addQuantification(q.var, (q.universal ? FORALL : EXISTS), q.g);
 		}
-		
+
+		Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
 		for (TempTransition t : transitions) {
-			Transition trans = new Transition(t.var_args(), t.g,
-					t.a, t.end);
-			trans.setAssignment(t.a);
-			trans.setGuard(t.g);
-			qea.addTransition(t.start, t.event_name, trans);
+			Map<Integer, Set<Transition>> this_state = actual_trans[t.start];
+			if (this_state == null) {
+				actual_trans[t.start] = new HashMap<Integer, Set<Transition>>();
+			}
+			this_state = actual_trans[t.start];
+
+			Set<Transition> nextstates = this_state.get(t.event_name);
+			if (nextstates == null) {
+				nextstates = new HashSet<Transition>();
+				this_state.put(t.event_name, nextstates);
+			}
+			nextstates.add(new Transition(t.var_args(), t.g, t.a, t.end));
 		}
-		for(Integer s : skipstates){
+		for (int i = 0; i < actual_trans.length; i++) {
+			if (actual_trans[i] != null) {
+				for (Map.Entry<Integer, Set<Transition>> entry : actual_trans[i]
+						.entrySet()) {
+					Transition[] nextstates = new Transition[entry.getValue()
+							.size()];
+					int j = 0;
+					for (Transition s : entry.getValue()) {
+						nextstates[j] = s;
+						j++;
+					}
+					qea.addTransitions(i, (entry.getKey()), nextstates);
+				}
+			}
+		}
+		for (Integer s : skipstates) {
 			qea.setStateAsSkip(s);
 		}
 		for (Integer s : finalstates) {
@@ -963,8 +950,42 @@ public class QEABuilder {
 			}
 		}
 		return qea;
-	}	
-	
+	}
+
+	private QEA makeGeneralFreeDet(int states, int events,
+			boolean[] strongStates, int frees) {
+
+		QEAType type = (frees == 0) ? QEAType.QVARN_NOFVAR_DET_QEA
+				: QEAType.QVARN_FVAR_DET_QEA;
+
+		QVarN_Det_QEA qea = new QVarN_Det_QEA(states, events, 1, quants.size(),
+				frees, type);
+
+		// Add quantifications
+		for (Quant q : quants) {
+			qea.addQuantification(q.var, (q.universal ? FORALL : EXISTS), q.g);
+		}
+
+		for (TempTransition t : transitions) {
+			Transition trans = new Transition(t.var_args(), t.g, t.a, t.end);
+			trans.setAssignment(t.a);
+			trans.setGuard(t.g);
+			qea.addTransition(t.start, t.event_name, trans);
+		}
+		for (Integer s : skipstates) {
+			qea.setStateAsSkip(s);
+		}
+		for (Integer s : finalstates) {
+			qea.setStatesAsFinal(s);
+		}
+		for (int i = 0; i < strongStates.length; i++) {
+			if (strongStates[i]) {
+				qea.setStatesAsStrong(i);
+			}
+		}
+		return qea;
+	}
+
 	private int countStates() {
 		int max = 0;
 		for (TempTransition t : transitions) {
@@ -1005,24 +1026,24 @@ public class QEABuilder {
 						}
 					}
 				}
-				if(t.g!=null){
-					for(int var : t.g.vars()){
+				if (t.g != null) {
+					for (int var : t.g.vars()) {
 						if (var != 0 && !qvars.contains(var)) {
 							// fvars.add(var);
 							if (var > max) {
 								max = var;
 							}
-						}						
+						}
 					}
 				}
-				if(t.a!=null){
-					for(int var : t.a.vars()){
+				if (t.a != null) {
+					for (int var : t.a.vars()) {
 						if (var != 0 && !qvars.contains(var)) {
 							// fvars.add(var);
 							if (var > max) {
 								max = var;
 							}
-						}							
+						}
 					}
 				}
 			}
@@ -1144,13 +1165,14 @@ public class QEABuilder {
 		}
 		return true;
 	}
+
 	private boolean usesGlobalGuards() {
-		for(Quant q : quants)
-			if(q.g!=null) return true;
+		for (Quant q : quants)
+			if (q.g != null)
+				return true;
 		return false;
 	}
-	
-	
+
 	/*
 	 * CREATING QEA
 	 */
@@ -1170,14 +1192,15 @@ public class QEABuilder {
 		trans.start = start;
 		trans.end = end;
 		trans.event_name = propname;
-		VarOrVal[] args = new VarOrVal[]{VarOrVal.makeVar(var)};
+		VarOrVal[] args = new VarOrVal[] { VarOrVal.makeVar(var) };
 		trans.event_args = args;
 		transitions.add(trans);
-		
-	}	
-	
+
+	}
+
 	// add a variable only transition
-	public void addTransition(int start, int propname, int[] vargs, Guard guard, Assignment ass, int end) {
+	public void addTransition(int start, int propname, int[] vargs,
+			Guard guard, Assignment ass, int end) {
 		TempTransition trans = new TempTransition();
 		trans.start = start;
 		trans.end = end;
@@ -1187,19 +1210,24 @@ public class QEABuilder {
 			args[i] = VarOrVal.makeVar(vargs[i]);
 		}
 		trans.event_args = args;
-		trans.g=guard;
-		trans.a=ass;
+		trans.g = guard;
+		trans.a = ass;
 		transitions.add(trans);
 	}
+
 	public void addTransition(int start, int propname, int[] vargs, int end) {
-		addTransition(start,propname,vargs,null,null,end);
-	}	
-	public void addTransition(int start, int propname, int[] vargs, Guard guard, int end) {
-		addTransition(start,propname,vargs,guard,null,end);
+		addTransition(start, propname, vargs, null, null, end);
 	}
-	public void addTransition(int start, int propname, int[] vargs, Assignment ass, int end) {
-		addTransition(start,propname,vargs,null,ass,end);
-	}	
+
+	public void addTransition(int start, int propname, int[] vargs,
+			Guard guard, int end) {
+		addTransition(start, propname, vargs, guard, null, end);
+	}
+
+	public void addTransition(int start, int propname, int[] vargs,
+			Assignment ass, int end) {
+		addTransition(start, propname, vargs, null, ass, end);
+	}
 
 	// incremental transition adding
 
@@ -1273,25 +1301,23 @@ public class QEABuilder {
 	public void setSkipStates(int... states) {
 
 		// Instead of closing we now just mark them as skip
-		for(int s: states) skipstates.add(s);
-		
-		/*Set<TempEvent> events = getEvents();
+		for (int s : states)
+			skipstates.add(s);
 
-		for (int state : states) {
-
-			if (usesGuards(state)) {
-				throw new ShouldNotHappenException(
-						"Cannot currently add skip states where guards are used"
-								+ " - you need to do this manually");
-			}
-
-			for (TempEvent event : events) {
-				if (!existsTransition(state, event)) {
-					//System.err.println("Adding skip transition for "+state+" and "+event);
-					addTransition(state, event, state);
-				}
-			}
-		}*/
+		/*
+		 * Set<TempEvent> events = getEvents();
+		 * 
+		 * for (int state : states) {
+		 * 
+		 * if (usesGuards(state)) { throw new ShouldNotHappenException(
+		 * "Cannot currently add skip states where guards are used" +
+		 * " - you need to do this manually"); }
+		 * 
+		 * for (TempEvent event : events) { if (!existsTransition(state, event))
+		 * {
+		 * //System.err.println("Adding skip transition for "+state+" and "+event
+		 * ); addTransition(state, event, state); } } }
+		 */
 
 	}
 
@@ -1352,8 +1378,8 @@ public class QEABuilder {
 
 		boolean[][] reach = computeReach(nstates);
 
-		DEBUG=true;
-		
+		DEBUG = true;
+
 		if (DEBUG) {
 			System.err.println("reach:");
 			for (int i = 1; i < reach.length; i++) {
@@ -1377,9 +1403,9 @@ public class QEABuilder {
 			System.err.println("\nStrong states: " + Arrays.toString(strong));
 		}
 
-		//System.err.println("=================");
-		//System.err.println(Arrays.toString(strong));		
-		
+		// System.err.println("=================");
+		// System.err.println(Arrays.toString(strong));
+
 		return strong;
 	}
 
@@ -1397,20 +1423,21 @@ public class QEABuilder {
 
 		for (TempTransition t : transitions) {
 			reach[t.start][t.end] = true;
-			if(t.g!=null && !skipstates.contains(t.start)){
-				// A next state with a transition using a guard can reach the failure state
+			if (t.g != null && !skipstates.contains(t.start)) {
+				// A next state with a transition using a guard can reach the
+				// failure state
 				reach[t.start][0] = true;
 			}
 			used[t.start].add(t.temp_event);
 		}
-		
 
 		for (int i = 1; i < reach.length; i++) {
 			if (used[i].size() != events.size()) {
 				// if there are unused events and this is not a skip state
 				// then we can reach the failing state
-//				System.out.println("state "+i+" does not use all events");
-				if(!skipstates.contains(i)) reach[i][0] = true;
+				// System.out.println("state "+i+" does not use all events");
+				if (!skipstates.contains(i))
+					reach[i][0] = true;
 			}
 		}
 
@@ -1429,51 +1456,51 @@ public class QEABuilder {
 					}
 				}
 			}
-		}		
-		
+		}
+
 		return reach;
 	}
 
-	public Map<TempEvent,Set<Set<TempEvent>>> computeEnableSets(){
-		
+	public Map<TempEvent, Set<Set<TempEvent>>> computeEnableSets() {
+
 		getEvents(); // ensures TempEvents are set
-		
+
 		// Computation in JavaMOP JSTTT paper, pg 30
-		Map<TempEvent,Set<Set<TempEvent>>> es = new HashMap<>();
-		Map<Integer,Set<Set<TempEvent>>> vs = new HashMap<>();
-		computeEnableSets(es,vs,1,new HashSet<TempEvent>());
-		
+		Map<TempEvent, Set<Set<TempEvent>>> es = new HashMap<>();
+		Map<Integer, Set<Set<TempEvent>>> vs = new HashMap<>();
+		computeEnableSets(es, vs, 1, new HashSet<TempEvent>());
+
 		return es;
 	}
 
-	private void computeEnableSets(Map<TempEvent,Set<Set<TempEvent>>> es,Map<Integer,Set<Set<TempEvent>>> vs,
-					int state, Set<TempEvent> set){
-		
-		for(TempTransition t : transitions){
-			if(t.start==state){
+	private void computeEnableSets(Map<TempEvent, Set<Set<TempEvent>>> es,
+			Map<Integer, Set<Set<TempEvent>>> vs, int state, Set<TempEvent> set) {
+
+		for (TempTransition t : transitions) {
+			if (t.start == state) {
 				TempEvent event = t.temp_event;
 				Set<Set<TempEvent>> event_es = es.get(event);
-				if(event_es==null){ 
+				if (event_es == null) {
 					event_es = new HashSet<>();
-					es.put(event,event_es);
+					es.put(event, event_es);
 				}
 				event_es.add(set);
 				Set<TempEvent> set_ = new HashSet<>(set);
 				set_.add(event);
 				Set<Set<TempEvent>> state_vs = vs.get(state);
-				if(state_vs==null){
+				if (state_vs == null) {
 					state_vs = new HashSet<>();
-					vs.put(state,state_vs);
+					vs.put(state, state_vs);
 				}
-				if(!state_vs.contains(set_)){
+				if (!state_vs.contains(set_)) {
 					state_vs.add(set_);
-					computeEnableSets(es,vs,t.end,set_);
+					computeEnableSets(es, vs, t.end, set_);
 				}
-			
+
 			}
-			
+
 		}
-		
+
 	}
-	
+
 }
