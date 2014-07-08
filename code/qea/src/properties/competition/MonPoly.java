@@ -419,19 +419,16 @@ public class MonPoly implements PropertyMaker {
 		final int INSERT_DB3 = 2;
 
 		final int d = -1;
-		final int p = -2;
 		final int ts = 1;
 		final int ts2 = 2;
 
 		q.addQuantification(FORALL, d,
 				Guard.varIsNotEqualSemToVal(d, "[unknown]"));
-		q.addQuantification(FORALL, p);
 
-		q.addTransition(1, INSERT_DB2, new int[] { p, d, ts }, 2);
+		q.addTransition(1, INSERT_DB2, new int[] { d, ts }, 2);
 
 		q.startTransition(2);
 		q.eventName(INSERT_DB3);
-		q.addVarArg(p);
 		q.addVarArg(d);
 		q.addVarArg(ts2);
 		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " <= 60") {
