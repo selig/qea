@@ -17,16 +17,17 @@ public class OfflineTranslator_SOLOIST_TWO extends OfflineTranslator {
 	private final String EVENT_TYPE_START_STR = "start";
 
 	@Override
-	public Verdict translateAndStep(String eventName, String[] params) {
+	public Verdict translateAndStep(String eventName, String[] paramNames,
+			String[] paramValues) {
 
 		switch (eventName) {
 		case INVCHECKACCESS_STR:
-			if (params[1].equals(EVENT_TYPE_START_STR)) {
+			if (paramValues[1].equals(EVENT_TYPE_START_STR)) {
 				return monitor.step(INVCHECKACCESS_START,
-						Integer.valueOf(params[0]));
+						Integer.valueOf(paramValues[0]));
 			}
 			return monitor.step(INVCHECKACCESS_COMPLETE,
-					Integer.valueOf(params[0]));
+					Integer.valueOf(paramValues[0]));
 		default:
 			return null;
 		}

@@ -18,11 +18,12 @@ public class OfflineTranslator_SOLOIST_THREE extends OfflineTranslator {
 	private final String REPLOGON_STR = "replogon";
 
 	@Override
-	public Verdict translateAndStep(String eventName, String[] params) {
+	public Verdict translateAndStep(String eventName, String[] paramNames,
+			String[] paramValues) {
 
 		switch (eventName) {
 		case INVCHECKACCESS_STR:
-			if (params[1].equals(EVENT_TYPE_COMPLETE_STR)) {
+			if (paramValues[1].equals(EVENT_TYPE_COMPLETE_STR)) {
 				return monitor.step(INVCHECKACCESS_COMPLETE);
 			}
 			return null;

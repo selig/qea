@@ -26,13 +26,16 @@ public abstract class OfflineTranslator {
 	 * 
 	 * @param eventName
 	 *            Name of the event
-	 * @param params
+	 * @param paramNames
+	 *            Array of parameter names
+	 * @param paramValues
 	 *            Array of parameter values
 	 * @return Verdict after processing the specified event or <code>null</code>
 	 *         if the event is not relevant for the property associated to the
 	 *         monitor of this translator
 	 */
-	public abstract Verdict translateAndStep(String eventName, String[] params);
+	public abstract Verdict translateAndStep(String eventName,
+			String[] paramNames, String[] paramValues);
 
 	/**
 	 * Determines if the specified event without parameters is applicable to the

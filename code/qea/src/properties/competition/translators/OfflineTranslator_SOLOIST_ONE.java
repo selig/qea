@@ -17,12 +17,13 @@ public class OfflineTranslator_SOLOIST_ONE extends OfflineTranslator {
 	private final String LOGOFF_STR = "recvlogoff";
 
 	@Override
-	public Verdict translateAndStep(String eventName, String[] params) {
+	public Verdict translateAndStep(String eventName, String[] paramNames,
+			String[] paramValues) {
 		switch (eventName) {
 		case WITHDRAW_STR:
-			return monitor.step(WITHDRAW, Integer.valueOf(params[0]));
+			return monitor.step(WITHDRAW, Integer.valueOf(paramValues[0]));
 		case LOGOFF_STR:
-			return monitor.step(LOGOFF, Integer.valueOf(params[0]));
+			return monitor.step(LOGOFF, Integer.valueOf(paramValues[0]));
 		default:
 			return null;
 		}

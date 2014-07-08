@@ -17,15 +17,18 @@ public class OfflineTranslator_MONPOLY_FIVE extends OfflineTranslator {
 	private final String INSERT_STR = "insert";
 
 	@Override
-	public Verdict translateAndStep(String eventName, String[] params) {
+	public Verdict translateAndStep(String eventName, String[] paramNames,
+			String[] paramValues) {
 		switch (eventName) {
 
 		case INSERT_STR:
 
 			// TODO Check in the trace how events are reported
-			return monitor.step(INSERT_DB2,
-					new Object[] { params[2], Integer.valueOf(params[3]),
-							Integer.valueOf(params[1]) });
+			return monitor.step(
+					INSERT_DB2,
+					new Object[] { paramValues[2],
+							Integer.valueOf(paramValues[3]),
+							Integer.valueOf(paramValues[1]) });
 		default:
 			return null;
 		}

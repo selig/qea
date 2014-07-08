@@ -18,7 +18,7 @@ import org.xml.sax.XMLReader;
 
 import properties.Property;
 import properties.competition.Soloist;
-import properties.competition.translators.OfflineTranslator_SOLOIST_ONE;
+import properties.competition.translators.OfflineTranslator_SOLOIST_FOUR;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import util.ArrayUtil;
@@ -55,8 +55,8 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 	public static void main(String[] args) throws IOException,
 			ParserConfigurationException, SAXException {
 		XMLFileMonitor fileMonitor = new XMLFileMonitor("traces/Team1/B5.xml",
-				new Soloist().make(Property.SOLOIST_ONE),
-				new OfflineTranslator_SOLOIST_ONE());
+				new Soloist().make(Property.SOLOIST_FOUR),
+				new OfflineTranslator_SOLOIST_FOUR());
 		System.out.println(fileMonitor.monitor());
 	}
 
@@ -215,6 +215,7 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 			return translator.translateAndStep(eventName);
 		} else {
 			return translator.translateAndStep(eventName,
+					ArrayUtil.resize(fieldNames, fieldCount),
 					ArrayUtil.resize(fieldValues, fieldCount));
 		}
 	}
