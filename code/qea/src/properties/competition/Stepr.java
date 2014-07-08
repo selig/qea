@@ -140,7 +140,7 @@ public class Stepr implements PropertyMaker {
 
 		final int INIT = 1;
 		final int RUN = 2;
-		final int FINISHED = 3;
+		final int FINISH = 3;
 		final int GROUP_START = 4;
 		final int PHASE_START = 5;
 		final int GROUP_END = 6;
@@ -185,7 +185,7 @@ public class Stepr implements PropertyMaker {
 		q.addTransition(2, PHASE_START, 2);
 		q.addTransition(2, INIT, new int[] { p }, 3);
 		q.addTransition(3, RUN, new int[] { p }, 4);
-		q.addTransition(4, FINISHED, new int[] { p }, 2);
+		q.addTransition(4, FINISH, new int[] { p }, 2);
 
 		q.addFinalStates(1);
 
@@ -193,10 +193,10 @@ public class Stepr implements PropertyMaker {
 
 		qea.record_event_name("init", INIT);
 		qea.record_event_name("run", RUN);
-		qea.record_event_name("finish", FINISHED);
-		qea.record_event_name("groupStart", GROUP_START);
-		qea.record_event_name("phaseStart", PHASE_START);
-		qea.record_event_name("groupEnd", GROUP_END);
+		qea.record_event_name("finish", FINISH);
+		qea.record_event_name("group_start", GROUP_START);
+		qea.record_event_name("phase_start", PHASE_START);
+		qea.record_event_name("group_end", GROUP_END);
 
 		return qea;
 	}
