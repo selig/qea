@@ -18,15 +18,20 @@ public class OfflineTranslator_MONPOLY_TWO extends OfflineTranslator {
 	private final String TRANS_STR = "trans";
 
 	@Override
-	public Verdict translateAndStep(String eventName, String[] params) {
+	public Verdict translateAndStep(String eventName, String[] paramNames,
+			String[] paramValues) {
 		switch (eventName) {
 		case AUTH_STR:
-			return monitor.step(AUTH,
-					new Object[] { params[3], Integer.valueOf(params[1]) });
+			return monitor.step(
+					AUTH,
+					new Object[] { paramValues[3],
+							Integer.valueOf(paramValues[1]) });
 		case TRANS_STR:
-			return monitor.step(TRANS,
-					new Object[] { params[3], Integer.valueOf(params[4]),
-							Integer.valueOf(params[1]) });
+			return monitor.step(
+					TRANS,
+					new Object[] { paramValues[3],
+							Integer.valueOf(paramValues[4]),
+							Integer.valueOf(paramValues[1]) });
 		default:
 			return null;
 		}

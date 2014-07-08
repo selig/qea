@@ -18,15 +18,20 @@ public class OfflineTranslator_MONPOLY_ONE extends OfflineTranslator {
 	private final String REPORT_STR = "report";
 
 	@Override
-	public Verdict translateAndStep(String eventName, String[] params) {
+	public Verdict translateAndStep(String eventName, String[] paramNames,
+			String[] paramValues) {
 		switch (eventName) {
 		case TRANS_STR:
-			return monitor.step(TRANS,
-					new Object[] { params[3], Integer.valueOf(params[4]),
-							Integer.valueOf(params[1]) });
+			return monitor.step(
+					TRANS,
+					new Object[] { paramValues[3],
+							Integer.valueOf(paramValues[4]),
+							Integer.valueOf(paramValues[1]) });
 		case REPORT_STR:
-			return monitor.step(REPORT,
-					new Object[] { params[2], Integer.valueOf(params[1]) });
+			return monitor.step(
+					REPORT,
+					new Object[] { paramValues[2],
+							Integer.valueOf(paramValues[1]) });
 		default:
 			return null;
 		}

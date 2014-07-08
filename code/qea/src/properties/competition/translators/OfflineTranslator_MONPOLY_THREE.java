@@ -26,28 +26,31 @@ public class OfflineTranslator_MONPOLY_THREE extends OfflineTranslator {
 	private final String PUBLISH_STR = "publish";
 
 	@Override
-	public Verdict translateAndStep(String eventName, String[] params) {
+	public Verdict translateAndStep(String eventName, String[] paramNames,
+			String[] paramValues) {
 		switch (eventName) {
 
 		case ACC_S_STR:
-			return monitor.step(ACC_S, new Object[] { params[2] });
+			return monitor.step(ACC_S, new Object[] { paramValues[2] });
 
 		case ACC_F_STR:
-			return monitor.step(ACC_F, new Object[] { params[2] });
+			return monitor.step(ACC_F, new Object[] { paramValues[2] });
 
 		case MGR_S_STR:
-			return monitor.step(MGR_S, new Object[] { params[2], params[3] });
+			return monitor.step(MGR_S, new Object[] { paramValues[2],
+					paramValues[3] });
 
 		case MGR_F_STR:
-			return monitor.step(MGR_F, new Object[] { params[2], params[3] });
+			return monitor.step(MGR_F, new Object[] { paramValues[2],
+					paramValues[3] });
 
 		case APPROVE_STR:
-			return monitor.step(APPROVE, new Object[] { params[2], params[3],
-					Integer.valueOf(params[1]) });
+			return monitor.step(APPROVE, new Object[] { paramValues[2],
+					paramValues[3], Integer.valueOf(paramValues[1]) });
 
 		case PUBLISH_STR:
-			return monitor.step(PUBLISH, new Object[] { params[2], params[3],
-					Integer.valueOf(params[1]) });
+			return monitor.step(PUBLISH, new Object[] { paramValues[2],
+					paramValues[3], Integer.valueOf(paramValues[1]) });
 
 		default:
 			return null;

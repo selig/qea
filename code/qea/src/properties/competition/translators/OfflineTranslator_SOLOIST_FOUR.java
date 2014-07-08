@@ -19,16 +19,17 @@ public class OfflineTranslator_SOLOIST_FOUR extends OfflineTranslator {
 	private final String EVENT_TYPE_COMPLETE_STR = "complete";
 
 	@Override
-	public Verdict translateAndStep(String eventName, String[] params) {
+	public Verdict translateAndStep(String eventName, String[] paramNames,
+			String[] paramValues) {
 		switch (eventName) {
 		case INVCHECKACCESS_STR:
-			switch (params[1]) {
+			switch (paramValues[1]) {
 			case EVENT_TYPE_START_STR:
 				return monitor.step(INVCHECKACCESS_START,
-						Integer.valueOf(params[0]));
+						Integer.valueOf(paramValues[0]));
 			case EVENT_TYPE_COMPLETE_STR:
 				return monitor.step(INVCHECKACCESS_COMPLETE,
-						Integer.valueOf(params[0]));
+						Integer.valueOf(paramValues[0]));
 			default:
 				return null;
 			}

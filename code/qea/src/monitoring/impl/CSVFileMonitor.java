@@ -6,7 +6,7 @@ import java.io.IOException;
 import monitoring.impl.translators.OfflineTranslator;
 import properties.Property;
 import properties.competition.MonPoly;
-import properties.competition.translators.OfflineTranslator_MONPOLY_ONE;
+import properties.competition.translators.OfflineTranslator_MONPOLY_FOUR;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 
@@ -54,17 +54,19 @@ public class CSVFileMonitor extends FileMonitor {
 		// int name = translate(parts[0]);
 		if (parts.length == 3) {
 			return translator.translateAndStep(parts[0],
-					new String[] { parts[2] });
+					new String[] { parts[1] }, new String[] { parts[2] });
 		} else if (parts.length == 5) {
 			return translator.translateAndStep(parts[0], new String[] {
-					parts[2], parts[4] });
+					parts[1], parts[3] }, new String[] { parts[2], parts[4] });
 		} else {
 			int noargs = (parts.length - 1) / 2;
 			String[] args = new String[noargs];
+			String[] argNames = new String[noargs];
 			for (int i = 2, j = 0; j < noargs; i += 2, j++) {
+				argNames[j] = parts[i - 1];
 				args[j] = parts[i];
 			}
-			return translator.translateAndStep(parts[0], args);
+			return translator.translateAndStep(parts[0], argNames, args);
 		}
 	}
 
@@ -75,9 +77,9 @@ public class CSVFileMonitor extends FileMonitor {
 	// A test
 	public static void main(String[] args) throws IOException {
 
-		CSVFileMonitor f = new CSVFileMonitor("traces/Team4/B1_trace.csv",
-				new MonPoly().make(Property.MONPOLY_ONE),
-				new OfflineTranslator_MONPOLY_ONE());
+		CSVFileMonitor f = new CSVFileMonitor("traces/Team4/B4_trace.csv",
+				new MonPoly().make(Property.MONPOLY_FOUR),
+				new OfflineTranslator_MONPOLY_FOUR());
 
 		long start = System.currentTimeMillis();
 		System.err.println(f.monitor());
