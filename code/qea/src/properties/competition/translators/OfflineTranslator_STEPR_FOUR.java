@@ -11,16 +11,16 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_STEPR_FOUR extends OfflineTranslator {
 
-	private final int INIT = 1;
-	private final int RUN = 2;
-	private final int FINISH = 3;
-	private final int GROUP_START = 4;
-	private final int PHASE_START = 5;
-	private final int GROUP_END = 6;
+	private static final int INIT = 1;
+	private static final int RUN = 2;
+	private static final int FINISH = 3;
+	private static final int GROUP_START = 4;
+	private static final int PHASE_START = 5;
+	private static final int GROUP_END = 6;
 
-	private final String GROUP_START_STR = "group_start";
-	private final String PHASE_START_STR = "phase_start";
-	private final String GROUP_END_STR = "group_end";
+	private static final String GROUP_START_STR = "group_start";
+	private static final String PHASE_START_STR = "phase_start";
+	private static final String GROUP_END_STR = "group_end";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

@@ -11,11 +11,11 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_QEA_OFFLINE_ONE extends OfflineTranslator {
 
-	private final int PING = 1;
-	private final int ACK = 2;
+	private static final int PING = 1;
+	private static final int ACK = 2;
 
-	private final String PING_STR = "ping";
-	private final String ACK_STR = "ack";
+	private static final String PING_STR = "ping";
+	private static final String ACK_STR = "ack";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

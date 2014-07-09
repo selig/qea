@@ -11,17 +11,17 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_QEA_OFFLINE_FOUR extends OfflineTranslator {
 
-	private final int REQUEST = 1;
-	private final int GRANT = 2;
-	private final int DENY = 3;
-	private final int RESCIND = 4;
-	private final int CANCEL = 5;
+	private static final int REQUEST = 1;
+	private static final int GRANT = 2;
+	private static final int DENY = 3;
+	private static final int RESCIND = 4;
+	private static final int CANCEL = 5;
 
-	private final String REQUEST_STR = "request";
-	private final String GRANT_STR = "grant";
-	private final String DENY_STR = "deny";
-	private final String RESCIND_STR = "rescind";
-	private final String CANCEL_STR = "cancel";
+	private static final String REQUEST_STR = "request";
+	private static final String GRANT_STR = "grant";
+	private static final String DENY_STR = "deny";
+	private static final String RESCIND_STR = "rescind";
+	private static final String CANCEL_STR = "cancel";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

@@ -11,10 +11,10 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_MONPOLY_FIVE extends OfflineTranslator {
 
-	private final int INSERT_DB2 = 1;
-	private final int INSERT_DB3 = 2;
+	private static final int INSERT_DB2 = 1;
+	private static final int INSERT_DB3 = 2;
 
-	private final String INSERT_STR = "insert";
+	private static final String INSERT_STR = "insert";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

@@ -11,12 +11,12 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_SOLOIST_FOUR extends OfflineTranslator {
 
-	private final int INVCHECKACCESS_START = 1;
-	private final int INVCHECKACCESS_COMPLETE = 2;
+	private static final int INVCHECKACCESS_START = 1;
+	private static final int INVCHECKACCESS_COMPLETE = 2;
 
-	private final String INVCHECKACCESS_STR = "invcheckaccess";
-	private final String EVENT_TYPE_START_STR = "start";
-	private final String EVENT_TYPE_COMPLETE_STR = "complete";
+	private static final String INVCHECKACCESS_STR = "invcheckaccess";
+	private static final String EVENT_TYPE_START_STR = "start";
+	private static final String EVENT_TYPE_COMPLETE_STR = "complete";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

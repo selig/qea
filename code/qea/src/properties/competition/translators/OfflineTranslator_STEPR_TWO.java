@@ -11,11 +11,11 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_STEPR_TWO extends OfflineTranslator {
 
-	private final int START1 = 1;
-	private final int STOP = 2;
+	private static final int START1 = 1;
+	private static final int STOP = 2;
 
-	private final String START1_STR = "start1";
-	private final String STOP_STR = "stop";
+	private static final String START1_STR = "start1";
+	private static final String STOP_STR = "stop";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,
