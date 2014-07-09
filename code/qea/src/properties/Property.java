@@ -47,11 +47,11 @@ public enum Property {
 	PRM4J_FIVE,
 	PRM4J_SIX,
 	
-	// QEA
-	QEA_ONE,
-	QEA_TWO,
-	QEA_THREE,
-	QEA_FOUR,
+	// QEA Java
+	QEA_JAVA_ONE,
+	QEA_JAVA_TWO,
+	QEA_JAVA_THREE,
+	QEA_JAVA_FOUR,
 	
 	//Stepr properties
 	STEPR_ONE,
@@ -79,5 +79,12 @@ public enum Property {
 	MONPOLY_TWO,
 	MONPOLY_THREE,
 	MONPOLY_FOUR,
-	MONPOLY_FIVE
+	MONPOLY_FIVE,
+	
+	// QEA offline properties
+	QEA_OFFLINE_ONE,
+	QEA_OFFLINE_TWO,
+	QEA_OFFLINE_THREE,
+	QEA_OFFLINE_FOUR,
+	QEA_OFFLINE_FIVE
 }
