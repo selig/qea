@@ -31,8 +31,9 @@ public class Incr_QVar0_FVar_Det_QEAMonitor extends
 	public Verdict step(int eventName, Object[] args) {
 
 		if (saved != null) {
-			if (!restart())
+			if (!restart()) {
 				return saved;
+			}
 		}
 
 		// Update configuration

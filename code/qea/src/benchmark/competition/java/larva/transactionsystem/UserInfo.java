@@ -67,15 +67,15 @@ public class UserInfo {
 
 	// User type
 	public boolean isGoldUser() {
-		return (type == UserType.GOLD);
+		return type == UserType.GOLD;
 	}
 
 	public boolean isSilverUser() {
-		return (type == UserType.SILVER);
+		return type == UserType.SILVER;
 	}
 
 	public boolean isNormalUser() {
-		return (type == UserType.NORMAL);
+		return type == UserType.NORMAL;
 	}
 
 	public void makeGoldUser() {
@@ -92,15 +92,15 @@ public class UserInfo {
 
 	// Status
 	public boolean isWhitelisted() {
-		return (status == UserStatus.WHITELISTED);
+		return status == UserStatus.WHITELISTED;
 	}
 
 	public boolean isGreylisted() {
-		return (status == UserStatus.GREYLISTED);
+		return status == UserStatus.GREYLISTED;
 	}
 
 	public boolean isBlacklisted() {
-		return (status == UserStatus.BLACKLISTED);
+		return status == UserStatus.BLACKLISTED;
 	}
 
 	public void blacklist() {
@@ -117,15 +117,15 @@ public class UserInfo {
 
 	// Mode
 	public boolean isActive() {
-		return (mode == UserMode.ACTIVE);
+		return mode == UserMode.ACTIVE;
 	}
 
 	public boolean isFrozen() {
-		return (mode == UserMode.FROZEN);
+		return mode == UserMode.FROZEN;
 	}
 
 	public boolean isDisabled() {
-		return (mode == UserMode.DISABLED);
+		return mode == UserMode.DISABLED;
 	}
 
 	public void makeActive() {
@@ -151,8 +151,9 @@ public class UserInfo {
 		Iterator<UserSession> iterator = sessions.iterator();
 		while (iterator.hasNext()) {
 			s = iterator.next();
-			if (s.getId() == sid)
+			if (s.getId() == sid) {
 				return s;
+			}
 		}
 		return null;
 	}
@@ -166,7 +167,7 @@ public class UserInfo {
 
 		next_session_id++;
 
-		return (sid);
+		return sid;
 	}
 
 	public void closeSession(Integer sid) {
@@ -182,8 +183,9 @@ public class UserInfo {
 		Iterator<UserAccount> iterator = accounts.iterator();
 		while (iterator.hasNext()) {
 			a = iterator.next();
-			if (a.getAccountNumber() == account_number)
+			if (a.getAccountNumber() == account_number) {
 				return a;
+			}
 		}
 		return null;
 	}

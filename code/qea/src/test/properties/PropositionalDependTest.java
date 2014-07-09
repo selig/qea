@@ -1,8 +1,8 @@
 package test.properties;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.*;
-import monitoring.impl.MonitorFactory;
+import static structure.impl.other.Verdict.SUCCESS;
+import static structure.impl.other.Verdict.WEAK_FAILURE;
 import monitoring.intf.Monitor;
 
 import org.junit.Before;
@@ -32,11 +32,11 @@ public class PropositionalDependTest {
 	public void test_one() {
 
 		assertEquals(monitor.step(e, 5), WEAK_FAILURE);
-		//System.out.println(monitor);
+		// System.out.println(monitor);
 		assertEquals(monitor.step(f, 4), WEAK_FAILURE);
-		//System.out.println(monitor);
+		// System.out.println(monitor);
 		assertEquals(monitor.step(f, 6), SUCCESS);
-		//System.out.println(monitor);
+		// System.out.println(monitor);
 	}
 
 }

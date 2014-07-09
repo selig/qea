@@ -54,8 +54,9 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 		}
 	}
 
+	@Override
 	public boolean isNormal() {
-		return (quantificationUniversal == isStateFinal(initialState));
+		return quantificationUniversal == isStateFinal(initialState);
 	}
 
 	/**
@@ -147,6 +148,7 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 	 * 
 	 * @return Initial state
 	 */
+	@Override
 	public int getInitialState() {
 		return initialState;
 	}
@@ -192,6 +194,7 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 	 * @return <code>true</code> if the quantification for the variable of this
 	 *         QEA is universal; <code>false</code> if it is existential
 	 */
+	@Override
 	public boolean isQuantificationUniversal() {
 		return quantificationUniversal;
 	}

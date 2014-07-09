@@ -12,82 +12,94 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 @SuppressWarnings("serial")
-public class EagerGarbageHashMap<V> implements Map<Object,V>, IgnoreWrapper<Object> {
+public class EagerGarbageHashMap<V> implements Map<Object, V>,
+		IgnoreWrapper<Object> {
 
-	private final HashMap<Integer,V> store = new HashMap<Integer,V>();
+	private final HashMap<Integer, V> store = new HashMap<Integer, V>();
 	private final ReferenceQueue to_remove = new ReferenceQueue();
-	private final WeakHashMap<Object,GarbageRef> garbage_store = new WeakHashMap<Object,GarbageRef>();
+	private final WeakHashMap<Object, GarbageRef> garbage_store = new WeakHashMap<Object, GarbageRef>();
 	private final HashSet<Integer> ignored_ids = new HashSet<Integer>();
-	
-	public void ignore(Object key){
+
+	@Override
+	public void ignore(Object key) {
 		int id = System.identityHashCode(key);
 		ignored_ids.add(id);
-	}	
-	
+	}
+
 	private int counter = 0;
 	public final int frequency = 10;
-	
-	private class GarbageRef extends WeakReference<Object>{		
-		public GarbageRef(Object k, int i){
-			super(k,to_remove);
-			id=i;
+
+	private class GarbageRef extends WeakReference<Object> {
+		public GarbageRef(Object k, int i) {
+			super(k, to_remove);
+			id = i;
 		}
-		public final int id;		
-	}
-	
-	private static class EntryWrapper {
-		public EntryWrapper(int i){id=i;}
+
 		public final int id;
 	}
-	
-	private int getId(Object key){
-		if(key instanceof EntryWrapper)
-			return ((EntryWrapper) key).id;
-		return System.identityHashCode(key);	
+
+	private static class EntryWrapper {
+		public EntryWrapper(int i) {
+			id = i;
+		}
+
+		public final int id;
 	}
-	
+
+	private int getId(Object key) {
+		if (key instanceof EntryWrapper) {
+			return ((EntryWrapper) key).id;
+		}
+		return System.identityHashCode(key);
+	}
+
 	@Override
-	public V put(Object key, V value){
-		if(counter++%frequency==0) clearGarbage();
-		
-		Integer id = getId(key);		
-		V old = store.put(id,value);
-		
-		//Record key - if not already in store
-		if(old==null){
-			GarbageRef g = new GarbageRef(key,id);
-			garbage_store.put(key,g);
+	public V put(Object key, V value) {
+		if (counter++ % frequency == 0) {
+			clearGarbage();
+		}
+
+		Integer id = getId(key);
+		V old = store.put(id, value);
+
+		// Record key - if not already in store
+		if (old == null) {
+			GarbageRef g = new GarbageRef(key, id);
+			garbage_store.put(key, g);
 		}
 
 		return old;
 	}
 
-	public void clearGarbage(){
-		Object r =  to_remove.poll();
-		while(r!=null){
+	public void clearGarbage() {
+		Object r = to_remove.poll();
+		while (r != null) {
 			GarbageRef g = (GarbageRef) r;
 			store.remove(g.id);
 			r = to_remove.poll();
 		}
 	}
-	
+
 	@Override
 	public V get(Object key) {
-		if(counter++%frequency==0) clearGarbage();		
+		if (counter++ % frequency == 0) {
+			clearGarbage();
+		}
 		Integer id = getId(key);
-		if(ignored_ids.contains(id))
+		if (ignored_ids.contains(id)) {
 			return null;
+		}
 		return store.get(id);
 	}
 
 	@Override
 	public V remove(Object key) {
 		Integer id = getId(key);
-		//TODO - perhaps remove from garbage_store? not sure how
+		// TODO - perhaps remove from garbage_store? not sure how
 		V old = store.remove(id);
 		return old;
-	}	
-	
+	}
+
 	@Override
 	public void clear() {
 		store.clear();
@@ -95,7 +107,7 @@ public class EagerGarbageHashMap<V> implements Map<Object,V>, IgnoreWrapper<Obje
 
 	@Override
 	public boolean containsKey(Object key) {
-		Integer id = getId(key);		
+		Integer id = getId(key);
 		return store.containsKey(id);
 	}
 
@@ -111,20 +123,19 @@ public class EagerGarbageHashMap<V> implements Map<Object,V>, IgnoreWrapper<Obje
 
 	public Set<java.util.Map.Entry<Integer, V>> storeEntrySet() {
 		return store.entrySet();
-	}	
-	
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return store.isEmpty();
 	}
 
-
 	private final class KeyWrapperIterator implements Iterator<Object> {
 
 		private final Iterator<Integer> rawIterator;
-		
+
 		public KeyWrapperIterator(Iterator<Integer> iterator) {
-			rawIterator=iterator;
+			rawIterator = iterator;
 		}
 
 		@Override
@@ -140,17 +151,17 @@ public class EagerGarbageHashMap<V> implements Map<Object,V>, IgnoreWrapper<Obje
 
 		@Override
 		public void remove() {
-			throw new RuntimeException("Not implemented");			
+			throw new RuntimeException("Not implemented");
 		}
-		
+
 	}
 
-    private final class KeySet extends AbstractSet<Object> {
+	private final class KeySet extends AbstractSet<Object> {
 
-    	private final Set<Integer> rawKeySet;
-    	
+		private final Set<Integer> rawKeySet;
+
 		public KeySet(Set<Integer> rawKeySet) {
-			this.rawKeySet=rawKeySet;
+			this.rawKeySet = rawKeySet;
 		}
 
 		@Override
@@ -163,12 +174,12 @@ public class EagerGarbageHashMap<V> implements Map<Object,V>, IgnoreWrapper<Obje
 			return rawKeySet.size();
 		}
 
-    }	
-	
+	}
+
 	@Override
 	public Set<Object> keySet() {
 		Set<Integer> rawKeySet = store.keySet();
-		return new KeySet(rawKeySet);		
+		return new KeySet(rawKeySet);
 	}
 
 	@Override

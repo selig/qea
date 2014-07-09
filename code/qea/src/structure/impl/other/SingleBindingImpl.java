@@ -38,7 +38,7 @@ public class SingleBindingImpl extends Binding {
 	 */
 	@Override
 	public Object getValue(int variableName) {
-		assert (variableName == index);
+		assert variableName == index;
 		return value;
 	}
 
@@ -75,10 +75,12 @@ public class SingleBindingImpl extends Binding {
 
 	@Override
 	public boolean update(int[] variableNames, Object[] args) {
-		assert(variableNames.length==args.length);
-		for(int i=0;i<args.length;i++){
+		assert variableNames.length == args.length;
+		for (int i = 0; i < args.length; i++) {
 			int var = variableNames[i];
-			if(var==index) value = args[i];
+			if (var == index) {
+				value = args[i];
+			}
 		}
 		return true;
 	}

@@ -3,7 +3,6 @@ package test.properties;
 import static org.junit.Assert.assertEquals;
 import static structure.impl.other.Verdict.WEAK_FAILURE;
 import static structure.impl.other.Verdict.WEAK_SUCCESS;
-import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 
 import org.junit.Before;
@@ -31,18 +30,18 @@ public class SampleNonDetTest {
 	}
 
 	private void printMonitor() {
-		System.out.println((monitor));
+		System.out.println(monitor);
 	}
 
 	@Test
 	public void test_one() {
 		// Test reach state 3
 		Object x = new Object();
-		//printMonitor();
+		// printMonitor();
 		assertEquals(monitor.step(a, x), WEAK_FAILURE);
-		//printMonitor();
+		// printMonitor();
 		assertEquals(monitor.step(c, x), WEAK_SUCCESS);
-		//printMonitor();
+		// printMonitor();
 	}
 
 	@Test

@@ -5,7 +5,6 @@ import static structure.impl.other.Verdict.FAILURE;
 import static structure.impl.other.Verdict.SUCCESS;
 import static structure.impl.other.Verdict.WEAK_FAILURE;
 import static structure.impl.other.Verdict.WEAK_SUCCESS;
-import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 
 import org.junit.Before;
@@ -46,7 +45,7 @@ public class UseFilePropositionalTest {
 
 		assertEquals(monitor.step(OPEN), WEAK_FAILURE);
 		assertEquals(monitor.step(OPEN), FAILURE); // failure happens here
-														// - two opens
+													// - two opens
 		assertEquals(monitor.step(USE), FAILURE);
 		assertEquals(monitor.step(CLOSE), FAILURE);
 		assertEquals(monitor.step(USE), FAILURE);
@@ -85,7 +84,7 @@ public class UseFilePropositionalTest {
 		// Test incorrect behaviour
 		// close twice
 		Object f = new Object();
-		
+
 		assertEquals(monitor.step(OPEN), WEAK_FAILURE);
 		assertEquals(monitor.step(USE), WEAK_FAILURE);
 		assertEquals(monitor.step(CLOSE), WEAK_SUCCESS);

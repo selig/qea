@@ -31,11 +31,12 @@ class CThread2 extends Thread {
 	private String func;
 
 	public CThread2(String name, String fun, int t) {
-		this.setName(name);
-		this.func = fun;
-		this.times = t;
+		setName(name);
+		func = fun;
+		times = t;
 	}
 
+	@Override
 	public void run() {
 		if (func.equals("A")) {
 			for (int i = 0; i < times; i++) {

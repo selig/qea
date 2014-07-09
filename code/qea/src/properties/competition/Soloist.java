@@ -149,9 +149,9 @@ public class Soloist implements PropertyMaker {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 
-				int var0Val = (Integer) ((var0 == qvar) ? firstQval : binding
+				int var0Val = (Integer) (var0 == qvar ? firstQval : binding
 						.getForced(var0));
-				int var1Val = (Integer) ((var1 == qvar) ? firstQval : binding
+				int var1Val = (Integer) (var1 == qvar ? firstQval : binding
 						.getForced(var1));
 				return var1Val - var0Val <= diff;
 			}
@@ -183,9 +183,9 @@ public class Soloist implements PropertyMaker {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 
-				int var0Val = (Integer) ((var0 == qvar) ? firstQval : binding
+				int var0Val = (Integer) (var0 == qvar ? firstQval : binding
 						.getForced(var0));
-				int var1Val = (Integer) ((var1 == qvar) ? firstQval : binding
+				int var1Val = (Integer) (var1 == qvar ? firstQval : binding
 						.getForced(var1));
 				return var1Val - var0Val > diff;
 			}
@@ -484,13 +484,13 @@ public class Soloist implements PropertyMaker {
 			public boolean check(Binding binding) {
 
 				int tVal = binding.getForcedAsInteger(t);
-				double tDoubleVal = (double) tVal;
+				double tDoubleVal = tVal;
 				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
-				double totalTimeDoubleVal = (double) binding
+				double totalTimeDoubleVal = binding
 						.getForcedAsInteger(totalTime);
-				double currStartTimeDoubleVal = (double) binding
+				double currStartTimeDoubleVal = binding
 						.getForcedAsInteger(currStartTime);
-				double execCountDoubleVal = (double) binding
+				double execCountDoubleVal = binding
 						.getForcedAsInteger(execCount);
 
 				double avg = (totalTimeDoubleVal + (tDoubleVal - currStartTimeDoubleVal))
@@ -564,9 +564,9 @@ public class Soloist implements PropertyMaker {
 
 				int tVal = binding.getForcedAsInteger(t);
 				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
-				double totalTimeDoubleVal = (double) binding
+				double totalTimeDoubleVal = binding
 						.getForcedAsInteger(totalTime);
-				double execCountDoubleVal = (double) binding
+				double execCountDoubleVal = binding
 						.getForcedAsInteger(execCount);
 				double avg = totalTimeDoubleVal / execCountDoubleVal;
 

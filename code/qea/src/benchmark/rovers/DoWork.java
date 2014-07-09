@@ -17,41 +17,31 @@ public abstract class DoWork<S> {
 	public void dowork(String name, int[] args) {
 		if (name.equals("IncreasingCommand")) {
 			work_for_IncreasingCommand(args[0]);
-		}
-		else if (name.equals("ResourceLifecycle")) {
+		} else if (name.equals("ResourceLifecycle")) {
 			work_for_ResourceLifecycle(args[0], args[1]);
-		}
-		else if (name.equals("ExactlyOneSuccess")) {
+		} else if (name.equals("ExactlyOneSuccess")) {
 			work_for_ExactlyOneSuccess(args[0]);
-		}
-		else if (name.equals("AcknowledgeCommands")) {
+		} else if (name.equals("AcknowledgeCommands")) {
 			work_for_AcknowledgeCommands(args[0]);
-		}
-		else if (name.equals("NestedCommand")) {
+		} else if (name.equals("NestedCommand")) {
 			work_for_NestedCommand(args[0], args[1], args[2]);
-		}
-		else if (name.equals("GrantCancel")) {
+		} else if (name.equals("GrantCancel")) {
 			work_for_GrantCancel(args[0], args[1], args[2]);
-		}
-		else if (name.equals("ReleaseResource")) {
+		} else if (name.equals("ReleaseResource")) {
 			work_for_ReleaseResource(args[0], args[1], args[2]);
-		}
-		else if (name.equals("RespectConflicts")) {
+		} else if (name.equals("RespectConflicts")) {
 			work_for_RespectConflicts(args[0], args[1], args[2]);
-		}
-		else if (name.equals("ExistsSatellite")) {
+		} else if (name.equals("ExistsSatellite")) {
 			work_for_ExistsSatellite(args[0], args[1]);
-		}
-		else if (name.equals("ExistsLeader")) {
+		} else if (name.equals("ExistsLeader")) {
 			work_for_ExistsLeader(args[0]);
-		}
-		else if (name.equals("MessageHashCorrectInvInt")) {
+		} else if (name.equals("MessageHashCorrectInvInt")) {
 			work_for_MessageHashCorrectInvInt(args[0], args[1]);
-		}
-		else if (name.equals("RespectPriorities")) {
+		} else if (name.equals("RespectPriorities")) {
 			work_for_RespectPriorities(args[0], args[1]);
-		}		
-		else System.err.println(name+" not found");
+		} else {
+			System.err.println(name + " not found");
+		}
 	}
 
 	/**
@@ -79,7 +69,7 @@ public abstract class DoWork<S> {
 	 *            Number of events to generate
 	 */
 	public void work_for_ResourceLifecycle(int r, int u) {
-		
+
 		// Initialise resources array
 		Object[] ros = new Object[r];
 		for (int i = 0; i < r; i++) {
@@ -88,13 +78,13 @@ public abstract class DoWork<S> {
 
 		int[] state = new int[r];
 
-		//Currently seems necessary to make MOP work... explore this more
+		// Currently seems necessary to make MOP work... explore this more
 		// after paper is done!!
-		for(int i=0;i<ros.length;i++){
+		for (int i = 0; i < ros.length; i++) {
 			request(ros[i]);
 			deny(ros[i]);
 		}
-		
+
 		Random rand = new Random();
 		for (int i = 0; i < u; i++) {
 
@@ -145,7 +135,7 @@ public abstract class DoWork<S> {
 	public void work_for_ExactlyOneSuccess(int c) {
 
 		System.err.println("Warning: cannot be used for MOP currently");
-		
+
 		Object[] cos = new Object[c];
 		for (int i = 0; i < c; i++) {
 			cos[i] = new Object();
@@ -156,7 +146,7 @@ public abstract class DoWork<S> {
 		Random rand = new Random();
 		while (c_made < c || !to_suc.isEmpty()) {
 
-			if (c_made == c || (!to_suc.isEmpty() && rand.nextBoolean())) {
+			if (c_made == c || !to_suc.isEmpty() && rand.nextBoolean()) {
 				int com = to_suc.remove();
 				succeed(cos[com]);
 			} else {
@@ -199,7 +189,7 @@ public abstract class DoWork<S> {
 
 		Random rand = new Random();
 		while (c_made < c || !to_suc.isEmpty()) {
-			if (c_made == c || (!to_suc.isEmpty() && rand.nextBoolean())) {
+			if (c_made == c || !to_suc.isEmpty() && rand.nextBoolean()) {
 				AC_tosuc_Entry entry = to_suc.remove(); // (com,n,p,t) =
 														// to_suc.head
 				if (rand.nextBoolean()) {
@@ -270,7 +260,7 @@ public abstract class DoWork<S> {
 		for (int i = 0; i < r; i++) {
 			owning[i] = -1;
 		}
-		
+
 		Random rand = new Random();
 		for (int i = 0; i < u; i++) {
 
@@ -343,7 +333,7 @@ public abstract class DoWork<S> {
 					finish(cos.get(com));
 					t_to_c.put(task, -1);
 				} else {
-					if (r_used == r || (!res.isEmpty() && rand.nextBoolean())) {
+					if (r_used == r || !res.isEmpty() && rand.nextBoolean()) {
 						// remove resource
 						int rr = res.remove();
 						resources[rr] = -1;
@@ -466,7 +456,7 @@ public abstract class DoWork<S> {
 
 		while (!sats_p.isEmpty() || !sats_r.isEmpty()) {
 
-			if ((!sats_p.isEmpty() && rand.nextBoolean()) || sats_r.isEmpty()) {
+			if (!sats_p.isEmpty() && rand.nextBoolean() || sats_r.isEmpty()) {
 
 				// important that it's an object for list remove method
 				Integer sat = sats_p.get(rand.nextInt(sats_p.size()));
@@ -475,16 +465,16 @@ public abstract class DoWork<S> {
 				Object rr = res.remove();
 
 				ping(rr, sos[sat]);
-				
+
 				Queue<Object> temp_q = map_r.get(sat);
 				if (temp_q == null) {
 					sats_r.add(sat);
 					temp_q = new LinkedList();
 					map_r.put(sat, temp_q);
 				}
-				temp_q.add(rr);				
+				temp_q.add(rr);
 
-				if (res.peek()==null) {
+				if (res.peek() == null) {
 					map_p.remove(sat);
 					sats_p.remove(sat);
 				}
@@ -495,7 +485,7 @@ public abstract class DoWork<S> {
 				Object rr = res.remove();
 				ack(sos[sat], rr);
 
-				if (res.peek()==null) {
+				if (res.peek() == null) {
 					map_r.remove(sat);
 					sats_r.remove(sat);
 				}
@@ -515,7 +505,7 @@ public abstract class DoWork<S> {
 
 		// maps resources into the the resources it should ping
 		Map<Integer, Queue<Integer>> map_ping = new HashMap<Integer, Queue<Integer>>();
-		
+
 		// randomly selects those resources
 		for (int res = 0; res < r; res++) {
 			Queue<Integer> o_res = new LinkedList<Integer>();
@@ -542,75 +532,77 @@ public abstract class DoWork<S> {
 
 		// set to true if some pings left
 		boolean[] res_p = new boolean[r];
-		int res_p_left=0;
+		int res_p_left = 0;
 		for (int i : map_ping.keySet()) {
 			res_p[i] = true;
 			res_p_left++;
 		}
 
 		// record acks to go
-		int res_a_left=0;
+		int res_a_left = 0;
 		boolean[] res_a = new boolean[r];
 
 		// while we have pings and acks left
-		while(res_p_left>0 || res_a_left>0){
-		  
-		  //System.err.println(res_p_left+","+res_a_left);	
-			
-		  // if we decide to ping
-		  if((res_p_left>0 && rand.nextBoolean()) || res_a_left==0){ 
+		while (res_p_left > 0 || res_a_left > 0) {
 
-			  // pick a random res to send res_p
-			  int res = rand.nextInt(r);
-			  while(!res_p[res]) res = rand.nextInt(r);
-			  
-			  Queue<Integer> resq = map_ping.get(res);	
-			  //select a res to receive
-			  int rr = resq.remove();
-			  
-			   ping(ros[res],ros[rr]);
-			  
-			   // rr now needs to do another ack
-			   if(!res_a[rr]){
-				   res_a_left++;
-				   res_a[rr]=true;
-			   }
-			   // add res to the ack resources of rr
-			   Queue<Integer> oldq = map_ack.get(rr);
-			   if(oldq==null){
-				   oldq = new LinkedList<Integer>();
-				   map_ack.put(rr,oldq);
-			   }
-			   oldq.add(res);
-			   
-		  
-		       if(resq.isEmpty()){ 
-		    	   map_ping.remove(res);		    	   
-		    	   res_p[res]=false;
-		    	   res_p_left--;
-		    	}
-		  
-		  } 
-		  else{ // send an ack instead 
-			  
-			  int res = rand.nextInt(r);
-			  while(!res_a[res]) res = rand.nextInt(r);		  
-			  Queue<Integer> resq = map_ack.get(res);				  
-			  
-			  int rr = resq.remove();
-			  
-			  ack(ros[rr],ros[res]);
-			  
-			  if(resq.isEmpty()){
-		    	   map_ack.remove(res);		    	   
-		    	   res_a[res]=false;
-		    	   res_a_left--;
-			  }
-		  
-		  } 
-		  
+			// System.err.println(res_p_left+","+res_a_left);
+
+			// if we decide to ping
+			if (res_p_left > 0 && rand.nextBoolean() || res_a_left == 0) {
+
+				// pick a random res to send res_p
+				int res = rand.nextInt(r);
+				while (!res_p[res]) {
+					res = rand.nextInt(r);
+				}
+
+				Queue<Integer> resq = map_ping.get(res);
+				// select a res to receive
+				int rr = resq.remove();
+
+				ping(ros[res], ros[rr]);
+
+				// rr now needs to do another ack
+				if (!res_a[rr]) {
+					res_a_left++;
+					res_a[rr] = true;
+				}
+				// add res to the ack resources of rr
+				Queue<Integer> oldq = map_ack.get(rr);
+				if (oldq == null) {
+					oldq = new LinkedList<Integer>();
+					map_ack.put(rr, oldq);
+				}
+				oldq.add(res);
+
+				if (resq.isEmpty()) {
+					map_ping.remove(res);
+					res_p[res] = false;
+					res_p_left--;
+				}
+
+			} else { // send an ack instead
+
+				int res = rand.nextInt(r);
+				while (!res_a[res]) {
+					res = rand.nextInt(r);
+				}
+				Queue<Integer> resq = map_ack.get(res);
+
+				int rr = resq.remove();
+
+				ack(ros[rr], ros[res]);
+
+				if (resq.isEmpty()) {
+					map_ack.remove(res);
+					res_a[res] = false;
+					res_a_left--;
+				}
+
+			}
+
 		}
-		 
+
 	}
 
 	private static class mhc_Entry {
@@ -641,7 +633,7 @@ public abstract class DoWork<S> {
 
 		while (sent < send_max || !to_ack.isEmpty()) {
 
-			if ((sent < send_max) && (to_ack.isEmpty() || rand.nextBoolean())) {
+			if (sent < send_max && (to_ack.isEmpty() || rand.nextBoolean())) {
 				// send a new message
 				// pick sender
 				Object sender = xos[rand.nextInt(x)];
@@ -666,142 +658,153 @@ public abstract class DoWork<S> {
 
 	}
 
-	private void make_res(Map<Object,Set<Object>> pmap, List<Object> resources, int r,Set<Object> parents){
-		
-		   if(resources.size()>=r) return;
-		   
-		   Set<Object> this_level = new HashSet<>();
-		   for(Object pr : parents){
-			   Set<Object> above_pr = new HashSet<>();
-			   for(Map.Entry<Object,Set<Object>> entry : pmap.entrySet()){
-				   if(entry.getValue().contains(pr))
-					   above_pr.add(entry.getKey());
-			   }
-			   if(resources.size() < r){
-				   Object c1 = new Object();
-				   this_level.add(c1);
-				   resources.add(c1);
-				   for(Object apr : above_pr){
-					   Set<Object> news = new HashSet<>(pmap.get(apr));
-					   news.add(c1);
-					   pmap.put(apr,news);
-				   }
-			   }
-			   //Do it again, i.e. binary tree
-			   if(resources.size() < r){
-				   Object c1 = new Object();
-				   this_level.add(c1);
-				   resources.add(c1);
-				   for(Object apr : above_pr){
-					   Set<Object> news = new HashSet<>(pmap.get(apr));
-					   news.add(c1);
-					   pmap.put(apr,news);
-				   }
-			   }			   
-		   }
-		   make_res(pmap,resources,r,this_level);
+	private void make_res(Map<Object, Set<Object>> pmap,
+			List<Object> resources, int r, Set<Object> parents) {
+
+		if (resources.size() >= r) {
+			return;
+		}
+
+		Set<Object> this_level = new HashSet<>();
+		for (Object pr : parents) {
+			Set<Object> above_pr = new HashSet<>();
+			for (Map.Entry<Object, Set<Object>> entry : pmap.entrySet()) {
+				if (entry.getValue().contains(pr)) {
+					above_pr.add(entry.getKey());
+				}
+			}
+			if (resources.size() < r) {
+				Object c1 = new Object();
+				this_level.add(c1);
+				resources.add(c1);
+				for (Object apr : above_pr) {
+					Set<Object> news = new HashSet<>(pmap.get(apr));
+					news.add(c1);
+					pmap.put(apr, news);
+				}
+			}
+			// Do it again, i.e. binary tree
+			if (resources.size() < r) {
+				Object c1 = new Object();
+				this_level.add(c1);
+				resources.add(c1);
+				for (Object apr : above_pr) {
+					Set<Object> news = new HashSet<>(pmap.get(apr));
+					news.add(c1);
+					pmap.put(apr, news);
+				}
+			}
+		}
+		make_res(pmap, resources, r, this_level);
 	}
-	
-	public void work_for_RespectPriorities(int r, int e){
-		  // first create a tree-structure of r resources with priorities
-		Map<Object,Set<Object>> pmap = new HashMap<>();
-		 
-		List<Object> resources = new ArrayList<>();		
-		
-		 Object mom = new Object();
-		 resources.add(mom);
-		 Set<Object> moms = new HashSet<Object>();
-		 moms.add(mom);
-		 make_res(pmap,resources,r, moms);
-	    
-		 // submit those priorities to the monitor
+
+	public void work_for_RespectPriorities(int r, int e) {
+		// first create a tree-structure of r resources with priorities
+		Map<Object, Set<Object>> pmap = new HashMap<>();
+
+		List<Object> resources = new ArrayList<>();
+
+		Object mom = new Object();
+		resources.add(mom);
+		Set<Object> moms = new HashSet<Object>();
+		moms.add(mom);
+		make_res(pmap, resources, r, moms);
+
+		// submit those priorities to the monitor
 		int e_done = 0;
-		for(Map.Entry<Object,Set<Object>> entry : pmap.entrySet()){
+		for (Map.Entry<Object, Set<Object>> entry : pmap.entrySet()) {
 			Object r1 = entry.getKey();
 			Set<Object> rs = entry.getValue();
-			for(Object r2 : rs){
-				priority(r1,r2);
+			for (Object r2 : rs) {
+				priority(r1, r2);
 				e_done++;
 			}
 		}
-			   
-		if(e_done>e){
-		  throw new RuntimeException("The number of events must be enough to allow the priorities to be given");
-		} 
-		//else System.err.println(e-e_done+" events left"); 
-		
-		 // now for the rest of the events select a random resource and do something with it, randomly
-		Random rand = new Random();
-		
-		Map<Object,Integer> rev = new HashMap<>();
-		for(int i=0;i<resources.size();i++){
-			rev.put(resources.get(i),i);
+
+		if (e_done > e) {
+			throw new RuntimeException(
+					"The number of events must be enough to allow the priorities to be given");
 		}
-		int[] status = new int[r+1];
+		// else System.err.println(e-e_done+" events left");
+
+		// now for the rest of the events select a random resource and do
+		// something with it, randomly
+		Random rand = new Random();
+
+		Map<Object, Integer> rev = new HashMap<>();
+		for (int i = 0; i < resources.size(); i++) {
+			rev.put(resources.get(i), i);
+		}
+		int[] status = new int[r + 1];
 		// statuses
 		// 0 unrequested
 		// 1 requested
 		// 2 granted
-		
-		for(int i=e_done;i<e;i++){
+
+		for (int i = e_done; i < e; i++) {
 			int index = rand.nextInt(r);
-		    Object res = resources.get(index);
-			switch(status[index]){
-			
-		      case 0 :
-		    	  request(res);
-		    	  status[index]=1;
-		    	  break;
-		      // if requested we can either grant or deny, if we plan on granting it we need to make sure
-		      // that all conflicted resources with lower priority are rescinded
-		      // we can only grant if there is no resource with higher priority granted
-		      case 1 :
-		        boolean higher_g = false;
-		        for(Map.Entry<Object,Set<Object>> entry : pmap.entrySet()){
-		        	if(entry.getValue().contains(res)){
-		        		if(status[rev.get(entry.getKey())]==2) higher_g=true;
-		        	}
-		        }
-		        if(higher_g){
-		        	deny(res);
-		        	status[index]=0;
-		        }
-		        else{
-		          // let's try and grant it
-		          Set<Object> res_set = pmap.get(res);
-		          if(res_set!=null){
-		        	  for(Object lr : res_set){
-		        		  if(status[rev.get(lr)]==2){
-		        			  rescind(lr);
-		        			  cancel_rp(lr);
-		        			  status[rev.get(lr)]=0;
-		        		  }
-		        	  }
-		          }
-		          grant_rp(res);
-		          status[index]=2;
-		        }
-		        break;
-		      case 2 :
-		    	  cancel_rp(res);
-		    	  status[index]=0;
-		    }
-		} 
-		 
+			Object res = resources.get(index);
+			switch (status[index]) {
+
+			case 0:
+				request(res);
+				status[index] = 1;
+				break;
+			// if requested we can either grant or deny, if we plan on granting
+			// it we need to make sure
+			// that all conflicted resources with lower priority are rescinded
+			// we can only grant if there is no resource with higher priority
+			// granted
+			case 1:
+				boolean higher_g = false;
+				for (Map.Entry<Object, Set<Object>> entry : pmap.entrySet()) {
+					if (entry.getValue().contains(res)) {
+						if (status[rev.get(entry.getKey())] == 2) {
+							higher_g = true;
+						}
+					}
+				}
+				if (higher_g) {
+					deny(res);
+					status[index] = 0;
+				} else {
+					// let's try and grant it
+					Set<Object> res_set = pmap.get(res);
+					if (res_set != null) {
+						for (Object lr : res_set) {
+							if (status[rev.get(lr)] == 2) {
+								rescind(lr);
+								cancel_rp(lr);
+								status[rev.get(lr)] = 0;
+							}
+						}
+					}
+					grant_rp(res);
+					status[index] = 2;
+				}
+				break;
+			case 2:
+				cancel_rp(res);
+				status[index] = 0;
+			}
+		}
+
 	}
-	
+
 	/*
 	 * The methods that we override to call the monitor. Events of the
 	 * properties
 	 */
 
-	//not used?
+	// not used?
 	public abstract void command_int(int x);
 
 	public abstract void request(Object o);
 
 	public abstract void grant_rl(Object o);
+
 	public abstract void grant_rc(Object o);
+
 	public abstract void grant_rp(Object o);
 
 	public abstract void deny(Object o);
@@ -809,7 +812,9 @@ public abstract class DoWork<S> {
 	public abstract void rescind(Object o);
 
 	public abstract void cancel_rl(Object o);
+
 	public abstract void cancel_rc(Object o);
+
 	public abstract void cancel_rp(Object o);
 
 	public abstract void succeed(Object o);
@@ -820,13 +825,15 @@ public abstract class DoWork<S> {
 
 	public abstract void command(Object a, Object b, Object c, int d);
 
-	//not used?
+	// not used?
 	public abstract void ack(Object o, int x);
 
 	public abstract void grant_gc(Object a, Object b);
+
 	public abstract void grant_rr(Object a, Object b);
 
 	public abstract void cancel_gc(Object a, Object b);
+
 	public abstract void cancel_rr(Object a, Object b);
 
 	public abstract void schedule(Object a, Object b);
@@ -836,6 +843,7 @@ public abstract class DoWork<S> {
 	public abstract void conflict(Object a, Object b);
 
 	public abstract void ping(Object a, Object b);
+
 	public abstract void ack(Object a, Object b);
 
 	public abstract void ack(Object a, Object b, int c);

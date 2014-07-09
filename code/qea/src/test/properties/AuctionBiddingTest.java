@@ -1,7 +1,8 @@
 package test.properties;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.*;
+import static structure.impl.other.Verdict.FAILURE;
+import static structure.impl.other.Verdict.WEAK_SUCCESS;
 import monitoring.intf.Monitor;
 
 import org.junit.Before;

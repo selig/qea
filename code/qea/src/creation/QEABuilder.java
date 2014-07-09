@@ -86,8 +86,9 @@ public class QEABuilder {
 		int var = nonvar;
 		Object val;
 
+		@Override
 		public String toString() {
-			return (val == null) ? "x_" + var : "v_" + val;
+			return val == null ? "x_" + var : "v_" + val;
 		}
 	}
 
@@ -108,8 +109,9 @@ public class QEABuilder {
 			event_name = e;
 			int[] vargs = transition.getVariableNames();
 			event_args = new VarOrVal[vargs.length];
-			for (int i = 0; i < vargs.length; i++)
+			for (int i = 0; i < vargs.length; i++) {
 				event_args[i] = VarOrVal.makeVar(vargs[i]);
+			}
 			g = transition.getGuard();
 			a = transition.getAssignment();
 			end = transition.getEndState();
@@ -191,6 +193,7 @@ public class QEABuilder {
 		int var = 1;
 		Guard g;
 
+		@Override
 		public String toString() {
 			return (universal ? "F" : "E") + var + (g == null ? "" : "g");
 		}
@@ -221,8 +224,9 @@ public class QEABuilder {
 		if (error != null) {
 			throw new ShouldNotHappenException(error);
 		}
-		if (inctrans != null)
+		if (inctrans != null) {
 			throw new ShouldNotHappenException("Unclosed transition");
+		}
 
 		// first get number of states and events
 		int states = countStates();
@@ -237,8 +241,9 @@ public class QEABuilder {
 		// Single quantifier next
 		else if (quants.size() == 1) {
 			qea = makeSingle(states, events);
-		} else
+		} else {
 			qea = makeGeneral(states, events);
+		}
 
 		if (qea != null) {
 			qea.setName(name);
@@ -255,8 +260,9 @@ public class QEABuilder {
 		if (error != null) {
 			throw new ShouldNotHappenException(error);
 		}
-		if (inctrans != null)
+		if (inctrans != null) {
 			throw new ShouldNotHappenException("Unclosed transition");
+		}
 
 		// first get number of states and events
 		int states = countStates();
@@ -276,43 +282,54 @@ public class QEABuilder {
 
 		switch (type) {
 		case QVAR01_FVAR_DET_QEA:
-			if (qs == 0 && det && !ggs)
+			if (qs == 0 && det && !ggs) {
 				return makePropFreeDet(states, events, strong);
-			if (qs == 1 && det && !ggs)
+			}
+			if (qs == 1 && det && !ggs) {
 				return makeSingleFreeDet(states, events, strong, qqs[0], fvars);
+			}
 			break;
 		case QVAR01_FVAR_NONDET_QEA:
-			if (qs == 0 && !ggs)
+			if (qs == 0 && !ggs) {
 				return makePropFreeNondet(states, events, strong);
-			if (qs == 1 && !ggs)
+			}
+			if (qs == 1 && !ggs) {
 				return makeSingleFreeNondet(states, events, strong, qqs[0],
 						fvars);
+			}
 			break;
 		case QVAR01_NOFVAR_DET_QEA:
-			if (qs == 0 && det && nofree && !ggs)
+			if (qs == 0 && det && nofree && !ggs) {
 				return makePropNofreeDet(states, events, strong);
-			if (qs == 1 && det && nofree && !ggs)
+			}
+			if (qs == 1 && det && nofree && !ggs) {
 				return makeSingleNofreeDet(states, events, strong, qqs[0]);
+			}
 			break;
 		case QVAR01_NOFVAR_NONDET_QEA:
-			if (qs == 0 && nofree && !ggs)
+			if (qs == 0 && nofree && !ggs) {
 				return makePropNofreeNondet(states, events, strong);
-			if (qs == 1 && nofree && !ggs)
+			}
+			if (qs == 1 && nofree && !ggs) {
 				return makeSingleNofreeNondet(states, events, strong, qqs[0]);
+			}
 			break;
 		case QVAR1_FVAR_DET_FIXEDQVAR_QEA:
-			if (qs == 1 && fixedQVar() && det && !ggs)
+			if (qs == 1 && fixedQVar() && det && !ggs) {
 				return makeSingleFreeDetFixed(states, events, strong, qqs[0],
 						fvars);
+			}
 			break;
 		case QVAR1_FVAR_NONDET_FIXEDQVAR_QEA:
-			if (qs == 1 && fixedQVar() && !ggs)
+			if (qs == 1 && fixedQVar() && !ggs) {
 				return makeSingleFreeNondetFixed(states, events, strong,
 						qqs[0], fvars);
+			}
 			break;
 		case QVARN_FVAR_DET_QEA:
-			if (det)
+			if (det) {
 				return makeGeneralFreeDet(states, events, strong, fvars);
+			}
 			break;
 		case QVARN_FVAR_NONDET_QEA:
 			return makeGeneralFreeNondet(states, events, strong, fvars);
@@ -325,10 +342,12 @@ public class QEABuilder {
 		QEABuilder b = deconstruct(qea);
 		QEA qea_new = b.make(type);
 		// copy
-		if (qea.get_name_lookup() != null)
+		if (qea.get_name_lookup() != null) {
 			for (Map.Entry<String, Integer> entry : qea.get_name_lookup()
-					.entrySet())
+					.entrySet()) {
 				qea_new.record_event_name(entry.getKey(), entry.getValue());
+			}
+		}
 		return qea_new;
 	}
 
@@ -351,13 +370,14 @@ public class QEABuilder {
 			Transition[][][] ts = ((QEA_nondet_free) qea).getDelta();
 			for (int s = 1; s < ts.length; s++) {
 				for (int e = 1; e < ts[0].length; e++) {
-					if (ts[s][e] != null)
+					if (ts[s][e] != null) {
 						for (Transition t : ts[s][e]) {
 							if (t != null && t.getEndState() > 0) {
 								TempTransition tt = new TempTransition(s, e, t);
 								q.addTransition(tt);
 							}
 						}
+					}
 				}
 			}
 		} else if (qea instanceof QVar01_NoFVar_Det_QEA) {
@@ -378,7 +398,7 @@ public class QEABuilder {
 			int[][][] ts = ((QVar01_NoFVar_NonDet_QEA) qea).getDelta();
 			for (int s = 1; s < ts.length; s++) {
 				for (int e = 1; e < ts[0].length; e++) {
-					if (ts[s][e] != null)
+					if (ts[s][e] != null) {
 						for (int t : ts[s][e]) {
 							if (t > 0) {
 								TempTransition tt = new TempTransition(s, e, t);
@@ -389,12 +409,14 @@ public class QEABuilder {
 								q.addTransition(tt);
 							}
 						}
+					}
 				}
 			}
-		} else
+		} else {
 			throw new ShouldNotHappenException(
 					"Cannot currently deconstruct qea of type "
 							+ qea.getClass());
+		}
 
 		// for(TempTransition tt : q.transitions)
 		// System.err.println(tt);
@@ -403,15 +425,17 @@ public class QEABuilder {
 		 * FinalStates
 		 */
 		for (int s : qea.getStates()) {
-			if (qea.isStateFinal(s))
+			if (qea.isStateFinal(s)) {
 				q.addFinalStates(s);
+			}
 		}
 		/*
 		 * Skiptates
 		 */
 		for (int s : qea.getStates()) {
-			if (qea.isStateSkip(s))
+			if (qea.isStateSkip(s)) {
 				q.setSkipStates(s);
+			}
 		}
 
 		/*
@@ -420,10 +444,11 @@ public class QEABuilder {
 		if (qea.getLambda().length == 0) {
 			// do nothing
 		} else if (qea.getLambda().length == 1) {
-			if (((QEA_single) qea).isQuantificationUniversal())
+			if (((QEA_single) qea).isQuantificationUniversal()) {
 				q.addQuantification(FORALL, -1);
-			else
+			} else {
 				q.addQuantification(EXISTS, -1);
+			}
 		} else {
 			try {
 				QEntry[] entry = ((Abstr_QVarN_QEA) qea).getFullLambda();
@@ -464,9 +489,10 @@ public class QEABuilder {
 	private QEA makeProp(int states, int events) {
 		boolean[] strongStates = computeStrongStates();
 
-		if (usesGlobalGuards())
+		if (usesGlobalGuards()) {
 			throw new ShouldNotHappenException(
 					"Global guards not supported here yet");
+		}
 		if (noFreeVariables()) {
 			if (isEventDeterministic()) {
 				return makePropNofreeDet(states, events, strongStates);
@@ -515,7 +541,7 @@ public class QEABuilder {
 						nextstates[j] = s;
 						j++;
 					}
-					qea.addTransitions(i, (entry.getKey()), nextstates);
+					qea.addTransitions(i, entry.getKey(), nextstates);
 				}
 			}
 		}
@@ -573,8 +599,9 @@ public class QEABuilder {
 				nextstates = new HashSet<Integer>();
 				this_state.put(t.event_name, nextstates);
 			}
-			if (t.event_args == null || t.event_args.length == 0)
+			if (t.event_args == null || t.event_args.length == 0) {
 				prop[t.start][t.end] = true;
+			}
 			nextstates.add(t.end);
 		}
 		for (int start = 0; start < actual_trans.length; start++) {
@@ -587,7 +614,7 @@ public class QEABuilder {
 						nextstates[j] = s;
 						j++;
 					}
-					int event = (entry.getKey());
+					int event = entry.getKey();
 					boolean p = prop[start][nextstates[0]];
 					qea.addTransitions(start, event, nextstates, p);
 				}
@@ -611,7 +638,7 @@ public class QEABuilder {
 		QVar01_NoFVar_Det_QEA qea = new QVar01_NoFVar_Det_QEA(states, events,
 				1, NONE);
 		for (TempTransition t : transitions) {
-			boolean prop = (t.event_args == null) || (t.event_args.length == 0);
+			boolean prop = t.event_args == null || t.event_args.length == 0;
 			qea.addTransition(t.start, t.event_name, t.end, prop);
 		}
 		for (Integer s : skipstates) {
@@ -629,9 +656,10 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingle(int states, int events) {
-		if (usesGlobalGuards())
+		if (usesGlobalGuards()) {
 			throw new ShouldNotHappenException(
 					"Global guards not supported here yet");
+		}
 		boolean[] strongStates = computeStrongStates();
 
 		Quantification q;
@@ -699,7 +727,7 @@ public class QEABuilder {
 						nextstates[j] = s;
 						j++;
 					}
-					qea.addTransitions(i, (entry.getKey()), nextstates);
+					qea.addTransitions(i, entry.getKey(), nextstates);
 				}
 			}
 		}
@@ -772,7 +800,7 @@ public class QEABuilder {
 						nextstates[j] = s;
 						j++;
 					}
-					qea.addTransitions(i, (entry.getKey()), nextstates);
+					qea.addTransitions(i, entry.getKey(), nextstates);
 				}
 			}
 		}
@@ -831,8 +859,9 @@ public class QEABuilder {
 				nextstates = new HashSet<Integer>();
 				this_state.put(t.event_name, nextstates);
 			}
-			if (t.event_args == null || t.event_args.length == 0)
+			if (t.event_args == null || t.event_args.length == 0) {
 				prop[t.start][t.end] = true;
+			}
 			nextstates.add(t.end);
 		}
 		for (int start = 0; start < actual_trans.length; start++) {
@@ -845,7 +874,7 @@ public class QEABuilder {
 						nextstates[j] = s;
 						j++;
 					}
-					int event = (entry.getKey());
+					int event = entry.getKey();
 					boolean p = prop[start][nextstates[0]];
 					qea.addTransitions(start, event, nextstates, p);
 				}
@@ -870,7 +899,7 @@ public class QEABuilder {
 		QVar01_NoFVar_Det_QEA qea = new QVar01_NoFVar_Det_QEA(states, events,
 				1, q);
 		for (TempTransition t : transitions) {
-			boolean prop = (t.event_args == null) || (t.event_args.length == 0);
+			boolean prop = t.event_args == null || t.event_args.length == 0;
 			qea.addTransition(t.start, t.event_name, t.end, prop);
 		}
 		for (Integer s : skipstates) {
@@ -905,7 +934,7 @@ public class QEABuilder {
 
 		// Add quantifications
 		for (Quant q : quants) {
-			qea.addQuantification(q.var, (q.universal ? FORALL : EXISTS), q.g);
+			qea.addQuantification(q.var, q.universal ? FORALL : EXISTS, q.g);
 		}
 
 		Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
@@ -934,7 +963,7 @@ public class QEABuilder {
 						nextstates[j] = s;
 						j++;
 					}
-					qea.addTransitions(i, (entry.getKey()), nextstates);
+					qea.addTransitions(i, entry.getKey(), nextstates);
 				}
 			}
 		}
@@ -955,7 +984,7 @@ public class QEABuilder {
 	private QEA makeGeneralFreeDet(int states, int events,
 			boolean[] strongStates, int frees) {
 
-		QEAType type = (frees == 0) ? QEAType.QVARN_NOFVAR_DET_QEA
+		QEAType type = frees == 0 ? QEAType.QVARN_NOFVAR_DET_QEA
 				: QEAType.QVARN_FVAR_DET_QEA;
 
 		QVarN_Det_QEA qea = new QVarN_Det_QEA(states, events, 1, quants.size(),
@@ -963,7 +992,7 @@ public class QEABuilder {
 
 		// Add quantifications
 		for (Quant q : quants) {
-			qea.addQuantification(q.var, (q.universal ? FORALL : EXISTS), q.g);
+			qea.addQuantification(q.var, q.universal ? FORALL : EXISTS, q.g);
 		}
 
 		for (TempTransition t : transitions) {
@@ -1079,8 +1108,8 @@ public class QEABuilder {
 					return "All events with the same name should have the same number of parameters";
 				}
 				for (VarOrVal event_arg : trans.event_args) {
-					if (event_arg == null
-							|| (event_arg.val == null && event_arg.var == -1000)) {
+					if (event_arg == null || event_arg.val == null
+							&& event_arg.var == -1000) {
 						return "The paramters were not correctly defined in a transition";
 					}
 				}
@@ -1167,9 +1196,11 @@ public class QEABuilder {
 	}
 
 	private boolean usesGlobalGuards() {
-		for (Quant q : quants)
-			if (q.g != null)
+		for (Quant q : quants) {
+			if (q.g != null) {
 				return true;
+			}
+		}
 		return false;
 	}
 
@@ -1253,12 +1284,12 @@ public class QEABuilder {
 	}
 
 	public void addGuard(Guard g) {
-		assert (inctrans.g == null);
+		assert inctrans.g == null;
 		inctrans.g = g;
 	}
 
 	public void addAssignment(Assignment a) {
-		assert (inctrans.a == null);
+		assert inctrans.a == null;
 		inctrans.a = a;
 	}
 
@@ -1275,14 +1306,14 @@ public class QEABuilder {
 
 	public void addQuantification(Quantification q, int var) {
 		Quant quant = new Quant();
-		quant.universal = (q == FORALL);
+		quant.universal = q == FORALL;
 		quant.var = var;
 		quants.add(quant);
 	}
 
 	public void addQuantification(Quantification q, int var, Guard g) {
 		Quant quant = new Quant();
-		quant.universal = (q == FORALL);
+		quant.universal = q == FORALL;
 		quant.var = var;
 		quant.g = g;
 		quants.add(quant);
@@ -1301,8 +1332,9 @@ public class QEABuilder {
 	public void setSkipStates(int... states) {
 
 		// Instead of closing we now just mark them as skip
-		for (int s : states)
+		for (int s : states) {
 			skipstates.add(s);
+		}
 
 		/*
 		 * Set<TempEvent> events = getEvents();
@@ -1392,8 +1424,8 @@ public class QEABuilder {
 			boolean is_strong = true;
 			for (int j = 0; j <= nstates; j++) {
 				if (reach[i][j]) {
-					is_strong &= (finalstates.contains(i) == finalstates
-							.contains(j));
+					is_strong &= finalstates.contains(i) == finalstates
+							.contains(j);
 				}
 			}
 			strong[i] = is_strong;
@@ -1436,18 +1468,19 @@ public class QEABuilder {
 				// if there are unused events and this is not a skip state
 				// then we can reach the failing state
 				// System.out.println("state "+i+" does not use all events");
-				if (!skipstates.contains(i))
+				if (!skipstates.contains(i)) {
 					reach[i][0] = true;
+				}
 			}
 		}
 
 		for (int i = 1; i < nstates; i++) {
-			for (int start = 1; start < (nstates + 1); start++) {
-				for (int middle = 1; middle < (nstates + 1); middle++) {
+			for (int start = 1; start < nstates + 1; start++) {
+				for (int middle = 1; middle < nstates + 1; middle++) {
 					// for each entry in reach where start can reach middle
 					if (reach[start][middle]) {
 						// for every state end that middle can reach
-						for (int end = 0; end < (nstates + 1); end++) {
+						for (int end = 0; end < nstates + 1; end++) {
 							if (reach[middle][end]) {
 								// set that start can reach end
 								reach[start][end] = true;

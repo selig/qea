@@ -41,8 +41,9 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 	public Verdict step(int eventName) {
 
 		if (saved != null) {
-			if (!restart())
+			if (!restart()) {
 				return saved;
+			}
 		}
 
 		// Update configuration

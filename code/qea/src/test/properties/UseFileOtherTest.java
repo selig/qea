@@ -1,9 +1,10 @@
 package test.properties;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
-import static structure.impl.other.Verdict.*;
 import static org.junit.Assert.assertEquals;
+import static structure.impl.other.Verdict.SUCCESS;
+import static structure.impl.other.Verdict.WEAK_FAILURE;
+import static structure.impl.other.Verdict.WEAK_SUCCESS;
+import monitoring.intf.Monitor;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,29 +35,44 @@ public class UseFileOtherTest {
 		int close = 4;
 		int read = 5; // This one is not defined in the QEA!
 
-		Object file1 = new Object(){public String toString(){return "F1";}};
-		Object file2 = new Object(){public String toString(){return "F2";}};
-		Object file3 = new Object(){public String toString(){return "F3";}};
+		Object file1 = new Object() {
+			@Override
+			public String toString() {
+				return "F1";
+			}
+		};
+		Object file2 = new Object() {
+			@Override
+			public String toString() {
+				return "F2";
+			}
+		};
+		Object file3 = new Object() {
+			@Override
+			public String toString() {
+				return "F3";
+			}
+		};
 
-		assertEquals(monitor.step(open, file1),WEAK_FAILURE);		
-		assertEquals(monitor.step(read, file1),WEAK_FAILURE);
-		assertEquals(monitor.step(read, file1),WEAK_FAILURE);
-		assertEquals(monitor.step(open, file2),WEAK_FAILURE);
-		assertEquals(monitor.step(write, file2),WEAK_FAILURE);	
-		assertEquals(monitor.step(save, file2),WEAK_FAILURE);
-		assertEquals(monitor.step(read, file2),WEAK_FAILURE);
-		assertEquals(monitor.step(write, file1),WEAK_FAILURE);
-		assertEquals(monitor.step(save, file1),WEAK_FAILURE);
-		assertEquals(monitor.step(close, file1),WEAK_FAILURE);
-		assertEquals(monitor.step(open, file3),WEAK_FAILURE);
-		assertEquals(monitor.step(read, file3),WEAK_FAILURE);
-		assertEquals(monitor.step(write, file2),WEAK_FAILURE);
-		assertEquals(monitor.step(close, file3),WEAK_FAILURE);
-		assertEquals(monitor.step(close, file2),WEAK_SUCCESS);
+		assertEquals(monitor.step(open, file1), WEAK_FAILURE);
+		assertEquals(monitor.step(read, file1), WEAK_FAILURE);
+		assertEquals(monitor.step(read, file1), WEAK_FAILURE);
+		assertEquals(monitor.step(open, file2), WEAK_FAILURE);
+		assertEquals(monitor.step(write, file2), WEAK_FAILURE);
+		assertEquals(monitor.step(save, file2), WEAK_FAILURE);
+		assertEquals(monitor.step(read, file2), WEAK_FAILURE);
+		assertEquals(monitor.step(write, file1), WEAK_FAILURE);
+		assertEquals(monitor.step(save, file1), WEAK_FAILURE);
+		assertEquals(monitor.step(close, file1), WEAK_FAILURE);
+		assertEquals(monitor.step(open, file3), WEAK_FAILURE);
+		assertEquals(monitor.step(read, file3), WEAK_FAILURE);
+		assertEquals(monitor.step(write, file2), WEAK_FAILURE);
+		assertEquals(monitor.step(close, file3), WEAK_FAILURE);
+		assertEquals(monitor.step(close, file2), WEAK_SUCCESS);
 
-		//System.out.println(monitor);
-		
-		assertEquals(monitor.end(),SUCCESS);
+		// System.out.println(monitor);
+
+		assertEquals(monitor.end(), SUCCESS);
 	}
 
 }

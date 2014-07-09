@@ -8,7 +8,7 @@ public abstract class DoEval<S> {
 	public static boolean hardest_only = false;
 	public static boolean output = false;
 	public static boolean csv_mode = false;
-	
+
 	private static PrintStream old_out = System.out;
 	private static PrintStream null_out = null;
 	static {
@@ -44,10 +44,9 @@ public abstract class DoEval<S> {
 	 */
 	public void run_eval(S spec, String name, int[] args, int w) {
 		warmup = w;
-		try{
+		try {
 			run_eval(spec, name, args);
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			System.err.println("There was a problem:");
 			e.printStackTrace();
 		}
@@ -78,10 +77,13 @@ public abstract class DoEval<S> {
 		}
 
 		// Print name of the property and arguments
-		if(csv_mode){
-			old_out.print(spec + ":" + Arrays.toString(args).replace(',',':') + ",");
+		if (csv_mode) {
+			old_out.print(spec + ":" + Arrays.toString(args).replace(',', ':')
+					+ ",");
+		} else {
+			old_out.println("==\t" + spec + ":" + Arrays.toString(args)
+					+ "\t==");
 		}
-		else old_out.println("==\t" + spec + ":" + Arrays.toString(args) + "\t==");
 
 		// Execute runs printing the time for each one
 		long[] times = new long[runs];
@@ -94,14 +96,20 @@ public abstract class DoEval<S> {
 			long end = System.currentTimeMillis();
 			System.setOut(old_out);
 			long time = end - start;
-			if(output && !csv_mode) System.out.println(i+" took "+time);
-			if(csv_mode) System.out.print(time+",");
-			times[i]=time;
+			if (output && !csv_mode) {
+				System.out.println(i + " took " + time);
+			}
+			if (csv_mode) {
+				System.out.print(time + ",");
+			}
+			times[i] = time;
 		}
-		//compute average time
+		// compute average time
 		long total = 0;
-		for(long time : times) total+=time;
-		double average = ((double) total) / runs;
+		for (long time : times) {
+			total += time;
+		}
+		double average = (double) total / runs;
 		System.out.println(average);
 
 	}
@@ -131,19 +139,20 @@ public abstract class DoEval<S> {
 		} else if (name.equals("MessageHashCorrectInvInt")) {
 			eval_for_MessageHashCorrectInvInt(spec, name);
 		}
-      }
-
+	}
 
 	public void eval_for_IncreasingCommand(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 10000 }); // put this one first to make
-													// sure we're nice and warm
-		run_eval(spec, name, new int[] { 10 });
-		run_eval(spec, name, new int[] { 100 });
-		run_eval(spec, name, new int[] { 1000 });
-		run_eval(spec, name, new int[] { 10000 }, 0);
-		run_eval(spec, name, new int[] { 100000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 10000 }); // put this one first to
+														// make
+														// sure we're nice and
+														// warm
+			run_eval(spec, name, new int[] { 10 });
+			run_eval(spec, name, new int[] { 100 });
+			run_eval(spec, name, new int[] { 1000 });
+			run_eval(spec, name, new int[] { 10000 }, 0);
+			run_eval(spec, name, new int[] { 100000 }, 0);
 		}
 		run_eval(spec, name, new int[] { 1000000 }, 0);
 
@@ -151,13 +160,13 @@ public abstract class DoEval<S> {
 
 	public void eval_for_ResourceLifecycle(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 10, 10000 }, 10);
-		run_eval(spec, name, new int[] { 100, 10000 });
-		run_eval(spec, name, new int[] { 1000, 10000 }, 0);
-		run_eval(spec, name, new int[] { 5000, 10000 }, 0);
-		run_eval(spec, name, new int[] { 100, 1000000 }, 0);
-		run_eval(spec, name, new int[] { 1000, 1000000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 10, 10000 }, 10);
+			run_eval(spec, name, new int[] { 100, 10000 });
+			run_eval(spec, name, new int[] { 1000, 10000 }, 0);
+			run_eval(spec, name, new int[] { 5000, 10000 }, 0);
+			run_eval(spec, name, new int[] { 100, 1000000 }, 0);
+			run_eval(spec, name, new int[] { 1000, 1000000 }, 0);
 		}
 		run_eval(spec, name, new int[] { 5000, 1000000 }, 0);
 
@@ -165,10 +174,10 @@ public abstract class DoEval<S> {
 
 	public void eval_for_ExactlyOneSuccess(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 10 }, 10);
-		run_eval(spec, name, new int[] { 100 });
-		run_eval(spec, name, new int[] { 1000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 10 }, 10);
+			run_eval(spec, name, new int[] { 100 });
+			run_eval(spec, name, new int[] { 1000 }, 0);
 		}
 		run_eval(spec, name, new int[] { 10000 }, 0);
 
@@ -176,24 +185,24 @@ public abstract class DoEval<S> {
 
 	public void eval_for_AcknowledgeCommands(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 10 });
-		run_eval(spec, name, new int[] { 100 });
-		run_eval(spec, name, new int[] { 1000 }, 0);
-		run_eval(spec, name, new int[] { 10000 }, 0);
-		run_eval(spec, name, new int[] { 100000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 10 });
+			run_eval(spec, name, new int[] { 100 });
+			run_eval(spec, name, new int[] { 1000 }, 0);
+			run_eval(spec, name, new int[] { 10000 }, 0);
+			run_eval(spec, name, new int[] { 100000 }, 0);
 		}
-		//System.err.println("AcknowledgeCommands turned down");
+		// System.err.println("AcknowledgeCommands turned down");
 		run_eval(spec, name, new int[] { 10000 }, 0);
 
 	}
 
 	public void eval_for_NestedCommand(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 2, 2, 10 });
-		run_eval(spec, name, new int[] { 3, 3, 10 }, 0);
-		run_eval(spec, name, new int[] { 2, 2, 100 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 2, 2, 10 });
+			run_eval(spec, name, new int[] { 3, 3, 10 }, 0);
+			run_eval(spec, name, new int[] { 2, 2, 100 }, 0);
 		}
 		run_eval(spec, name, new int[] { 2, 2, 100 }, 0);
 
@@ -210,13 +219,13 @@ public abstract class DoEval<S> {
 	 */
 	public void eval_for_GrantCancel(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 10, 10, 1000 }, 100);
-		run_eval(spec, name, new int[] { 10, 10, 10000 });
-		run_eval(spec, name, new int[] { 100, 100, 1000 }, 0);
-		run_eval(spec, name, new int[] { 100, 100, 10000 }, 0);
-		run_eval(spec, name, new int[] { 1000, 1000, 1000 });
-		run_eval(spec, name, new int[] { 1000, 1000, 10000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 10, 10, 1000 }, 100);
+			run_eval(spec, name, new int[] { 10, 10, 10000 });
+			run_eval(spec, name, new int[] { 100, 100, 1000 }, 0);
+			run_eval(spec, name, new int[] { 100, 100, 10000 }, 0);
+			run_eval(spec, name, new int[] { 1000, 1000, 1000 });
+			run_eval(spec, name, new int[] { 1000, 1000, 10000 }, 0);
 		}
 		run_eval(spec, name, new int[] { 1000, 1000, 100000 }, 0);
 
@@ -224,11 +233,11 @@ public abstract class DoEval<S> {
 
 	public void eval_for_ReleaseResource(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 5, 5, 100 });
-		run_eval(spec, name, new int[] { 5, 5, 1000 });
-		run_eval(spec, name, new int[] { 10, 10, 100 }, 0);
-		run_eval(spec, name, new int[] { 10, 10, 1000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 5, 5, 100 });
+			run_eval(spec, name, new int[] { 5, 5, 1000 });
+			run_eval(spec, name, new int[] { 10, 10, 100 }, 0);
+			run_eval(spec, name, new int[] { 10, 10, 1000 }, 0);
 		}
 		run_eval(spec, name, new int[] { 10, 10, 10000 }, 0);
 
@@ -236,14 +245,14 @@ public abstract class DoEval<S> {
 
 	public void eval_for_RespectConflicts(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 3, 100, 100 });
-		run_eval(spec, name, new int[] { 4, 100, 100 }, 0);
-		run_eval(spec, name, new int[] { 5, 100, 100 }, 0);
-		run_eval(spec, name, new int[] { 6, 100, 100 }, 0);
-		run_eval(spec, name, new int[] { 7, 100, 100 }, 0);
-		run_eval(spec, name, new int[] { 3, 1000, 1000 }, 0);
-		run_eval(spec, name, new int[] { 4, 1000, 1000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 3, 100, 100 });
+			run_eval(spec, name, new int[] { 4, 100, 100 }, 0);
+			run_eval(spec, name, new int[] { 5, 100, 100 }, 0);
+			run_eval(spec, name, new int[] { 6, 100, 100 }, 0);
+			run_eval(spec, name, new int[] { 7, 100, 100 }, 0);
+			run_eval(spec, name, new int[] { 3, 1000, 1000 }, 0);
+			run_eval(spec, name, new int[] { 4, 1000, 1000 }, 0);
 		}
 		run_eval(spec, name, new int[] { 5, 1000, 1000 }, 0);
 
@@ -251,12 +260,12 @@ public abstract class DoEval<S> {
 
 	public void eval_for_ExistsSatellite(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 10, 10 });
-		run_eval(spec, name, new int[] { 10, 100 });
-		run_eval(spec, name, new int[] { 10, 1000 }, 0);
-		run_eval(spec, name, new int[] { 100, 100 }, 0);
-		run_eval(spec, name, new int[] { 100, 1000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 10, 10 });
+			run_eval(spec, name, new int[] { 10, 100 });
+			run_eval(spec, name, new int[] { 10, 1000 }, 0);
+			run_eval(spec, name, new int[] { 100, 100 }, 0);
+			run_eval(spec, name, new int[] { 100, 1000 }, 0);
 		}
 		run_eval(spec, name, new int[] { 1000, 1000 }, 0);
 
@@ -264,11 +273,11 @@ public abstract class DoEval<S> {
 
 	public void eval_for_ExistsLeader(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 5 });
-		run_eval(spec, name, new int[] { 10 }, 0);
-		run_eval(spec, name, new int[] { 15 }, 0);
-		run_eval(spec, name, new int[] { 20 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 5 });
+			run_eval(spec, name, new int[] { 10 }, 0);
+			run_eval(spec, name, new int[] { 15 }, 0);
+			run_eval(spec, name, new int[] { 20 }, 0);
 		}
 		run_eval(spec, name, new int[] { 30 }, 0);
 
@@ -276,23 +285,23 @@ public abstract class DoEval<S> {
 
 	public void eval_for_MessageHashCorrectInvInt(S spec, String name) {
 
-		if(!hardest_only){
-		run_eval(spec, name, new int[] { 100, 100 }, 50);
-		run_eval(spec, name, new int[] { 100, 1000 });
-		run_eval(spec, name, new int[] { 100, 10000 }, 0);
-		run_eval(spec, name, new int[] { 1000, 1000 }, 0);
-		run_eval(spec, name, new int[] { 1000, 10000 }, 0);
-		run_eval(spec, name, new int[] { 1000, 100000 }, 0);
+		if (!hardest_only) {
+			run_eval(spec, name, new int[] { 100, 100 }, 50);
+			run_eval(spec, name, new int[] { 100, 1000 });
+			run_eval(spec, name, new int[] { 100, 10000 }, 0);
+			run_eval(spec, name, new int[] { 1000, 1000 }, 0);
+			run_eval(spec, name, new int[] { 1000, 10000 }, 0);
+			run_eval(spec, name, new int[] { 1000, 100000 }, 0);
 		}
 		run_eval(spec, name, new int[] { 1000, 1000000 }, 0);
 
 	}
 
 	public void eval_for_RespectPriorities(S spec, String name) {
-		if(!hardest_only){
-			//none here!
+		if (!hardest_only) {
+			// none here!
 		}
-		//run_eval(spec, name, new int[]{5,100});
-		run_eval(spec, name, new int[]{20,100000});
+		// run_eval(spec, name, new int[]{5,100});
+		run_eval(spec, name, new int[] { 20, 100000 });
 	}
 }

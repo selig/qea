@@ -71,16 +71,16 @@ public abstract class Binding {
 	}
 
 	/**
-	 * Helper method to perform matching update
-	 * In the free variable case we update the binding for all free variables in variableNames
-	 * with their corresponding value in args
+	 * Helper method to perform matching update In the free variable case we
+	 * update the binding for all free variables in variableNames with their
+	 * corresponding value in args
 	 * 
-	 * In the quantified variable case we will do the same (for quantified variables) if
-	 * a value does not already exist - if it does and the values clash we return false and
-	 * do no updates
+	 * In the quantified variable case we will do the same (for quantified
+	 * variables) if a value does not already exist - if it does and the values
+	 * clash we return false and do no updates
 	 * 
 	 * @param variableNames
-	 * @param args 
+	 * @param args
 	 * @return true if matching successful and binding updated
 	 */
 	public abstract boolean update(int[] variableNames, Object[] args);
@@ -88,15 +88,18 @@ public abstract class Binding {
 	/**
 	 * A version of the above update method that returns a new binding instead.
 	 * Where the previous would return false this returns null
+	 * 
 	 * @param variableNames
 	 * @param args
 	 * @return
 	 */
 	public Binding extend(int[] variableNames, Object[] args) {
-		assert(variableNames.length==args.length);
-		Binding binding = this.copy();
-		boolean okay = binding.update(variableNames,args);
-		if(!okay) return null;
+		assert variableNames.length == args.length;
+		Binding binding = copy();
+		boolean okay = binding.update(variableNames, args);
+		if (!okay) {
+			return null;
+		}
 		return binding;
 	}
 

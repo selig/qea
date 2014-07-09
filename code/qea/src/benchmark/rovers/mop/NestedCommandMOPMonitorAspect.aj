@@ -1,17 +1,17 @@
 package benchmark.rovers.mop;
-import java.util.*;
-import javamoprt.*;
-import java.lang.ref.*;
-import org.aspectj.lang.*;
+import java.util.Arrays;
+
+import javamoprt.MOPMonitor;
 
 class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 	protected NestedCommandMOPMonitor[] elementData;
 
 	public NestedCommandMOPMonitor_Set(){
-		this.size = 0;
-		this.elementData = new NestedCommandMOPMonitor[4];
+		size = 0;
+		elementData = new NestedCommandMOPMonitor[4];
 	}
 
+	@Override
 	public final int size(){
 		while(size > 0 && elementData[size-1].MOP_terminated) {
 			elementData[--size] = null;
@@ -19,12 +19,14 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 		return size;
 	}
 
+	@Override
 	public final boolean add(MOPMonitor e){
 		ensureCapacity();
 		elementData[size++] = (NestedCommandMOPMonitor)e;
 		return true;
 	}
 
+	@Override
 	public final void endObject(int idnum){
 		int numAlive = 0;
 		for(int i = 0; i < size; i++){
@@ -42,6 +44,7 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 		size = numAlive;
 	}
 
+	@Override
 	public final boolean alive(){
 		for(int i = 0; i < size; i++){
 			MOPMonitor monitor = elementData[i];
@@ -52,6 +55,7 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 		return false;
 	}
 
+	@Override
 	public final void endObjectAndClean(int idnum){
 		int size = this.size;
 		this.size = 0;
@@ -65,6 +69,7 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 		elementData = null;
 	}
 
+	@Override
 	public final void ensureCapacity() {
 		int oldCapacity = elementData.length;
 		if (size + 1 > oldCapacity) {
@@ -72,7 +77,7 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 		}
 		if (size + 1 > oldCapacity) {
 			NestedCommandMOPMonitor[] oldData = elementData;
-			int newCapacity = (oldCapacity * 3) / 2 + 1;
+			int newCapacity = oldCapacity * 3 / 2 + 1;
 			if (newCapacity < size + 1){
 				newCapacity = size + 1;
 			}
@@ -83,7 +88,7 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 	public final void cleanup() {
 		int numAlive = 0 ;
 		for(int i = 0; i < size; i++){
-			NestedCommandMOPMonitor monitor = (NestedCommandMOPMonitor)elementData[i];
+			NestedCommandMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -97,8 +102,8 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 
 	public final void event_com_x(Object x) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			NestedCommandMOPMonitor monitor = (NestedCommandMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			NestedCommandMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -109,16 +114,16 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_suc_x(Object x) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			NestedCommandMOPMonitor monitor = (NestedCommandMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			NestedCommandMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -129,16 +134,16 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_com_y(Object y) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			NestedCommandMOPMonitor monitor = (NestedCommandMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			NestedCommandMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -149,16 +154,16 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_suc_y(Object y) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			NestedCommandMOPMonitor monitor = (NestedCommandMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			NestedCommandMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -169,8 +174,8 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
@@ -178,6 +183,7 @@ class NestedCommandMOPMonitor_Set extends javamoprt.MOPSet {
 
 class NestedCommandMOPMonitor extends javamoprt.MOPMonitor implements Cloneable, javamoprt.MOPObject {
 	public long tau = -1;
+	@Override
 	public Object clone() {
 		try {
 			NestedCommandMOPMonitor ret = (NestedCommandMOPMonitor) super.clone();
@@ -248,7 +254,9 @@ class NestedCommandMOPMonitor extends javamoprt.MOPMonitor implements Cloneable,
 
 	public final void Prop_1_handler_fail (Object x, Object y){
 		{
-			if (saved_x != saved_y) System.err.println("error in NestedCommand with " + saved_x + " and " + saved_y + " on " + last_event);
+			if (saved_x != saved_y) {
+				System.err.println("error in NestedCommand with " + saved_x + " and " + saved_y + " on " + last_event);
+			}
 		}
 
 	}
@@ -267,6 +275,7 @@ class NestedCommandMOPMonitor extends javamoprt.MOPMonitor implements Cloneable,
 	//alive_parameters_1 = [Object y]
 	public boolean alive_parameters_1 = true;
 
+	@Override
 	public final void endObject(int idnum){
 		switch(idnum){
 			case 0:
@@ -397,7 +406,7 @@ public aspect NestedCommandMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object y = (Object)origMonitor.MOPRef_y.get();
+							Object y = origMonitor.MOPRef_y.get();
 							if (!origMonitor.MOP_terminated && y != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -415,7 +424,7 @@ public aspect NestedCommandMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_x.disable[0] > origMonitor.tau|| (TempRef_x.tau[0] > 0 && TempRef_x.tau[0] < origMonitor.tau)) {
+									if (TempRef_x.disable[0] > origMonitor.tau|| TempRef_x.tau[0] > 0 && TempRef_x.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 
@@ -527,7 +536,7 @@ public aspect NestedCommandMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object y = (Object)origMonitor.MOPRef_y.get();
+							Object y = origMonitor.MOPRef_y.get();
 							if (!origMonitor.MOP_terminated && y != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -545,7 +554,7 @@ public aspect NestedCommandMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_x.disable[0] > origMonitor.tau|| (TempRef_x.tau[0] > 0 && TempRef_x.tau[0] < origMonitor.tau)) {
+									if (TempRef_x.disable[0] > origMonitor.tau|| TempRef_x.tau[0] > 0 && TempRef_x.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 
@@ -657,7 +666,7 @@ public aspect NestedCommandMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object x = (Object)origMonitor.MOPRef_x.get();
+							Object x = origMonitor.MOPRef_x.get();
 							if (!origMonitor.MOP_terminated && x != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -675,7 +684,7 @@ public aspect NestedCommandMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_y.disable[0] > origMonitor.tau|| (TempRef_y.tau[0] > 0 && TempRef_y.tau[0] < origMonitor.tau)) {
+									if (TempRef_y.disable[0] > origMonitor.tau|| TempRef_y.tau[0] > 0 && TempRef_y.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 
@@ -787,7 +796,7 @@ public aspect NestedCommandMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object x = (Object)origMonitor.MOPRef_x.get();
+							Object x = origMonitor.MOPRef_x.get();
 							if (!origMonitor.MOP_terminated && x != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -805,7 +814,7 @@ public aspect NestedCommandMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_y.disable[0] > origMonitor.tau|| (TempRef_y.tau[0] > 0 && TempRef_y.tau[0] < origMonitor.tau)) {
+									if (TempRef_y.disable[0] > origMonitor.tau|| TempRef_y.tau[0] > 0 && TempRef_y.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 

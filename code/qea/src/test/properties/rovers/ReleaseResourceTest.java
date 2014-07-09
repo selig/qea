@@ -1,8 +1,8 @@
 package test.properties.rovers;
 
 import static org.junit.Assert.assertEquals;
-import static structure.impl.other.Verdict.*;
-import monitoring.impl.MonitorFactory;
+import static structure.impl.other.Verdict.FAILURE;
+import static structure.impl.other.Verdict.SUCCESS;
 import monitoring.intf.Monitor;
 
 import org.junit.Before;
@@ -34,14 +34,15 @@ public class ReleaseResourceTest {
 		Object command = TestSettings.object("command");
 		Object resource = TestSettings.object("resource");
 
-		monitor.step(SCHEDULE,task,command);
-		monitor.step(GRANT,task,resource);
-		monitor.step(CANCEL,task,resource);
-		monitor.step(FINISH,command);
-		
-		assertEquals(SUCCESS,monitor.end());
-		
+		monitor.step(SCHEDULE, task, command);
+		monitor.step(GRANT, task, resource);
+		monitor.step(CANCEL, task, resource);
+		monitor.step(FINISH, command);
+
+		assertEquals(SUCCESS, monitor.end());
+
 	}
+
 	@Test
 	public void test_two() {
 
@@ -49,13 +50,14 @@ public class ReleaseResourceTest {
 		Object command = TestSettings.object("command");
 		Object resource = TestSettings.object("resource");
 
-		monitor.step(SCHEDULE,task,command);
-		monitor.step(GRANT,task,resource);
-		monitor.step(FINISH,command);
-		
-		assertEquals(FAILURE,monitor.end());
-		
-	}	
+		monitor.step(SCHEDULE, task, command);
+		monitor.step(GRANT, task, resource);
+		monitor.step(FINISH, command);
+
+		assertEquals(FAILURE, monitor.end());
+
+	}
+
 	@Test
 	public void test_three() {
 
@@ -64,21 +66,22 @@ public class ReleaseResourceTest {
 		Object resource1 = TestSettings.object("resource1");
 		Object command2 = TestSettings.object("command2");
 		Object resource2 = TestSettings.object("resource2");
-		
-		monitor.step(SCHEDULE,task,command1);
-		monitor.step(GRANT,task,resource1);
-		monitor.step(GRANT,task,resource2);
-		monitor.step(SCHEDULE,task,command2);
-		monitor.step(CANCEL,task,resource1);
-		monitor.step(CANCEL,task,resource2);
-		monitor.step(FINISH,command1);
-		monitor.step(GRANT,task,resource1);
-		monitor.step(CANCEL,task,resource1);				
-		monitor.step(FINISH,command2);
-		
-		assertEquals(SUCCESS,monitor.end());
-		
-	}	
+
+		monitor.step(SCHEDULE, task, command1);
+		monitor.step(GRANT, task, resource1);
+		monitor.step(GRANT, task, resource2);
+		monitor.step(SCHEDULE, task, command2);
+		monitor.step(CANCEL, task, resource1);
+		monitor.step(CANCEL, task, resource2);
+		monitor.step(FINISH, command1);
+		monitor.step(GRANT, task, resource1);
+		monitor.step(CANCEL, task, resource1);
+		monitor.step(FINISH, command2);
+
+		assertEquals(SUCCESS, monitor.end());
+
+	}
+
 	@Test
 	public void test_four() {
 
@@ -86,13 +89,14 @@ public class ReleaseResourceTest {
 		Object command = TestSettings.object("command");
 		Object resource = TestSettings.object("resource");
 
-		monitor.step(SCHEDULE,task,command);
-		monitor.step(GRANT,task,resource);
-		monitor.step(CANCEL,task,resource);
-		
-		assertEquals(SUCCESS,monitor.end());
-		
+		monitor.step(SCHEDULE, task, command);
+		monitor.step(GRANT, task, resource);
+		monitor.step(CANCEL, task, resource);
+
+		assertEquals(SUCCESS, monitor.end());
+
 	}
+
 	@Test
 	public void test_five() {
 
@@ -100,14 +104,15 @@ public class ReleaseResourceTest {
 		Object command = TestSettings.object("command");
 		Object resource = TestSettings.object("resource");
 
-		monitor.step(GRANT,task,resource);
-		monitor.step(SCHEDULE,task,command);
-		monitor.step(FINISH,command);
-		monitor.step(CANCEL,task,resource);
-		
-		assertEquals(SUCCESS,monitor.end());
-		
-	}	
+		monitor.step(GRANT, task, resource);
+		monitor.step(SCHEDULE, task, command);
+		monitor.step(FINISH, command);
+		monitor.step(CANCEL, task, resource);
+
+		assertEquals(SUCCESS, monitor.end());
+
+	}
+
 	@Test
 	public void test_six() {
 
@@ -117,16 +122,16 @@ public class ReleaseResourceTest {
 		Object task2 = TestSettings.object("task2");
 		Object command2 = TestSettings.object("command2");
 		Object resource2 = TestSettings.object("resource2");
-		
-		monitor.step(SCHEDULE,task1,command1);
-		monitor.step(GRANT,task2,resource2);
-		monitor.step(SCHEDULE,task2,command2);
-		monitor.step(GRANT,task2,resource1);
-		monitor.step(CANCEL,task1,resource1);
-		monitor.step(FINISH,command2);
-		monitor.step(CANCEL,task1,resource1);
-		
-		assertEquals(FAILURE,monitor.end());
-		
-	}		
+
+		monitor.step(SCHEDULE, task1, command1);
+		monitor.step(GRANT, task2, resource2);
+		monitor.step(SCHEDULE, task2, command2);
+		monitor.step(GRANT, task2, resource1);
+		monitor.step(CANCEL, task1, resource1);
+		monitor.step(FINISH, command2);
+		monitor.step(CANCEL, task1, resource1);
+
+		assertEquals(FAILURE, monitor.end());
+
+	}
 }

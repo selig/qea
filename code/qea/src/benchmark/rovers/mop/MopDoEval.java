@@ -2,13 +2,6 @@ package benchmark.rovers.mop;
 
 import benchmark.rovers.DoEval;
 import benchmark.rovers.DoWork;
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
-import properties.rovers.RoverCaseStudy;
-import structure.impl.other.Verdict;
-import structure.impl.qeas.QEAType;
-import structure.intf.QEA;
-import creation.QEABuilder;
 
 public class MopDoEval extends DoEval<String> {
 
@@ -20,42 +13,41 @@ public class MopDoEval extends DoEval<String> {
 	public static void main(String[] args) {
 
 		do_the_eval();
-		
-		
-	}	
-		
-	public static void do_the_eval(){	
-		
-		MopDoEval eval = new MopDoEval();
-		DoEval.hardest_only=true;
-		DoEval.csv_mode=true;
-
-		eval.eval_for_GrantCancel("GrantCancel","GrantCancel");
-		
-		eval.eval_for_ResourceLifecycle("ResourceLifecycle","ResourceLifecycle");
-		
-		eval.eval_for_RespectConflicts("RespectConflicts", "RespectConflicts");		
-		
-		//eval.eval_for_IncreasingCommand("IncreasingCommand","IncreasingCommand");		 				
-
-		//eval.eval_for_AcknowledgeCommands("AcknowledgeCommands", "AcknowledgeCommands");		 
-			 
-		//eval.eval_for_ReleaseResource("ReleaseResource","ReleaseResource");		 
-			 
-		eval.eval_for_NestedCommand("NestedCommand","NestedCommand");
-	
 
 	}
 
-	
+	public static void do_the_eval() {
+
+		MopDoEval eval = new MopDoEval();
+		DoEval.hardest_only = true;
+		DoEval.csv_mode = true;
+
+		eval.eval_for_GrantCancel("GrantCancel", "GrantCancel");
+
+		eval.eval_for_ResourceLifecycle("ResourceLifecycle",
+				"ResourceLifecycle");
+
+		eval.eval_for_RespectConflicts("RespectConflicts", "RespectConflicts");
+
+		// eval.eval_for_IncreasingCommand("IncreasingCommand","IncreasingCommand");
+
+		// eval.eval_for_AcknowledgeCommands("AcknowledgeCommands",
+		// "AcknowledgeCommands");
+
+		// eval.eval_for_ReleaseResource("ReleaseResource","ReleaseResource");
+
+		eval.eval_for_NestedCommand("NestedCommand", "NestedCommand");
+
+	}
+
 	public static class MopDoWork extends DoWork<String> {
 
 		public boolean print = false;
-		
+
 		@Override
 		public void run_with_spec(String spec, String name, int[] args) {
 			// Doesn't do anything as we use aspects
-			dowork(name, args );
+			dowork(name, args);
 		}
 
 		/*
@@ -65,26 +57,34 @@ public class MopDoEval extends DoEval<String> {
 
 		@Override
 		public void command_int(int x) {
-			last_event = "command";			
+			last_event = "command";
 		}
 
 		@Override
 		public void request(Object o) {
 			last_event = "request";
-			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
+			if (print) {
+				System.err.println(last_event + " "
+						+ System.identityHashCode(o));
+			}
 		}
-
 
 		@Override
 		public void deny(Object o) {
 			last_event = "deny";
-			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
+			if (print) {
+				System.err.println(last_event + " "
+						+ System.identityHashCode(o));
+			}
 		}
 
 		@Override
 		public void rescind(Object o) {
 			last_event = "rescind";
-			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
+			if (print) {
+				System.err.println(last_event + " "
+						+ System.identityHashCode(o));
+			}
 		}
 
 		@Override
@@ -116,19 +116,21 @@ public class MopDoEval extends DoEval<String> {
 		public void grant_rr(Object a, Object b) {
 			last_event = "grant";
 		}
+
 		@Override
 		public void grant_gc(Object a, Object b) {
 			last_event = "grant";
-		}		
+		}
 
 		@Override
 		public void cancel_gc(Object a, Object b) {
 			last_event = "cancel";
 		}
+
 		@Override
 		public void cancel_rr(Object a, Object b) {
 			last_event = "cancel";
-		}		
+		}
 
 		@Override
 		public void schedule(Object a, Object b) {
@@ -178,7 +180,10 @@ public class MopDoEval extends DoEval<String> {
 		@Override
 		public void grant_rl(Object o) {
 			last_event = "grant";
-			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
+			if (print) {
+				System.err.println(last_event + " "
+						+ System.identityHashCode(o));
+			}
 		}
 
 		@Override
@@ -194,7 +199,10 @@ public class MopDoEval extends DoEval<String> {
 		@Override
 		public void cancel_rl(Object o) {
 			last_event = "cancel";
-			if(print) System.err.println(last_event+" "+System.identityHashCode(o));
+			if (print) {
+				System.err.println(last_event + " "
+						+ System.identityHashCode(o));
+			}
 		}
 
 		@Override
@@ -207,5 +215,5 @@ public class MopDoEval extends DoEval<String> {
 			last_event = "cancel";
 		}
 	}
-	
+
 }

@@ -7,44 +7,51 @@ import structure.impl.other.QBindingImpl;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.Abstr_QVarN_QEA;
 
-public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_QEA> extends IncrementalMonitor<Q>  {
+public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_QEA>
+		extends IncrementalMonitor<Q> {
 
 	protected final QBindingImpl bottom;
 	protected final QBindingImpl[] dummyEmptyBinding = new QBindingImpl[1];
 	protected final Object[] emptyArgs = new Object[0];
-	
+
 	protected final IncrementalChecker checker;
 
-		
 	public Abstr_Incr_Naive_QEAMonitor(Q qea) {
-		super(RestartMode.NONE,GarbageMode.NONE,qea);
+		super(RestartMode.NONE, GarbageMode.NONE, qea);
 		qea.setupMatching();
 		qea.isNormal(); // set normal
 		bottom = qea.newQBinding();
-		dummyEmptyBinding[0]=bottom;	
-		checker = IncrementalChecker.make(qea.getFullLambda(),qea.getFinalStates(),qea.getStrongStates());
-		if(bottom.isTotal()) checker.newBinding(bottom,qea.getInitialState());
+		dummyEmptyBinding[0] = bottom;
+		checker = IncrementalChecker.make(qea.getFullLambda(),
+				qea.getFinalStates(), qea.getStrongStates());
+		if (bottom.isTotal()) {
+			checker.newBinding(bottom, qea.getInitialState());
+		}
 	}
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
-		QBindingImpl[] qbindings = qea.makeBindings(eventName,args);
-		innerStep(eventName,qbindings,args);
-		Verdict result = checker.verdict(false);		
-		if(result.isStrong()) saved=result;
+		QBindingImpl[] qbindings = qea.makeBindings(eventName, args);
+		innerStep(eventName, qbindings, args);
+		Verdict result = checker.verdict(false);
+		if (result.isStrong()) {
+			saved = result;
+		}
 		return result;
 	}
-
 
 	@Override
 	public Verdict step(int eventName) {
-		innerStep(eventName,dummyEmptyBinding,emptyArgs);
-		Verdict result = checker.verdict(false);		
-		if(result.isStrong()) saved=result;
+		innerStep(eventName, dummyEmptyBinding, emptyArgs);
+		Verdict result = checker.verdict(false);
+		if (result.isStrong()) {
+			saved = result;
+		}
 		return result;
 	}
-	
-	protected abstract void innerStep(int eventName, QBindingImpl[] qbindings, Object[] args);
+
+	protected abstract void innerStep(int eventName, QBindingImpl[] qbindings,
+			Object[] args);
 
 	@Override
 	public Verdict end() {

@@ -40,6 +40,6 @@ public class AuctionBiddingNDQEA extends QVar1_FVar_NonDet_FixedQVar_QEA {
 						NEW_AMOUNT, AMOUNT), 3));
 
 		setStatesAsFinal(1, 2);
-		setStatesAsStrong(0,3);
+		setStatesAsStrong(0, 3);
 	}
 }

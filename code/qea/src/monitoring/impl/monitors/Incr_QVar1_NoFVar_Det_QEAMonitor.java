@@ -6,7 +6,6 @@ import java.util.Set;
 
 import monitoring.impl.GarbageMode;
 import monitoring.impl.RestartMode;
-import monitoring.impl.configs.NonDetConfig;
 import structure.impl.other.Verdict;
 import structure.impl.qeas.QVar01_NoFVar_Det_QEA;
 import util.EagerGarbageHashMap;
@@ -33,17 +32,24 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 	 * @param qea
 	 *            QEA
 	 */
-	public Incr_QVar1_NoFVar_Det_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_NoFVar_Det_QEA qea) {
-		super(restart,garbage,qea);
-		switch(garbage){
-			case UNSAFE_LAZY:
-			case OVERSAFE_LAZY:
-			case LAZY: bindings = new WeakIdentityHashMap<>(); break;
-			case EAGER: bindings = new EagerGarbageHashMap<>(); break;
-			case NONE: bindings = new IdentityHashMap<>();
+	public Incr_QVar1_NoFVar_Det_QEAMonitor(RestartMode restart,
+			GarbageMode garbage, QVar01_NoFVar_Det_QEA qea) {
+		super(restart, garbage, qea);
+		switch (garbage) {
+		case UNSAFE_LAZY:
+		case OVERSAFE_LAZY:
+		case LAZY:
+			bindings = new WeakIdentityHashMap<>();
+			break;
+		case EAGER:
+			bindings = new EagerGarbageHashMap<>();
+			break;
+		case NONE:
+			bindings = new IdentityHashMap<>();
 		}
-		if(restart==RestartMode.IGNORE && garbage!=GarbageMode.EAGER)
-			bindings = new IgnoreIdentityWrapper<>(bindings);		
+		if (restart == RestartMode.IGNORE && garbage != GarbageMode.EAGER) {
+			bindings = new IgnoreIdentityWrapper<>(bindings);
+		}
 		empty_state = qea.getInitialState();
 	}
 
@@ -59,10 +65,12 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 	@Override
 	public Verdict step(int eventName, Object param1) {
 
-		if(saved!=null){
-			if(!restart()) return saved;
-		}		
-		
+		if (saved != null) {
+			if (!restart()) {
+				return saved;
+			}
+		}
+
 		boolean existingBinding = false;
 		Integer startState;
 
@@ -73,7 +81,9 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 			startState = bindings.get(param1);
 			// if startState=null it means the object is ignored
 			// we should stop processing it here
-			if(startState==null) return computeVerdict(false);
+			if (startState == null) {
+				return computeVerdict(false);
+			}
 
 			// Assign flag for counters update
 			existingBinding = true;
@@ -93,7 +103,9 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 
 		// Determine if there is a final/non-final strong state
 		if (qea.isStateStrong(endState)) {
-			if(restart_mode.on()) strong.add(param1);
+			if (restart_mode.on()) {
+				strong.add(param1);
+			}
 			if (endStateFinal) {
 				finalStrongState = true;
 			} else {
@@ -108,7 +120,8 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 		return computeVerdict(false);
 	}
 
-	private final static Object[] dummyArgs = new Object[]{};
+	private final static Object[] dummyArgs = new Object[] {};
+
 	@Override
 	public Verdict step(int eventName) {
 		empty_state = qea.getNextState(empty_state, eventName);
@@ -122,9 +135,12 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 	@Override
 	public String getStatus() {
 		String ret = "Map:\n";
-		Set<Map.Entry<Object,Integer>> entryset = null;
-		if(bindings instanceof EagerGarbageHashMap) entryset = ((EagerGarbageHashMap) bindings).storeEntrySet();
-		else entryset = bindings.entrySet();
+		Set<Map.Entry<Object, Integer>> entryset = null;
+		if (bindings instanceof EagerGarbageHashMap) {
+			entryset = ((EagerGarbageHashMap) bindings).storeEntrySet();
+		} else {
+			entryset = bindings.entrySet();
+		}
 		for (Map.Entry<Object, Integer> entry : entryset) {
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
@@ -134,13 +150,13 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 	@Override
 	protected int removeStrongBindings() {
 		int removed = 0;
-		for(Object o : strong){
+		for (Object o : strong) {
 			int state = bindings.get(o);
-			if(qea.isStateFinal(state)==finalStrongState){
+			if (qea.isStateFinal(state) == finalStrongState) {
 				removed++;
 				bindings.remove(o);
 			}
-			
+
 		}
 		strong.clear();
 		return removed;
@@ -149,27 +165,28 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 	@Override
 	protected int rollbackStrongBindings() {
 		int rolled = 0;
-		for(Object o : strong){
+		for (Object o : strong) {
 			int state = bindings.get(o);
-			if(qea.isStateFinal(state)==finalStrongState){			
-				bindings.put(o,empty_state);
+			if (qea.isStateFinal(state) == finalStrongState) {
+				bindings.put(o, empty_state);
 				rolled++;
 			}
 		}
 		strong.clear();
 		return rolled;
-	}	
+	}
+
 	@Override
 	protected int ignoreStrongBindings() {
 		int ignored = 0;
-		for(Object o : strong){
+		for (Object o : strong) {
 			int state = bindings.get(o);
-			if(qea.isStateFinal(state)==finalStrongState){			
+			if (qea.isStateFinal(state) == finalStrongState) {
 				((IgnoreWrapper) bindings).ignore(o);
 				ignored++;
-			}					
+			}
 		}
 		strong.clear();
 		return ignored;
-	}	
+	}
 }

@@ -14,17 +14,17 @@ public class EnableSets {
 
 	@Test
 	public void test() {
-		
+
 		QEA qea = DaCapo.makeUnsafeIter();
-		
+
 		QEABuilder b = QEABuilder.deconstruct(qea);
-		
-		Map<TempEvent,Set<Set<TempEvent>>> es = b.computeEnableSets();
-		
-		for(Map.Entry<TempEvent,Set<Set<TempEvent>>> entry : es.entrySet()){
-			System.err.println(entry.getKey()+"\t"+entry.getValue());
+
+		Map<TempEvent, Set<Set<TempEvent>>> es = b.computeEnableSets();
+
+		for (Map.Entry<TempEvent, Set<Set<TempEvent>>> entry : es.entrySet()) {
+			System.err.println(entry.getKey() + "\t" + entry.getValue());
 		}
-		
+
 	}
 
 }

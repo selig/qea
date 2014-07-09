@@ -301,10 +301,10 @@ public class RoverCaseStudy {
 		q.addVarArg(R2);
 		q.addVarArg(R1);
 		q.addAssignment(Assignment.addElementToSet(RS, R2));
-		q.endTransition(2);		
-		
+		q.endTransition(2);
+
 		// All conflicts have been given
-		
+
 		// We can grant and cancel
 		q.addTransition(2, GRANT, new int[] { R1 }, 3);
 		q.addTransition(3, CANCEL, new int[] { R1 }, 2);
@@ -314,19 +314,19 @@ public class RoverCaseStudy {
 		// We don't actually need this transition - failure
 		// will occur as we can't take the skip transition
 		// defined below
-		//q.startTransition(3);
-		//q.eventName(GRANT);
-		//q.addVarArg(R2);
-		//q.addGuard(Guard.setContainsElement(R2, RS));
-		//q.endTransition(4);
+		// q.startTransition(3);
+		// q.eventName(GRANT);
+		// q.addVarArg(R2);
+		// q.addGuard(Guard.setContainsElement(R2, RS));
+		// q.endTransition(4);
 
 		// Manual skip states
 		// q.addTransition(3, CONFLICT, new int[] { R1, R2 }, 3);
 		q.addTransition(1, GRANT, new int[] { R2 }, 1);
-		
+
 		// This is tricky - the skip semantics are not
 		// as straight-forward as this
-		//q.addTransition(2, GRANT, new int[] { R2 }, 2);
+		// q.addTransition(2, GRANT, new int[] { R2 }, 2);
 		// we need r2!=r1
 		q.startTransition(2);
 		q.eventName(GRANT);
@@ -658,7 +658,7 @@ public class RoverCaseStudy {
 				int t1 = binding.getForcedAsInteger(T1);
 				int t2 = binding.getForcedAsInteger(T2);
 				int m = binding.getForcedAsInteger(M);
-				return n1 == n2 && p1 == p2 && (t2 - t1 < 2 * m);
+				return n1 == n2 && p1 == p2 && t2 - t1 < 2 * m;
 			}
 		});
 		q.endTransition(4);
@@ -706,7 +706,7 @@ public class RoverCaseStudy {
 				int t1 = binding.getForcedAsInteger(T1);
 				int t2 = binding.getForcedAsInteger(T2);
 				int m = binding.getForcedAsInteger(M);
-				return !(n1 == n2 && p1 == p2 && (t2 - t1 < 2 * m));
+				return !(n1 == n2 && p1 == p2 && t2 - t1 < 2 * m);
 			}
 
 		});
@@ -813,10 +813,10 @@ public class RoverCaseStudy {
 
 		QEABuilder q = new QEABuilder("ExistsLeader");
 
-		//System.err.println("*********************");
-		//System.err.println("WARNING: Not Normal - not sure if monitors work for this");
-		//System.err.println("*********************");
-		
+		// System.err.println("*********************");
+		// System.err.println("WARNING: Not Normal - not sure if monitors work for this");
+		// System.err.println("*********************");
+
 		// Events
 		int PING = 1;
 		int ACK = 2;
@@ -827,13 +827,12 @@ public class RoverCaseStudy {
 		q.addQuantification(EXISTS, R1);
 		q.addQuantification(FORALL, R2);
 
-		
 		q.addTransition(1, PING, new int[] { R1, R2 }, 2);
 		q.addTransition(2, ACK, new int[] { R2, R1 }, 3);
 
 		// Add to alphabet
-		q.addTransition(4, PING, new int[]{ R2, R1}, 4);
-		
+		q.addTransition(4, PING, new int[] { R2, R1 }, 4);
+
 		q.addFinalStates(3);
 		q.setSkipStates(1, 2, 3);
 
@@ -964,10 +963,11 @@ public class RoverCaseStudy {
 				return newBinding;
 
 			}
+
 			@Override
 			public int[] vars() {
-				return new int[]{M,H};
-			}			
+				return new int[] { M, H };
+			}
 		});
 		q.endTransition(2);
 

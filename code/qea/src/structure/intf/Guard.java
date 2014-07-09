@@ -49,7 +49,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				boolean val0 = (Boolean) ((var0 == qvar) ? firstQval : binding
+				boolean val0 = (Boolean) (var0 == qvar ? firstQval : binding
 						.getForced(var0));
 				return val0;
 			}
@@ -77,16 +77,16 @@ public abstract class Guard {
 			public boolean check(Binding binding) {
 				Object val0 = binding.getForced(var0);
 				Object val1 = binding.getForced(var1);
-				return (val0 == val1);
+				return val0 == val1;
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Object val0 = (var0 == qvar) ? firstQval : binding
+				Object val0 = var0 == qvar ? firstQval : binding
 						.getForced(var0);
-				Object val1 = (var1 == qvar) ? firstQval : binding
+				Object val1 = var1 == qvar ? firstQval : binding
 						.getForced(var1);
-				return (val0 == val1);
+				return val0 == val1;
 			}
 
 			@Override
@@ -111,7 +111,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				int varVal = (Integer) ((var == qvar) ? firstQval : binding
+				int varVal = (Integer) (var == qvar ? firstQval : binding
 						.getForced(var));
 				return varVal == val;
 			}
@@ -133,14 +133,14 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding) {
 				Object val0 = binding.getForced(var0);
-				return (val0.equals(value));
+				return val0.equals(value);
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Object val0 = (var0 == qvar) ? firstQval : binding
+				Object val0 = var0 == qvar ? firstQval : binding
 						.getForced(var0);
-				return (val0.equals(value));
+				return val0.equals(value);
 			}
 
 			@Override
@@ -166,16 +166,16 @@ public abstract class Guard {
 			public boolean check(Binding binding) {
 				Object val0 = binding.getForced(var0);
 				Object val1 = binding.getForced(var1);
-				return (val0 != val1);
+				return val0 != val1;
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Object val0 = (var0 == qvar) ? firstQval : binding
+				Object val0 = var0 == qvar ? firstQval : binding
 						.getForced(var0);
-				Object val1 = (var1 == qvar) ? firstQval : binding
+				Object val1 = var1 == qvar ? firstQval : binding
 						.getForced(var1);
-				return (val0 != val1);
+				return val0 != val1;
 			}
 
 			@Override
@@ -206,9 +206,9 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Object val0 = (var0 == qvar) ? firstQval : binding
+				Object val0 = var0 == qvar ? firstQval : binding
 						.getForced(var0);
-				Object val1 = (var1 == qvar) ? firstQval : binding
+				Object val1 = var1 == qvar ? firstQval : binding
 						.getForced(var1);
 				return val0.equals(val1);
 			}
@@ -235,7 +235,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Object varVal = (var == qvar) ? firstQval : binding
+				Object varVal = var == qvar ? firstQval : binding
 						.getForced(var);
 				return varVal.equals(val);
 			}
@@ -262,7 +262,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Object varVal = (var == qvar) ? firstQval : binding
+				Object varVal = var == qvar ? firstQval : binding
 						.getForced(var);
 				return !varVal.equals(val);
 			}
@@ -290,16 +290,16 @@ public abstract class Guard {
 			public boolean check(Binding binding) {
 				Integer val0 = binding.getForcedAsInteger(var0);
 				Integer val1 = binding.getForcedAsInteger(var1);
-				return (val0 > val1);
+				return val0 > val1;
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
 						.getForced(var0));
-				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding
+				Integer val1 = (Integer) (var1 == qvar ? firstQval : binding
 						.getForced(var1));
-				return (val0 > val1);
+				return val0 > val1;
 			}
 
 			@Override
@@ -340,7 +340,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer varVal = (Integer) ((var == qvar) ? firstQval : binding
+				Integer varVal = (Integer) (var == qvar ? firstQval : binding
 						.getForced(var));
 				return varVal < val;
 			}
@@ -368,7 +368,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer varVal = (Integer) ((var == qvar) ? firstQval : binding
+				Integer varVal = (Integer) (var == qvar ? firstQval : binding
 						.getForced(var));
 				return varVal <= val;
 			}
@@ -396,7 +396,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer varVal = (Integer) ((var == qvar) ? firstQval : binding
+				Integer varVal = (Integer) (var == qvar ? firstQval : binding
 						.getForced(var));
 				return varVal > val;
 			}
@@ -425,7 +425,7 @@ public abstract class Guard {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				double varVal = (double) ((var == qvar) ? firstQval : binding
+				double varVal = (double) (var == qvar ? firstQval : binding
 						.getForced(var));
 				return varVal >= val;
 			}
@@ -449,16 +449,16 @@ public abstract class Guard {
 			public boolean check(Binding binding) {
 				Integer val0 = binding.getForcedAsInteger(var0);
 				Integer val1 = binding.getForcedAsInteger(var1);
-				return (val0 <= val1);
+				return val0 <= val1;
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
 						.getForced(var0));
-				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding
+				Integer val1 = (Integer) (var1 == qvar ? firstQval : binding
 						.getForced(var1));
-				return (val0 <= val1);
+				return val0 <= val1;
 			}
 
 			@Override
@@ -479,16 +479,16 @@ public abstract class Guard {
 			public boolean check(Binding binding) {
 				Integer val0 = binding.getForcedAsInteger(var0);
 				Integer val1 = binding.getForcedAsInteger(var1);
-				return (val0 < val1);
+				return val0 < val1;
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
 						.getForced(var0));
-				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding
+				Integer val1 = (Integer) (var1 == qvar ? firstQval : binding
 						.getForced(var1));
-				return (val0 < val1);
+				return val0 < val1;
 			}
 
 			@Override
@@ -509,18 +509,18 @@ public abstract class Guard {
 			public boolean check(Binding binding) {
 				Object val0 = binding.getForcedAsInteger(var0);
 				Object val1 = binding.getForcedAsInteger(var1);
-				return (System.identityHashCode(val0) < System
-						.identityHashCode(val1));
+				return System.identityHashCode(val0) < System
+						.identityHashCode(val1);
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Object val0 = (Integer) ((var0 == qvar) ? firstQval : binding
-						.getForced(var0));
-				Object val1 = (Integer) ((var1 == qvar) ? firstQval : binding
-						.getForced(var1));
-				return (System.identityHashCode(val0) < System
-						.identityHashCode(val1));
+				Object val0 = var0 == qvar ? firstQval : binding
+						.getForced(var0);
+				Object val1 = var1 == qvar ? firstQval : binding
+						.getForced(var1);
+				return System.identityHashCode(val0) < System
+						.identityHashCode(val1);
 			}
 
 			@Override
@@ -541,16 +541,16 @@ public abstract class Guard {
 			public boolean check(Binding binding) {
 				Integer val0 = binding.getForcedAsInteger(var0);
 				Integer val1 = binding.getForcedAsInteger(var1);
-				return (val0 >= val1);
+				return val0 >= val1;
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
 						.getForced(var0));
-				Integer val1 = (Integer) ((var1 == qvar) ? firstQval : binding
+				Integer val1 = (Integer) (var1 == qvar ? firstQval : binding
 						.getForced(var1));
-				return (val0 >= val1);
+				return val0 >= val1;
 			}
 
 			@Override
@@ -570,14 +570,14 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding) {
 				Integer val0 = binding.getForcedAsInteger(var0);
-				return (val0 > val1);
+				return val0 > val1;
 			}
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				Integer val0 = (Integer) ((var0 == qvar) ? firstQval : binding
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
 						.getForced(var0));
-				return (val0 > val1);
+				return val0 > val1;
 			}
 
 			@Override
@@ -604,11 +604,12 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 				Object oset = binding.getValue(varSet);
-				if (oset == null)
+				if (oset == null) {
 					return false;
-				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
+				}
+				HashSet<Object> set = (HashSet<Object>) (varSet == qvar ? firstQval
 						: oset);
-				Object element = (varElement == qvar) ? firstQval : binding
+				Object element = varElement == qvar ? firstQval : binding
 						.getForced(varElement);
 				return set.contains(element);
 			}
@@ -616,8 +617,9 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding) {
 				Object oset = binding.getValue(varSet);
-				if (oset == null)
+				if (oset == null) {
 					return false;
+				}
 				HashSet<Object> set = (HashSet<Object>) oset;
 				Object element = binding.getForced(varElement);
 				return set.contains(element);
@@ -647,11 +649,12 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 				Object oset = binding.getValue(varSet);
-				if (oset == null)
+				if (oset == null) {
 					return false;
-				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
+				}
+				HashSet<Object> set = (HashSet<Object>) (varSet == qvar ? firstQval
 						: oset);
-				Object element = (varElement == qvar) ? firstQval : binding
+				Object element = varElement == qvar ? firstQval : binding
 						.getForced(varElement);
 				return set.size() == 1 && set.contains(element);
 			}
@@ -659,8 +662,9 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding) {
 				Object oset = binding.getValue(varSet);
-				if (oset == null)
+				if (oset == null) {
 					return false;
+				}
 				HashSet<Object> set = (HashSet<Object>) oset;
 				Object element = binding.getForced(varElement);
 				return set.size() == 1 && set.contains(element);
@@ -686,11 +690,12 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
 				Object oset = binding.getValue(varSet);
-				if (oset == null)
+				if (oset == null) {
 					return false;
-				HashSet<Object> set = (HashSet<Object>) ((varSet == qvar) ? firstQval
+				}
+				HashSet<Object> set = (HashSet<Object>) (varSet == qvar ? firstQval
 						: oset);
-				Object element = (varElement == qvar) ? firstQval : binding
+				Object element = varElement == qvar ? firstQval : binding
 						.getForced(varElement);
 				return set.size() > 1 && set.contains(element);
 			}
@@ -698,8 +703,9 @@ public abstract class Guard {
 			@Override
 			public boolean check(Binding binding) {
 				Object oset = binding.getValue(varSet);
-				if (oset == null)
+				if (oset == null) {
 					return false;
+				}
 				HashSet<Object> set = (HashSet<Object>) oset;
 				Object element = binding.getForced(varElement);
 				return set.size() > 1 && set.contains(element);

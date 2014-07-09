@@ -26,7 +26,8 @@ import util.ArrayUtil;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA implements QEA_nondet_free {
+public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA
+		implements QEA_nondet_free {
 
 	private final QEAType qeaType = QEAType.QVAR1_FVAR_NONDET_FIXEDQVAR_QEA;
 
@@ -138,9 +139,9 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 			// should remain unchanged, as there is only one entry
 			// we don't even need to copy it
 			if (transitions == null) {
-				if(skipStates[start_state]){
+				if (skipStates[start_state]) {
 					return config;
-				}else{
+				} else {
 					// again, only one config, no need to copy
 					config.setState(0, 0);
 					config.getBindings()[0].setEmpty();
@@ -169,8 +170,9 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 				if (transition.getGuard() != null) {
 					Guard guard = transition.getGuard();
 					if (!guard.check(binding, -1, qVarValue)) {
-						if(!skipStates[start_state]) 
+						if (!skipStates[start_state]) {
 							config.setState(0, 0); // Failing state
+						}
 						return config;
 					}
 				}
@@ -178,7 +180,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 				// If there is an assignment, execute it
 				if (transition.getAssignment() != null) {
 					config.setBinding(0,
-							transition.getAssignment().apply(binding,false));
+							transition.getAssignment().apply(binding, false));
 				}
 
 				// Set the end state
@@ -214,7 +216,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 						// If there is an assignment, execute it
 						if (transition.getAssignment() != null) {
 							binding = (FBindingImpl) transition.getAssignment()
-									.apply(binding,true);
+									.apply(binding, true);
 						}
 
 						// Copy end state and binding in the arrays
@@ -222,15 +224,16 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 						bindings[endStatesCount] = binding;
 
 						endStatesCount++;
-					}					
+					}
 				}
 
 				if (endStatesCount == 0) { // All end states are failing states
 
 					// Set failing state if not skip
 					// leave binding as it is
-					if(!skipStates[config.getStates()[0]])
+					if (!skipStates[config.getStates()[0]]) {
 						config.setState(0, 0);
+					}
 					return config;
 				}
 
@@ -260,7 +263,9 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 								transitions[i][0].getVariableNames().length);
 						argsNumberChecked = true;
 					}
-				}else if(skipStates[startStates[i]]) maxEndStates++;
+				} else if (skipStates[startStates[i]]) {
+					maxEndStates++;
+				}
 			}
 
 			// If the event is not defined for any of the current start states,
@@ -282,7 +287,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 			for (int i = 0; i < transitions.length; i++) {
 
 				if (transitions[i] != null) {
-					boolean transition_taken=false;
+					boolean transition_taken = false;
 					for (Transition transition : transitions[i]) {
 
 						// Copy the initial binding
@@ -303,7 +308,7 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 							// If there is an assignment, execute it
 							if (transition.getAssignment() != null) {
 								binding = (FBindingImpl) transition
-										.getAssignment().apply(binding,true);
+										.getAssignment().apply(binding, true);
 							}
 
 							// Copy end state and binding in the arrays
@@ -312,23 +317,23 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 							bindings[endStatesCount] = binding;
 
 							endStatesCount++;
-							transition_taken=true;
+							transition_taken = true;
 						}
 					}
-					if(!transition_taken){
-						if(skipStates[startStates[i]]){
+					if (!transition_taken) {
+						if (skipStates[startStates[i]]) {
 							endStates[endStatesCount] = startStates[i];
 							bindings[endStatesCount] = (FBindingImpl) config
 									.getBindings()[i].copy();
 							endStatesCount++;
 						}
 					}
-				}else {
-					if(skipStates[startStates[i]]){
+				} else {
+					if (skipStates[startStates[i]]) {
 						endStates[endStatesCount] = startStates[i];
 						bindings[endStatesCount] = (FBindingImpl) config
-							.getBindings()[i].copy();
-						endStatesCount++;	
+								.getBindings()[i].copy();
+						endStatesCount++;
 					}
 				}
 			}
@@ -339,8 +344,8 @@ public class QVar1_FVar_NonDet_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA imple
 				return config;
 			}
 
-			//TODO - should remove any repetitions here or as we go
-			
+			// TODO - should remove any repetitions here or as we go
+
 			// Copy the states and bindings into the correct sized array if
 			// needed and update the configuration
 			config.setStates(ArrayUtil.resize(endStates, endStatesCount));
