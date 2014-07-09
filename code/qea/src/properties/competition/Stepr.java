@@ -48,7 +48,7 @@ public class Stepr implements PropertyMaker {
 		q.startTransition(2);
 		q.eventName(STOP);
 		q.addVarArg(ts2);
-		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " > 30000") {
+		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " <= 30000") {
 
 			@Override
 			public int[] vars() {
@@ -69,7 +69,7 @@ public class Stepr implements PropertyMaker {
 			public boolean check(Binding binding) {
 				long tsVal = (long) binding.getForced(ts);
 				long ts2Val = (long) binding.getForced(ts2);
-				return ts2Val - tsVal > 30000;
+				return ts2Val - tsVal <= 30000;
 			}
 		});
 		q.endTransition(1);
