@@ -11,19 +11,19 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_MONPOLY_THREE extends OfflineTranslator {
 
-	private final int ACC_S = 1;
-	private final int ACC_F = 2;
-	private final int MGR_S = 3;
-	private final int MGR_F = 4;
-	private final int APPROVE = 5;
-	private final int PUBLISH = 6;
+	private static final int ACC_S = 1;
+	private static final int ACC_F = 2;
+	private static final int MGR_S = 3;
+	private static final int MGR_F = 4;
+	private static final int APPROVE = 5;
+	private static final int PUBLISH = 6;
 
-	private final String ACC_S_STR = "acc_S";
-	private final String ACC_F_STR = "acc_F";
-	private final String MGR_S_STR = "mgr_S";
-	private final String MGR_F_STR = "mgr_F";
-	private final String APPROVE_STR = "approve";
-	private final String PUBLISH_STR = "publish";
+	private static final String ACC_S_STR = "acc_S";
+	private static final String ACC_F_STR = "acc_F";
+	private static final String MGR_S_STR = "mgr_S";
+	private static final String MGR_F_STR = "mgr_F";
+	private static final String APPROVE_STR = "approve";
+	private static final String PUBLISH_STR = "publish";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

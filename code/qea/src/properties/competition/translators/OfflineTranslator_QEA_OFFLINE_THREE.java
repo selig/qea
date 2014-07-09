@@ -11,11 +11,11 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_QEA_OFFLINE_THREE extends OfflineTranslator {
 
-	private final int COMMAND = 1;
-	private final int SUCCEED = 2;
+	private static final int COMMAND = 1;
+	private static final int SUCCEED = 2;
 
-	private final String COMMAND_STR = "command";
-	private final String SUCCEED_STR = "succeed";
+	private static final String COMMAND_STR = "command";
+	private static final String SUCCEED_STR = "succeed";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

@@ -11,9 +11,9 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_MONPOLY_FOUR extends OfflineTranslator {
 
-	private final int WITHDRAW = 1;
+	private static final int WITHDRAW = 1;
 
-	private final String WITHDRAW_STR = "withdraw";
+	private static final String WITHDRAW_STR = "withdraw";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

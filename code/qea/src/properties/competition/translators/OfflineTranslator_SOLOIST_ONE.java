@@ -11,10 +11,11 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_SOLOIST_ONE extends OfflineTranslator {
 
-	private final int WITHDRAW = 1;
-	private final int LOGOFF = 2;
-	private final String WITHDRAW_STR = "repwidraw";
-	private final String LOGOFF_STR = "recvlogoff";
+	private static final int WITHDRAW = 1;
+	private static final int LOGOFF = 2;
+	
+	private static final String WITHDRAW_STR = "repwidraw";
+	private static final String LOGOFF_STR = "recvlogoff";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,

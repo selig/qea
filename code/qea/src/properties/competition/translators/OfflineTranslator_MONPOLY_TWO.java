@@ -11,11 +11,11 @@ import structure.impl.other.Verdict;
  */
 public class OfflineTranslator_MONPOLY_TWO extends OfflineTranslator {
 
-	private final int AUTH = 1;
-	private final int TRANS = 2;
+	private static final int AUTH = 1;
+	private static final int TRANS = 2;
 
-	private final String AUTH_STR = "auth";
-	private final String TRANS_STR = "trans";
+	private static final String AUTH_STR = "auth";
+	private static final String TRANS_STR = "trans";
 
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,
