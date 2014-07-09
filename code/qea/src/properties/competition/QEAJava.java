@@ -14,18 +14,18 @@ import structure.intf.QEA;
 import creation.QEABuilder;
 import exceptions.ShouldNotHappenException;
 
-public class QEAComp implements PropertyMaker {
+public class QEAJava implements PropertyMaker {
 
 	@Override
 	public QEA make(Property property) {
 		switch (property) {
-		case QEA_ONE:
+		case QEA_JAVA_ONE:
 			return makeOne();
-		case QEA_TWO:
+		case QEA_JAVA_TWO:
 			return makeTwo();
-		case QEA_THREE:
+		case QEA_JAVA_THREE:
 			return makeThree();
-		case QEA_FOUR:
+		case QEA_JAVA_FOUR:
 			return makeFour();
 		}
 		return null;
