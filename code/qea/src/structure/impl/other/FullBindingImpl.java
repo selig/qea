@@ -97,7 +97,8 @@ public class FullBindingImpl extends Binding {
 
 	@Override
 	public boolean update(int[] vars, Object[] args) {
-		return (freeBinding.update(vars,args)) && (quantBinding.update(vars,args));
+		return freeBinding.update(vars, args)
+				&& quantBinding.update(vars, args);
 	}
 
 }

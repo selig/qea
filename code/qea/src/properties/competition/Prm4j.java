@@ -197,7 +197,7 @@ public class Prm4j implements PropertyMaker {
 			}
 		});
 		q.endTransition(4);
-		
+
 		q.startTransition(3);
 		q.eventName(ITERATOR);
 		q.addVarArg(i);
@@ -226,7 +226,7 @@ public class Prm4j implements PropertyMaker {
 			}
 		});
 		q.endTransition(5);
-		
+
 		q.startTransition(5);
 		q.eventName(USE);
 		q.addVarArg(i);
@@ -255,16 +255,16 @@ public class Prm4j implements PropertyMaker {
 			}
 		});
 		q.endTransition(6);
-		
-		q.addFinalStates(1,2,3,5);
-		q.setSkipStates(1,2,3,5);
-		
+
+		q.addFinalStates(1, 2, 3, 5);
+		q.setSkipStates(1, 2, 3, 5);
+
 		QEA qea = q.make();
-		
+
 		qea.record_event_name("create", 1);
 		qea.record_event_name("iterator", 2);
 		qea.record_event_name("use", 3);
-		
+
 		return qea;
 	}
 

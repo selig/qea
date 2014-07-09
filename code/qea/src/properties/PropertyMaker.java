@@ -1,9 +1,9 @@
 package properties;
 
-import structure.intf.*;
+import structure.intf.QEA;
 
 public interface PropertyMaker {
-	
+
 	public QEA make(Property property);
 
 }

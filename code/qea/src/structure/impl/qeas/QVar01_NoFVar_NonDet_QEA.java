@@ -43,7 +43,8 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 	 * @param endState
 	 *            End state for the transition
 	 */
-	public void addTransition(int startState, int event, int endState, boolean prop) {
+	public void addTransition(int startState, int event, int endState,
+			boolean prop) {
 		if (delta[startState][event] == null) {
 			delta[startState][event] = new int[] { endState };
 		} else {
@@ -53,12 +54,15 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 					delta[startState][event], currentSize + 1);
 			delta[startState][event][currentSize] = endState;
 		}
-		if(prop){
-			if(propEvents[event]==2) 
-				throw new ShouldNotHappenException("An event cannot be propositional and not");
-			propEvents[event]=1;
+		if (prop) {
+			if (propEvents[event] == 2) {
+				throw new ShouldNotHappenException(
+						"An event cannot be propositional and not");
+			}
+			propEvents[event] = 1;
+		} else {
+			propEvents[event] = 2;
 		}
-		else propEvents[event]=2;
 	}
 
 	/**
@@ -71,7 +75,8 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 	 * @param endStates
 	 *            Array of end states for the transition
 	 */
-	public void addTransitions(int startState, int event, int[] endStates, boolean prop) {
+	public void addTransitions(int startState, int event, int[] endStates,
+			boolean prop) {
 
 		if (delta[startState][event] == null) {
 			delta[startState][event] = endStates;
@@ -80,11 +85,13 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 			delta[startState][event] = ArrayUtil.concat(
 					delta[startState][event], endStates);
 		}
-		if(prop){
-			if(propEvents[event]==2) 
-				throw new ShouldNotHappenException("An event cannot be propositional and not");
-			propEvents[event]=1;
-		}		
+		if (prop) {
+			if (propEvents[event] == 2) {
+				throw new ShouldNotHappenException(
+						"An event cannot be propositional and not");
+			}
+			propEvents[event] = 1;
+		}
 	}
 
 	/**
@@ -102,11 +109,11 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 		if (config.getStates().length == 1) { // Only one state in the start
 												// configuration
 			int[] next_states = delta[config.getStates()[0]][event];
-			if(next_states==null){
-				if(skipStates[config.getStates()[0]])
+			if (next_states == null) {
+				if (skipStates[config.getStates()[0]]) {
 					return config;
-				else{
-					config.setStates(new int[]{0});
+				} else {
+					config.setStates(new int[] { 0 });
 				}
 			}
 			config.setStates(next_states);
@@ -136,10 +143,10 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 							endStatesCount++;
 						}
 					}
-				}else if(skipStates[startState]){
+				} else if (skipStates[startState]) {
 					// if there are no transitions, but it's a
 					// skip state, then mark the startState
-					endStatesBool[startState]=true;
+					endStatesBool[startState] = true;
 				}
 			}
 
@@ -219,8 +226,9 @@ public class QVar01_NoFVar_NonDet_QEA extends Abstr_QVar01_NoFVar_QEA {
 	public int[][][] getDelta() {
 		return delta;
 	}
-	public boolean isProp(int event){
-		return propEvents[event]==1;
+
+	public boolean isProp(int event) {
+		return propEvents[event] == 1;
 	}
-	
+
 }

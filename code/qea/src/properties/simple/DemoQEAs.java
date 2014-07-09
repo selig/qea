@@ -122,7 +122,7 @@ public class DemoQEAs {
 		qea.endTransition(3);
 
 		qea.setSkipStates(3);
-		
+
 		qea.addFinalStates(3);
 
 		return qea.make();

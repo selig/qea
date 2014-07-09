@@ -24,7 +24,8 @@ import structure.intf.QEA_det_free;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA implements QEA_det_free {
+public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA
+		implements QEA_det_free {
 
 	private final QEAType qeaType = QEAType.QVAR1_FVAR_DET_FIXEDQVAR_QEA;
 
@@ -100,7 +101,7 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA implemen
 		// If the event is not defined for the current start state, return the
 		// failing state with an empty binding
 		if (transition == null) {
-			if(!skipStates[config.getState()]){
+			if (!skipStates[config.getState()]) {
 				config.setState(0);
 				config.getBinding().setEmpty();
 			}
@@ -123,15 +124,16 @@ public class QVar1_FVar_Det_FixedQVar_QEA extends Abstr_QVar01_FVar_QEA implemen
 		if (transition.getGuard() != null) {
 			Guard guard = transition.getGuard();
 			if (!guard.check(binding, -1, qVarValue)) {
-				if(!skipStates[config.getState()])
+				if (!skipStates[config.getState()]) {
 					config.setState(0); // Failing state
+				}
 				return config;
 			}
 		}
 
 		// If there is an assignment, execute it
 		if (transition.getAssignment() != null) {
-			config.setBinding(transition.getAssignment().apply(binding,false));
+			config.setBinding(transition.getAssignment().apply(binding, false));
 		}
 
 		// Set the end state

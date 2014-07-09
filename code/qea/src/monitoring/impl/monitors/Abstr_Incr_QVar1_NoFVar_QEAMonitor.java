@@ -53,18 +53,20 @@ public abstract class Abstr_Incr_QVar1_NoFVar_QEAMonitor<Q extends Abstr_QVar01_
 		boolean universal = qea.isQuantificationUniversal();
 		Verdict result = null;
 
-		if ((universal && allBindingsInFinalState())
-				|| (!universal && existsOneBindingInFinalState())) {
-			if (end || (finalStrongState && !universal)) {
+		if (universal && allBindingsInFinalState() || !universal
+				&& existsOneBindingInFinalState()) {
+			if (end || finalStrongState && !universal) {
 				saved = Verdict.SUCCESS;
 				result = Verdict.SUCCESS;
-			} else
+			} else {
 				result = Verdict.WEAK_SUCCESS;
-		} else if (end || (nonFinalStrongState && universal)) {
+			}
+		} else if (end || nonFinalStrongState && universal) {
 			saved = Verdict.FAILURE;
 			result = Verdict.FAILURE;
-		} else
+		} else {
 			result = Verdict.WEAK_FAILURE;
+		}
 
 		if (qea.isNegated()) {
 			result = result.negated();

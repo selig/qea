@@ -1,17 +1,17 @@
 package benchmark.rovers.mop;
-import java.util.*;
-import javamoprt.*;
-import java.lang.ref.*;
-import org.aspectj.lang.*;
+import java.util.Arrays;
+
+import javamoprt.MOPMonitor;
 
 class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 	protected GrantCancelMOPMonitor[] elementData;
 
 	public GrantCancelMOPMonitor_Set(){
-		this.size = 0;
-		this.elementData = new GrantCancelMOPMonitor[4];
+		size = 0;
+		elementData = new GrantCancelMOPMonitor[4];
 	}
 
+	@Override
 	public final int size(){
 		while(size > 0 && elementData[size-1].MOP_terminated) {
 			elementData[--size] = null;
@@ -19,12 +19,14 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 		return size;
 	}
 
+	@Override
 	public final boolean add(MOPMonitor e){
 		ensureCapacity();
 		elementData[size++] = (GrantCancelMOPMonitor)e;
 		return true;
 	}
 
+	@Override
 	public final void endObject(int idnum){
 		int numAlive = 0;
 		for(int i = 0; i < size; i++){
@@ -42,6 +44,7 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 		size = numAlive;
 	}
 
+	@Override
 	public final boolean alive(){
 		for(int i = 0; i < size; i++){
 			MOPMonitor monitor = elementData[i];
@@ -52,6 +55,7 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 		return false;
 	}
 
+	@Override
 	public final void endObjectAndClean(int idnum){
 		int size = this.size;
 		this.size = 0;
@@ -65,6 +69,7 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 		elementData = null;
 	}
 
+	@Override
 	public final void ensureCapacity() {
 		int oldCapacity = elementData.length;
 		if (size + 1 > oldCapacity) {
@@ -72,7 +77,7 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 		}
 		if (size + 1 > oldCapacity) {
 			GrantCancelMOPMonitor[] oldData = elementData;
-			int newCapacity = (oldCapacity * 3) / 2 + 1;
+			int newCapacity = oldCapacity * 3 / 2 + 1;
 			if (newCapacity < size + 1){
 				newCapacity = size + 1;
 			}
@@ -83,7 +88,7 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 	public final void cleanup() {
 		int numAlive = 0 ;
 		for(int i = 0; i < size; i++){
-			GrantCancelMOPMonitor monitor = (GrantCancelMOPMonitor)elementData[i];
+			GrantCancelMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -97,8 +102,8 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 
 	public final void event_grant_t1(Object t1, Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			GrantCancelMOPMonitor monitor = (GrantCancelMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			GrantCancelMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -109,16 +114,16 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_grant_t2(Object t2, Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			GrantCancelMOPMonitor monitor = (GrantCancelMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			GrantCancelMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -129,16 +134,16 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_cancel_t1(Object t1, Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			GrantCancelMOPMonitor monitor = (GrantCancelMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			GrantCancelMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -149,16 +154,16 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_cancel_t2(Object t2, Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			GrantCancelMOPMonitor monitor = (GrantCancelMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			GrantCancelMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -169,8 +174,8 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
@@ -178,6 +183,7 @@ class GrantCancelMOPMonitor_Set extends javamoprt.MOPSet {
 
 class GrantCancelMOPMonitor extends javamoprt.MOPMonitor implements Cloneable, javamoprt.MOPObject {
 	public long tau = -1;
+	@Override
 	public Object clone() {
 		try {
 			GrantCancelMOPMonitor ret = (GrantCancelMOPMonitor) super.clone();
@@ -251,6 +257,7 @@ class GrantCancelMOPMonitor extends javamoprt.MOPMonitor implements Cloneable, j
 	//alive_parameters_1 = [Object t2, Object r]
 	public boolean alive_parameters_1 = true;
 
+	@Override
 	public final void endObject(int idnum){
 		switch(idnum){
 			case 0:
@@ -400,7 +407,7 @@ public aspect GrantCancelMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object t2 = (Object)origMonitor.MOPRef_t2.get();
+							Object t2 = origMonitor.MOPRef_t2.get();
 							if (!origMonitor.MOP_terminated && t2 != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -424,7 +431,7 @@ public aspect GrantCancelMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_t1.disable[0] > origMonitor.tau|| (TempRef_t1.tau[0] > 0 && TempRef_t1.tau[0] < origMonitor.tau)) {
+									if (TempRef_t1.disable[0] > origMonitor.tau|| TempRef_t1.tau[0] > 0 && TempRef_t1.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 
@@ -571,7 +578,7 @@ public aspect GrantCancelMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object t1 = (Object)origMonitor.MOPRef_t1.get();
+							Object t1 = origMonitor.MOPRef_t1.get();
 							if (!origMonitor.MOP_terminated && t1 != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -595,7 +602,7 @@ public aspect GrantCancelMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_t2.disable[0] > origMonitor.tau|| (TempRef_t2.tau[0] > 0 && TempRef_t2.tau[0] < origMonitor.tau)) {
+									if (TempRef_t2.disable[0] > origMonitor.tau|| TempRef_t2.tau[0] > 0 && TempRef_t2.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 
@@ -742,7 +749,7 @@ public aspect GrantCancelMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object t2 = (Object)origMonitor.MOPRef_t2.get();
+							Object t2 = origMonitor.MOPRef_t2.get();
 							if (!origMonitor.MOP_terminated && t2 != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -766,7 +773,7 @@ public aspect GrantCancelMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_t1.disable[0] > origMonitor.tau|| (TempRef_t1.tau[0] > 0 && TempRef_t1.tau[0] < origMonitor.tau)) {
+									if (TempRef_t1.disable[0] > origMonitor.tau|| TempRef_t1.tau[0] > 0 && TempRef_t1.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 
@@ -913,7 +920,7 @@ public aspect GrantCancelMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object t1 = (Object)origMonitor.MOPRef_t1.get();
+							Object t1 = origMonitor.MOPRef_t1.get();
 							if (!origMonitor.MOP_terminated && t1 != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -937,7 +944,7 @@ public aspect GrantCancelMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_t2.disable[0] > origMonitor.tau|| (TempRef_t2.tau[0] > 0 && TempRef_t2.tau[0] < origMonitor.tau)) {
+									if (TempRef_t2.disable[0] > origMonitor.tau|| TempRef_t2.tau[0] > 0 && TempRef_t2.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 

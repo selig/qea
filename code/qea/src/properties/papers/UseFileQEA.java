@@ -24,9 +24,9 @@ public class UseFileQEA extends QVar01_NoFVar_Det_QEA {
 		int CLOSE = 3;
 
 		// hasnext_true allows us to call next
-		addTransition(1, OPEN, 2,false);
-		addTransition(2, USE, 2,false);
-		addTransition(2, CLOSE, 1,false);
+		addTransition(1, OPEN, 2, false);
+		addTransition(2, USE, 2, false);
+		addTransition(2, CLOSE, 1, false);
 
 		// only state 1 is final as the file must be closed
 		setStateAsFinal(1);

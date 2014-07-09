@@ -167,8 +167,9 @@ public abstract class QEA {
 
 	public String get_event_name(int id) {
 		for (Map.Entry<String, Integer> entry : name_lookup.entrySet()) {
-			if (entry.getValue().equals(id))
+			if (entry.getValue().equals(id)) {
 				return entry.getKey();
+			}
 		}
 		return "NotFound";
 	}

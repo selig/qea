@@ -3,7 +3,6 @@ package test.properties.rovers;
 import static org.junit.Assert.assertEquals;
 import static structure.impl.other.Verdict.FAILURE;
 import static structure.impl.other.Verdict.SUCCESS;
-import monitoring.impl.MonitorFactory;
 import monitoring.intf.Monitor;
 
 import org.junit.Before;
@@ -35,37 +34,38 @@ public class ExistsLeaderTest {
 		Object B = TestSettings.object("B");
 		Object C = TestSettings.object("C");
 
-		monitor.step(PING,A,B);
-		//System.err.println("======================\n"+monitor);	
-		monitor.step(PING,A,C);
-		//System.err.println("======================\n"+monitor);
-		monitor.step(PING,A,A);
-		//System.err.println("======================\n"+monitor);
-		monitor.step(ACK,B,A);
-		//System.err.println("======================\n"+monitor);
-		monitor.step(ACK,A,A);
-		//System.err.println("======================\n"+monitor);
-		monitor.step(ACK,C,A);
-		//System.err.println("======================\n"+monitor);
-		
-		assertEquals(SUCCESS,monitor.end());
-		
+		monitor.step(PING, A, B);
+		// System.err.println("======================\n"+monitor);
+		monitor.step(PING, A, C);
+		// System.err.println("======================\n"+monitor);
+		monitor.step(PING, A, A);
+		// System.err.println("======================\n"+monitor);
+		monitor.step(ACK, B, A);
+		// System.err.println("======================\n"+monitor);
+		monitor.step(ACK, A, A);
+		// System.err.println("======================\n"+monitor);
+		monitor.step(ACK, C, A);
+		// System.err.println("======================\n"+monitor);
+
+		assertEquals(SUCCESS, monitor.end());
+
 	}
+
 	/*
 	 * Check that x and y have same domain
 	 */
 	@Test
 	public void test_two() {
-		
+
 		Object A = TestSettings.object("A");
 		Object B = TestSettings.object("B");
 		Object C = TestSettings.object("C");
 
-		monitor.step(PING,A,B);
-		monitor.step(PING,C,B);		
-		monitor.step(ACK,B,A);
-		
-		assertEquals(FAILURE,monitor.end());
-		
+		monitor.step(PING, A, B);
+		monitor.step(PING, C, B);
+		monitor.step(ACK, B, A);
+
+		assertEquals(FAILURE, monitor.end());
+
 	}
 }

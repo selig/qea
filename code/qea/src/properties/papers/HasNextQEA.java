@@ -34,16 +34,16 @@ public class HasNextQEA extends QVar01_NoFVar_Det_QEA {
 		int HASNEXT_FALSE = 3;
 
 		// hasnext_true allows us to call next
-		addTransition(1, HASNEXT_TRUE, 2,false);
-		addTransition(2, HASNEXT_TRUE, 2,false);
-		addTransition(2, NEXT, 1,false);
+		addTransition(1, HASNEXT_TRUE, 2, false);
+		addTransition(2, HASNEXT_TRUE, 2, false);
+		addTransition(2, NEXT, 1, false);
 
 		// hasnext_false means the Iterator is finished
-		addTransition(1, HASNEXT_FALSE, 3,false);
-		addTransition(3, HASNEXT_FALSE, 3,false);
+		addTransition(1, HASNEXT_FALSE, 3, false);
+		addTransition(3, HASNEXT_FALSE, 3, false);
 
 		setStatesAsFinal(1, 2, 3);
-		
+
 		setStatesAsStrong(0);
 	}
 }

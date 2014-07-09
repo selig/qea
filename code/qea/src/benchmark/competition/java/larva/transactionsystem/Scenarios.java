@@ -14,8 +14,8 @@ public class Scenarios {
 		if (n > 0 && n <= SCENARIO_COUNT) {
 			Integer prop = (n + 1) / 2;
 			System.out.println("\nRunning scenario [" + prop
-					+ ((n % 2 == 1) ? "a" : "b") + "]");
-			System.out.println("Should " + ((n % 2 == 1) ? "" : "not ")
+					+ (n % 2 == 1 ? "a" : "b") + "]");
+			System.out.println("Should " + (n % 2 == 1 ? "" : "not ")
 					+ "violate property " + prop);
 		}
 		switch (n) {
@@ -216,8 +216,9 @@ public class Scenarios {
 			sid = tr.USER_login(uid);
 			for (Integer i = 0; i < 11; i++) {
 				account_number = tr.USER_requestAccount(uid, sid);
-				if (i % 2 == 0)
+				if (i % 2 == 0) {
 					tr.ADMIN_approveOpenAccount(uid, account_number);
+				}
 			}
 			tr.USER_logout(uid, sid);
 			break;
@@ -229,8 +230,9 @@ public class Scenarios {
 			sid = tr.USER_login(uid);
 			for (Integer i = 0; i < 30; i++) {
 				account_number = tr.USER_requestAccount(uid, sid);
-				if (i % 2 == 0)
+				if (i % 2 == 0) {
 					tr.ADMIN_approveOpenAccount(uid, account_number);
+				}
 				if (i % 9 == 5) {
 					tr.USER_logout(uid, sid);
 					sid = tr.USER_login(uid);
@@ -270,8 +272,9 @@ public class Scenarios {
 				tr.USER_depositFromExternal(uid, sid, account_number, 1000);
 				tr.USER_payToExternal(uid, sid, account_number, 500);
 				total += 1525;
-				if (total > 500000)
+				if (total > 500000) {
 					tr.ADMIN_reconcile();
+				}
 				tr.USER_logout(uid, sid);
 			}
 			break;
@@ -323,8 +326,9 @@ public class Scenarios {
 				tr.ADMIN_approveOpenAccount(uid, account_number);
 				tr.USER_depositFromExternal(uid, sid, account_number, 1000);
 				tr.USER_logout(uid, sid);
-				if (i == 3)
+				if (i == 3) {
 					tr.USER_payToExternal(uid, sid, account_number, 100);
+				}
 			}
 			break;
 		case 20:

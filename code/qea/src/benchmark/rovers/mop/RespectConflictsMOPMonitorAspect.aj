@@ -1,17 +1,17 @@
 package benchmark.rovers.mop;
-import java.util.*;
-import javamoprt.*;
-import java.lang.ref.*;
-import org.aspectj.lang.*;
+import java.util.Arrays;
+
+import javamoprt.MOPMonitor;
 
 class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 	protected RespectConflictsMOPMonitor[] elementData;
 
 	public RespectConflictsMOPMonitor_Set(){
-		this.size = 0;
-		this.elementData = new RespectConflictsMOPMonitor[4];
+		size = 0;
+		elementData = new RespectConflictsMOPMonitor[4];
 	}
 
+	@Override
 	public final int size(){
 		while(size > 0 && elementData[size-1].MOP_terminated) {
 			elementData[--size] = null;
@@ -19,12 +19,14 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 		return size;
 	}
 
+	@Override
 	public final boolean add(MOPMonitor e){
 		ensureCapacity();
 		elementData[size++] = (RespectConflictsMOPMonitor)e;
 		return true;
 	}
 
+	@Override
 	public final void endObject(int idnum){
 		int numAlive = 0;
 		for(int i = 0; i < size; i++){
@@ -42,6 +44,7 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 		size = numAlive;
 	}
 
+	@Override
 	public final boolean alive(){
 		for(int i = 0; i < size; i++){
 			MOPMonitor monitor = elementData[i];
@@ -52,6 +55,7 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 		return false;
 	}
 
+	@Override
 	public final void endObjectAndClean(int idnum){
 		int size = this.size;
 		this.size = 0;
@@ -65,6 +69,7 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 		elementData = null;
 	}
 
+	@Override
 	public final void ensureCapacity() {
 		int oldCapacity = elementData.length;
 		if (size + 1 > oldCapacity) {
@@ -72,7 +77,7 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 		}
 		if (size + 1 > oldCapacity) {
 			RespectConflictsMOPMonitor[] oldData = elementData;
-			int newCapacity = (oldCapacity * 3) / 2 + 1;
+			int newCapacity = oldCapacity * 3 / 2 + 1;
 			if (newCapacity < size + 1){
 				newCapacity = size + 1;
 			}
@@ -83,7 +88,7 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 	public final void cleanup() {
 		int numAlive = 0 ;
 		for(int i = 0; i < size; i++){
-			RespectConflictsMOPMonitor monitor = (RespectConflictsMOPMonitor)elementData[i];
+			RespectConflictsMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -97,8 +102,8 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 
 	public final void event_conflict(Object r1, Object r2) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			RespectConflictsMOPMonitor monitor = (RespectConflictsMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			RespectConflictsMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -109,16 +114,16 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_grant_r1(Object r1) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			RespectConflictsMOPMonitor monitor = (RespectConflictsMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			RespectConflictsMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -129,16 +134,16 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_grant_r2(Object r2) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			RespectConflictsMOPMonitor monitor = (RespectConflictsMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			RespectConflictsMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -149,16 +154,16 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_release_r1(Object r1) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			RespectConflictsMOPMonitor monitor = (RespectConflictsMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			RespectConflictsMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -169,16 +174,16 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_release_r2(Object r2) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			RespectConflictsMOPMonitor monitor = (RespectConflictsMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			RespectConflictsMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -189,8 +194,8 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
@@ -198,6 +203,7 @@ class RespectConflictsMOPMonitor_Set extends javamoprt.MOPSet {
 
 class RespectConflictsMOPMonitor extends javamoprt.MOPMonitor implements Cloneable, javamoprt.MOPObject {
 	public long tau = -1;
+	@Override
 	public Object clone() {
 		try {
 			RespectConflictsMOPMonitor ret = (RespectConflictsMOPMonitor) super.clone();
@@ -280,6 +286,7 @@ class RespectConflictsMOPMonitor extends javamoprt.MOPMonitor implements Cloneab
 	//alive_parameters_2 = [Object r1]
 	public boolean alive_parameters_2 = true;
 
+	@Override
 	public final void endObject(int idnum){
 		switch(idnum){
 			case 0:
@@ -297,7 +304,7 @@ class RespectConflictsMOPMonitor extends javamoprt.MOPMonitor implements Cloneab
 			case 0:
 			//conflict
 			//alive_r1 && alive_r2
-			if(!(alive_parameters_0)){
+			if(!alive_parameters_0){
 				MOP_terminated = true;
 				return;
 			}
@@ -306,7 +313,7 @@ class RespectConflictsMOPMonitor extends javamoprt.MOPMonitor implements Cloneab
 			case 1:
 			//grant_r1
 			//alive_r2
-			if(!(alive_parameters_1)){
+			if(!alive_parameters_1){
 				MOP_terminated = true;
 				return;
 			}
@@ -315,7 +322,7 @@ class RespectConflictsMOPMonitor extends javamoprt.MOPMonitor implements Cloneab
 			case 2:
 			//grant_r2
 			//alive_r1
-			if(!(alive_parameters_2)){
+			if(!alive_parameters_2){
 				MOP_terminated = true;
 				return;
 			}
@@ -324,7 +331,7 @@ class RespectConflictsMOPMonitor extends javamoprt.MOPMonitor implements Cloneab
 			case 3:
 			//release_r1
 			//alive_r1 && alive_r2
-			if(!(alive_parameters_0)){
+			if(!alive_parameters_0){
 				MOP_terminated = true;
 				return;
 			}
@@ -333,7 +340,7 @@ class RespectConflictsMOPMonitor extends javamoprt.MOPMonitor implements Cloneab
 			case 4:
 			//release_r2
 			//alive_r1 && alive_r2
-			if(!(alive_parameters_0)){
+			if(!alive_parameters_0){
 				MOP_terminated = true;
 				return;
 			}

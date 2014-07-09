@@ -1,7 +1,7 @@
 package structure.impl.qeas;
 
-import exceptions.ShouldNotHappenException;
 import structure.impl.other.Quantification;
+import exceptions.ShouldNotHappenException;
 
 /**
  * This class represents a simple Quantified Event Automaton (QEA) with the
@@ -27,7 +27,7 @@ public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 			int initialState, Quantification quantification) {
 		super(numStates, initialState, quantification);
 		delta = new int[numStates + 1][numEvents + 1];
-		propEvents = new int[numEvents +1];
+		propEvents = new int[numEvents + 1];
 	}
 
 	/**
@@ -40,14 +40,18 @@ public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 	 * @param endState
 	 *            End state for this transition
 	 */
-	public void addTransition(int startState, int event, int endState, boolean prop) {
+	public void addTransition(int startState, int event, int endState,
+			boolean prop) {
 		delta[startState][event] = endState;
-		if(prop){
-			if(propEvents[event]==2) 
-				throw new ShouldNotHappenException("An event cannot be propositional and not");
-			propEvents[event]=1;
-		}	
-		else propEvents[event]=2;
+		if (prop) {
+			if (propEvents[event] == 2) {
+				throw new ShouldNotHappenException(
+						"An event cannot be propositional and not");
+			}
+			propEvents[event] = 1;
+		} else {
+			propEvents[event] = 2;
+		}
 	}
 
 	/**
@@ -63,11 +67,12 @@ public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 	 */
 	public int getNextState(int previousState, int event) {
 		int next_state = delta[previousState][event];
-		
-		if(next_state==0 && skipStates[previousState]) 
+
+		if (next_state == 0 && skipStates[previousState]) {
 			return previousState;
-		
-		return next_state;		
+		}
+
+		return next_state;
 	}
 
 	/**
@@ -102,8 +107,9 @@ public class QVar01_NoFVar_Det_QEA extends Abstr_QVar01_NoFVar_QEA {
 	public int[][] getDelta() {
 		return delta;
 	}
-	public boolean isProp(int event){
-		return propEvents[event]==1;
+
+	public boolean isProp(int event) {
+		return propEvents[event] == 1;
 	}
 
 }

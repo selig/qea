@@ -1,17 +1,17 @@
 package benchmark.rovers.mop;
-import java.util.*;
-import javamoprt.*;
-import java.lang.ref.*;
-import org.aspectj.lang.*;
+import java.util.Arrays;
+
+import javamoprt.MOPMonitor;
 
 class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 	protected ReleaseResourceMOPMonitor[] elementData;
 
 	public ReleaseResourceMOPMonitor_Set(){
-		this.size = 0;
-		this.elementData = new ReleaseResourceMOPMonitor[4];
+		size = 0;
+		elementData = new ReleaseResourceMOPMonitor[4];
 	}
 
+	@Override
 	public final int size(){
 		while(size > 0 && elementData[size-1].MOP_terminated) {
 			elementData[--size] = null;
@@ -19,12 +19,14 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 		return size;
 	}
 
+	@Override
 	public final boolean add(MOPMonitor e){
 		ensureCapacity();
 		elementData[size++] = (ReleaseResourceMOPMonitor)e;
 		return true;
 	}
 
+	@Override
 	public final void endObject(int idnum){
 		int numAlive = 0;
 		for(int i = 0; i < size; i++){
@@ -42,6 +44,7 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 		size = numAlive;
 	}
 
+	@Override
 	public final boolean alive(){
 		for(int i = 0; i < size; i++){
 			MOPMonitor monitor = elementData[i];
@@ -52,6 +55,7 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 		return false;
 	}
 
+	@Override
 	public final void endObjectAndClean(int idnum){
 		int size = this.size;
 		this.size = 0;
@@ -65,6 +69,7 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 		elementData = null;
 	}
 
+	@Override
 	public final void ensureCapacity() {
 		int oldCapacity = elementData.length;
 		if (size + 1 > oldCapacity) {
@@ -72,7 +77,7 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 		}
 		if (size + 1 > oldCapacity) {
 			ReleaseResourceMOPMonitor[] oldData = elementData;
-			int newCapacity = (oldCapacity * 3) / 2 + 1;
+			int newCapacity = oldCapacity * 3 / 2 + 1;
 			if (newCapacity < size + 1){
 				newCapacity = size + 1;
 			}
@@ -83,7 +88,7 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 	public final void cleanup() {
 		int numAlive = 0 ;
 		for(int i = 0; i < size; i++){
-			ReleaseResourceMOPMonitor monitor = (ReleaseResourceMOPMonitor)elementData[i];
+			ReleaseResourceMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -97,8 +102,8 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 
 	public final void event_schedule(Object t, Object c) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ReleaseResourceMOPMonitor monitor = (ReleaseResourceMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ReleaseResourceMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -112,16 +117,16 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_grant(Object t, Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ReleaseResourceMOPMonitor monitor = (ReleaseResourceMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ReleaseResourceMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -135,16 +140,16 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_cancel(Object t, Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ReleaseResourceMOPMonitor monitor = (ReleaseResourceMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ReleaseResourceMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -158,16 +163,16 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_finish(Object c) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ReleaseResourceMOPMonitor monitor = (ReleaseResourceMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ReleaseResourceMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -181,8 +186,8 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
@@ -190,6 +195,7 @@ class ReleaseResourceMOPMonitor_Set extends javamoprt.MOPSet {
 
 class ReleaseResourceMOPMonitor extends javamoprt.MOPMonitor implements Cloneable, javamoprt.MOPObject {
 	public long tau = -1;
+	@Override
 	public Object clone() {
 		try {
 			ReleaseResourceMOPMonitor ret = (ReleaseResourceMOPMonitor) super.clone();
@@ -289,6 +295,7 @@ class ReleaseResourceMOPMonitor extends javamoprt.MOPMonitor implements Cloneabl
 	//alive_parameters_1 = [Object t, Object r]
 	public boolean alive_parameters_1 = true;
 
+	@Override
 	public final void endObject(int idnum){
 		switch(idnum){
 			case 0:
@@ -527,7 +534,7 @@ public aspect ReleaseResourceMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object c = (Object)origMonitor.MOPRef_c.get();
+							Object c = origMonitor.MOPRef_c.get();
 							if (!origMonitor.MOP_terminated && c != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -551,7 +558,7 @@ public aspect ReleaseResourceMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_r.disable[0] > origMonitor.tau|| (TempRef_r.tau[0] > 0 && TempRef_r.tau[0] < origMonitor.tau)) {
+									if (TempRef_r.disable[0] > origMonitor.tau|| TempRef_r.tau[0] > 0 && TempRef_r.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 
@@ -698,7 +705,7 @@ public aspect ReleaseResourceMOPMonitorAspect implements javamoprt.MOPObject {
 						int numAlive = 0;
 						for(int i = 0; i < origSet.size; i++) {
 							origMonitor = origSet.elementData[i];
-							Object c = (Object)origMonitor.MOPRef_c.get();
+							Object c = origMonitor.MOPRef_c.get();
 							if (!origMonitor.MOP_terminated && c != null) {
 								origSet.elementData[numAlive] = origMonitor;
 								numAlive++;
@@ -722,7 +729,7 @@ public aspect ReleaseResourceMOPMonitorAspect implements javamoprt.MOPObject {
 								if (lastMonitor == null) {
 									boolean timeCheck = true;
 
-									if (TempRef_r.disable[0] > origMonitor.tau|| (TempRef_r.tau[0] > 0 && TempRef_r.tau[0] < origMonitor.tau)) {
+									if (TempRef_r.disable[0] > origMonitor.tau|| TempRef_r.tau[0] > 0 && TempRef_r.tau[0] < origMonitor.tau) {
 										timeCheck = false;
 									}
 

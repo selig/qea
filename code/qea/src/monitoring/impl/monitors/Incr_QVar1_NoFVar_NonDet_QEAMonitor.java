@@ -26,28 +26,37 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 	private Map<Object, NonDetConfig> bindings;
 
 	private NonDetConfig empty_config;
-	
-	public Incr_QVar1_NoFVar_NonDet_QEAMonitor(RestartMode restart, GarbageMode garbage, QVar01_NoFVar_NonDet_QEA qea) {
-		super(restart,garbage,qea);
-		switch(garbage){
-			case UNSAFE_LAZY:
-			case OVERSAFE_LAZY:
-			case LAZY: bindings = new WeakIdentityHashMap<>(); break;
-			case EAGER: bindings = new EagerGarbageHashMap<>(); break;
-			case NONE: bindings = new IdentityHashMap<>();
-		}	
-		if(restart==RestartMode.IGNORE && garbage!=GarbageMode.EAGER)
+
+	public Incr_QVar1_NoFVar_NonDet_QEAMonitor(RestartMode restart,
+			GarbageMode garbage, QVar01_NoFVar_NonDet_QEA qea) {
+		super(restart, garbage, qea);
+		switch (garbage) {
+		case UNSAFE_LAZY:
+		case OVERSAFE_LAZY:
+		case LAZY:
+			bindings = new WeakIdentityHashMap<>();
+			break;
+		case EAGER:
+			bindings = new EagerGarbageHashMap<>();
+			break;
+		case NONE:
+			bindings = new IdentityHashMap<>();
+		}
+		if (restart == RestartMode.IGNORE && garbage != GarbageMode.EAGER) {
 			bindings = new IgnoreIdentityWrapper<>(bindings);
+		}
 		empty_config = new NonDetConfig(qea.getInitialState());
 	}
 
 	@Override
 	public Verdict step(int eventName, Object param1) {
 
-		if(saved!=null){
-			if(!restart()) return saved;
-		}		
-		
+		if (saved != null) {
+			if (!restart()) {
+				return saved;
+			}
+		}
+
 		boolean existingBinding = false;
 		boolean startConfigFinal = false;
 		NonDetConfig config;
@@ -60,7 +69,9 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 			config = bindings.get(param1);
 			// if config=null it means the object is ignored
 			// we should stop processing it here
-			if(config==null) return computeVerdict(false);
+			if (config == null) {
+				return computeVerdict(false);
+			}
 
 			// Assign flags for counters update
 			existingBinding = true;
@@ -79,7 +90,7 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 		bindings.put(param1, config);
 
 		// Determine if there is a final/non-final strong state
-		boolean endConfigFinal = checkFinalAndStrongStates(config,param1);
+		boolean endConfigFinal = checkFinalAndStrongStates(config, param1);
 
 		// Update counters
 		updateCounters(existingBinding, startConfigFinal, endConfigFinal);
@@ -88,10 +99,10 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 	}
 
 	@Override
-	public Verdict step(int eventName) {		
+	public Verdict step(int eventName) {
 		Verdict finalVerdict = null;
-		empty_config = qea.getNextConfig(empty_config,eventName);
-		for (Object bound_object : bindings.keySet()) {			
+		empty_config = qea.getNextConfig(empty_config, eventName);
+		for (Object bound_object : bindings.keySet()) {
 			finalVerdict = step(eventName, bound_object);
 		}
 		return finalVerdict;
@@ -100,9 +111,12 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 	@Override
 	public String getStatus() {
 		String ret = "Map:\n";
-		Set<Map.Entry<Object,NonDetConfig>> entryset = null;
-		if(bindings instanceof EagerGarbageHashMap) entryset = ((EagerGarbageHashMap) bindings).storeEntrySet();
-		else entryset = bindings.entrySet();
+		Set<Map.Entry<Object, NonDetConfig>> entryset = null;
+		if (bindings instanceof EagerGarbageHashMap) {
+			entryset = ((EagerGarbageHashMap) bindings).storeEntrySet();
+		} else {
+			entryset = bindings.entrySet();
+		}
 		for (Map.Entry<Object, NonDetConfig> entry : entryset) {
 			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
@@ -112,11 +126,13 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 	@Override
 	protected int removeStrongBindings() {
 		int removed = 0;
-		for(Object o : strong){	
+		for (Object o : strong) {
 			NonDetConfig c = bindings.get(o);
 			boolean is_final = false;
-			for(int s : c.getStates()) is_final |= qea.isStateFinal(s);
-			if(is_final==finalStrongState){
+			for (int s : c.getStates()) {
+				is_final |= qea.isStateFinal(s);
+			}
+			if (is_final == finalStrongState) {
 				bindings.remove(o);
 				removed++;
 			}
@@ -128,14 +144,16 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 	@Override
 	protected int rollbackStrongBindings() {
 		int rolled = 0;
-		for(Object o : strong){
+		for (Object o : strong) {
 			NonDetConfig c = bindings.get(o);
 			boolean is_final = false;
-			for(int s : c.getStates()) is_final |= qea.isStateFinal(s);
-			if(is_final==finalStrongState){
-				bindings.put(o,empty_config.copy());
+			for (int s : c.getStates()) {
+				is_final |= qea.isStateFinal(s);
+			}
+			if (is_final == finalStrongState) {
+				bindings.put(o, empty_config.copy());
 				rolled++;
-			}						
+			}
 		}
 		strong.clear();
 		return rolled;
@@ -144,17 +162,19 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 	@Override
 	protected int ignoreStrongBindings() {
 		int ignored = 0;
-		for(Object o : strong){
+		for (Object o : strong) {
 			NonDetConfig c = bindings.get(o);
 			boolean is_final = false;
-			for(int s : c.getStates()) is_final |= qea.isStateFinal(s);
-			if(is_final==finalStrongState){
+			for (int s : c.getStates()) {
+				is_final |= qea.isStateFinal(s);
+			}
+			if (is_final == finalStrongState) {
 				((IgnoreWrapper) bindings).ignore(o);
 				ignored++;
-			}						
+			}
 		}
 		strong.clear();
 		return ignored;
-	}	
-	
+	}
+
 }

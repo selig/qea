@@ -1,17 +1,17 @@
 package benchmark.rovers.mop;
-import java.util.*;
-import javamoprt.*;
-import java.lang.ref.*;
-import org.aspectj.lang.*;
+import java.util.Arrays;
+
+import javamoprt.MOPMonitor;
 
 class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 	protected ResourceLifecycleMOPMonitor[] elementData;
 
 	public ResourceLifecycleMOPMonitor_Set(){
-		this.size = 0;
-		this.elementData = new ResourceLifecycleMOPMonitor[4];
+		size = 0;
+		elementData = new ResourceLifecycleMOPMonitor[4];
 	}
 
+	@Override
 	public final int size(){
 		while(size > 0 && elementData[size-1].MOP_terminated) {
 			elementData[--size] = null;
@@ -19,12 +19,14 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 		return size;
 	}
 
+	@Override
 	public final boolean add(MOPMonitor e){
 		ensureCapacity();
 		elementData[size++] = (ResourceLifecycleMOPMonitor)e;
 		return true;
 	}
 
+	@Override
 	public final void endObject(int idnum){
 		int numAlive = 0;
 		for(int i = 0; i < size; i++){
@@ -42,6 +44,7 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 		size = numAlive;
 	}
 
+	@Override
 	public final boolean alive(){
 		for(int i = 0; i < size; i++){
 			MOPMonitor monitor = elementData[i];
@@ -52,6 +55,7 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 		return false;
 	}
 
+	@Override
 	public final void endObjectAndClean(int idnum){
 		int size = this.size;
 		this.size = 0;
@@ -65,6 +69,7 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 		elementData = null;
 	}
 
+	@Override
 	public final void ensureCapacity() {
 		int oldCapacity = elementData.length;
 		if (size + 1 > oldCapacity) {
@@ -72,7 +77,7 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 		}
 		if (size + 1 > oldCapacity) {
 			ResourceLifecycleMOPMonitor[] oldData = elementData;
-			int newCapacity = (oldCapacity * 3) / 2 + 1;
+			int newCapacity = oldCapacity * 3 / 2 + 1;
 			if (newCapacity < size + 1){
 				newCapacity = size + 1;
 			}
@@ -83,7 +88,7 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 	public final void cleanup() {
 		int numAlive = 0 ;
 		for(int i = 0; i < size; i++){
-			ResourceLifecycleMOPMonitor monitor = (ResourceLifecycleMOPMonitor)elementData[i];
+			ResourceLifecycleMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -97,8 +102,8 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 
 	public final void event_request(Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ResourceLifecycleMOPMonitor monitor = (ResourceLifecycleMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ResourceLifecycleMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -109,16 +114,16 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_deny(Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ResourceLifecycleMOPMonitor monitor = (ResourceLifecycleMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ResourceLifecycleMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -129,16 +134,16 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_grant(Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ResourceLifecycleMOPMonitor monitor = (ResourceLifecycleMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ResourceLifecycleMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -149,16 +154,16 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_cancel(Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ResourceLifecycleMOPMonitor monitor = (ResourceLifecycleMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ResourceLifecycleMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -169,16 +174,16 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 
 	public final void event_rescind(Object r) {
 		int numAlive = 0 ;
-		for(int i = 0; i < this.size; i++){
-			ResourceLifecycleMOPMonitor monitor = (ResourceLifecycleMOPMonitor)this.elementData[i];
+		for(int i = 0; i < size; i++){
+			ResourceLifecycleMOPMonitor monitor = elementData[i];
 			if(!monitor.MOP_terminated){
 				elementData[numAlive] = monitor;
 				numAlive++;
@@ -189,14 +194,15 @@ class ResourceLifecycleMOPMonitor_Set extends javamoprt.MOPSet {
 				}
 			}
 		}
-		for(int i = numAlive; i < this.size; i++){
-			this.elementData[i] = null;
+		for(int i = numAlive; i < size; i++){
+			elementData[i] = null;
 		}
 		size = numAlive;
 	}
 }
 
 class ResourceLifecycleMOPMonitor extends javamoprt.MOPMonitor implements Cloneable, javamoprt.MOPObject {
+	@Override
 	public Object clone() {
 		try {
 			ResourceLifecycleMOPMonitor ret = (ResourceLifecycleMOPMonitor) super.clone();
@@ -275,6 +281,7 @@ class ResourceLifecycleMOPMonitor extends javamoprt.MOPMonitor implements Clonea
 	//alive_parameters_0 = [Object r]
 	public boolean alive_parameters_0 = true;
 
+	@Override
 	public final void endObject(int idnum){
 		switch(idnum){
 			case 0:
@@ -287,7 +294,7 @@ class ResourceLifecycleMOPMonitor extends javamoprt.MOPMonitor implements Clonea
 			case 0:
 			//request
 			//alive_r
-			if(!(alive_parameters_0)){
+			if(!alive_parameters_0){
 				MOP_terminated = true;
 				return;
 			}
@@ -296,7 +303,7 @@ class ResourceLifecycleMOPMonitor extends javamoprt.MOPMonitor implements Clonea
 			case 1:
 			//deny
 			//alive_r
-			if(!(alive_parameters_0)){
+			if(!alive_parameters_0){
 				MOP_terminated = true;
 				return;
 			}
@@ -305,7 +312,7 @@ class ResourceLifecycleMOPMonitor extends javamoprt.MOPMonitor implements Clonea
 			case 2:
 			//grant
 			//alive_r
-			if(!(alive_parameters_0)){
+			if(!alive_parameters_0){
 				MOP_terminated = true;
 				return;
 			}
@@ -314,7 +321,7 @@ class ResourceLifecycleMOPMonitor extends javamoprt.MOPMonitor implements Clonea
 			case 3:
 			//cancel
 			//alive_r
-			if(!(alive_parameters_0)){
+			if(!alive_parameters_0){
 				MOP_terminated = true;
 				return;
 			}
@@ -323,7 +330,7 @@ class ResourceLifecycleMOPMonitor extends javamoprt.MOPMonitor implements Clonea
 			case 4:
 			//rescind
 			//alive_r
-			if(!(alive_parameters_0)){
+			if(!alive_parameters_0){
 				MOP_terminated = true;
 				return;
 			}

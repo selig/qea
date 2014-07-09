@@ -62,14 +62,14 @@ public abstract class FileMonitor {
 				if (starting[c - 97] == 1) {
 					// expand
 					int tmp = event_lookup[c - 97];
-					event_lookup[c - 97] = (-expansions);
+					event_lookup[c - 97] = -expansions;
 					expansions_str[expansions] = new String[] {
 							tmp_event_lookup[c - 97], string_name };
 					expansions_int[expansions] = new int[] { tmp, int_name };
 					expansions++;
 				} else {
 					// add
-					int index = -(event_lookup[c - 97]);
+					int index = -event_lookup[c - 97];
 					int prev = expansions_str[index].length;
 					int[] nint = new int[prev + 1];
 					String[] nstr = new String[prev + 1];
@@ -91,7 +91,7 @@ public abstract class FileMonitor {
 			for (int i = 0; i < event_lookup.length; i++) {
 				int id = event_lookup[i];
 				if (id != 0) {
-					System.err.print(((char) (i + 97)) + "\t" + id);
+					System.err.print((char) (i + 97) + "\t" + id);
 					if (id < 0) {
 						for (int j = 0; j < expansions_int[-id].length; j++) {
 							System.err.print("\t" + expansions_int[-id][j]

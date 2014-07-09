@@ -140,8 +140,8 @@ public class MonPoly implements PropertyMaker {
 				int ts1Val = binding.getForcedAsInteger(ts1);
 				int ts2Val = binding.getForcedAsInteger(ts2);
 
-				return aVal < 2000
-						|| (ts2Val - ts1Val < 21 && ts2Val - ts1Val >= 2);
+				return aVal < 2000 || ts2Val - ts1Val < 21
+						&& ts2Val - ts1Val >= 2;
 			}
 		});
 		q.endTransition(3);

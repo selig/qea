@@ -13,20 +13,21 @@ import java.util.Set;
  * identity differently
  */
 
-public class IgnoreIdentityWrapper<K,V> implements Map<K,V>, IgnoreWrapper<K> {
+public class IgnoreIdentityWrapper<K, V> implements Map<K, V>, IgnoreWrapper<K> {
 
-	private final Map<K,V> inner;
+	private final Map<K, V> inner;
 	private final HashSet<Integer> ignored_ids = new HashSet<Integer>();
-	
-	public void ignore(K key){
+
+	@Override
+	public void ignore(K key) {
 		int id = System.identityHashCode(key);
 		ignored_ids.add(id);
 	}
-	
-	public IgnoreIdentityWrapper(Map<K,V> inner){
-		this.inner=inner;
+
+	public IgnoreIdentityWrapper(Map<K, V> inner) {
+		this.inner = inner;
 	}
-	
+
 	@Override
 	public void clear() {
 		inner.clear();
@@ -53,8 +54,9 @@ public class IgnoreIdentityWrapper<K,V> implements Map<K,V>, IgnoreWrapper<K> {
 	@Override
 	public V get(Object key) {
 		int id = System.identityHashCode(key);
-		if(ignored_ids.contains(id))
+		if (ignored_ids.contains(id)) {
 			return null;
+		}
 		return inner.get(key);
 	}
 
@@ -70,7 +72,7 @@ public class IgnoreIdentityWrapper<K,V> implements Map<K,V>, IgnoreWrapper<K> {
 
 	@Override
 	public V put(K key, V value) {
-		return inner.put(key,value);
+		return inner.put(key, value);
 	}
 
 	@Override
@@ -93,6 +95,4 @@ public class IgnoreIdentityWrapper<K,V> implements Map<K,V>, IgnoreWrapper<K> {
 		return inner.values();
 	}
 
-	
-	
 }

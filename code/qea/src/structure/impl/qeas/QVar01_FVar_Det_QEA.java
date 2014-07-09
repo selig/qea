@@ -126,8 +126,9 @@ public class QVar01_FVar_Det_QEA extends Abstr_QVar01_FVar_QEA implements
 			if (isQVarValue && !guard.check(binding, -1, qVarValue)
 					|| !isQVarValue && !guard.check(binding)) {
 
-				if (!skipStates[config.getState()])
+				if (!skipStates[config.getState()]) {
 					config.setState(0); // Failing state
+				}
 				return config;
 			}
 		}

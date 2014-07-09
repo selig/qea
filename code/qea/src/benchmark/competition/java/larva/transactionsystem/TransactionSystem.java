@@ -37,8 +37,9 @@ public class TransactionSystem {
 		Iterator<UserInfo> iterator = users.iterator();
 		while (iterator.hasNext()) {
 			u = iterator.next();
-			if (u.getId() == uid)
+			if (u.getId() == uid) {
 				return u;
+			}
 		}
 		return null;
 	}
@@ -56,20 +57,23 @@ public class TransactionSystem {
 	public double charges(Integer uid, double amount) {
 		UserInfo u = getUserInfo(uid);
 		if (u.isGoldUser()) {
-			if (amount <= 100)
+			if (amount <= 100) {
 				return 0; // no charges
-			if (amount <= 1000)
-				return (amount * 0.02); // 2% charges
-			return (amount * 0.01); // 1% charges
+			}
+			if (amount <= 1000) {
+				return amount * 0.02; // 2% charges
+			}
+			return amount * 0.01; // 1% charges
 		}
 		if (u.isSilverUser()) {
-			if (amount <= 1000)
-				return (amount * 0.03); // 3% charges
-			return (amount * 0.02); // 2% charges
+			if (amount <= 1000) {
+				return amount * 0.03; // 3% charges
+			}
+			return amount * 0.02; // 2% charges
 		}
 		if (u.isNormalUser()) {
 			if (amount * 0.05 > 2.0) {
-				return (amount * 0.05);
+				return amount * 0.05;
 			} else {
 				return 2.0;
 			} // 5% charges, minimum of $2

@@ -53,17 +53,17 @@ class CThread extends Thread {
 	private int depth;
 
 	public CThread(Lock l, String name, int threadNo, int dep) {
-		this.lo = l;
-		this.setName(name);
-		this.tNum = threadNo;
-		this.depth = dep;
+		lo = l;
+		setName(name);
+		tNum = threadNo;
+		depth = dep;
 	}
 
 	public void doSomething() {
 		if (depth == 1) {
 			try {
 				lo.lock();
-				LockTest.sum += this.tNum;
+				LockTest.sum += tNum;
 				Thread.sleep(1000);
 			} catch (Exception e) {
 				System.err.println(e);
@@ -84,6 +84,7 @@ class CThread extends Thread {
 
 	}
 
+	@Override
 	public void run() {
 		doSomething();
 	}
@@ -95,18 +96,18 @@ class WThread1 extends Thread {
 	private int depth;
 
 	public WThread1(Lock l, String name, int threadNo, int dep) {
-		this.lo = l;
-		this.setName(name);
-		this.tNum = threadNo;
-		this.depth = dep;
+		lo = l;
+		setName(name);
+		tNum = threadNo;
+		depth = dep;
 	}
 
 	public void doSomething() {
 		if (depth == 1) {
 			try {
 				lo.lock();
-				LockTest.sum += this.tNum;
-				System.out.println("Oops,thread " + this.tNum
+				LockTest.sum += tNum;
+				System.out.println("Oops,thread " + tNum
 						+ " may cause deadlock!");
 				Thread.sleep(1000);
 			} catch (Exception e) {
@@ -126,6 +127,7 @@ class WThread1 extends Thread {
 
 	}
 
+	@Override
 	public void run() {
 		doSomething();
 	}

@@ -21,20 +21,18 @@ import exceptions.NotRelevantException;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free{
+public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free {
 
 	private final Transition[][] delta;
 
-
 	public QVarN_Det_QEA(int numStates, int numEvents, int initialState,
 			int qVariablesCount, int fVariablesCount, QEAType type) {
-		super(numStates,numEvents,initialState,qVariablesCount,fVariablesCount,type);
+		super(numStates, numEvents, initialState, qVariablesCount,
+				fVariablesCount, type);
 
 		delta = new Transition[numStates + 1][numEvents + 1];
 
 	}
-
-
 
 	public Transition[][] getTransitions() {
 		return delta;
@@ -48,6 +46,7 @@ public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free{
 	public void addTransition(int startState, int event, Transition transition) {
 		delta[startState][event] = transition;
 	}
+
 	@Override
 	public int[] getEventsAlphabet() {
 		int[] a = new int[delta[0].length - 1];
@@ -56,20 +55,20 @@ public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free{
 		}
 		return a;
 	}
-	
+
 	/*
 	 * MUST check for null - instead of NotRelevantException
 	 */
 	public Integer getNextConfig(QBindingImpl qbinding, Integer start_state,
 			int eventName, Object[] args) {
-		
-		
+
 		Transition transition = delta[start_state][eventName];
 
 		if (transition == null) {
 			// no transition - fail if not a skip state
-			if(!skipStates[start_state])
+			if (!skipStates[start_state]) {
 				return 0;
+			}
 			return start_state;
 		}
 
@@ -82,12 +81,12 @@ public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free{
 			// MUST check for this
 			return null;
 		}
-		
-		//No guards or assignments - just return the end state
+
+		// No guards or assignments - just return the end state
 		return transition.getEndState();
-		
+
 	}
-	
+
 	public void getNextConfig(QBindingImpl qbinding, DetConfig config,
 			int eventName, Object[] args) throws NotRelevantException {
 
@@ -100,8 +99,9 @@ public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free{
 
 		if (transition == null) {
 			// no transition - fail if not a skip state
-			if(!skipStates[start_state])
+			if (!skipStates[start_state]) {
 				config.setState(0);
+			}
 			return;
 		}
 
@@ -111,7 +111,7 @@ public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free{
 				args);
 		if (extend_with == null || !qbinding.equals(extend_with)) {
 			// not relevant, just return
-			//System.err.println("Not relevant: "+qbinding+" for "+eventName+Arrays.toString(args));
+			// System.err.println("Not relevant: "+qbinding+" for "+eventName+Arrays.toString(args));
 			throw new NotRelevantException();
 		}
 
@@ -134,64 +134,68 @@ public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free{
 		}
 		// if we cannot go to state 0 unless a skip state
 		else {
-			if(!skipStates[start_state])
+			if (!skipStates[start_state]) {
 				config.setState(0);
+			}
 		}
 
 	}
 
-
+	@Override
 	public void setupMatching() {
 		e_sigs = new int[delta[0].length][][];
-				
+
 		for (int e = 1; e < delta[0].length; e++) {
 			Set<ArrayList<Integer>> sigset = new HashSet<ArrayList<Integer>>();
 			for (int s = 1; s < delta.length; s++) {
 				Transition t = delta[s][e];
 				if (t != null) {
-                    int[] targs = t.getVariableNames();
-                    ArrayList<Integer> itargs = new ArrayList<Integer>();
-                    for(int v : targs) itargs.add(v);					
+					int[] targs = t.getVariableNames();
+					ArrayList<Integer> itargs = new ArrayList<Integer>();
+					for (int v : targs) {
+						itargs.add(v);
+					}
 					sigset.add(itargs);
 				}
 			}
 			e_sigs[e] = new int[sigset.size()][];
-            int i=0;
-            for(ArrayList<Integer> siglist : sigset){
-                 int[] sig = new int[siglist.size()];
-                 for(int i1=0;i1<sig.length;i1++) sig[i1]=siglist.get(i1);
-                 e_sigs[e][i]=sig;
-                 i++;
-            }			
+			int i = 0;
+			for (ArrayList<Integer> siglist : sigset) {
+				int[] sig = new int[siglist.size()];
+				for (int i1 = 0; i1 < sig.length; i1++) {
+					sig[i1] = siglist.get(i1);
+				}
+				e_sigs[e][i] = sig;
+				i++;
+			}
 		}
-		
+
 	}
-
-
 
 	@Override
 	public Transition[][] getDelta() {
 		return delta;
 	}
 
-
-
 	@Override
 	public boolean can_leave(int state, int event) {
-		if(isNormal()){
+		if (isNormal()) {
 			Transition t = delta[state][event];
-			//if no transition then this depends on whether state is skip
-			if(t==null) return !skipStates[state];
-			//if t has any fvars then it's true as the config can get updated
-			for(int v : t.getVariableNames())
-				if(v > 0) return true;
-			//lastly check if we loop
+			// if no transition then this depends on whether state is skip
+			if (t == null) {
+				return !skipStates[state];
+			}
+			// if t has any fvars then it's true as the config can get updated
+			for (int v : t.getVariableNames()) {
+				if (v > 0) {
+					return true;
+				}
+			}
+			// lastly check if we loop
 			return t.getEndState() != state;
+		} else {
+			return true;
 		}
-		else return true;
 	}
-
-
-
 
 }

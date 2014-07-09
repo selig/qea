@@ -11,7 +11,7 @@ public abstract class Assignment {
 	 * 
 	 * @return updated binding
 	 */
-	public abstract Binding apply(Binding binding,boolean copy);
+	public abstract Binding apply(Binding binding, boolean copy);
 
 	/**
 	 * Get all variables used in this assignment
@@ -19,7 +19,7 @@ public abstract class Assignment {
 	 * @return used variables
 	 */
 	public abstract int[] vars();
-	
+
 	private final String name;
 
 	public Assignment(String name) {
@@ -43,16 +43,19 @@ public abstract class Assignment {
 	public static Assignment store(final int var0, final int var1) {
 		return new Assignment("store(x_" + var0 + ", x_" + var1 + ")") {
 			@Override
-			public Binding apply(Binding binding,boolean copy) {
+			public Binding apply(Binding binding, boolean copy) {
 				Object val1 = binding.getForced(var1);
 				Binding newBinding = binding;
-				if(copy) newBinding = binding.copy();
+				if (copy) {
+					newBinding = binding.copy();
+				}
 				newBinding.setValue(var0, val1);
 				return newBinding;
 			}
+
 			@Override
 			public int[] vars() {
-				return new int[]{var0,var1};
+				return new int[] { var0, var1 };
 			}
 		};
 	}
@@ -63,18 +66,21 @@ public abstract class Assignment {
 				+ varElement) {
 
 			@Override
-			public Binding apply(Binding binding,boolean copy) {
+			public Binding apply(Binding binding, boolean copy) {
 				HashSet<Object> set = new HashSet<>();
 				set.add(binding.getForced(varElement));
 				Binding newBinding = binding;
-				if(copy) newBinding = binding.copy();
+				if (copy) {
+					newBinding = binding.copy();
+				}
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}
+
 			@Override
 			public int[] vars() {
-				return new int[]{varSet,varElement};
-			}			
+				return new int[] { varSet, varElement };
+			}
 		};
 	}
 
@@ -83,27 +89,32 @@ public abstract class Assignment {
 		return new Assignment("addElement_" + varElement + "ToSet_" + varSet) {
 
 			@Override
-			public Binding apply(Binding binding,boolean copy) {
+			public Binding apply(Binding binding, boolean copy) {
 				if (binding.getValue(varSet) != null) {
 					HashSet<Object> set = (HashSet<Object>) binding
 							.getForced(varSet);
 					set.add(binding.getForced(varElement));
 					Binding newBinding = binding;
-					if(copy) newBinding = binding.copy();
+					if (copy) {
+						newBinding = binding.copy();
+					}
 					newBinding.setValue(varSet, set);
 					return newBinding;
 				}
 				HashSet<Object> set = new HashSet<>();
 				set.add(binding.getForced(varElement));
 				Binding newBinding = binding;
-				if(copy) newBinding = binding.copy();
+				if (copy) {
+					newBinding = binding.copy();
+				}
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}
+
 			@Override
 			public int[] vars() {
-				return new int[]{varSet,varElement};
-			}			
+				return new int[] { varSet, varElement };
+			}
 		};
 	}
 
@@ -113,66 +124,81 @@ public abstract class Assignment {
 				+ varSet) {
 
 			@Override
-			public Binding apply(Binding binding,boolean copy) {
+			public Binding apply(Binding binding, boolean copy) {
 				HashSet<Object> set = (HashSet<Object>) binding
 						.getForced(varSet);
 				set.remove(binding.getForced(varElement));
 
 				Binding newBinding = binding;
-				if(copy) newBinding = binding.copy();
+				if (copy) {
+					newBinding = binding.copy();
+				}
 				newBinding.setValue(varSet, set);
 				return newBinding;
 			}
+
 			@Override
 			public int[] vars() {
-				return new int[]{varSet,varElement};
-			}			
+				return new int[] { varSet, varElement };
+			}
 		};
 	}
+
 	public static Assignment set(final int var0, final Object value) {
-		return new Assignment("x_"+var0+"="+value) {
+		return new Assignment("x_" + var0 + "=" + value) {
 			@Override
-			public Binding apply(Binding binding,boolean copy) {
+			public Binding apply(Binding binding, boolean copy) {
 				Binding newBinding = binding;
-				if(copy) newBinding = binding.copy();
+				if (copy) {
+					newBinding = binding.copy();
+				}
 				newBinding.setValue(var0, value);
 				return newBinding;
 			}
+
 			@Override
 			public int[] vars() {
-				return new int[]{var0};
+				return new int[] { var0 };
 			}
 		};
 	}
+
 	public static Assignment increment(final int var0) {
-		return new Assignment("x_"+var0+"++") {
+		return new Assignment("x_" + var0 + "++") {
 			@Override
-			public Binding apply(Binding binding,boolean copy) {
+			public Binding apply(Binding binding, boolean copy) {
 				Integer val0 = (Integer) binding.getForced(var0);
 				Binding newBinding = binding;
-				if(copy) newBinding = binding.copy();
-				newBinding.setValue(var0, val0+1);
+				if (copy) {
+					newBinding = binding.copy();
+				}
+				newBinding.setValue(var0, val0 + 1);
 				return newBinding;
 			}
+
 			@Override
 			public int[] vars() {
-				return new int[]{var0};
+				return new int[] { var0 };
 			}
 		};
 	}
+
 	public static Assignment decrement(final int var0) {
-		return new Assignment("x_"+var0+"--") {
+		return new Assignment("x_" + var0 + "--") {
 			@Override
-			public Binding apply(Binding binding,boolean copy) {
+			public Binding apply(Binding binding, boolean copy) {
 				Integer val0 = (Integer) binding.getForced(var0);
 				Binding newBinding = binding;
-				if(copy) newBinding = binding.copy();
-				newBinding.setValue(var0, val0-1);
+				if (copy) {
+					newBinding = binding.copy();
+				}
+				newBinding.setValue(var0, val0 - 1);
 				return newBinding;
 			}
+
 			@Override
 			public int[] vars() {
-				return new int[]{var0};
+				return new int[] { var0 };
 			}
 		};
 	}
