@@ -117,8 +117,10 @@ public class Stepr implements PropertyMaker {
 
 			@Override
 			public boolean check(Binding binding) {
-				double errorCountVal = (double) binding.getForced(errorCount);
-				double cycleCountVal = (double) binding.getForced(cycleCount);
+				double errorCountVal = Double.valueOf((String) binding
+						.getForced(errorCount));
+				double cycleCountVal = Double.valueOf((String) binding
+						.getForced(cycleCount));
 				return errorCountVal == 0 || cycleCountVal == 0
 						|| errorCountVal <= 0.00002 * cycleCountVal;
 			}
@@ -175,8 +177,8 @@ public class Stepr implements PropertyMaker {
 
 			@Override
 			public boolean check(Binding binding) {
-				int tsVal = binding.getForcedAsInteger(ts);
-				int ts2Val = binding.getForcedAsInteger(ts2);
+				long tsVal = (long) binding.getForced(ts);
+				long ts2Val = (long) binding.getForced(ts2);
 				return ts2Val - tsVal < 480000;
 			}
 		});
