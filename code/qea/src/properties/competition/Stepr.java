@@ -21,8 +21,6 @@ public class Stepr implements PropertyMaker {
 			return makeThree();
 		case STEPR_FOUR:
 			return makeFour();
-		case STEPR_FIVE:
-			return makeFive();
 		}
 		return null;
 	}
@@ -201,11 +199,6 @@ public class Stepr implements PropertyMaker {
 		qea.record_event_name("group_end", GROUP_END);
 
 		return qea;
-	}
-
-	public QEA makeFive() {
-		// There's no 5
-		return null;
 	}
 
 }

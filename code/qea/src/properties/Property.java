@@ -58,14 +58,12 @@ public enum Property {
 	STEPR_TWO,
 	STEPR_THREE,
 	STEPR_FOUR,
-	STEPR_FIVE,
 
 	// Soloist properties
 	SOLOIST_ONE,
 	SOLOIST_TWO,
 	SOLOIST_THREE,
 	SOLOIST_FOUR,
-	SOLOIST_FIVE,
 
 	// RiTHM properties
 	RITHM_ONE,
