@@ -6,7 +6,7 @@ import java.io.IOException;
 import monitoring.impl.translators.OfflineTranslator;
 import properties.Property;
 import properties.competition.MonPoly;
-import properties.competition.translators.OfflineTranslator_MONPOLY_FOUR;
+import properties.competition.translators.MonPolyTranslators;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 
@@ -77,9 +77,11 @@ public class CSVFileMonitor extends FileMonitor {
 	// A test
 	public static void main(String[] args) throws IOException {
 
+		Property property = Property.MONPOLY_FOUR;
+
 		CSVFileMonitor f = new CSVFileMonitor("traces/Team4/B4_trace.csv",
-				new MonPoly().make(Property.MONPOLY_FOUR),
-				new OfflineTranslator_MONPOLY_FOUR());
+				new MonPoly().make(property),
+				new MonPolyTranslators().make(property));
 
 		long start = System.currentTimeMillis();
 		System.err.println(f.monitor());
