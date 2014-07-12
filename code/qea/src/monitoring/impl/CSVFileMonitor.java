@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import monitoring.impl.translators.OfflineTranslator;
 import properties.Property;
-import properties.competition.MonPoly;
-import properties.competition.translators.MonPolyTranslators;
+import properties.competition.QEAOffline;
+import properties.competition.translators.QEAOfflineTranslators;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 
@@ -40,8 +40,13 @@ public class CSVFileMonitor extends FileMonitor {
 				// System.err.println(monitor);
 			}
 			// System.err.println(events+":"+line);
-			if (step(line) == Verdict.FAILURE) {
-				System.err.println("Failure on " + events + ":" + line);
+			Verdict verdict = step(line);
+			if (verdict != null) {
+				lastVerdict = verdict;
+				if (verdict == Verdict.FAILURE
+						|| verdict == Verdict.WEAK_FAILURE) {
+					System.err.println("Failure on " + events + ":" + line);
+				}
 			}
 		}
 		System.err.println(events + " events");
@@ -77,11 +82,12 @@ public class CSVFileMonitor extends FileMonitor {
 	// A test
 	public static void main(String[] args) throws IOException {
 
-		Property property = Property.MONPOLY_FOUR;
+		Property property = Property.QEA_OFFLINE_TWO;
 
-		CSVFileMonitor f = new CSVFileMonitor("traces/Team4/B4_trace.csv",
-				new MonPoly().make(property),
-				new MonPolyTranslators().make(property));
+		CSVFileMonitor f = new CSVFileMonitor(
+				"traces/Team8/B2_GrantCancel.csv",
+				new QEAOffline().make(property),
+				new QEAOfflineTranslators().make(property));
 
 		long start = System.currentTimeMillis();
 		System.err.println(f.monitor());
