@@ -199,19 +199,24 @@ public class Larva implements PropertyMaker {
 
 		int NEW_ACCOUNT = 1;
 
-		int sid = -1;
+		int user = -1;
+		int sid = -2;
+
 		int n = 1;
 
+		q.addQuantification(FORALL, user);
 		q.addQuantification(FORALL, sid);
 
 		q.startTransition(1);
 		q.eventName(NEW_ACCOUNT);
+		q.addVarArg(user);
 		q.addVarArg(sid);
 		q.addAssignment(Assignment.set(n, 1));
 		q.endTransition(2);
 
 		q.startTransition(2);
 		q.eventName(NEW_ACCOUNT);
+		q.addVarArg(user);
 		q.addVarArg(sid);
 		q.addGuard(Guard.varIsLessThanVal(n, 10));
 		q.addAssignment(Assignment.increment(n));
@@ -285,8 +290,8 @@ public class Larva implements PropertyMaker {
 			public boolean check(Binding binding) {
 
 				int countVal = binding.getForcedAsInteger(count);
-				double amountVal = (double) binding.getForced(amount);
-				if (countVal < 1000 && amountVal < 1000000) {
+				double totalVal = (double) binding.getForced(total);
+				if (countVal < 1000 && totalVal < 1000000) {
 					return true;
 				}
 				return false;
