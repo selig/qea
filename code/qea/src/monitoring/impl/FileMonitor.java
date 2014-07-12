@@ -27,7 +27,7 @@ public abstract class FileMonitor {
 	// position 0 not used
 	private int[][] expansions_int;
 	private String[][] expansions_str;
-	
+
 	protected Verdict lastVerdict = null;
 
 	public FileMonitor(String tracename, QEA qea, OfflineTranslator translator)
@@ -36,6 +36,12 @@ public abstract class FileMonitor {
 		translator.setMonitor(MonitorFactory.create(qea));
 		this.translator = translator;
 		trace = new BufferedReader(new FileReader(tracename));
+
+		// eventLookupInit(qea);
+
+	}
+
+	private void eventLookupInit(QEA qea) {
 
 		event_lookup = new int[26];
 		int[] starting = new int[26];
@@ -104,7 +110,6 @@ public abstract class FileMonitor {
 				}
 			}
 		}
-
 	}
 
 	protected int translate(String name) {
