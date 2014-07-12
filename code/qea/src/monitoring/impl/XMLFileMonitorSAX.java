@@ -50,15 +50,15 @@ import exceptions.ShouldNotHappenException;
  * @author Helena Cuenca
  * @author Giles Reger
  */
-public class XMLFileMonitor extends FileMonitor implements ContentHandler {
+public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
 
 	public static void main(String[] args) throws IOException,
 			ParserConfigurationException, SAXException {
 
 		Property property = Property.STEPR_TWO;
 
-		XMLFileMonitor fileMonitor = new XMLFileMonitor("traces/Team6/log.xml",
-				new Stepr().make(property),
+		XMLFileMonitorSAX fileMonitor = new XMLFileMonitorSAX(
+				"traces/Team6/log.xml", new Stepr().make(property),
 				new SteprTranslators().make(property));
 		long start = System.currentTimeMillis();
 		System.out.println(fileMonitor.monitor());
@@ -108,15 +108,19 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 	private Status status = Status.START;
 
 	/**
-	 * Creates an XML file monitor for the specified trace and QEA property
+	 * Creates an XML file monitor for the specified trace, QEA property and
+	 * offline translator
 	 * 
 	 * @param traceFileName
 	 *            Trace file name
 	 * @param qea
 	 *            QEA property
+	 * @param translator
+	 *            Translator processing the events and parameters in the trace
+	 *            to send them to the monitor
 	 * @throws FileNotFoundException
 	 */
-	public XMLFileMonitor(String traceFileName, QEA qea,
+	public XMLFileMonitorSAX(String traceFileName, QEA qea,
 			OfflineTranslator translator) throws FileNotFoundException {
 
 		super(traceFileName, qea, translator);
@@ -198,8 +202,7 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 			Verdict verdict = step();
 			if (verdict != null) {
 				lastVerdict = verdict;
-				if (verdict == Verdict.FAILURE
-						|| verdict == Verdict.WEAK_FAILURE) {
+				if (verdict == Verdict.FAILURE) {
 					printFailureDetail();
 				}
 			}
@@ -212,7 +215,6 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 
 	private Verdict step() {
 
-		// int event = translate(eventName);
 		if (fieldCount == 0) {
 			return translator.translateAndStep(eventName);
 		} else {
