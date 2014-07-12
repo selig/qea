@@ -17,8 +17,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import properties.Property;
-import properties.competition.Soloist;
-import properties.competition.translators.SoloistTranslators;
+import properties.competition.Stepr;
+import properties.competition.translators.SteprTranslators;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import util.ArrayUtil;
@@ -55,12 +55,14 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 	public static void main(String[] args) throws IOException,
 			ParserConfigurationException, SAXException {
 
-		Property property = Property.SOLOIST_FOUR;
+		Property property = Property.STEPR_TWO;
 
-		XMLFileMonitor fileMonitor = new XMLFileMonitor("traces/Team1/B5.xml",
-				new Soloist().make(property),
-				new SoloistTranslators().make(property));
+		XMLFileMonitor fileMonitor = new XMLFileMonitor("traces/Team6/log.xml",
+				new Stepr().make(property),
+				new SteprTranslators().make(property));
+		long start = System.currentTimeMillis();
 		System.out.println(fileMonitor.monitor());
+		System.out.println("Took: " + (System.currentTimeMillis() - start));
 	}
 
 	/**
@@ -193,16 +195,13 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 		case "event":
 
 			eventCount++;
-			if (step() == Verdict.FAILURE) {
-				System.out.print("Failure on event #" + eventCount + ": "
-						+ eventName + "(");
-				for (int i = 0; i < fieldCount; i++) {
-					if (i > 0) {
-						System.out.print(",");
-					}
-					System.out.print(fieldNames[i] + "=" + fieldValues[i]);
+			Verdict verdict = step();
+			if (verdict != null) {
+				lastVerdict = verdict;
+				if (verdict == Verdict.FAILURE
+						|| verdict == Verdict.WEAK_FAILURE) {
+					printFailureDetail();
 				}
-				System.out.println(")");
 			}
 			break;
 
@@ -221,6 +220,18 @@ public class XMLFileMonitor extends FileMonitor implements ContentHandler {
 					ArrayUtil.resize(fieldNames, fieldCount),
 					ArrayUtil.resize(fieldValues, fieldCount));
 		}
+	}
+
+	private void printFailureDetail() {
+		System.out.print("Failure on event #" + eventCount + ": " + eventName
+				+ "(");
+		for (int i = 0; i < fieldCount; i++) {
+			if (i > 0) {
+				System.out.print(",");
+			}
+			System.out.print(fieldNames[i] + "=" + fieldValues[i]);
+		}
+		System.out.println(")");
 	}
 
 	@Override
