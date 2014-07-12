@@ -1410,7 +1410,7 @@ public class QEABuilder {
 
 		boolean[][] reach = computeReach(nstates);
 
-		DEBUG = true;
+		DEBUG = false;
 
 		if (DEBUG) {
 			System.err.println("reach:");
