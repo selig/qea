@@ -82,7 +82,7 @@ public aspect JUnitRV_MMTThreeAspect {
 			proceed(lockObj, thread);	
 			// Ordering between lockObj and monitor important
 			synchronized (monitor) {
-				verdict = monitor.step(LOCK_TRUE, thread);
+				verdict = monitor.step(UNLOCK, thread);
 			}
 		}
 		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
