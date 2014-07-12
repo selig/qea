@@ -164,6 +164,10 @@ public class Incr_QVar1_FVar_Det_QEAMonitor extends
 			// Apply event to all existing bindings
 			for (Object binding : bindings.keySet()) {
 				stepNoVerdict(eventName, args, binding);
+				Verdict verdict = computeVerdict(false);
+				if (verdict.isStrong()) {
+					return verdict;
+				}
 			}
 			eventProcessedForAllExistingBindings = true;
 		}
