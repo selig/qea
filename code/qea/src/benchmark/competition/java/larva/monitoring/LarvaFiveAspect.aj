@@ -33,7 +33,7 @@ public aspect LarvaFiveAspect {
 
 	before(UserInfo user) : withdraw(user) {
 		Verdict verdict = monitor.step(WITHDRAW, user.getId());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 5. [userId="
 							+ user.getId()
@@ -43,7 +43,7 @@ public aspect LarvaFiveAspect {
 
 	before(UserInfo user) : disable(user) {
 		Verdict verdict = monitor.step(DISABLE, user.getId());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 5. [userId="
 							+ user.getId()
@@ -53,7 +53,7 @@ public aspect LarvaFiveAspect {
 
 	before(UserInfo user) : activate(user) {
 		Verdict verdict = monitor.step(ACTIVATE, user.getId());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 5. [userId="
 							+ user.getId()

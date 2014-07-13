@@ -25,7 +25,7 @@ public aspect LarvaFourAspect {
 
 	before(String accountId) : approveAccount(accountId) {
 		Verdict verdict = monitor.step(APPROVE, accountId);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 4. [accountNumber="
 							+ accountId

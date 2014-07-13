@@ -25,7 +25,7 @@ public aspect LarvaSevenAspect {
 	before(Integer sid) : newAccount(sid) {
 //		System.out.println(">> newAccount(" + sid + ")");
 		Verdict verdict = monitor.step(NEW_ACCOUNT, sid);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 7. [sid="
 							+ sid

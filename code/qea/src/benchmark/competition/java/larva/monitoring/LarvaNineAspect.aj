@@ -28,7 +28,7 @@ public aspect LarvaNineAspect {
 
 	before(UserInfo user) : openSession(user) {
 		Verdict verdict = monitor.step(OPEN_SESSION, user.getId());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 9. [userId="
 							+ user.getId()
@@ -38,7 +38,7 @@ public aspect LarvaNineAspect {
 
 	before(UserInfo user) : closeSession(user) {
 		Verdict verdict = monitor.step(CLOSE_SESSION, user.getId());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 9. [userId="
 							+ user.getId()

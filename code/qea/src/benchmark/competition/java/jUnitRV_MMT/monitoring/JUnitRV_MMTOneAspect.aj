@@ -25,7 +25,7 @@ public aspect JUnitRV_MMTOneAspect {
 	before(int counter) : step(counter) {
 		// System.out.println(">> step(" + counter + ")");
 		Verdict verdict = monitor.step(STEP, counter);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in JUnitRV (MMT) 1. [counter="
 							+ counter

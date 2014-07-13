@@ -35,7 +35,7 @@ public aspect JUnitRV_MMTThreeAspect {
 		synchronized (monitor) {
 			verdict = monitor.step(RUN, thread);
 		}
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in JUnitRV (MMT) 3. [thread="
 							+ thread
@@ -59,7 +59,7 @@ public aspect JUnitRV_MMTThreeAspect {
 				synchronized (monitor) {
 					verdict = monitor.step(LOCK_TRUE, thread);
 				}
-				if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+				if (verdict == Verdict.FAILURE) {
 					System.err
 							.println("Violation in JUnitRV (MMT) 3. [thread="
 									+ thread
@@ -85,7 +85,7 @@ public aspect JUnitRV_MMTThreeAspect {
 				verdict = monitor.step(UNLOCK, thread);
 			}
 		}
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in JUnitRV (MMT) 3. [thread="
 							+ thread
@@ -98,7 +98,7 @@ public aspect JUnitRV_MMTThreeAspect {
 		synchronized (monitor) {
 			verdict = monitor.step(ACTION, thread);
 		}
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in JUnitRV (MMT) 3. [id="
 							+ thread

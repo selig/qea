@@ -29,7 +29,7 @@ public aspect JUnitRV_MMTTwoAspect {
 	before(int service) : request(service) {
 		// System.out.println("request(" + service + ")");
 		Verdict verdict = monitor.step(REQUEST, service);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in JUnitRV (MMT) 2. [service="
 							+ service
@@ -40,7 +40,7 @@ public aspect JUnitRV_MMTTwoAspect {
 	before(int service) : response(service) {
 		// System.out.println("response(" + service + ")");
 		Verdict verdict = monitor.step(RESPONSE, service);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in JUnitRV (MMT) 2. [service="
 							+ service
