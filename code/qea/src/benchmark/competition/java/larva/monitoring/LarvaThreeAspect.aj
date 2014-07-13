@@ -25,7 +25,7 @@ public aspect LarvaThreeAspect {
 
 	after(UserAccount account) : transaction(account) {
 		Verdict verdict = monitor.step(TRANSACTION, account.getBalance());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 3. [accountNumber="
 							+ account.getAccountNumber()

@@ -31,7 +31,7 @@ public aspect LarvaEightAspect {
 	before(double amount) : transfer(amount) {
 //		System.out.println(">> transfer(" + amount + ")");
 		Verdict verdict = monitor.step(TRANSFER, amount);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 8. [amount="
 							+ amount
@@ -42,7 +42,7 @@ public aspect LarvaEightAspect {
 	before() : reconcile() {
 //		System.out.println(">> reconcile()");
 		Verdict verdict = monitor.step(RECONCILE);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 8. The administrator must reconcile accounts every 1000 attempted external money transfers or an aggregate total of one million dollars in attempted external transfers");
 		}

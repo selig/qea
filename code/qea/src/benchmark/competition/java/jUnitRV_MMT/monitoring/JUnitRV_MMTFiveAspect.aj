@@ -30,7 +30,7 @@ public aspect JUnitRV_MMTFiveAspect {
 	before(Route route) : blockRoute(route)	 {
 		Verdict verdict = monitor.step(BLOCK_ROUTE, route, route.getFromX(),
 				route.getFromY(), route.getToX(), route.getToY());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err.println("Violation in JUnitRV (MMT) 5. [route=" + route
 					+ "]. Blocked routes must not cross.");
 		}
@@ -39,7 +39,7 @@ public aspect JUnitRV_MMTFiveAspect {
 
 	before(Route route) : freeRoute(route) {
 		Verdict verdict = monitor.step(FREE_ROUTE, route);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err.println("Violation in JUnitRV (MMT) 5. [route=" + route
 					+ "]. Blocked routes must not cross.");
 		}

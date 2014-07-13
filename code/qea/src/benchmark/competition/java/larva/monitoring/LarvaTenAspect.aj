@@ -33,7 +33,7 @@ public aspect LarvaTenAspect {
 	before(UserSession session) : openSession(session) {
 //		System.out.println(">> openSession(" + session.getOwner() + ")");
 		Verdict verdict = monitor.step(OPEN_SESSION, session.getOwner());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err.println("Violation in Larva 10. [userId="
 					+ session.getOwner() + "] [sid=" + session.getId()
 					+ "]. Logging can only be made to an active session.");
@@ -43,7 +43,7 @@ public aspect LarvaTenAspect {
 	before(UserSession session) : closeSession(session) {
 //		System.out.println(">> closeSession(" + session.getOwner() + ")");
 		Verdict verdict = monitor.step(CLOSE_SESSION, session.getOwner());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err.println("Violation in Larva 10. [userId="
 					+ session.getOwner() + "] [sid=" + session.getId()
 					+ "]. Logging can only be made to an active session.");
@@ -53,7 +53,7 @@ public aspect LarvaTenAspect {
 	before(UserSession session) : log(session) {
 //		System.out.println(">> log(" + session.getOwner() + ")");
 		Verdict verdict = monitor.step(LOG, session.getOwner());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err.println("Violation in Larva 10. [userId="
 					+ session.getOwner() + "] [sid=" + session.getId()
 					+ "]. Logging can only be made to an active session.");

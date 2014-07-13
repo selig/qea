@@ -24,7 +24,7 @@ public aspect LarvaOneAspect {
 
 	before(UserInfo user) : makeGoldUser(user) {
 		Verdict verdict = monitor.step(MAKE_GOLD_USER, user.getCountry());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err.println("Violation in Larva 1. [userId=" + user.getId()
 					+ "] [country=" + user.getCountry()
 					+ "]. Only users based in Argentina can be Gold users.");

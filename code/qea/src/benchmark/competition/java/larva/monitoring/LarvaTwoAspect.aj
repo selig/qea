@@ -27,7 +27,7 @@ public aspect LarvaTwoAspect {
 
 	before() : initialise() {
 		Verdict verdict = monitor.step(INITIALISE);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 2. The transaction system must be initialised before any user logs in.");
 		}
@@ -35,7 +35,7 @@ public aspect LarvaTwoAspect {
 
 	before() : openSession() {
 		Verdict verdict = monitor.step(USER_LOGIN);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 2. The transaction system must be initialised before any user logs in.");
 		}

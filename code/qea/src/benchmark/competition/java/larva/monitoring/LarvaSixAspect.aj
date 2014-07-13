@@ -32,7 +32,7 @@ public aspect LarvaSixAspect {
 
 	before(UserInfo user) : transfer(user) {
 		Verdict verdict = monitor.step(TRANSFER, user.getId());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 6. [userId="
 							+ user.getId()
@@ -42,7 +42,7 @@ public aspect LarvaSixAspect {
 
 	before(UserInfo user) : greyList(user) {
 		Verdict verdict = monitor.step(GREY_LIST, user.getId());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 6. [userId="
 							+ user.getId()
@@ -52,7 +52,7 @@ public aspect LarvaSixAspect {
 
 	before(UserInfo user) : whiteList(user) {
 		Verdict verdict = monitor.step(WHITE_LIST, user.getId());
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 6. [userId="
 							+ user.getId()

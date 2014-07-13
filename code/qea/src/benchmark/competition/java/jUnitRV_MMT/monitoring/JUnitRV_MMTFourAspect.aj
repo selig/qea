@@ -25,7 +25,7 @@ public aspect JUnitRV_MMTFourAspect {
 	before(double pos, double time) : step(pos, time) {
 		// System.out.println(">> step(" + pos + "," + time + ")");
 		Verdict verdict = monitor.step(STEP, pos, time);
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in JUnitRV (MMT) 4. [pos="
 							+ pos
