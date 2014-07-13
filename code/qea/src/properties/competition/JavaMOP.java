@@ -63,7 +63,7 @@ public class JavaMOP implements PropertyMaker {
 				Guard.isSemEqualToConstant(count, 1), Assignment.set(count, 0),
 				1);
 
-		q.addFinalStates(1, 2);
+		q.addFinalStates(1);
 
 		QEA qea = q.make();
 		qea.record_event_name("lock", LOCK);
