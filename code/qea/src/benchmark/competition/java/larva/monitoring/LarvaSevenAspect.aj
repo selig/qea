@@ -6,6 +6,7 @@ import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
+import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
 public aspect LarvaSevenAspect {
@@ -23,13 +24,26 @@ public aspect LarvaSevenAspect {
 		call(String UserInfo.createAccount(Integer)) && args(sid);
 
 	before(Integer sid) : newAccount(sid) {
-//		System.out.println(">> newAccount(" + sid + ")");
+		// System.out.println(">> newAccount(" + sid + ")");
 		Verdict verdict = monitor.step(NEW_ACCOUNT, sid);
 		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 7. [sid="
 							+ sid
 							+ "]. No user may not request more than 10 new accounts in a single session.");
+			System.exit(0);
 		}
 	};
+
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 7. No user may not request more than 10 new accounts in a single session.");
+		} else {
+			System.err.println("Property Larva 7 satisfied");
+		}
+	}
 }

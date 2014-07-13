@@ -6,6 +6,7 @@ import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
+import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.TransactionSystem;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
@@ -30,6 +31,7 @@ public aspect LarvaTwoAspect {
 		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 2. The transaction system must be initialised before any user logs in.");
+			System.exit(0);
 		}
 	};
 
@@ -38,7 +40,20 @@ public aspect LarvaTwoAspect {
 		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 2. The transaction system must be initialised before any user logs in.");
+			System.exit(0);
 		}
 	};
+
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 2. The transaction system must be initialised before any user logs in.");
+		} else {
+			System.err.println("Property Larva 2 satisfied");
+		}
+	}
 
 }

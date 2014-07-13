@@ -6,6 +6,7 @@ import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
+import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserSession;
 
 public aspect LarvaTenAspect {
@@ -37,6 +38,7 @@ public aspect LarvaTenAspect {
 			System.err.println("Violation in Larva 10. [userId="
 					+ session.getOwner() + "] [sid=" + session.getId()
 					+ "]. Logging can only be made to an active session.");
+			System.exit(0);
 		}
 	};
 
@@ -47,6 +49,7 @@ public aspect LarvaTenAspect {
 			System.err.println("Violation in Larva 10. [userId="
 					+ session.getOwner() + "] [sid=" + session.getId()
 					+ "]. Logging can only be made to an active session.");
+			System.exit(0);
 		}
 	};
 
@@ -57,6 +60,19 @@ public aspect LarvaTenAspect {
 			System.err.println("Violation in Larva 10. [userId="
 					+ session.getOwner() + "] [sid=" + session.getId()
 					+ "]. Logging can only be made to an active session.");
+			System.exit(0);
 		}
 	};
+	
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 10. Logging can only be made to an active session.");
+		} else {
+			System.err.println("Property Larva 10 satisfied");
+		}
+	}
 }

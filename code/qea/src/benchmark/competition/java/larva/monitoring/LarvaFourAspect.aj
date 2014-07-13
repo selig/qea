@@ -7,6 +7,7 @@ import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import benchmark.competition.java.larva.transactionsystem.Interface;
+import benchmark.competition.java.larva.transactionsystem.Main;
 
 public aspect LarvaFourAspect {
 
@@ -30,6 +31,19 @@ public aspect LarvaFourAspect {
 					.println("Violation in Larva 4. [accountNumber="
 							+ accountId
 							+ "]. An account approved by the administrator may not have the same account number as any other already existing account in the system.");
+			System.exit(0);
 		}
 	};
+	
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 4. An account approved by the administrator may not have the same account number as any other already existing account in the system.");
+		} else {
+			System.err.println("Property Larva 4 satisfied");
+		}
+	}
 }

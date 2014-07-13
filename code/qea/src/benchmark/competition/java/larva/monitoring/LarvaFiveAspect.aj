@@ -6,6 +6,7 @@ import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
+import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
 public aspect LarvaFiveAspect {
@@ -38,6 +39,7 @@ public aspect LarvaFiveAspect {
 					.println("Violation in Larva 5. [userId="
 							+ user.getId()
 							+ "]. Once a user is disabled, he or she may not withdraw from an account until being made activate again.");
+			System.exit(0);
 		}
 	};
 
@@ -48,6 +50,7 @@ public aspect LarvaFiveAspect {
 					.println("Violation in Larva 5. [userId="
 							+ user.getId()
 							+ "]. Once a user is disabled, he or she may not withdraw from an account until being made activate again.");
+			System.exit(0);
 		}
 	};
 
@@ -58,7 +61,20 @@ public aspect LarvaFiveAspect {
 					.println("Violation in Larva 5. [userId="
 							+ user.getId()
 							+ "]. Once a user is disabled, he or she may not withdraw from an account until being made activate again.");
+			System.exit(0);
 		}
 	};
+
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 5. Once a user is disabled, he or she may not withdraw from an account until being made activate again.");
+		} else {
+			System.err.println("Property Larva 5 satisfied");
+		}
+	}
 
 }

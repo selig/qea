@@ -7,6 +7,7 @@ import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import benchmark.competition.java.larva.transactionsystem.Interface;
+import benchmark.competition.java.larva.transactionsystem.Main;
 
 public aspect LarvaEightAspect {
 
@@ -36,6 +37,7 @@ public aspect LarvaEightAspect {
 					.println("Violation in Larva 8. [amount="
 							+ amount
 							+ "]. The administrator must reconcile accounts every 1000 attempted external money transfers or an aggregate total of one million dollars in attempted external transfers");
+			System.exit(0);
 		}
 	};
 
@@ -45,6 +47,19 @@ public aspect LarvaEightAspect {
 		if (verdict == Verdict.FAILURE) {
 			System.err
 					.println("Violation in Larva 8. The administrator must reconcile accounts every 1000 attempted external money transfers or an aggregate total of one million dollars in attempted external transfers");
+			System.exit(0);
 		}
 	};
+	
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 8. The administrator must reconcile accounts every 1000 attempted external money transfers or an aggregate total of one million dollars in attempted external transfers.");
+		} else {
+			System.err.println("Property Larva 8 satisfied");
+		}
+	}
 }

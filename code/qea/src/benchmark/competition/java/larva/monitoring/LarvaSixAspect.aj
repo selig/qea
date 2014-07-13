@@ -6,6 +6,7 @@ import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
+import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
 public aspect LarvaSixAspect {
@@ -37,6 +38,7 @@ public aspect LarvaSixAspect {
 					.println("Violation in Larva 6. [userId="
 							+ user.getId()
 							+ "]. Once greylisted, a user must perform at least three incoming transfers before being whitelisted.");
+			System.exit(0);
 		}
 	};
 
@@ -47,6 +49,7 @@ public aspect LarvaSixAspect {
 					.println("Violation in Larva 6. [userId="
 							+ user.getId()
 							+ "]. Once greylisted, a user must perform at least three incoming transfers before being whitelisted.");
+			System.exit(0);
 		}
 	};
 
@@ -57,6 +60,19 @@ public aspect LarvaSixAspect {
 					.println("Violation in Larva 6. [userId="
 							+ user.getId()
 							+ "]. Once greylisted, a user must perform at least three incoming transfers before being whitelisted.");
+			System.exit(0);
 		}
 	};
+	
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 6. Once greylisted, a user must perform at least three incoming transfers before being whitelisted.");
+		} else {
+			System.err.println("Property Larva 6 satisfied");
+		}
+	}
 }
