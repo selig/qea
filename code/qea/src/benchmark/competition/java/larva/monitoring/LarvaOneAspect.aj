@@ -6,6 +6,7 @@ import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
+import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
 public aspect LarvaOneAspect {
@@ -28,6 +29,19 @@ public aspect LarvaOneAspect {
 			System.err.println("Violation in Larva 1. [userId=" + user.getId()
 					+ "] [country=" + user.getCountry()
 					+ "]. Only users based in Argentina can be Gold users.");
+			System.exit(0);
 		}
 	};
+
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 1. Only users based in Argentina can be Gold users.");
+		} else {
+			System.err.println("Property Larva 1 satisfied");
+		}
+	}
 }

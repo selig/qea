@@ -6,6 +6,7 @@ import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
+import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
 public aspect LarvaNineAspect {
@@ -33,6 +34,7 @@ public aspect LarvaNineAspect {
 					.println("Violation in Larva 9. [userId="
 							+ user.getId()
 							+ "]. A user may not have more than 3 active sessions at once.");
+			System.exit(0);
 		}
 	};
 
@@ -43,7 +45,20 @@ public aspect LarvaNineAspect {
 					.println("Violation in Larva 9. [userId="
 							+ user.getId()
 							+ "]. A user may not have more than 3 active sessions at once.");
+			System.exit(0);
 		}
 	};
+
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 9. A user may not have more than 3 active sessions at once.");
+		} else {
+			System.err.println("Property Larva 9 satisfied");
+		}
+	}
 
 }

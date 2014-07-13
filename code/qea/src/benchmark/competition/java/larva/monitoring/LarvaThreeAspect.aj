@@ -6,6 +6,7 @@ import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
+import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserAccount;
 
 public aspect LarvaThreeAspect {
@@ -32,6 +33,19 @@ public aspect LarvaThreeAspect {
 							+ "] [balance="
 							+ account.getBalance()
 							+ "]. No account may end up with a negative balance after being accessed.");
+			System.exit(0);
 		}
 	};
+	
+	pointcut endOfProgram() : execution(void Main.main(String[]));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in Larva 3. No account may end up with a negative balance after being accessed.");
+		} else {
+			System.err.println("Property Larva 3 satisfied");
+		}
+	}
 }
