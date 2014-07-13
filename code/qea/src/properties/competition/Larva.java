@@ -40,7 +40,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeOne() {
 
-		QEABuilder q = new QEABuilder("GoldUser");
+		QEABuilder q = new QEABuilder("LARVA_ONE");
 
 		int MAKE_GOLD_USER = 1;
 		final int country = 1;
@@ -63,7 +63,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeTwo() {
 
-		QEABuilder q = new QEABuilder("InitialiseBeforLogin");
+		QEABuilder q = new QEABuilder("LARVA_TWO");
 
 		int INITIALISE = 1;
 		int USER_LOGIN = 2;
@@ -84,7 +84,7 @@ public class Larva implements PropertyMaker {
 	public QEA makeThree() {
 		// TODO Ask about this property! The balance is checked before or after
 		// the transaction?
-		QEABuilder q = new QEABuilder("NonNegativeBalance");
+		QEABuilder q = new QEABuilder("LARVA_THREE");
 
 		int TRANSACTION = 1;
 		int balance = 1;
@@ -106,7 +106,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeFour() {
 
-		QEABuilder q = new QEABuilder("UniqueAccountId");
+		QEABuilder q = new QEABuilder("LARVA_FOUR");
 
 		int APPROVE = 1;
 		int accountId = 1;
@@ -136,7 +136,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeFive() {
 
-		QEABuilder q = new QEABuilder("OnlyActivateUsersCanWithdraw");
+		QEABuilder q = new QEABuilder("LARVA_FIVE");
 
 		int WITHDRAW = 1;
 		int DISABLE = 2;
@@ -145,10 +145,10 @@ public class Larva implements PropertyMaker {
 
 		q.addQuantification(FORALL, u);
 
-		q.addTransition(1, ACTIVATE, new int[] { u }, 1); // TODO Added
+		q.addTransition(1, ACTIVATE, new int[] { u }, 1);
 		q.addTransition(1, WITHDRAW, new int[] { u }, 1);
 		q.addTransition(1, DISABLE, new int[] { u }, 2);
-		q.addTransition(2, DISABLE, new int[] { u }, 2); // TODO Added
+		q.addTransition(2, DISABLE, new int[] { u }, 2);
 		q.addTransition(2, ACTIVATE, new int[] { u }, 1);
 
 		q.addFinalStates(1, 2);
@@ -164,7 +164,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeSix() {
 
-		QEABuilder q = new QEABuilder("GreylistedUsers");
+		QEABuilder q = new QEABuilder("LARVA_SIX");
 
 		int TRANSFER = 1;
 		int GREY_LIST = 2;
@@ -195,7 +195,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeSeven() {
 
-		QEABuilder q = new QEABuilder("Max10AccountsPerSession");
+		QEABuilder q = new QEABuilder("LARVA_SEVEN");
 
 		int NEW_ACCOUNT = 1;
 
@@ -233,7 +233,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeEight() {
 
-		QEABuilder q = new QEABuilder("ReconciliationRequired");
+		QEABuilder q = new QEABuilder("LARVA_EIGHT");
 
 		int TRANSFER = 1;
 		int RECONCILE = 2;
@@ -352,7 +352,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeNine() {
 
-		QEABuilder q = new QEABuilder("Max3ActiveSessionsPerUser");
+		QEABuilder q = new QEABuilder("LARVA_NINE");
 
 		int OPEN_SESSION = 1;
 		int CLOSE_SESSION = 2;
@@ -380,7 +380,7 @@ public class Larva implements PropertyMaker {
 
 	public QEA makeTen() {
 
-		QEABuilder q = new QEABuilder("LoggingOnlyForActiveSessions");
+		QEABuilder q = new QEABuilder("LARVA_TEN");
 
 		int OPEN_SESSION = 1;
 		int CLOSE_SESSION = 2;
