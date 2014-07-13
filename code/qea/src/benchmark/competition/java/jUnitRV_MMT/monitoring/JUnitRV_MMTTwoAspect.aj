@@ -34,6 +34,7 @@ public aspect JUnitRV_MMTTwoAspect {
 					.println("Violation in JUnitRV (MMT) 2. [service="
 							+ service
 							+ "]. Whenever a service is requested, eventually there is a response for that request from some provider.");
+			System.exit(0);
 		}
 	};
 
@@ -45,7 +46,20 @@ public aspect JUnitRV_MMTTwoAspect {
 					.println("Violation in JUnitRV (MMT) 2. [service="
 							+ service
 							+ "]. Whenever a service is requested, eventually there is a response for that request from some provider.");
+			System.exit(0);
 		}
 	};
+	
+	pointcut endOfProgram() : execution(void ExampleRequestResponse.main(String...));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in JUnitRV (MMT) 2. Whenever a service is requested, eventually there is a response for that request from some provider.");
+		} else {
+			System.err.println("Property JUnitRV (MMT) 2 satisfied");
+		}
+	}
 
 }

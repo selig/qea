@@ -33,6 +33,7 @@ public aspect JUnitRV_MMTFiveAspect {
 		if (verdict == Verdict.FAILURE) {
 			System.err.println("Violation in JUnitRV (MMT) 5. [route=" + route
 					+ "]. Blocked routes must not cross.");
+			System.exit(0);
 		}
 
 	};
@@ -42,6 +43,19 @@ public aspect JUnitRV_MMTFiveAspect {
 		if (verdict == Verdict.FAILURE) {
 			System.err.println("Violation in JUnitRV (MMT) 5. [route=" + route
 					+ "]. Blocked routes must not cross.");
+			System.exit(0);
 		}
 	};
+	
+	pointcut endOfProgram() : execution(void ExampleRoutes.main(String...));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in JUnitRV (MMT) 5. Blocked routes must not cross.");
+		} else {
+			System.err.println("Property JUnitRV (MMT) 5 satisfied");
+		}
+	}
 }

@@ -40,6 +40,7 @@ public aspect JUnitRV_MMTThreeAspect {
 					.println("Violation in JUnitRV (MMT) 3. [thread="
 							+ thread
 							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
+			System.exit(0);
 		}
 	};
 
@@ -64,6 +65,7 @@ public aspect JUnitRV_MMTThreeAspect {
 							.println("Violation in JUnitRV (MMT) 3. [thread="
 									+ thread
 									+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
+					System.exit(0);
 				}
 	
 			}
@@ -90,6 +92,7 @@ public aspect JUnitRV_MMTThreeAspect {
 					.println("Violation in JUnitRV (MMT) 3. [thread="
 							+ thread
 							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
+			System.exit(0);
 		}
 	};
 
@@ -103,7 +106,20 @@ public aspect JUnitRV_MMTThreeAspect {
 					.println("Violation in JUnitRV (MMT) 3. [id="
 							+ thread
 							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
+			System.exit(0);
 		}
 	};
+	
+	pointcut endOfProgram() : execution(void ExampleLocking.main(String...));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in JUnitRV (MMT) 3. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
+		} else {
+			System.err.println("Property JUnitRV (MMT) 3 satisfied");
+		}
+	}
 
 }
