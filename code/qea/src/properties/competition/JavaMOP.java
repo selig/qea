@@ -6,6 +6,7 @@ import properties.PropertyMaker;
 import properties.papers.DaCapo;
 import properties.papers.HasNextQEA;
 import structure.intf.Assignment;
+import structure.intf.Binding;
 import structure.intf.Guard;
 import structure.intf.QEA;
 import creation.QEABuilder;
@@ -23,15 +24,15 @@ public class JavaMOP implements PropertyMaker {
 			return makeThree();
 		case JAVAMOP_FOUR:
 			return makeFour();
-		case JAVAMOP_FIVE:
-			return makeFive();
 		}
 		return null;
 	}
 
 	public QEA makeOne() {
 		// This is just the HasNext property we know and love
-		return new HasNextQEA();
+		QEA qea = new HasNextQEA();
+		qea.setName("JAVAMOP_ONE");
+		return qea;
 	}
 
 	public QEA makeTwo() {
@@ -41,7 +42,7 @@ public class JavaMOP implements PropertyMaker {
 		 * optimisation!
 		 */
 
-		QEABuilder q = new QEABuilder("SafeLock");
+		QEABuilder q = new QEABuilder("JAVAMOP_TWO");
 
 		int LOCK = 1;
 		int UNLOCK = 2;
@@ -71,9 +72,9 @@ public class JavaMOP implements PropertyMaker {
 		return qea;
 	}
 
-	public QEA makeThree() {
+	public QEA makeThreeOld() {
 
-		QEABuilder q = new QEABuilder("A^n B^n C^n");
+		QEABuilder q = new QEABuilder("JAVAMOP_THREE");
 
 		int A = 1;
 		int B = 2;
@@ -129,13 +130,293 @@ public class JavaMOP implements PropertyMaker {
 		return qea;
 	}
 
-	public QEA makeFour() {
-		return DaCapo.makeUnsafeMapIter();
+	public QEA makeThree() {
+
+		QEABuilder q = new QEABuilder("JAVAMOP_THREE");
+
+		final int A = 1;
+		final int B = 2;
+		final int C = 3;
+
+		final int a = 1;
+		final int b = 2;
+		final int c = 3;
+
+		// First level of transitions
+
+		q.startTransition(1);
+		q.eventName(A);
+		q.addAssignment(Assignment.store(a, 1));
+		q.endTransition(2);
+
+		q.startTransition(1);
+		q.eventName(B);
+		q.addAssignment(Assignment.store(b, 1));
+		q.endTransition(3);
+
+		q.startTransition(1);
+		q.eventName(C);
+		q.addAssignment(Assignment.store(c, 1));
+		q.endTransition(4);
+
+		// Second level of transitions - From state 2 (A)
+
+		q.startTransition(2);
+		q.eventName(A);
+		q.addAssignment(Assignment.increment(a));
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(B);
+		q.addAssignment(Assignment.store(b, 1));
+		q.endTransition(5);
+
+		q.startTransition(2);
+		q.eventName(C);
+		q.addAssignment(Assignment.store(c, 1));
+		q.endTransition(6);
+
+		// Second level of transitions - From state 3 (B)
+
+		q.startTransition(3);
+		q.eventName(A);
+		q.addAssignment(Assignment.store(a, 1));
+		q.endTransition(5);
+
+		q.startTransition(3);
+		q.eventName(B);
+		q.addAssignment(Assignment.increment(b));
+		q.endTransition(3);
+
+		q.startTransition(3);
+		q.eventName(C);
+		q.addAssignment(Assignment.store(c, 1));
+		q.endTransition(7);
+
+		// Second level of transitions - From state 4 (C)
+
+		q.startTransition(4);
+		q.eventName(A);
+		q.addAssignment(Assignment.store(a, 1));
+		q.endTransition(6);
+
+		q.startTransition(4);
+		q.eventName(B);
+		q.addAssignment(Assignment.store(b, 1));
+		q.endTransition(7);
+
+		q.startTransition(4);
+		q.eventName(C);
+		q.addAssignment(Assignment.increment(c));
+		q.endTransition(4);
+
+		// Third level of transitions - From state 5 (AB)
+
+		q.startTransition(5);
+		q.eventName(A);
+		q.addAssignment(Assignment.increment(a));
+		q.endTransition(5);
+
+		q.startTransition(5);
+		q.eventName(B);
+		q.addAssignment(Assignment.increment(b));
+		q.endTransition(5);
+
+		q.startTransition(5);
+		q.eventName(C);
+		q.addGuard(Guard.or(Guard.varIsNotEqualSemToVal(a, 1),
+				Guard.varIsNotEqualSemToVal(b, 1)));
+		q.addAssignment(Assignment.store(c, 1));
+		q.endTransition(8);
+
+		q.startTransition(5);
+		q.eventName(C);
+		q.addGuard(Guard.and(Guard.isEqualSem(a, 1), Guard.isEqualSem(b, 1)));
+		q.addAssignment(Assignment.store(c, 1));
+		q.endTransition(9);
+
+		// Third level of transitions - From state 6 (AC)
+
+		q.startTransition(6);
+		q.eventName(A);
+		q.addAssignment(Assignment.increment(a));
+		q.endTransition(6);
+
+		q.startTransition(6);
+		q.eventName(B);
+		q.addGuard(Guard.or(Guard.varIsNotEqualSemToVal(a, 1),
+				Guard.varIsNotEqualSemToVal(c, 1)));
+		q.addAssignment(Assignment.store(b, 1));
+		q.endTransition(8);
+
+		q.startTransition(6);
+		q.eventName(B);
+		q.addGuard(Guard.and(Guard.isEqualSem(a, 1), Guard.isEqualSem(c, 1)));
+		q.addAssignment(Assignment.store(b, 1));
+		q.endTransition(9);
+
+		q.startTransition(6);
+		q.eventName(C);
+		q.addAssignment(Assignment.increment(c));
+		q.endTransition(6);
+
+		// Third level of transitions - From state 7 (BC)
+
+		q.startTransition(7);
+		q.eventName(A);
+		q.addGuard(Guard.or(Guard.varIsNotEqualSemToVal(b, 1),
+				Guard.varIsNotEqualSemToVal(c, 1)));
+		q.addAssignment(Assignment.store(a, 1));
+		q.endTransition(8);
+
+		q.startTransition(7);
+		q.eventName(A);
+		q.addGuard(Guard.and(Guard.isEqualSem(b, 1), Guard.isEqualSem(c, 1)));
+		q.addAssignment(Assignment.store(a, 1));
+		q.endTransition(9);
+
+		q.startTransition(7);
+		q.eventName(B);
+		q.addAssignment(Assignment.increment(b));
+		q.endTransition(7);
+
+		q.startTransition(7);
+		q.eventName(C);
+		q.addAssignment(Assignment.increment(c));
+		q.endTransition(7);
+
+		// From state 8
+
+		q.startTransition(8);
+		q.eventName(A);
+		q.addGuard(Guard.not(guardAllEqual(b, c, a)));
+		q.addAssignment(Assignment.increment(a));
+		q.endTransition(8);
+
+		q.startTransition(8);
+		q.eventName(A);
+		q.addGuard(guardAllEqual(b, c, a));
+		q.addAssignment(Assignment.increment(a));
+		q.endTransition(9);
+
+		q.startTransition(8);
+		q.eventName(B);
+		q.addGuard(Guard.not(guardAllEqual(a, c, b)));
+		q.addAssignment(Assignment.increment(b));
+		q.endTransition(8);
+
+		q.startTransition(8);
+		q.eventName(B);
+		q.addGuard(guardAllEqual(a, c, b));
+		q.addAssignment(Assignment.increment(b));
+		q.endTransition(9);
+
+		q.startTransition(8);
+		q.eventName(C);
+		q.addGuard(Guard.not(guardAllEqual(a, b, c)));
+		q.addAssignment(Assignment.increment(c));
+		q.endTransition(8);
+
+		q.startTransition(8);
+		q.eventName(C);
+		q.addGuard(guardAllEqual(a, b, c));
+		q.addAssignment(Assignment.increment(c));
+		q.endTransition(9);
+
+		// From state 9
+
+		q.startTransition(9);
+		q.eventName(A);
+		q.addAssignment(Assignment.increment(a));
+		q.endTransition(8);
+
+		q.startTransition(9);
+		q.eventName(B);
+		q.addAssignment(Assignment.increment(b));
+		q.endTransition(8);
+
+		q.startTransition(9);
+		q.eventName(C);
+		q.addAssignment(Assignment.increment(c));
+		q.endTransition(8);
+
+		q.addFinalStates(1, 9);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("A", A);
+		qea.record_event_name("B", B);
+		qea.record_event_name("C", C);
+
+		return qea;
 	}
 
-	public QEA makeFive() {
-		// There isn't one
-		return null;
+	private Guard guardAllEqual(final int x, final int y, final int z) {
+		return new Guard("x_" + x + " = x_" + y + " && x_" + z + " == x_" + x
+				+ " - 1") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { x, y, z };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int xVal = binding.getForcedAsInteger(x);
+				int yVal = binding.getForcedAsInteger(y);
+				int zVal = binding.getForcedAsInteger(z);
+
+				return xVal == yVal && zVal == xVal - 1;
+			}
+		};
+	}
+
+	private Guard guardNotAllEqual(final int x, final int y, final int z) {
+		return new Guard("x_" + x + " != x_" + y + " || x_" + z + " != x_" + x
+				+ " - 1") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { x, y, z };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+
+				int xVal = binding.getForcedAsInteger(x);
+				int yVal = binding.getForcedAsInteger(y);
+				int zVal = binding.getForcedAsInteger(z);
+
+				return xVal != yVal || zVal != xVal - 1;
+			}
+		};
+	}
+
+	public QEA makeFour() {
+		QEA qea = DaCapo.makeUnsafeMapIter();
+		qea.setName("JAVAMOP_FOUR");
+		return qea;
 	}
 
 }

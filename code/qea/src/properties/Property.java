@@ -37,7 +37,6 @@ public enum Property {
 	JAVAMOP_TWO,
 	JAVAMOP_THREE,
 	JAVAMOP_FOUR,
-	JAVAMOP_FIVE,
 
 	// prm4j
 	PRM4J_ONE,
