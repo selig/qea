@@ -30,7 +30,20 @@ public aspect JUnitRV_MMTOneAspect {
 					.println("Violation in JUnitRV (MMT) 1. [counter="
 							+ counter
 							+ "]. The parameter counter of method step has to increase by 1 with each call.");
+			System.exit(0);
 		}
 	}
 
+	pointcut endOfProgram() : execution(void ExampleCounting.main(String...));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in JUnitRV (MMT) 1. The parameter counter of method step has to increase by 1 with each call.");
+		} else {
+			System.err.println("Property JUnitRV (MMT) 1 satisfied");
+		}
+	}
+	
 }

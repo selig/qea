@@ -32,7 +32,19 @@ public aspect JUnitRV_MMTFourAspect {
 							+ "] [time="
 							+ time
 							+ "]. The average speed between two observations must never exceed the maximal velocity 10.");
+			System.exit(0);
 		}
 	}
 
+	pointcut endOfProgram() : execution(void ExampleVelocity.main(String...));
+
+	after() : endOfProgram() {
+		Verdict verdict = monitor.end();
+		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
+			System.err
+					.println("Violation in JUnitRV (MMT) 4. The average speed between two observations must never exceed the maximal velocity 10.");
+		} else {
+			System.err.println("Property JUnitRV (MMT) 4 satisfied");
+		}
+	}
 }
