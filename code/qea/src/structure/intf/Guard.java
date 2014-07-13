@@ -734,7 +734,40 @@ public abstract class Guard {
 
 			@Override
 			public boolean usesQvars() {
-				return g1.usesQvars() && g2.usesQvars();
+				return g1.usesQvars() || g2.usesQvars();
+			}
+
+			@Override
+			public int[] vars() {
+				int[] g1v = g1.vars();
+				int[] g2v = g2.vars();
+				int[] both = new int[g1v.length + g2v.length];
+				// we should probably filter out duplicates
+				// but we don't yet!
+				System.arraycopy(g1v, 0, both, 0, g1v.length);
+				System.arraycopy(g2v, 0, both, g1v.length, g2v.length);
+				return both;
+			}
+		};
+	}
+	
+	public static Guard or(final Guard g1, final Guard g2) {
+		return new Guard(g1 + " or " + g2) {
+
+			@Override
+			public boolean check(Binding binding) {
+				return g1.check(binding) || g2.check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object qval) {
+				return g1.check(binding, qvar, qval)
+						|| g2.check(binding, qvar, qval);
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return g1.usesQvars() || g2.usesQvars();
 			}
 
 			@Override
