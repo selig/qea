@@ -19,13 +19,13 @@ public aspect JavaMOPThreeAspect {
 		QEA qea = new JavaMOP().make(Property.JAVAMOP_THREE);
 		monitor = MonitorFactory.create(qea);
 	}
-	
+
 	pointcut A() : call(void CThread2.A());
-	
+
 	pointcut B() : call(void CThread2.B());
-	
+
 	pointcut C() : call(void CThread2.C());
-	
+
 	before() : A() {
 		Verdict verdict;
 		synchronized (monitor) {
@@ -33,10 +33,11 @@ public aspect JavaMOPThreeAspect {
 		}
 		if (verdict == Verdict.FAILURE) {
 			System.err
-			.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
+					.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
+			System.exit(0);
 		}
 	}
-	
+
 	before() : B() {
 		Verdict verdict;
 		synchronized (monitor) {
@@ -44,10 +45,11 @@ public aspect JavaMOPThreeAspect {
 		}
 		if (verdict == Verdict.FAILURE) {
 			System.err
-			.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
+					.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
+			System.exit(0);
 		}
 	}
-	
+
 	before() : C() {
 		Verdict verdict;
 		synchronized (monitor) {
@@ -55,10 +57,10 @@ public aspect JavaMOPThreeAspect {
 		}
 		if (verdict == Verdict.FAILURE) {
 			System.err
-			.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
+					.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
+			System.exit(0);
 		}
 	}
-	
 
 	pointcut endOfProgram() : execution(void SRSTest.main(String[]));
 
