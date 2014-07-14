@@ -1,49 +1,29 @@
 package benchmark.competition.java.larva.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
-import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
-public aspect LarvaSevenAspect {
-
-	private final Monitor monitor;
+public aspect LarvaSevenAspect extends QEAMonitoringAspect {
 
 	private final int NEW_ACCOUNT = 1;
 
 	public LarvaSevenAspect() {
-		QEA qea = new Larva().make(Property.LARVA_SEVEN);
-		monitor = MonitorFactory.create(qea);
+		super(new Larva().make(Property.LARVA_SEVEN));
+		validationMsg = "Property Larva 7 satisfied";
+		violationMsg = "Property Larva 7 violated. No user may not request more than 10 new accounts in a single session";
 	}
 
-	pointcut newAccount(Integer sid) :
-		call(String UserInfo.createAccount(Integer)) && args(sid);
+	pointcut newAccount(UserInfo user, Integer sid) :
+		call(String UserInfo.createAccount(Integer)) && target(user) && args(sid);
 
-	before(Integer sid) : newAccount(sid) {
-		// System.out.println(">> newAccount(" + sid + ")");
-		Verdict verdict = monitor.step(NEW_ACCOUNT, sid);
+	before(UserInfo user, Integer sid) : newAccount(user, sid) {
+		Verdict verdict = monitor.step(NEW_ACCOUNT, user, sid);
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 7. [sid="
-							+ sid
-							+ "]. No user may not request more than 10 new accounts in a single session.");
-			System.exit(0);
+			System.err.println(violationMsg + " [sid=" + sid + "]");
+			printTimeAndExit();
 		}
 	};
-
-	pointcut endOfProgram() : execution(void Main.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in Larva 7. No user may not request more than 10 new accounts in a single session.");
-		} else {
-			System.err.println("Property Larva 7 satisfied");
-		}
-	}
 }

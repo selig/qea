@@ -1,23 +1,19 @@
 package benchmark.competition.java.larva.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
 import benchmark.competition.java.larva.transactionsystem.Interface;
-import benchmark.competition.java.larva.transactionsystem.Main;
 
-public aspect LarvaFourAspect {
-
-	private final Monitor monitor;
+public aspect LarvaFourAspect extends QEAMonitoringAspect {
 
 	private final int APPROVE = 1;
 
 	public LarvaFourAspect() {
-		QEA qea = new Larva().make(Property.LARVA_FOUR);
-		monitor = MonitorFactory.create(qea);
+		super(new Larva().make(Property.LARVA_FOUR));
+		validationMsg = "Property Larva 4 satisfied";
+		violationMsg = "Property Larva 4 violated. An account approved by the administrator may not have the same account number as any other already existing account in the system";
 	}
 
 	pointcut approveAccount(String accountId) :
@@ -27,23 +23,9 @@ public aspect LarvaFourAspect {
 	before(String accountId) : approveAccount(accountId) {
 		Verdict verdict = monitor.step(APPROVE, accountId);
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 4. [accountNumber="
-							+ accountId
-							+ "]. An account approved by the administrator may not have the same account number as any other already existing account in the system.");
-			System.exit(0);
+			System.err.println(violationMsg + " [accountNumber=" + accountId
+					+ "]");
+			printTimeAndExit();
 		}
 	};
-	
-	pointcut endOfProgram() : execution(void Main.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in Larva 4. An account approved by the administrator may not have the same account number as any other already existing account in the system.");
-		} else {
-			System.err.println("Property Larva 4 satisfied");
-		}
-	}
 }
