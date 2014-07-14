@@ -1,24 +1,21 @@
 package benchmark.competition.java.jUnitRV_MMT.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.JavaRV_mmt;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
 import benchmark.competition.java.jUnitRV_MMT.ExampleRoutes;
 import benchmark.competition.java.jUnitRV_MMT.ExampleRoutes.Route;
 
-public aspect JUnitRV_MMTFiveAspect {
-
-	private final Monitor monitor;
+public aspect JUnitRV_MMTFiveAspect extends QEAMonitoringAspect {
 
 	private final int BLOCK_ROUTE = 1;
 	private final int FREE_ROUTE = 2;
 
 	public JUnitRV_MMTFiveAspect() {
-		QEA qea = new JavaRV_mmt().make(Property.JAVARV_MMT_FIVE);
-		monitor = MonitorFactory.create(qea);
+		super(new JavaRV_mmt().make(Property.JAVARV_MMT_FIVE));
+		validationMsg = "Property JUnitRV (MMT) 5 satisfied";
+		violationMsg = "Property JUnitRV (MMT) 5 violated. Blocked routes must not cross";
 	}
 
 	pointcut blockRoute(Route route) :
@@ -31,31 +28,16 @@ public aspect JUnitRV_MMTFiveAspect {
 		Verdict verdict = monitor.step(BLOCK_ROUTE, route, route.getFromX(),
 				route.getFromY(), route.getToX(), route.getToY());
 		if (verdict == Verdict.FAILURE) {
-			System.err.println("Violation in JUnitRV (MMT) 5. [route=" + route
-					+ "]. Blocked routes must not cross.");
-			System.exit(0);
+			System.err.println(violationMsg + " [route=" + route + "]");
+			printTimeAndExit();
 		}
-
 	};
 
 	before(Route route) : freeRoute(route) {
 		Verdict verdict = monitor.step(FREE_ROUTE, route);
 		if (verdict == Verdict.FAILURE) {
-			System.err.println("Violation in JUnitRV (MMT) 5. [route=" + route
-					+ "]. Blocked routes must not cross.");
-			System.exit(0);
+			System.err.println(violationMsg + " [route=" + route + "]");
+			printTimeAndExit();
 		}
 	};
-	
-	pointcut endOfProgram() : execution(void ExampleRoutes.main(String...));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in JUnitRV (MMT) 5. Blocked routes must not cross.");
-		} else {
-			System.err.println("Property JUnitRV (MMT) 5 satisfied");
-		}
-	}
 }
