@@ -1,25 +1,21 @@
 package benchmark.competition.java.larva.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
-import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
-public aspect LarvaSixAspect {
-
-	private final Monitor monitor;
+public aspect LarvaSixAspect extends QEAMonitoringAspect {
 
 	private final int TRANSFER = 1;
 	private final int GREY_LIST = 2;
 	private final int WHITE_LIST = 3;
 
 	public LarvaSixAspect() {
-		QEA qea = new Larva().make(Property.LARVA_SIX);
-		monitor = MonitorFactory.create(qea);
+		super(new Larva().make(Property.LARVA_SIX));
+		validationMsg = "Property Larva 6 satisfied";
+		violationMsg = "Property Larva 6 violated. Once greylisted, a user must perform at least three incoming transfers before being whitelisted";
 	}
 
 	pointcut transfer(UserInfo user) :
@@ -34,45 +30,24 @@ public aspect LarvaSixAspect {
 	before(UserInfo user) : transfer(user) {
 		Verdict verdict = monitor.step(TRANSFER, user.getId());
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 6. [userId="
-							+ user.getId()
-							+ "]. Once greylisted, a user must perform at least three incoming transfers before being whitelisted.");
-			System.exit(0);
+			System.err.println(violationMsg + " [userId=" + user.getId() + "]");
+			printTimeAndExit();
 		}
 	};
 
 	before(UserInfo user) : greyList(user) {
 		Verdict verdict = monitor.step(GREY_LIST, user.getId());
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 6. [userId="
-							+ user.getId()
-							+ "]. Once greylisted, a user must perform at least three incoming transfers before being whitelisted.");
-			System.exit(0);
+			System.err.println(violationMsg + " [userId=" + user.getId() + "]");
+			printTimeAndExit();
 		}
 	};
 
 	before(UserInfo user) : whiteList(user) {
 		Verdict verdict = monitor.step(WHITE_LIST, user.getId());
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 6. [userId="
-							+ user.getId()
-							+ "]. Once greylisted, a user must perform at least three incoming transfers before being whitelisted.");
-			System.exit(0);
+			System.err.println(violationMsg + " [userId=" + user.getId() + "]");
+			printTimeAndExit();
 		}
 	};
-	
-	pointcut endOfProgram() : execution(void Main.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in Larva 6. Once greylisted, a user must perform at least three incoming transfers before being whitelisted.");
-		} else {
-			System.err.println("Property Larva 6 satisfied");
-		}
-	}
 }

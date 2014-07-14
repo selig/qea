@@ -1,24 +1,20 @@
 package benchmark.competition.java.larva.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
 import benchmark.competition.java.larva.transactionsystem.Interface;
-import benchmark.competition.java.larva.transactionsystem.Main;
 
-public aspect LarvaEightAspect {
-
-	private final Monitor monitor;
+public aspect LarvaEightAspect extends QEAMonitoringAspect {
 
 	private final int TRANSFER = 1;
 	private final int RECONCILE = 2;
 
 	public LarvaEightAspect() {
-		QEA qea = new Larva().make(Property.LARVA_EIGHT);
-		monitor = MonitorFactory.create(qea);
+		super(new Larva().make(Property.LARVA_EIGHT));
+		validationMsg = "Property Larva 8 satisfied";
+		violationMsg = "Property Larva 8 violated. The administrator must reconcile accounts every 1000 attempted external money transfers or an aggregate total of one million dollars in attempted external transfers";
 	}
 
 	pointcut transfer(double amount) :
@@ -30,36 +26,18 @@ public aspect LarvaEightAspect {
 	pointcut reconcile() : call(void Interface.ADMIN_reconcile());
 
 	before(double amount) : transfer(amount) {
-//		System.out.println(">> transfer(" + amount + ")");
 		Verdict verdict = monitor.step(TRANSFER, amount);
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 8. [amount="
-							+ amount
-							+ "]. The administrator must reconcile accounts every 1000 attempted external money transfers or an aggregate total of one million dollars in attempted external transfers");
-			System.exit(0);
+			System.err.println(violationMsg + " [amount=" + amount + "]");
+			printTimeAndExit();
 		}
 	};
 
 	before() : reconcile() {
-//		System.out.println(">> reconcile()");
 		Verdict verdict = monitor.step(RECONCILE);
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 8. The administrator must reconcile accounts every 1000 attempted external money transfers or an aggregate total of one million dollars in attempted external transfers");
-			System.exit(0);
+			System.err.println(violationMsg);
+			printTimeAndExit();
 		}
 	};
-	
-	pointcut endOfProgram() : execution(void Main.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in Larva 8. The administrator must reconcile accounts every 1000 attempted external money transfers or an aggregate total of one million dollars in attempted external transfers.");
-		} else {
-			System.err.println("Property Larva 8 satisfied");
-		}
-	}
 }

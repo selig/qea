@@ -1,25 +1,21 @@
 package benchmark.competition.java.larva.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
-import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.TransactionSystem;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
-public aspect LarvaTwoAspect {
-
-	private final Monitor monitor;
+public aspect LarvaTwoAspect extends QEAMonitoringAspect {
 
 	private final int INITIALISE = 1;
 	private final int USER_LOGIN = 2;
 
 	public LarvaTwoAspect() {
-		QEA qea = new Larva().make(Property.LARVA_TWO);
-		monitor = MonitorFactory.create(qea);
+		super(new Larva().make(Property.LARVA_TWO));
+		validationMsg = "Property Larva 2 satisfied";
+		violationMsg = "Property Larva 2 violated. The transaction system must be initialised before any user logs in";
 	}
 
 	pointcut initialise() : call(void TransactionSystem.initialise());
@@ -29,31 +25,16 @@ public aspect LarvaTwoAspect {
 	before() : initialise() {
 		Verdict verdict = monitor.step(INITIALISE);
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 2. The transaction system must be initialised before any user logs in.");
-			System.exit(0);
+			System.err.println(violationMsg);
+			printTimeAndExit();
 		}
 	};
 
 	before() : openSession() {
 		Verdict verdict = monitor.step(USER_LOGIN);
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 2. The transaction system must be initialised before any user logs in.");
-			System.exit(0);
+			System.err.println(violationMsg);
+			printTimeAndExit();
 		}
 	};
-
-	pointcut endOfProgram() : execution(void Main.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in Larva 2. The transaction system must be initialised before any user logs in.");
-		} else {
-			System.err.println("Property Larva 2 satisfied");
-		}
-	}
-
 }

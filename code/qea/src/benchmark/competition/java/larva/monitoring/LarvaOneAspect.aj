@@ -1,23 +1,19 @@
 package benchmark.competition.java.larva.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
-import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserInfo;
 
-public aspect LarvaOneAspect {
-
-	private final Monitor monitor;
+public aspect LarvaOneAspect extends QEAMonitoringAspect {
 
 	private final int MAKE_GOLD_USER = 1;
 
 	public LarvaOneAspect() {
-		QEA qea = new Larva().make(Property.LARVA_ONE);
-		monitor = MonitorFactory.create(qea);
+		super(new Larva().make(Property.LARVA_ONE));
+		validationMsg = "Property Larva 1 satisfied";
+		violationMsg = "Property Larva 1 violated. Only users based in Argentina can be Gold users";
 	}
 
 	pointcut makeGoldUser(UserInfo user) : call(void UserInfo.makeGoldUser())
@@ -26,22 +22,9 @@ public aspect LarvaOneAspect {
 	before(UserInfo user) : makeGoldUser(user) {
 		Verdict verdict = monitor.step(MAKE_GOLD_USER, user.getCountry());
 		if (verdict == Verdict.FAILURE) {
-			System.err.println("Violation in Larva 1. [userId=" + user.getId()
-					+ "] [country=" + user.getCountry()
-					+ "]. Only users based in Argentina can be Gold users.");
-			System.exit(0);
+			System.err.println(violationMsg + " [userId=" + user.getId()
+					+ ", country=" + user.getCountry() + "]");
+			printTimeAndExit();
 		}
 	};
-
-	pointcut endOfProgram() : execution(void Main.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in Larva 1. Only users based in Argentina can be Gold users.");
-		} else {
-			System.err.println("Property Larva 1 satisfied");
-		}
-	}
 }

@@ -1,23 +1,19 @@
 package benchmark.competition.java.larva.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
-import benchmark.competition.java.larva.transactionsystem.Main;
 import benchmark.competition.java.larva.transactionsystem.UserAccount;
 
-public aspect LarvaThreeAspect {
-
-	private final Monitor monitor;
+public aspect LarvaThreeAspect extends QEAMonitoringAspect {
 
 	private final int TRANSACTION = 1;
 
 	public LarvaThreeAspect() {
-		QEA qea = new Larva().make(Property.LARVA_THREE);
-		monitor = MonitorFactory.create(qea);
+		super(new Larva().make(Property.LARVA_THREE));
+		validationMsg = "Property Larva 3 satisfied";
+		violationMsg = "Property Larva 3 violated. No account may end up with a negative balance after being accessed";
 	}
 
 	pointcut transaction(UserAccount account) :
@@ -27,25 +23,10 @@ public aspect LarvaThreeAspect {
 	after(UserAccount account) : transaction(account) {
 		Verdict verdict = monitor.step(TRANSACTION, account.getBalance());
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in Larva 3. [accountNumber="
-							+ account.getAccountNumber()
-							+ "] [balance="
-							+ account.getBalance()
-							+ "]. No account may end up with a negative balance after being accessed.");
-			System.exit(0);
+			System.err.println(violationMsg + " [accountNumber="
+					+ account.getAccountNumber() + ", balance="
+					+ account.getBalance() + "]");
+			printTimeAndExit();
 		}
 	};
-	
-	pointcut endOfProgram() : execution(void Main.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in Larva 3. No account may end up with a negative balance after being accessed.");
-		} else {
-			System.err.println("Property Larva 3 satisfied");
-		}
-	}
 }
