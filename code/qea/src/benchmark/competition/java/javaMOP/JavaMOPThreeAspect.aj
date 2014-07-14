@@ -1,23 +1,20 @@
 package benchmark.competition.java.javaMOP;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.JavaMOP;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
 
-public aspect JavaMOPThreeAspect {
-
-	private final Monitor monitor;
+public aspect JavaMOPThreeAspect extends QEAMonitoringAspect {
 
 	private final int A = 1;
 	private final int B = 2;
 	private final int C = 3;
 
 	public JavaMOPThreeAspect() {
-		QEA qea = new JavaMOP().make(Property.JAVAMOP_THREE);
-		monitor = MonitorFactory.create(qea);
+		super(new JavaMOP().make(Property.JAVAMOP_THREE));
+		validationMsg = "Property JavaMOP 3 satisfied";
+		violationMsg = "Property JavaMOP 3 violated. The functions A(), B(), C() must be called equal times";
 	}
 
 	pointcut A() : call(void CThread2.A());
@@ -32,9 +29,8 @@ public aspect JavaMOPThreeAspect {
 			verdict = monitor.step(A);
 		}
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
-			System.exit(0);
+			System.err.println(violationMsg);
+			printTimeAndExit();
 		}
 	}
 
@@ -44,9 +40,8 @@ public aspect JavaMOPThreeAspect {
 			verdict = monitor.step(B);
 		}
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
-			System.exit(0);
+			System.err.println(violationMsg);
+			printTimeAndExit();
 		}
 	}
 
@@ -56,21 +51,8 @@ public aspect JavaMOPThreeAspect {
 			verdict = monitor.step(C);
 		}
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
-			System.exit(0);
-		}
-	}
-
-	pointcut endOfProgram() : execution(void SRSTest.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in JavaMOP 3. The functions A(), B(), C() must be called equal times.");
-		} else {
-			System.err.println("Property JavaMOP 3 satisfied");
+			System.err.println(violationMsg);
+			printTimeAndExit();
 		}
 	}
 }

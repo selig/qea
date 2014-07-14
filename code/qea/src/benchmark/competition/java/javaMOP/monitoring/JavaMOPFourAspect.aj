@@ -5,18 +5,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.JavaMOP;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
 import benchmark.competition.java.javaMOP.MapIteratorTest;
 
 @SuppressWarnings("rawtypes")
-public aspect JavaMOPFourAspect {
-
-	private final Monitor monitor;
+public aspect JavaMOPFourAspect extends QEAMonitoringAspect {
 
 	private final int CREATE = 1;
 	private final int ITERATOR = 2;
@@ -24,8 +20,9 @@ public aspect JavaMOPFourAspect {
 	private final int UPDATE = 4;
 
 	public JavaMOPFourAspect() {
-		QEA qea = new JavaMOP().make(Property.JAVAMOP_FOUR);
-		monitor = MonitorFactory.create(qea);
+		super(new JavaMOP().make(Property.JAVAMOP_FOUR));
+		validationMsg = "Property JavaMOP 4 satisfied";
+		violationMsg = "Property JavaMOP 4 violated. UnsafeMapIterator";
 	}
 
 	// create(m,c)
@@ -47,47 +44,34 @@ public aspect JavaMOPFourAspect {
 	after(Map map) returning (Collection col) : create(map) {
 		Verdict verdict = monitor.step(CREATE, map, col);
 		if (verdict == Verdict.FAILURE) {
-			System.err.println("Violation in JavaMOP 4. [map=" + map + ", col="
-					+ col + "]. UnsafeMapIterator");
-			System.exit(0);
+			System.err.println(violationMsg + " [map=" + map + ", col=" + col
+					+ "]");
+			printTimeAndExit();
 		}
 	}
 
 	after(Collection col) returning (Iterator iter) : iterator(col) {
 		Verdict verdict = monitor.step(ITERATOR, col, iter);
 		if (verdict == Verdict.FAILURE) {
-			System.err.println("Violation in JavaMOP 4. [col=" + col
-					+ ", iter=" + iter + "]. UnsafeMapIterator");
-			System.exit(0);
+			System.err.println(violationMsg + " [col=" + col + ", iter=" + iter
+					+ "]");
+			printTimeAndExit();
 		}
 	}
 
 	before(Map map) : update(map) {
 		Verdict verdict = monitor.step(UPDATE, map);
 		if (verdict == Verdict.FAILURE) {
-			System.err.println("Violation in JavaMOP 4. [map=" + map
-					+ "]. UnsafeMapIterator");
-			System.exit(0);
+			System.err.println(violationMsg + " [map=" + map + "]");
+			printTimeAndExit();
 		}
 	}
 
 	before(Iterator iter) : use(iter) {
 		Verdict verdict = monitor.step(USE, iter);
 		if (verdict == Verdict.FAILURE) {
-			System.err.println("Violation in JavaMOP 4. [iter=" + iter
-					+ "]. UnsafeMapIterator");
-			System.exit(0);
-		}
-	}
-
-	pointcut endOfProgram() : execution(void MapIteratorTest.main(String[]));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err.println("Violation in JavaMOP 4. UnsafeMapIterator.");
-		} else {
-			System.err.println("Property JavaMOP 4 satisfied");
+			System.err.println(violationMsg + " [iter=" + iter + "]");
+			printTimeAndExit();
 		}
 	}
 }
