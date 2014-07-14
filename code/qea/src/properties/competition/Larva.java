@@ -82,8 +82,7 @@ public class Larva implements PropertyMaker {
 	}
 
 	public QEA makeThree() {
-		// TODO Ask about this property! The balance is checked before or after
-		// the transaction?
+		
 		QEABuilder q = new QEABuilder("LARVA_THREE");
 
 		int TRANSACTION = 1;

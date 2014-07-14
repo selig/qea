@@ -2,17 +2,13 @@ package benchmark.competition.java.jUnitRV_MMT.monitoring;
 
 import java.util.concurrent.locks.Lock;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.JavaRV_mmt;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
 import benchmark.competition.java.jUnitRV_MMT.ExampleLocking;
 
-public aspect JUnitRV_MMTThreeAspect {
-
-	private final Monitor monitor;
+public aspect JUnitRV_MMTThreeAspect extends QEAMonitoringAspect {
 
 	private final int RUN = 1;
 	private final int LOCK_TRUE = 2;
@@ -20,8 +16,9 @@ public aspect JUnitRV_MMTThreeAspect {
 	private final int ACTION = 4;
 
 	public JUnitRV_MMTThreeAspect() {
-		QEA qea = new JavaRV_mmt().make(Property.JAVARV_MMT_THREE);
-		monitor = MonitorFactory.create(qea);
+		super(new JavaRV_mmt().make(Property.JAVARV_MMT_THREE));
+		validationMsg = "Property JUnitRV (MMT) 3 satisfied";
+		violationMsg = "Property JUnitRV (MMT) 3 violated. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock";
 	}
 
 	pointcut run(ExampleLocking thread) : execution(void ExampleLocking.run())
@@ -36,11 +33,8 @@ public aspect JUnitRV_MMTThreeAspect {
 			verdict = monitor.step(RUN, thread);
 		}
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in JUnitRV (MMT) 3. [thread="
-							+ thread
-							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
-			System.exit(0);
+			System.err.println(violationMsg + " [thread=" + thread + "]");
+			printTimeAndExit();
 		}
 	};
 
@@ -60,13 +54,10 @@ public aspect JUnitRV_MMTThreeAspect {
 					verdict = monitor.step(LOCK_TRUE, thread);
 				}
 				if (verdict == Verdict.FAILURE) {
-					System.err
-							.println("Violation in JUnitRV (MMT) 3. [thread="
-									+ thread
-									+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
-					System.exit(0);
+					System.err.println(violationMsg + " [thread=" + thread
+							+ "]");
+					printTimeAndExit();
 				}
-
 			}
 		}
 		return result;
@@ -87,11 +78,8 @@ public aspect JUnitRV_MMTThreeAspect {
 			}
 		}
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in JUnitRV (MMT) 3. [thread="
-							+ thread
-							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
-			System.exit(0);
+			System.err.println(violationMsg + " [thread=" + thread + "]");
+			printTimeAndExit();
 		}
 	};
 
@@ -101,24 +89,8 @@ public aspect JUnitRV_MMTThreeAspect {
 			verdict = monitor.step(ACTION, thread);
 		}
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in JUnitRV (MMT) 3. [id="
-							+ thread
-							+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
-			System.exit(0);
+			System.err.println(violationMsg + " [thread=" + thread + "]");
+			printTimeAndExit();
 		}
 	};
-
-	pointcut endOfProgram() : execution(void ExampleLocking.main(String...));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in JUnitRV (MMT) 3. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
-		} else {
-			System.err.println("Property JUnitRV (MMT) 3 satisfied");
-		}
-	}
-
 }

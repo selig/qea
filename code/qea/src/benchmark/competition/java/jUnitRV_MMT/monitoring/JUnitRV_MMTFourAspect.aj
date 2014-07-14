@@ -1,50 +1,30 @@
 package benchmark.competition.java.jUnitRV_MMT.monitoring;
 
-import monitoring.impl.MonitorFactory;
-import monitoring.intf.Monitor;
+import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.JavaRV_mmt;
 import structure.impl.other.Verdict;
-import structure.intf.QEA;
 import benchmark.competition.java.jUnitRV_MMT.ExampleVelocity;
 
-public aspect JUnitRV_MMTFourAspect {
-
-	private final Monitor monitor;
+public aspect JUnitRV_MMTFourAspect extends QEAMonitoringAspect {
 
 	private final int STEP = 1;
 
 	public JUnitRV_MMTFourAspect() {
-		QEA qea = new JavaRV_mmt().make(Property.JAVARV_MMT_FOUR);
-		monitor = MonitorFactory.create(qea);
+		super(new JavaRV_mmt().make(Property.JAVARV_MMT_FOUR));
+		validationMsg = "Property JUnitRV (MMT) 4 satisfied";
+		violationMsg = "Property JUnitRV (MMT) 4 violated. The average speed between two observations must never exceed the maximal velocity 10";
 	}
 
 	pointcut step(double pos, double time) :
 		call(void ExampleVelocity.step(double, double)) && args(pos, time);
 
 	before(double pos, double time) : step(pos, time) {
-		// System.out.println(">> step(" + pos + "," + time + ")");
 		Verdict verdict = monitor.step(STEP, pos, time);
 		if (verdict == Verdict.FAILURE) {
-			System.err
-					.println("Violation in JUnitRV (MMT) 4. [pos="
-							+ pos
-							+ "] [time="
-							+ time
-							+ "]. The average speed between two observations must never exceed the maximal velocity 10.");
-			System.exit(0);
-		}
-	}
-
-	pointcut endOfProgram() : execution(void ExampleVelocity.main(String...));
-
-	after() : endOfProgram() {
-		Verdict verdict = monitor.end();
-		if (verdict == Verdict.FAILURE || verdict == Verdict.WEAK_FAILURE) {
-			System.err
-					.println("Violation in JUnitRV (MMT) 4. The average speed between two observations must never exceed the maximal velocity 10.");
-		} else {
-			System.err.println("Property JUnitRV (MMT) 4 satisfied");
+			System.err.println(violationMsg + " [pos=" + pos + ", time=" + time
+					+ "]");
+			printTimeAndExit();
 		}
 	}
 }
