@@ -40,6 +40,7 @@ public aspect JavaMOPTwoAspect {
 							+ ", lock="
 							+ lockObj
 							+ "]. A thread should release a lock as many times as it acquires the lock.");
+			System.exit(0);
 		}
 	}
 
@@ -55,6 +56,7 @@ public aspect JavaMOPTwoAspect {
 							+ ", lock="
 							+ lockObj
 							+ "]. A thread should release a lock as many times as it acquires the lock.");
+			System.exit(0);
 		}
 	}
 
