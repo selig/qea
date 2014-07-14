@@ -45,15 +45,14 @@ public aspect JUnitRV_MMTThreeAspect {
 	};
 
 	boolean around(Lock lockObj, ExampleLocking thread) :
-			call(boolean Lock.tryLock())
-			&& cflow(call(boolean ExampleLocking.lock())) && target(lockObj)
-			&& this(thread) {
+		call(boolean Lock.tryLock()) && target(lockObj) && this(thread) 
+		&& within(ExampleLocking) {
 
 		boolean result = false;
 		// We perform the lock and the monitor step as an atomic action
 		// i.e. whilst holding the lockObj, so that we cannot be interrupted
 		synchronized (lockObj) {
-			result = proceed(lockObj, thread);		
+			result = proceed(lockObj, thread);
 			if (result) {
 				Verdict verdict = null;
 				// Ordering between lockObj and monitor important
@@ -67,21 +66,21 @@ public aspect JUnitRV_MMTThreeAspect {
 									+ "]. - A thread has to call lock (returning true) to acquire the lock before it may call action - A call to lock only returns true, if no thread is currently holding the lock.");
 					System.exit(0);
 				}
-	
+
 			}
 		}
 		return result;
 	};
 
 	void around(Lock lockObj, ExampleLocking thread) :
-		call(void Lock.unlock()) && cflow(call(void ExampleLocking.unlock()))
-		&& target(lockObj) && this(thread) {
+		call(void Lock.unlock()) && target(lockObj) && this(thread)
+		&& within(ExampleLocking) {
 
 		// We perform the unlock and the monitor step as an atomic action
 		// i.e. whilst holding the lockObj, so that we cannot be interrupted
 		Verdict verdict = null;
 		synchronized (lockObj) {
-			proceed(lockObj, thread);	
+			proceed(lockObj, thread);
 			// Ordering between lockObj and monitor important
 			synchronized (monitor) {
 				verdict = monitor.step(UNLOCK, thread);
@@ -109,7 +108,7 @@ public aspect JUnitRV_MMTThreeAspect {
 			System.exit(0);
 		}
 	};
-	
+
 	pointcut endOfProgram() : execution(void ExampleLocking.main(String...));
 
 	after() : endOfProgram() {
