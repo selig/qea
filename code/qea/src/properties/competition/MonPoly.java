@@ -55,32 +55,8 @@ public class MonPoly implements PropertyMaker {
 		q.eventName(REPORT);
 		q.addVarArg(t);
 		q.addVarArg(t2);
-		q.addGuard(new Guard("x_" + t2 + " - x_" + t1 + " < 5 days") {
-
-			@Override
-			public int[] vars() {
-				return new int[] { t1, t2 };
-			}
-
-			@Override
-			public boolean usesQvars() {
-				return false;
-			}
-
-			@Override
-			public boolean check(Binding binding, int qvar, Object firstQval) {
-				return check(binding);
-			}
-
-			@Override
-			public boolean check(Binding binding) {
-
-				int t1Val = binding.getForcedAsInteger(t1);
-				int t2Val = binding.getForcedAsInteger(t2);
-				// Timestamp unit is second
-				return t2Val - t1Val < 432000;
-			}
-		});
+		// Timestamp unit is second
+		q.addGuard(Guard.differenceLessThanVal(t2, t1, 432000));		
 		q.endTransition(3);
 
 		q.addFinalStates(1, 3);
@@ -314,54 +290,11 @@ public class MonPoly implements PropertyMaker {
 		q.addVarArg(u);
 		q.addVarArg(a);
 		q.addVarArg(ts2);
-		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " <= 28 days && x_"
-				+ s + " + x_" + a + " <= 10000") {
-
-			@Override
-			public int[] vars() {
-				return new int[] { ts2, ts, s, a };
-			}
-
-			@Override
-			public boolean usesQvars() {
-				return false;
-			}
-
-			@Override
-			public boolean check(Binding binding, int qvar, Object firstQval) {
-				return check(binding);
-			}
-
-			@Override
-			public boolean check(Binding binding) {
-
-				int ts2Val = binding.getForcedAsInteger(ts2);
-				int tsVal = binding.getForcedAsInteger(ts);
-				double sVal = (double) binding.getForced(s);
-				double aVal = (double) binding.getForced(a);
-
-				// Timestamp unit is second
-				return ts2Val - tsVal <= 6912000 && sVal + aVal <= 10000;
-			}
-		});
-		q.addAssignment(new Assignment("x_" + s + " += x_" + a) {
-
-			@Override
-			public int[] vars() {
-				return new int[] { s, a };
-			}
-
-			@Override
-			public Binding apply(Binding binding, boolean copy) {
-
-				double sVal = (double) binding.getForced(s);
-				double aVal = (double) binding.getForced(a);
-
-				Binding result = copy ? binding.copy() : binding;
-				result.setValue(s, sVal + aVal);
-				return result;
-			}
-		});
+		q.addGuard(Guard.and(
+					Guard.differenceLessThanOrEqualToVal(ts2,ts,6912000),
+					Guard.sumLessThanOrEqualToVal(s,a,10000)
+				));
+		q.addAssignment(Assignment.add(s, a));				
 		q.endTransition(2);
 
 		q.startTransition(2);
@@ -369,36 +302,10 @@ public class MonPoly implements PropertyMaker {
 		q.addVarArg(u);
 		q.addVarArg(a);
 		q.addVarArg(ts2);
-		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " <= 28 days && x_"
-				+ s + " + x_" + a + " > 10000") {
-
-			@Override
-			public int[] vars() {
-				return new int[] { ts2, ts, s, a };
-			}
-
-			@Override
-			public boolean usesQvars() {
-				return false;
-			}
-
-			@Override
-			public boolean check(Binding binding, int qvar, Object firstQval) {
-				return check(binding);
-			}
-
-			@Override
-			public boolean check(Binding binding) {
-
-				int ts2Val = binding.getForcedAsInteger(ts2);
-				int tsVal = binding.getForcedAsInteger(ts);
-				double sVal = (double) binding.getForced(s);
-				double aVal = (double) binding.getForced(a);
-
-				// Timestamp unit is second
-				return ts2Val - tsVal <= 6912000 && sVal + aVal > 10000;
-			}
-		});
+		q.addGuard(Guard.and(
+				Guard.differenceLessThanOrEqualToVal(ts2,ts,6912000),
+				Guard.sumGreaterThanVal(s,a,10000)
+			));		
 		q.endTransition(3);
 
 		q.addFinalStates(3);

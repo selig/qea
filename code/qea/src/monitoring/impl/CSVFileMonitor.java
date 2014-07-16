@@ -33,19 +33,20 @@ public class CSVFileMonitor extends FileMonitor {
 
 		String line;
 		int events = 0;
-		while ((line = trace.readLine()) != null) {
+		boolean not_failed = true;
+		while (not_failed && (line = trace.readLine()) != null) {
 			events++;
-			if (events % 100 == 0) {
-				System.err.println(events);
-				// System.err.println(monitor);
-			}
+			//if (events % 100 == 0) {
+				//System.err.println(events);
+			//	 System.err.println(translator.getMonitor());
+			//}
 			// System.err.println(events+":"+line);
 			Verdict verdict = step(line);
 			if (verdict != null) {
 				lastVerdict = verdict;
-				if (verdict == Verdict.FAILURE
-						|| verdict == Verdict.WEAK_FAILURE) {
+				if (verdict == Verdict.FAILURE) {
 					System.err.println("Failure on " + events + ":" + line);
+					not_failed=false;
 				}
 			}
 		}
@@ -59,23 +60,23 @@ public class CSVFileMonitor extends FileMonitor {
 		// int name = translate(parts[0]);
 		if (parts.length == 3) {
 			return translator.translateAndStep(parts[0],
-					new String[] { parts[1] }, new String[] { parts[2] });
+					new String[] { format(parts[1]) }, new String[] { format(parts[2]) });
 		} else if (parts.length == 5) {
-			return translator.translateAndStep(parts[0], new String[] {
-					parts[1], parts[3] }, new String[] { parts[2], parts[4] });
+			return translator.translateAndStep(parts[0], 
+					new String[] { format(parts[1]), format(parts[3]) }, 
+					new String[] { format(parts[2]), format(parts[4]) });
 		} else {
 			int noargs = (parts.length - 1) / 2;
 			String[] args = new String[noargs];
 			String[] argNames = new String[noargs];
 			for (int i = 2, j = 0; j < noargs; i += 2, j++) {
-				argNames[j] = parts[i - 1];
-				args[j] = parts[i];
+				argNames[j] = format(parts[i - 1]);
+				args[j] = format(parts[i]);
 			}
 			return translator.translateAndStep(parts[0], argNames, args);
 		}
 	}
-
-	private Object format(String arg) {
+	private String format(String arg) {
 		return arg.intern();
 	}
 

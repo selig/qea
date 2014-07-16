@@ -247,10 +247,12 @@ public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
 			break;
 
 		case EXPECTING_FIELD_NAME:
+			//TODO does this intern the String?
 			fieldNames[fieldCount] = new String(ch, start, length);
 			break;
 
 		case EXPECTING_FIELD_VALUE:
+			//TODO does this intern the String?
 			fieldValues[fieldCount] = new String(ch, start, length);
 			fieldCount++;
 			break;

@@ -213,6 +213,28 @@ public abstract class Assignment {
 		};
 	}
 
+	public static Assignment add(final int var0, final int var1) {
+		return new Assignment("x_" + var0 + "+= x_"+var1) {
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+				Integer val0 = (Integer) binding.getForced(var0);
+				Integer val1 = (Integer) binding.getForced(var1);
+				
+				Binding newBinding = binding;
+				if (copy) {
+					newBinding = binding.copy();
+				}
+				newBinding.setValue(var0, val0 + val1);
+				return newBinding;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};
+	}		
+	
 	public static Assignment addDifference(final int var0, final int var1, final int var2) {
 		return new Assignment("x_" + var0 + "+= x_"+var1+" - x_"+var2) {
 			@Override
@@ -231,7 +253,7 @@ public abstract class Assignment {
 
 			@Override
 			public int[] vars() {
-				return new int[] { var0 };
+				return new int[] { var0, var1, var2 };
 			}
 		};
 	}	
