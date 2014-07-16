@@ -234,6 +234,7 @@ public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
 			System.out.print(fieldNames[i] + "=" + fieldValues[i]);
 		}
 		System.out.println(")");
+		System.exit(0);
 	}
 
 	@Override
