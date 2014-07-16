@@ -26,7 +26,56 @@ public class Stepr implements PropertyMaker {
 	}
 
 	public QEA makeOne() {
-		return null;
+
+		QEABuilder q = new QEABuilder("STEPR_ONE");
+
+		final int START2 = 1;
+		final int ALARM = 2;
+
+		final int ts = 1;
+		final int ts2 = 2;
+
+		q.addTransition(1, ALARM, new int[] { ts2 }, 1);
+		q.addTransition(1, START2, new int[] { ts }, 2);
+		q.addTransition(2, START2, new int[] { ts }, 2);
+
+		q.startTransition(2);
+		q.eventName(ALARM);
+		q.addVarArg(ts2);
+		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " > 60000") {
+
+			@Override
+			public int[] vars() {
+				return new int[] { ts, ts2 };
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				return check(binding);
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				long tsVal = (long) binding.getForced(ts);
+				long ts2Val = (long) binding.getForced(ts2);
+				return ts2Val - tsVal > 60000;
+			}
+		});
+		q.endTransition(1);
+
+		q.addFinalStates(1, 2);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("start2", START2);
+		qea.record_event_name("alarm", ALARM);
+
+		return qea;
 	}
 
 	public QEA makeTwo() {
