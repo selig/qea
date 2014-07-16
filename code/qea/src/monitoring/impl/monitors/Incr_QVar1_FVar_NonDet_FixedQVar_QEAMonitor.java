@@ -56,6 +56,8 @@ public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 			}
 		}
 
+		//printEvent(eventName,args);
+		
 		boolean existingBinding = false;
 		boolean startConfigFinal = false;
 		NonDetConfig config;
@@ -87,6 +89,8 @@ public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 		// Compute next configuration
 		config = qea.getNextConfig(config, eventName, args, qVarValue);
 
+		//System.err.println(config);
+		
 		// Update/add configuration for the binding
 		bindings.put(qVarValue, config);
 

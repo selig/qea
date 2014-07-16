@@ -451,13 +451,13 @@ public class Soloist implements PropertyMaker {
 		q.startTransition(2);
 		q.eventName(INVCHECKACCESS_COMPLETE);
 		q.addVarArg(t);
-		q.addGuard(Guard.DifferenceLessThanVal(t, wdwStartTime, 900));
+		q.addGuard(Guard.differenceLessThanVal(t, wdwStartTime, 900));
 		q.endTransition(4);
 
 		q.startTransition(3);
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);
-		q.addGuard(Guard.DifferenceGreaterThanOrEqualToVal(t, wdwStartTime, 900));
+		q.addGuard(Guard.differenceGreaterThanOrEqualToVal(t, wdwStartTime, 900));
 		q.addAssignment(Assignment.set(currStartTime, t));
 		q.endTransition(2);
 
@@ -489,7 +489,7 @@ public class Soloist implements PropertyMaker {
 		q.startTransition(3);
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);
-		q.addGuard(Guard.DifferenceGreaterThanOrEqualToVal(t, wdwStartTime, 900));
+		q.addGuard(Guard.differenceGreaterThanOrEqualToVal(t, wdwStartTime, 900));
 		q.endTransition(4);
 
 		q.addFinalStates(5);
