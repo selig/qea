@@ -389,72 +389,31 @@ public class Soloist implements PropertyMaker {
 		int INVCHECKACCESS_COMPLETE = 2;
 
 		final int t = 1;
-		final int _ = 2;
-		final int currStartTime = 3;
-		final int totalTime = 4;
-		final int execCount = 5;
-		final int wdwStartTime = 6;
+		final int currStartTime = 2;
+		final int totalTime = 3;
+		final int execCount = 4;
+		final int wdwStartTime = 5;
 
-		q.addTransition(1, INVCHECKACCESS_START, new int[] { _ }, 1);
+		q.addTransition(1, INVCHECKACCESS_START, new int[] { t }, 1);
 
 		q.startTransition(1);
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);
-		q.addAssignment(new Assignment("x_" + currStartTime + " = x_" + t
-				+ "; x_" + totalTime + " = 0; x_" + execCount + " = 0; x_"
-				+ wdwStartTime + " = x_" + t) {
-
-			@Override
-			public int[] vars() {
-				return new int[] { currStartTime, t, totalTime, execCount,
-						wdwStartTime };
-			}
-
-			@Override
-			public Binding apply(Binding binding, boolean copy) {
-
-				Binding result = copy ? binding.copy() : binding;
-				int tVal = binding.getForcedAsInteger(t);
-
-				result.setValue(currStartTime, tVal);
-				result.setValue(totalTime, 0);
-				result.setValue(execCount, 0);
-				result.setValue(wdwStartTime, tVal);
-
-				return result;
-			}
-		});
+		q.addAssignment(
+				Assignment.list(Assignment.store(currStartTime, t),
+								Assignment.set(totalTime,0),
+								Assignment.set(execCount, 0),
+								Assignment.store(wdwStartTime, t))
+				);
 		q.endTransition(2);
 
 		q.startTransition(2);
 		q.eventName(INVCHECKACCESS_COMPLETE);
 		q.addVarArg(t);
-		q.addAssignment(new Assignment("x_" + totalTime + " += x_" + t
-				+ " - x_" + currStartTime + "; x_" + execCount + "++") {
-
-			@Override
-			public int[] vars() {
-				return new int[] { totalTime, t, currStartTime, execCount };
-			}
-
-			@Override
-			public Binding apply(Binding binding, boolean copy) {
-
-				Binding result = copy ? binding.copy() : binding;
-
-				int totalTimeVal = binding.getForcedAsInteger(totalTime);
-				int tVal = binding.getForcedAsInteger(t);
-				int currStartTimeVal = binding
-						.getForcedAsInteger(currStartTime);
-				int execCountVal = binding.getForcedAsInteger(execCount);
-
-				result.setValue(totalTime, totalTimeVal + tVal
-						- currStartTimeVal);
-				result.setValue(execCount, execCountVal + 1);
-
-				return result;
-			}
-		});
+		q.addAssignment(
+				Assignment.then(Assignment.storeDifference(totalTime, t,currStartTime),
+								Assignment.increment(execCount))
+		);				
 		q.endTransition(3);
 
 		q.startTransition(2);
@@ -464,21 +423,9 @@ public class Soloist implements PropertyMaker {
 				+ " >= 15m and (x_" + totalTime + " + (x_" + t + " - x_"
 				+ currStartTime + ")) / ((x_" + execCount + " + 1) >= 5") {
 
-			@Override
-			public int[] vars() {
-				return new int[] { t, wdwStartTime, totalTime, currStartTime,
-						execCount };
-			}
-
-			@Override
-			public boolean usesQvars() {
-				return false;
-			}
-
-			@Override
-			public boolean check(Binding binding, int qvar, Object firstQval) {
-				return check(binding);
-			}
+			public int[] vars() {return new int[] { t, wdwStartTime, totalTime, currStartTime,execCount };}
+			public boolean usesQvars() {return false;}
+			public boolean check(Binding binding, int qvar, Object firstQval) {return check(binding);}
 
 			@Override
 			public boolean check(Binding binding) {
@@ -486,55 +433,28 @@ public class Soloist implements PropertyMaker {
 				int tVal = binding.getForcedAsInteger(t);
 				double tDoubleVal = tVal;
 				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
-				double totalTimeDoubleVal = binding
-						.getForcedAsInteger(totalTime);
-				double currStartTimeDoubleVal = binding
-						.getForcedAsInteger(currStartTime);
-				double execCountDoubleVal = binding
-						.getForcedAsInteger(execCount);
+				double totalTimeDoubleVal = binding.getForcedAsInteger(totalTime);
+				double currStartTimeDoubleVal = binding.getForcedAsInteger(currStartTime);
+				double execCountDoubleVal = binding.getForcedAsInteger(execCount);
 
-				double avg = (totalTimeDoubleVal + (tDoubleVal - currStartTimeDoubleVal))
-						/ (execCountDoubleVal + 1);
+				double avg = (totalTimeDoubleVal + (tDoubleVal - currStartTimeDoubleVal)) / (execCountDoubleVal + 1);
 
 				return tVal - wdwStartTimeVal >= 900 && avg >= 5;
 			}
 		});
+		q.addAssignment(Assignment.addDifference(totalTime,t,currStartTime));
 		q.endTransition(5);
 
 		q.startTransition(2);
 		q.eventName(INVCHECKACCESS_COMPLETE);
 		q.addVarArg(t);
-		q.addGuard(new Guard("x_" + t + " - x_" + wdwStartTime + " >= 15m") {
-
-			@Override
-			public int[] vars() {
-				return new int[] { t, wdwStartTime };
-			}
-
-			@Override
-			public boolean usesQvars() {
-				return false;
-			}
-
-			@Override
-			public boolean check(Binding binding, int qvar, Object firstQval) {
-				return check(binding);
-			}
-
-			@Override
-			public boolean check(Binding binding) {
-
-				int tVal = binding.getForcedAsInteger(t);
-				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
-
-				return tVal - wdwStartTimeVal >= 900;
-			}
-		});
+		q.addGuard(Guard.DifferenceLessThanVal(t, wdwStartTime, 900));
 		q.endTransition(4);
 
 		q.startTransition(3);
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);
+		q.addGuard(Guard.DifferenceGreaterThanOrEqualToVal(t, wdwStartTime, 900));
 		q.addAssignment(Assignment.set(currStartTime, t));
 		q.endTransition(2);
 
@@ -544,30 +464,17 @@ public class Soloist implements PropertyMaker {
 		q.addGuard(new Guard("x_" + t + " - x_" + wdwStartTime
 				+ " >= 15m and x_" + totalTime + "/x_" + execCount + " >= 5") {
 
-			@Override
-			public int[] vars() {
-				return new int[] { t, wdwStartTime, totalTime, execCount };
-			}
-
-			@Override
-			public boolean usesQvars() {
-				return false;
-			}
-
-			@Override
-			public boolean check(Binding binding, int qvar, Object firstQval) {
-				return check(binding);
-			}
+			public int[] vars() {return new int[] { t, wdwStartTime, totalTime, execCount };}
+			public boolean usesQvars() {return false;}
+			public boolean check(Binding binding, int qvar, Object firstQval) {return check(binding);}
 
 			@Override
 			public boolean check(Binding binding) {
 
 				int tVal = binding.getForcedAsInteger(t);
 				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
-				double totalTimeDoubleVal = binding
-						.getForcedAsInteger(totalTime);
-				double execCountDoubleVal = binding
-						.getForcedAsInteger(execCount);
+				double totalTimeDoubleVal = binding.getForcedAsInteger(totalTime);
+				double execCountDoubleVal = binding.getForcedAsInteger(execCount);
 				double avg = totalTimeDoubleVal / execCountDoubleVal;
 
 				return tVal - wdwStartTimeVal >= 900 && avg >= 5;
@@ -578,31 +485,7 @@ public class Soloist implements PropertyMaker {
 		q.startTransition(3);
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);
-		q.addGuard(new Guard("x_" + t + " - x_" + wdwStartTime + " >= 15m") {
-
-			@Override
-			public int[] vars() {
-				return new int[] { t, wdwStartTime };
-			}
-
-			@Override
-			public boolean usesQvars() {
-				return false;
-			}
-
-			@Override
-			public boolean check(Binding binding, int qvar, Object firstQval) {
-				return check(binding);
-			}
-
-			@Override
-			public boolean check(Binding binding) {
-
-				int tVal = binding.getForcedAsInteger(t);
-				int wdwStartTimeVal = binding.getForcedAsInteger(wdwStartTime);
-				return tVal - wdwStartTimeVal >= 900;
-			}
-		});
+		q.addGuard(Guard.DifferenceGreaterThanOrEqualToVal(t, wdwStartTime, 900));
 		q.endTransition(4);
 
 		q.addFinalStates(5);

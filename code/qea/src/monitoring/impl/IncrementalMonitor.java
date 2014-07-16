@@ -265,4 +265,16 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	protected abstract int rollbackStrongBindings();
 
 	protected abstract int ignoreStrongBindings();
+	
+	public void printEvent(int eventName, Object[] args){
+		System.err.print(">>> "+eventName +"[");
+		for(Object o : args){
+			if(o instanceof Integer){
+				System.err.print(o+" ");
+			}else{
+				System.err.print(System.identityHashCode(o)+" ");
+			}
+		}
+		System.err.println("]");
+	}
 }

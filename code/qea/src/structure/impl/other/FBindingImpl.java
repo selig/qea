@@ -80,7 +80,12 @@ public class FBindingImpl extends Binding {
 			if (values[i] == null) {
 				out[i] = "-";
 			} else {
-				out[i] = "" + System.identityHashCode(values[i]);// values[i].toString();
+				if(values[i] instanceof Integer){
+					out[i] = "" + values[i];
+				}
+				else{
+					out[i] = "o_" + System.identityHashCode(values[i]);// values[i].toString();
+				}
 			}
 		}
 		return Arrays.toString(out);
