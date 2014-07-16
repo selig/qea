@@ -91,7 +91,7 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 				result = Verdict.WEAK_SUCCESS;
 			}
 		}
-		if (end || nonFinalStrongState) {
+		else if (end || nonFinalStrongState) {
 			saved = Verdict.FAILURE;
 			result = Verdict.FAILURE;
 		} else {

@@ -1,5 +1,7 @@
 package monitoring.impl.monitors;
 
+import java.util.Arrays;
+
 import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.RestartMode;
@@ -39,9 +41,16 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 			}
 		}
 
+		printEvent(eventName,args);
+		
 		// Update configuration
 		config = qea.getNextConfig(config, eventName, args, null, false);
 
+		structure.intf.Binding [] bs = config.getBindings();
+		int[] states = config.getStates();
+		for(int i=0;i<states.length;i++)
+			System.err.println(states[i]+"  ,  "+bs[i]);
+		
 		// Determine if there is a final/non-final strong state
 		checkFinalAndStrongStates(config, null);
 
@@ -57,6 +66,7 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 
 	@Override
 	public Verdict end() {
+		System.err.println("Calling end");
 		return computeVerdict(true);
 	}
 
@@ -83,6 +93,7 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 
 		Verdict result;
 
+		
 		if (qea.containsFinalState(config)) {
 			if (end || finalStrongState) {
 				saved = Verdict.SUCCESS;
@@ -91,13 +102,15 @@ public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 				result = Verdict.WEAK_SUCCESS;
 			}
 		}
-		if (end || nonFinalStrongState) {
+		else if (end || nonFinalStrongState) {
 			saved = Verdict.FAILURE;
 			result = Verdict.FAILURE;
 		} else {
 			result = Verdict.WEAK_FAILURE;
 		}
-
+		
+		System.err.println("verdict is "+result);
+		
 		if (qea.isNegated()) {
 			result = result.negated();
 		}

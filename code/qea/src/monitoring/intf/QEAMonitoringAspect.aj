@@ -10,7 +10,7 @@ public abstract aspect QEAMonitoringAspect {
 	protected long startTime;
 	protected String validationMsg;
 	protected String violationMsg;
-
+	
 	public QEAMonitoringAspect(QEA qea) {
 		monitor = MonitorFactory.create(qea);
 	}
@@ -18,7 +18,7 @@ public abstract aspect QEAMonitoringAspect {
 	pointcut main() : execution(void *.main(String[])) ||
 		execution(void *.main(String...));
 
-	before() : main() {
+	/*before() : main() {
 		startTime = System.currentTimeMillis();
 	}
 
@@ -32,7 +32,7 @@ public abstract aspect QEAMonitoringAspect {
 		long totalTime = System.currentTimeMillis() - startTime;
 		System.err.println(">>Execution time: " + totalTime);
 	}
-
+*/
 	protected void printTimeAndExit() {
 		long totalTime = System.currentTimeMillis() - startTime;
 		System.err.println(">>Execution time: " + totalTime);

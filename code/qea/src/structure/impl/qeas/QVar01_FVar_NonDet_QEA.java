@@ -210,6 +210,11 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 		// Iterate over the transitions
 		for (Transition transition : transitions) {
 
+			//Check if state is a strong failure state
+			// TODO : add an option to keep them
+			int end_state = transition.getEndState();
+			if(!(strongStates[end_state] && !finalStates[end_state])){
+			
 			// Check the transition matches the value of the QVar
 			if (!isQVarValue || qVarMatchesBinding(qVarValue, args, transition)) {
 
@@ -238,6 +243,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 					endStatesCount++;
 				}
 			}
+			}
 		}
 
 		if (endStatesCount == 0) { // All end states are failing
@@ -249,7 +255,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 			}
 			return config;
 		}
-
+		
 		// TODO - check for repetitions?
 
 		config.setStates(ArrayUtil.resize(endStates, endStatesCount));
@@ -307,6 +313,11 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 				boolean taken_transition = false;
 				for (Transition transition : transitions[i]) {
 
+					// Check if strong failure state
+					// TODO: add option to not remove these
+					int end_state = transition.getEndState();
+					if(!(strongStates[end_state] && !finalStates[end_state])){
+					
 					// Check the transition matches the value of the QVar
 					if (!isQVarValue
 							|| qVarMatchesBinding(qVarValue, args, transition)) {
@@ -346,6 +357,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 							endStatesCount++;
 							taken_transition = true;
 						}
+					}
 					}
 				}
 				if (!taken_transition) {
