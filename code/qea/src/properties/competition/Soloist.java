@@ -442,7 +442,10 @@ public class Soloist implements PropertyMaker {
 				return tVal - wdwStartTimeVal >= 900 && avg >= 5;
 			}
 		});
-		q.addAssignment(Assignment.addDifference(totalTime,t,currStartTime));
+		q.addAssignment(Assignment.then(
+				Assignment.addDifference(totalTime,t,currStartTime),
+				Assignment.increment(execCount)
+			));
 		q.endTransition(5);
 
 		q.startTransition(2);
@@ -480,6 +483,7 @@ public class Soloist implements PropertyMaker {
 				return tVal - wdwStartTimeVal >= 900 && avg >= 5;
 			}
 		});
+		q.addAssignment(Assignment.addDifference(totalTime,t,currStartTime));
 		q.endTransition(5);
 
 		q.startTransition(3);
