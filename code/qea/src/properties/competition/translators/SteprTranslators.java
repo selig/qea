@@ -23,8 +23,33 @@ public class SteprTranslators implements TranslatorMaker {
 	}
 
 	public OfflineTranslator makeOne() {
-		// TODO Auto-generated method stub
-		return null;
+		return new OfflineTranslator() {
+
+			private static final int START2 = 1;
+			private static final int ALARM = 2;
+
+			private static final String START2_STR = "start2";
+			private static final String ALARM_STR = "alarm";
+
+			@Override
+			public Verdict translateAndStep(String eventName,
+					String[] paramNames, String[] paramValues) {
+				switch (paramNames[0]) {
+				case START2_STR:
+					return monitor.step(START2, Long.valueOf(paramValues[6]));
+				case ALARM_STR:
+					return monitor.step(ALARM, Long.valueOf(paramValues[6]));
+				default:
+					return null;
+				}
+			}
+
+			@Override
+			public Verdict translateAndStep(String eventName) {
+				// No event without parameters is relevant for this property
+				return null;
+			}
+		};
 	}
 
 	public OfflineTranslator makeTwo() {
@@ -55,7 +80,6 @@ public class SteprTranslators implements TranslatorMaker {
 				// No event without parameters is relevant for this property
 				return null;
 			}
-
 		};
 	}
 
