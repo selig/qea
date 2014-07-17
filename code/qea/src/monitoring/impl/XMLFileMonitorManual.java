@@ -10,6 +10,7 @@ import properties.competition.translators.SteprTranslators;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import util.ArrayUtil;
+import exceptions.XMLFailureException;
 
 /**
  * This class processes an XML document representing a trace of events and
@@ -171,27 +172,24 @@ public class XMLFileMonitorManual extends FileMonitor {
 					ArrayUtil.resize(fieldValues, fieldCount));
 		}
 
-		// Save verdict and print failure detail in case the verdict is failure
-		if (verdict != null) {
-			lastVerdict = verdict;
-			if (verdict == Verdict.FAILURE) {
-				printFailureDetail(eventName);
-			}
+		if (verdict == Verdict.FAILURE) {
+			throw new XMLFailureException(getFailureDetail(eventName));
 		}
 
 		return true;
 	}
 
-	private void printFailureDetail(String eventName) {
-		System.out.print("Failure on event #" + eventCount + ": " + eventName
-				+ "(");
+	private String getFailureDetail(String eventName) {
+		String failureDetail = "Failure on event #" + eventCount + ": "
+				+ eventName + "(";
 		for (int i = 0; i < fieldCount; i++) {
 			if (i > 0) {
-				System.out.print(",");
+				failureDetail += ",";
 			}
-			System.out.print(fieldNames[i] + "=" + fieldValues[i]);
+			failureDetail += fieldNames[i] + "=" + fieldValues[i];
 		}
-		System.out.println(")");
+		failureDetail += ")";
+		return failureDetail;
 	}
 
 	private boolean readField() throws IOException {

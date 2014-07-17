@@ -42,12 +42,9 @@ public class CSVFileMonitor extends FileMonitor {
 			// }
 			// System.err.println(events+":"+line);
 			Verdict verdict = step(line);
-			if (verdict != null) {
-				lastVerdict = verdict;
-				if (verdict == Verdict.FAILURE) {
-					System.err.println("Failure on " + events + ":" + line);
-					not_failed = false;
-				}
+			if (verdict == Verdict.FAILURE) {
+				System.err.println("Failure on " + events + ":" + line);
+				not_failed = false;
 			}
 		}
 		System.err.println(events + " events");
