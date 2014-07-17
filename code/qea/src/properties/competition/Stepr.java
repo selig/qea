@@ -42,7 +42,7 @@ public class Stepr implements PropertyMaker {
 		q.startTransition(2);
 		q.eventName(ALARM);
 		q.addVarArg(ts2);
-		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " > 60000") {
+		q.addGuard(new Guard("x_" + ts2 + " - x_" + ts + " >= 60000") {
 
 			@Override
 			public int[] vars() {
@@ -63,7 +63,7 @@ public class Stepr implements PropertyMaker {
 			public boolean check(Binding binding) {
 				long tsVal = (long) binding.getForced(ts);
 				long ts2Val = (long) binding.getForced(ts2);
-				return ts2Val - tsVal > 60000;
+				return ts2Val - tsVal >= 60000;
 			}
 		});
 		q.endTransition(1);
@@ -144,8 +144,8 @@ public class Stepr implements PropertyMaker {
 		q.eventName(STEP);
 		q.addVarArg(errorCount);
 		q.addVarArg(cycleCount);
-		q.addGuard(new Guard("x_" + errorCount + " == 0 || x_" + cycleCount
-				+ " == 0 || x_" + errorCount + " <= 0.00002 * x_" + cycleCount) {
+		q.addGuard(new Guard("x_" + errorCount + " > 0 && x_" + cycleCount
+				+ " > 0 && x_" + errorCount + " > 0.00002 * x_" + cycleCount) {
 
 			@Override
 			public int[] vars() {
@@ -164,17 +164,18 @@ public class Stepr implements PropertyMaker {
 
 			@Override
 			public boolean check(Binding binding) {
-				double errorCountVal = Double.valueOf((String) binding
-						.getForced(errorCount));
-				double cycleCountVal = Double.valueOf((String) binding
-						.getForced(cycleCount));
-				return errorCountVal == 0 || cycleCountVal == 0
-						|| errorCountVal <= 0.00002 * cycleCountVal;
+				double errorCountVal = binding.getForcedAsInteger(errorCount)
+						.doubleValue();
+				double cycleCountVal = binding.getForcedAsInteger(cycleCount)
+						.doubleValue();
+				return errorCountVal > 0 && cycleCountVal > 0
+						&& errorCountVal > 0.00002 * cycleCountVal;
 			}
 		});
-		q.endTransition(1);
+		q.endTransition(2);
 
 		q.addFinalStates(1);
+		q.setSkipStates(1);
 
 		QEA qea = q.make();
 
