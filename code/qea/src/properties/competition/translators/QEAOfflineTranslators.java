@@ -38,13 +38,11 @@ public class QEAOfflineTranslators implements TranslatorMaker {
 					String[] paramNames, String[] paramValues) {
 				switch (eventName) {
 				case PING_STR:
-					return monitor.step(PING,
-							new Object[] { paramValues[0].intern(),
-									paramValues[1].intern() });
+					return monitor.step(PING, new Object[] { paramValues[0],
+							paramValues[1] });
 				case ACK_STR:
-					return monitor.step(ACK,
-							new Object[] { paramValues[0].intern(),
-									paramValues[1].intern() });
+					return monitor.step(ACK, new Object[] { paramValues[0],
+							paramValues[1] });
 				default:
 					return null;
 				}
@@ -72,13 +70,11 @@ public class QEAOfflineTranslators implements TranslatorMaker {
 					String[] paramNames, String[] paramValues) {
 				switch (eventName) {
 				case GRANT_STR:
-					return monitor.step(GRANT,
-							new Object[] { paramValues[0].intern(),
-									paramValues[1].intern() });
+					return monitor.step(GRANT, new Object[] { paramValues[0],
+							paramValues[1] });
 				case CANCEL_STR:
-					return monitor.step(CANCEL,
-							new Object[] { paramValues[0].intern(),
-									paramValues[1].intern() });
+					return monitor.step(CANCEL, new Object[] { paramValues[0],
+							paramValues[1] });
 				default:
 					return null;
 				}
@@ -107,10 +103,10 @@ public class QEAOfflineTranslators implements TranslatorMaker {
 				switch (eventName) {
 				case COMMAND_STR:
 					return monitor.step(COMMAND,
-							new Object[] { paramValues[0].intern() });
+							new Object[] { paramValues[0] });
 				case SUCCEED_STR:
 					return monitor.step(SUCCEED,
-							new Object[] { paramValues[0].intern() });
+							new Object[] { paramValues[0] });
 				default:
 					return null;
 				}
@@ -145,19 +141,17 @@ public class QEAOfflineTranslators implements TranslatorMaker {
 				switch (eventName) {
 				case REQUEST_STR:
 					return monitor.step(REQUEST,
-							new Object[] { paramValues[0].intern() });
+							new Object[] { paramValues[0] });
 				case GRANT_STR:
-					return monitor.step(GRANT,
-							new Object[] { paramValues[0].intern() });
+					return monitor.step(GRANT, new Object[] { paramValues[0] });
 				case DENY_STR:
-					return monitor.step(DENY,
-							new Object[] { paramValues[0].intern() });
+					return monitor.step(DENY, new Object[] { paramValues[0] });
 				case RESCIND_STR:
 					return monitor.step(RESCIND,
-							new Object[] { paramValues[0].intern() });
+							new Object[] { paramValues[0] });
 				case CANCEL_STR:
-					return monitor.step(CANCEL,
-							new Object[] { paramValues[0].intern() });
+					return monitor
+							.step(CANCEL, new Object[] { paramValues[0] });
 				default:
 					return null;
 				}
@@ -188,16 +182,14 @@ public class QEAOfflineTranslators implements TranslatorMaker {
 					String[] paramNames, String[] paramValues) {
 				switch (eventName) {
 				case CONFLICT_STR:
-					return monitor.step(CONFLICT,
-							new Object[] { paramValues[0].intern(),
-									paramValues[1].intern() });
+					return monitor.step(CONFLICT, new Object[] {
+							paramValues[0], paramValues[1] });
 				case GRANT_STR:
-					return monitor.step(GRANT,
-							new Object[] { paramValues[0].intern() });
+					return monitor.step(GRANT, new Object[] { paramValues[0] });
 
 				case CANCEL_STR:
-					return monitor.step(CANCEL,
-							new Object[] { paramValues[0].intern() });
+					return monitor
+							.step(CANCEL, new Object[] { paramValues[0] });
 				default:
 					return null;
 				}

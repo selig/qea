@@ -141,15 +141,15 @@ public class SoloistTranslators implements TranslatorMaker {
 					// TODO Should we check the name of the parameter?
 					if (!paramValues[2].equals("0")) { // init(p)
 						return monitor.step(INIT,
-								new Object[] { paramValues[2].intern() });
+								new Object[] { paramValues[2] });
 					}
 					if (!paramValues[3].equals("0")) { // run(p)
 						return monitor.step(RUN,
-								new Object[] { paramValues[3].intern() });
+								new Object[] { paramValues[3] });
 					}
 					if (!paramValues[4].equals("0")) { // finish(p)
 						return monitor.step(FINISH,
-								new Object[] { paramValues[4].intern() });
+								new Object[] { paramValues[4] });
 					}
 				}
 
