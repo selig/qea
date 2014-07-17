@@ -127,6 +127,10 @@ public abstract class FileMonitor {
 		throw new RuntimeException("Could not translate event name " + name);
 	}
 
+	protected String format(String arg) {
+		return arg.intern();
+	}
+
 	public abstract Verdict monitor() throws Exception;
 
 }
