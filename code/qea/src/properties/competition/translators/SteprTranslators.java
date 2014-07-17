@@ -96,8 +96,16 @@ public class SteprTranslators implements TranslatorMaker {
 
 				switch (eventName) {
 				case STEP_STR:
-					return monitor.step(STEP, paramValues[1], paramValues[2]);
-
+					switch (paramValues[0]) {
+					case "true":
+						return monitor.step(STEP,
+								Integer.valueOf(paramValues[1]),
+								Integer.valueOf(paramValues[2]));
+					default:
+						return monitor.step(STEP,
+								Integer.valueOf(paramValues[0]),
+								Integer.valueOf(paramValues[1]));
+					}
 				default:
 					return null;
 				}
