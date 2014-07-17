@@ -28,8 +28,6 @@ public abstract class FileMonitor {
 	private int[][] expansions_int;
 	private String[][] expansions_str;
 
-	protected Verdict lastVerdict = null;
-
 	public FileMonitor(String tracename, QEA qea, OfflineTranslator translator)
 			throws FileNotFoundException {
 

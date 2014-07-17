@@ -23,6 +23,7 @@ import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import util.ArrayUtil;
 import exceptions.ShouldNotHappenException;
+import exceptions.XMLFailureException;
 
 /**
  * Content Handler that processes an XML document representing a trace of events
@@ -200,11 +201,8 @@ public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
 
 			eventCount++;
 			Verdict verdict = step();
-			if (verdict != null) {
-				lastVerdict = verdict;
-				if (verdict == Verdict.FAILURE) {
-					printFailureDetail();
-				}
+			if (verdict == Verdict.FAILURE) {
+				throw new XMLFailureException(getFailureDetail());
 			}
 			break;
 
@@ -224,17 +222,17 @@ public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
 		}
 	}
 
-	private void printFailureDetail() {
-		System.out.print("Failure on event #" + eventCount + ": " + eventName
-				+ "(");
+	private String getFailureDetail() {
+		String failureDetail = "Failure on event #" + eventCount + ": "
+				+ eventName + "(";
 		for (int i = 0; i < fieldCount; i++) {
 			if (i > 0) {
-				System.out.print(",");
+				failureDetail += ",";
 			}
-			System.out.print(fieldNames[i] + "=" + fieldValues[i]);
+			failureDetail += fieldNames[i] + "=" + fieldValues[i];
 		}
-		System.out.println(")");
-		System.exit(0);
+		failureDetail += ")";
+		return failureDetail;
 	}
 
 	@Override
