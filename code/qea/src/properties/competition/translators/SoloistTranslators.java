@@ -12,7 +12,7 @@ public class SoloistTranslators implements TranslatorMaker {
 
 		switch (property) {
 		case SOLOIST_ONE:
-			return makeOneSimple();
+			return makeOne();
 		case SOLOIST_TWO:
 			return makeTwo();
 		case SOLOIST_THREE:
@@ -23,7 +23,7 @@ public class SoloistTranslators implements TranslatorMaker {
 		return null;
 	}
 
-	public OfflineTranslator makeOneSimple() {
+	public OfflineTranslator makeOne() {
 		return new OfflineTranslator() {
 
 			private static final int WITHDRAW = 1;
@@ -92,17 +92,28 @@ public class SoloistTranslators implements TranslatorMaker {
 	public OfflineTranslator makeThree() {
 		return new OfflineTranslator() {
 
-			private static final int STEP = 1;
+			private static final int INVCHECKACCESS_COMPLETE = 1;
+			private static final int REPLOGON = 2;
 
-			private static final String STEP_STR = "step";
+			private static final String INVCHECKACCESS_STR = "invcheckaccess";
+			private static final String EVENT_TYPE_COMPLETE_STR = "complete";
+			private static final String REPLOGON_STR = "replogon";
 
 			@Override
 			public Verdict translateAndStep(String eventName,
 					String[] paramNames, String[] paramValues) {
 
 				switch (eventName) {
-				case STEP_STR:
-					return monitor.step(STEP, paramValues[1], paramValues[2]);
+				case INVCHECKACCESS_STR:
+					switch (paramValues[1]) {
+					case EVENT_TYPE_COMPLETE_STR:
+						return monitor.step(INVCHECKACCESS_COMPLETE);
+					default:
+						return null;
+					}
+
+				case REPLOGON_STR:
+					return monitor.step(REPLOGON);
 
 				default:
 					return null;
@@ -120,53 +131,28 @@ public class SoloistTranslators implements TranslatorMaker {
 	public OfflineTranslator makeFour() {
 		return new OfflineTranslator() {
 
-			private static final int INIT = 1;
-			private static final int RUN = 2;
-			private static final int FINISH = 3;
-			private static final int GROUP_START = 4;
-			private static final int PHASE_START = 5;
-			private static final int GROUP_END = 6;
+			private static final int INVCHECKACCESS_START = 1;
+			private static final int INVCHECKACCESS_COMPLETE = 2;
 
-			private static final String GROUP_START_STR = "group_start";
-			private static final String PHASE_START_STR = "phase_start";
-			private static final String GROUP_END_STR = "group_end";
+			private static final String INVCHECKACCESS_STR = "invcheckaccess";
+			private static final String EVENT_TYPE_START_STR = "start";
+			private static final String EVENT_TYPE_COMPLETE_STR = "complete";
 
 			@Override
 			public Verdict translateAndStep(String eventName,
 					String[] paramNames, String[] paramValues) {
-
-				if (paramNames.length == 6) { // TODO Can we assume this? Check
-												// eventName=step?
-
-					// TODO Should we check the name of the parameter?
-					if (!paramValues[2].equals("0")) { // init(p)
-						return monitor.step(INIT,
-								new Object[] { paramValues[2] });
+				switch (eventName) {
+				case INVCHECKACCESS_STR:
+					switch (paramValues[1]) {
+					case EVENT_TYPE_START_STR:
+						return monitor.step(INVCHECKACCESS_START,
+								Integer.valueOf(paramValues[0]));
+					case EVENT_TYPE_COMPLETE_STR:
+						return monitor.step(INVCHECKACCESS_COMPLETE,
+								Integer.valueOf(paramValues[0]));
+					default:
+						return null;
 					}
-					if (!paramValues[3].equals("0")) { // run(p)
-						return monitor.step(RUN,
-								new Object[] { paramValues[3] });
-					}
-					if (!paramValues[4].equals("0")) { // finish(p)
-						return monitor.step(FINISH,
-								new Object[] { paramValues[4] });
-					}
-				}
-
-				switch (paramNames[0]) {
-
-				// TODO Should we check the value of the parameter is true?
-				case GROUP_START_STR: // group_start(ts)
-					return monitor.step(GROUP_START,
-							Long.valueOf(paramValues[6]));
-
-				case GROUP_END_STR: // group_end(ts2)
-					return monitor
-							.step(GROUP_END, Long.valueOf(paramValues[6]));
-
-				case PHASE_START_STR: // phase_start()
-					return monitor.step(PHASE_START);
-
 				default:
 					return null;
 				}
