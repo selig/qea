@@ -79,6 +79,10 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 
 		} else { // New quantified variable binding
 
+			// If the global guard is false then we can return now
+			// as we can ignore this binding
+			if(!qea.checkGlobalGuard(param1)) return computeVerdict(false);			
+			
 			// Create configuration for the new binding
 			config = empty_config.copy();
 		}

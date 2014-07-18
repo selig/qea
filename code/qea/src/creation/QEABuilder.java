@@ -281,51 +281,52 @@ public class QEABuilder {
 			qqs[i] = q.universal ? FORALL : EXISTS;
 		}
 		boolean ggs = usesGlobalGuards();
+		Guard sg = quants.get(0).g;
 
 		switch (type) {
 		case QVAR01_FVAR_DET_QEA:
 			if (qs == 0 && det && !ggs) {
 				return makePropFreeDet(states, events, strong);
 			}
-			if (qs == 1 && det && !ggs) {
-				return makeSingleFreeDet(states, events, strong, qqs[0], fvars);
+			if (qs == 1 && det) {
+				return makeSingleFreeDet(states, events, strong, qqs[0], fvars,sg);
 			}
 			break;
 		case QVAR01_FVAR_NONDET_QEA:
 			if (qs == 0 && !ggs) {
 				return makePropFreeNondet(states, events, strong);
 			}
-			if (qs == 1 && !ggs) {
+			if (qs == 1) {
 				return makeSingleFreeNondet(states, events, strong, qqs[0],
-						fvars);
+						fvars,sg);
 			}
 			break;
 		case QVAR01_NOFVAR_DET_QEA:
 			if (qs == 0 && det && nofree && !ggs) {
 				return makePropNofreeDet(states, events, strong);
 			}
-			if (qs == 1 && det && nofree && !ggs) {
-				return makeSingleNofreeDet(states, events, strong, qqs[0]);
+			if (qs == 1 && det && nofree) {
+				return makeSingleNofreeDet(states, events, strong, qqs[0],sg);
 			}
 			break;
 		case QVAR01_NOFVAR_NONDET_QEA:
 			if (qs == 0 && nofree && !ggs) {
 				return makePropNofreeNondet(states, events, strong);
 			}
-			if (qs == 1 && nofree && !ggs) {
-				return makeSingleNofreeNondet(states, events, strong, qqs[0]);
+			if (qs == 1 && nofree) {
+				return makeSingleNofreeNondet(states, events, strong, qqs[0],sg);
 			}
 			break;
 		case QVAR1_FVAR_DET_FIXEDQVAR_QEA:
-			if (qs == 1 && fixedQVar() && det && !ggs) {
+			if (qs == 1 && fixedQVar() && det) {
 				return makeSingleFreeDetFixed(states, events, strong, qqs[0],
-						fvars);
+						fvars,sg);
 			}
 			break;
 		case QVAR1_FVAR_NONDET_FIXEDQVAR_QEA:
-			if (qs == 1 && fixedQVar() && !ggs) {
+			if (qs == 1 && fixedQVar()) {
 				return makeSingleFreeNondetFixed(states, events, strong,
-						qqs[0], fvars);
+						qqs[0], fvars,sg);
 			}
 			break;
 		case QVARN_FVAR_DET_QEA:
@@ -658,10 +659,7 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingle(int states, int events) {
-		if (usesGlobalGuards()) {
-			throw new ShouldNotHappenException(
-					"Global guards not supported here yet");
-		}
+		
 		boolean[] strongStates = computeStrongStates();
 
 		Quantification q;
@@ -670,39 +668,41 @@ public class QEABuilder {
 		} else {
 			q = EXISTS;
 		}
+		Guard g = quants.get(0).g;
 
 		if (noFreeVariables()) {
 			if (isEventDeterministic()) {
-				return makeSingleNofreeDet(states, events, strongStates, q);
+				return makeSingleNofreeDet(states, events, strongStates, q, g);
 			} else {
-				return makeSingleNofreeNondet(states, events, strongStates, q);
+				return makeSingleNofreeNondet(states, events, strongStates, q, g);
 			}
 		} else {
 			int frees = countFreeVars();
 			if (fixedQVar()) {
 				if (isEventDeterministic()) {
 					return makeSingleFreeDetFixed(states, events, strongStates,
-							q, frees);
+							q, frees, g);
 				} else {
 					return makeSingleFreeNondetFixed(states, events,
-							strongStates, q, frees);
+							strongStates, q, frees, g);
 				}
 			} else {
 				if (isEventDeterministic()) {
 					return makeSingleFreeDet(states, events, strongStates, q,
-							frees);
+							frees, g);
 				} else {
 					return makeSingleFreeNondet(states, events, strongStates,
-							q, frees);
+							q, frees, g);
 				}
 			}
 		}
 	}
 
 	private QEA makeSingleFreeNondet(int states, int events,
-			boolean[] strongStates, Quantification q, int frees) {
+			boolean[] strongStates, Quantification q, int frees, Guard g) {
 		QVar01_FVar_NonDet_QEA qea = new QVar01_FVar_NonDet_QEA(states, events,
 				1, q, frees);
+		qea.setGlobalGuard(g);
 		Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
 		for (TempTransition t : transitions) {
 			Map<Integer, Set<Transition>> this_state = actual_trans[t.start];
@@ -748,10 +748,10 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingleFreeDet(int states, int events,
-			boolean[] strongStates, Quantification q, int frees) {
+			boolean[] strongStates, Quantification q, int frees, Guard g) {
 		QVar01_FVar_Det_QEA qea = new QVar01_FVar_Det_QEA(states, events, 1, q,
 				frees);
-
+		qea.setGlobalGuard(g);
 		for (TempTransition t : transitions) {
 			Transition trans = new Transition(t.var_args(), t.g, t.a, t.end);
 			trans.setAssignment(t.a);
@@ -773,9 +773,10 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingleFreeNondetFixed(int states, int events,
-			boolean[] strongStates, Quantification q, int frees) {
+			boolean[] strongStates, Quantification q, int frees, Guard g) {
 		QVar1_FVar_NonDet_FixedQVar_QEA qea = new QVar1_FVar_NonDet_FixedQVar_QEA(
 				states, events, 1, q, frees);
+		qea.setGlobalGuard(g);
 		Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
 		for (TempTransition t : transitions) {
 			Map<Integer, Set<Transition>> this_state = actual_trans[t.start];
@@ -821,10 +822,11 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingleFreeDetFixed(int states, int events,
-			boolean[] strongStates, Quantification q, int frees) {
+			boolean[] strongStates, Quantification q, int frees, Guard g) {
 		QVar1_FVar_Det_FixedQVar_QEA qea = new QVar1_FVar_Det_FixedQVar_QEA(
 				states, events, 1, q, frees);
-
+		qea.setGlobalGuard(g);
+		
 		for (TempTransition t : transitions) {
 			Transition trans = new Transition(t.var_args(), t.g, t.a, t.end);
 			qea.addTransition(t.start, t.event_name, trans);
@@ -844,9 +846,11 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingleNofreeNondet(int states, int events,
-			boolean[] strongStates, Quantification q) {
+			boolean[] strongStates, Quantification q, Guard g) {
 		QVar01_NoFVar_NonDet_QEA qea = new QVar01_NoFVar_NonDet_QEA(states,
 				events, 1, q);
+		qea.setGlobalGuard(g);
+		
 		Map<Integer, Set<Integer>>[] actual_trans = new Map[states + 1];
 		boolean[][] prop = new boolean[states + 1][states + 1];
 		for (TempTransition t : transitions) {
@@ -897,9 +901,11 @@ public class QEABuilder {
 	}
 
 	private QEA makeSingleNofreeDet(int states, int events,
-			boolean[] strongStates, Quantification q) {
+			boolean[] strongStates, Quantification q, Guard g) {
 		QVar01_NoFVar_Det_QEA qea = new QVar01_NoFVar_Det_QEA(states, events,
 				1, q);
+		qea.setGlobalGuard(g);
+		
 		for (TempTransition t : transitions) {
 			boolean prop = t.event_args == null || t.event_args.length == 0;
 			qea.addTransition(t.start, t.event_name, t.end, prop);
