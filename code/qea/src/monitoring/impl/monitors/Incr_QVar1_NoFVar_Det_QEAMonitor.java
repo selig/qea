@@ -89,6 +89,11 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 			existingBinding = true;
 
 		} else { // New binding
+			
+			// If the global guard is false then we can return now
+			// as we can ignore this binding
+			if(!qea.checkGlobalGuard(param1)) return computeVerdict(false);			
+			
 			startState = empty_state;
 		}
 

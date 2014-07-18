@@ -1,6 +1,8 @@
 package structure.impl.qeas;
 
 import structure.impl.other.Quantification;
+import structure.impl.other.SingleBindingImpl;
+import structure.intf.Guard;
 import structure.intf.QEA;
 import structure.intf.QEA_single;
 import exceptions.ShouldNotHappenException;
@@ -184,4 +186,10 @@ public abstract class Abstr_QVar01_NoFVar_QEA extends QEA implements QEA_single 
 		return quantificationUniversal;
 	}
 
+	protected Guard global_g = null;
+	public void setGlobalGuard(Guard g){ global_g = g; }
+	public boolean checkGlobalGuard(Object qVarValue){
+		return global_g == null || global_g.check(new SingleBindingImpl(qVarValue,-1));
+	}	
+	
 }

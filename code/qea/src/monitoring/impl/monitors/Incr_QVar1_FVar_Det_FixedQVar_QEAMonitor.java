@@ -91,6 +91,10 @@ public class Incr_QVar1_FVar_Det_FixedQVar_QEAMonitor extends
 
 		} else { // New quantified variable binding
 
+			// If the global guard is false then we can return now
+			// as we can ignore this binding
+			if(!qea.checkGlobalGuard(qVarValue)) return computeVerdict(false);			
+			
 			// Create configuration for the new binding
 			config = new DetConfig(qea.getInitialState(), qea.newBinding());
 		}
