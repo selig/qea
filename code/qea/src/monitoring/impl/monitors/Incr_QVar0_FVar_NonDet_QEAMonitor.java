@@ -1,7 +1,5 @@
 package monitoring.impl.monitors;
 
-import java.util.Arrays;
-
 import monitoring.impl.GarbageMode;
 import monitoring.impl.IncrementalMonitor;
 import monitoring.impl.RestartMode;
@@ -19,7 +17,7 @@ import structure.impl.qeas.QVar01_FVar_NonDet_QEA;
 public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 		IncrementalMonitor<QVar01_FVar_NonDet_QEA> {
 
-	private static boolean DEBUG = true;		
+	private static boolean DEBUG = false;		
 			
 	/**
 	 * Contains the current configuration (set of states) for the monitor
