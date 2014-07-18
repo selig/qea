@@ -11,7 +11,7 @@ import structure.intf.QEA;
 public class Monpoly {
 
 	public static void main(String[] args) throws IOException {
-		runFour();
+		runFive();
 	}
 
 	public static void runOne() throws IOException {
@@ -91,4 +91,23 @@ public class Monpoly {
 				+ (endTime - beforeMonitoring));
 		System.err.println(">>Total execution time : " + (endTime - startTime));
 	}
+	
+	public static void runFive() throws IOException {
+		long startTime = System.currentTimeMillis();
+		String trace = "traces/Team4/B5_trace.csv";
+		QEA qea = (new properties.competition.MonPoly()).makeFive();
+		System.err.println("Using monitor "
+				+ MonitorFactory.create(qea).getClass());
+		OfflineTranslator t = (new properties.competition.translators.MonPolyTranslators())
+				.makeFive();
+		CSVFileMonitor m = new CSVFileMonitor(trace, qea, t);
+		long beforeMonitoring = System.currentTimeMillis();
+
+		Verdict v = m.monitor();
+		System.err.println("MonPoly 5: Verdict was " + v);
+		long endTime = System.currentTimeMillis();
+		System.err.println(">>Execution time without creation: "
+				+ (endTime - beforeMonitoring));
+		System.err.println(">>Total execution time : " + (endTime - startTime));
+	}	
 }
