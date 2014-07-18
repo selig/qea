@@ -12,7 +12,6 @@ import structure.intf.Binding;
 import structure.intf.Guard;
 import structure.intf.QEA;
 import creation.QEABuilder;
-import exceptions.ShouldNotHappenException;
 
 public class QEAJava implements PropertyMaker {
 
@@ -32,12 +31,14 @@ public class QEAJava implements PropertyMaker {
 	}
 
 	public QEA makeOne() {
-		return new HasNextQEA();
+		QEA qea = new HasNextQEA();
+		qea.setName("QEA_JAVA_ONE");
+		return qea;
 	}
 
 	public QEA makeTwo() {
 
-		QEABuilder q = new QEABuilder("ExtendedHasNext");
+		QEABuilder q = new QEABuilder("QEA_JAVA_TWO");
 
 		int ITERATOR = 1;
 		int NEXT = 2;
@@ -89,7 +90,7 @@ public class QEAJava implements PropertyMaker {
 
 	public QEA makeThree() {
 
-		QEABuilder q = new QEABuilder("ExtendedHasNext");
+		QEABuilder q = new QEABuilder("QEA_JAVA_THREE");
 
 		int ADD = 1;
 		int OBSERVE = 2;
@@ -115,8 +116,11 @@ public class QEAJava implements PropertyMaker {
 
 			@Override
 			public Binding apply(Binding binding, boolean copy) {
-				// TODO We need the value of the qVar here!!!
-				return null;
+
+				Object oVal = binding.getForced(o);
+				Binding result = copy ? binding.copy() : binding;
+				result.setValue(h, oVal.hashCode());
+				return result;
 			}
 		});
 		q.endTransition(2);
@@ -135,21 +139,14 @@ public class QEAJava implements PropertyMaker {
 
 			@Override
 			public boolean check(Binding binding, int qvar, Object firstQval) {
-				if (qvar == o) {
-					if (binding.getForcedAsInteger(h) == firstQval.hashCode()) {
-						return true;
-					}
-					return false;
-				}
-				throw new ShouldNotHappenException(
-						"This guard needs the variable x_" + o
-								+ " to be checked");
+				return check(binding); // Assuming binding is FullBindingImpl
 			}
 
 			@Override
 			public boolean check(Binding binding) {
-				throw new ShouldNotHappenException(
-						"This guard needs a quantified variable to be checked");
+				int hVal = binding.getForcedAsInteger(h);
+				Object oVal = binding.getForced(o);
+				return hVal == oVal.hashCode();
 			}
 		};
 
@@ -167,6 +164,13 @@ public class QEAJava implements PropertyMaker {
 		q.addGuard(gHashCode);
 		q.endTransition(1);
 
+		q.startTransition(2);
+		q.eventName(ADD);
+		q.addVarArg(s);
+		q.addVarArg(o);
+		q.addGuard(gHashCode);
+		q.endTransition(2);
+
 		q.addFinalStates(1, 2);
 
 		QEA qea = q.make();
@@ -180,7 +184,7 @@ public class QEAJava implements PropertyMaker {
 
 	public QEA makeFour() {
 
-		QEABuilder q = new QEABuilder("DeadlockAvoidance");
+		QEABuilder q = new QEABuilder("QEA_JAVA_FOUR");
 
 		int LOCK = 1;
 		int UNLOCK = 2;
