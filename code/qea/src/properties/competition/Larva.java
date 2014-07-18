@@ -210,7 +210,7 @@ public class Larva implements PropertyMaker {
 		q.eventName(NEW_ACCOUNT);
 		q.addVarArg(user);
 		q.addVarArg(sid);
-		q.addAssignment(Assignment.set(n, 1));
+		q.addAssignment(Assignment.setVal(n, 1));
 		q.endTransition(2);
 
 		q.startTransition(2);

@@ -140,8 +140,10 @@ public class QEABuilder {
 
 		@Override
 		public String toString() {
-			return start + "-" + event_name + "(" + Arrays.toString(event_args)
-					+ ")-" + end;
+			String s = start + "-" + event_name + "(" + Arrays.toString(event_args)+ ")-";
+			if(g!=null) s += "["+g+"]-";
+			if(a!=null) s += "["+a+"]-";
+			return s+ end;
 		}
 	}
 
@@ -488,7 +490,7 @@ public class QEABuilder {
 
 	private QEA makeProp(int states, int events) {
 		boolean[] strongStates = computeStrongStates();
-
+		
 		if (usesGlobalGuards()) {
 			throw new ShouldNotHappenException(
 					"Global guards not supported here yet");
@@ -1055,7 +1057,8 @@ public class QEABuilder {
 						}
 					}
 				}
-				if (t.g != null) {
+			}
+			if (t.g != null) {
 					for (int var : t.g.vars()) {
 						if (var != 0 && !qvars.contains(var)) {
 							// fvars.add(var);
@@ -1064,8 +1067,8 @@ public class QEABuilder {
 							}
 						}
 					}
-				}
-				if (t.a != null) {
+			}
+			if (t.a != null) {
 					for (int var : t.a.vars()) {
 						if (var != 0 && !qvars.contains(var)) {
 							// fvars.add(var);
@@ -1074,7 +1077,6 @@ public class QEABuilder {
 							}
 						}
 					}
-				}
 			}
 		}
 		return max;
@@ -1236,11 +1238,13 @@ public class QEABuilder {
 		trans.start = start;
 		trans.end = end;
 		trans.event_name = propname;
-		VarOrVal[] args = new VarOrVal[vargs.length];
-		for (int i = 0; i < vargs.length; i++) {
-			args[i] = VarOrVal.makeVar(vargs[i]);
+		if(vargs!=null){
+			VarOrVal[] args = new VarOrVal[vargs.length];
+			for (int i = 0; i < vargs.length; i++) {
+				args[i] = VarOrVal.makeVar(vargs[i]);
+			}		
+			trans.event_args = args;
 		}
-		trans.event_args = args;
 		trans.g = guard;
 		trans.a = ass;
 		transitions.add(trans);
@@ -1259,6 +1263,14 @@ public class QEABuilder {
 			Assignment ass, int end) {
 		addTransition(start, propname, vargs, null, ass, end);
 	}
+	public void addTransition(int start, int propname, Guard gu,
+			Assignment ass, int end) {
+		addTransition(start, propname, null, gu, ass, end);
+	}
+	public void addTransition(int start, int propname,
+			Assignment ass, int end) {
+		addTransition(start, propname, null, null, ass, end);
+	}	
 
 	// incremental transition adding
 
@@ -1535,5 +1547,6 @@ public class QEABuilder {
 		}
 
 	}
+
 
 }

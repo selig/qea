@@ -13,6 +13,7 @@ public abstract aspect QEAMonitoringAspect {
 	
 	public QEAMonitoringAspect(QEA qea) {
 		monitor = MonitorFactory.create(qea);
+		System.err.println("Using "+monitor.getClass());
 	}
 
 	pointcut main() : execution(void *.main(String[])) ||
@@ -23,6 +24,7 @@ public abstract aspect QEAMonitoringAspect {
 	}
 
 	after() : main() {
+		System.err.println("Sending end...");
 		Verdict verdict = monitor.end();
 		if (verdict == Verdict.WEAK_SUCCESS || verdict == Verdict.SUCCESS) {
 			System.err.println(validationMsg);

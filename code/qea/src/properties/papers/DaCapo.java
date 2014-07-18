@@ -184,7 +184,7 @@ public class DaCapo implements PropertyMaker {
 		b.addVarArg(hash);
 		b.addVarArg(success);// should only take if add is suc
 		b.addGuard(Guard.isTrue(success));
-		b.addAssignment(Assignment.set(count_inside, 1));
+		b.addAssignment(Assignment.setVal(count_inside, 1));
 		b.endTransition(2);
 
 		b.startTransition(2);

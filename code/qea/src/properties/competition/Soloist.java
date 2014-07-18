@@ -221,7 +221,7 @@ public class Soloist implements PropertyMaker {
 		q.startTransition(1);
 		q.eventName(WITHDRAW);
 		q.addVarArg(t1);
-		q.addAssignment(Assignment.set(count, 1));
+		q.addAssignment(Assignment.setVal(count, 1));
 		q.endTransition(2);
 
 		q.addTransition(1, WITHDRAW, new int[] { _ }, 1);
@@ -400,10 +400,10 @@ public class Soloist implements PropertyMaker {
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);
 		q.addAssignment(
-				Assignment.list(Assignment.store(currStartTime, t),
-								Assignment.set(totalTime,0),
-								Assignment.set(execCount, 0),
-								Assignment.store(wdwStartTime, t))
+				Assignment.list(Assignment.storeVar(currStartTime, t),
+								Assignment.setVal(totalTime,0),
+								Assignment.setVal(execCount, 0),
+								Assignment.storeVar(wdwStartTime, t))
 				);
 		q.endTransition(2);
 
@@ -437,7 +437,9 @@ public class Soloist implements PropertyMaker {
 				double currStartTimeDoubleVal = binding.getForcedAsInteger(currStartTime);
 				double execCountDoubleVal = binding.getForcedAsInteger(execCount);
 
-				double avg = (totalTimeDoubleVal + (tDoubleVal - currStartTimeDoubleVal)) / (execCountDoubleVal + 1);
+				// We cannot consider this event as it is outside the window
+				//double avg = (totalTimeDoubleVal + (tDoubleVal - currStartTimeDoubleVal)) / (execCountDoubleVal + 1);
+				double avg = totalTimeDoubleVal / execCountDoubleVal;
 
 				return tVal - wdwStartTimeVal >= 900 && avg >= 5;
 			}
@@ -458,9 +460,9 @@ public class Soloist implements PropertyMaker {
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);
 		q.addGuard(Guard.differenceGreaterThanOrEqualToVal(t, wdwStartTime, 900));
-		q.addAssignment(Assignment.set(currStartTime, t));
+		q.addAssignment(Assignment.setVal(currStartTime, t));
 		q.endTransition(2);
-
+/*
 		q.startTransition(3);
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);
@@ -485,7 +487,7 @@ public class Soloist implements PropertyMaker {
 		});
 		q.addAssignment(Assignment.addDifference(totalTime,t,currStartTime));
 		q.endTransition(5);
-
+*/
 		q.startTransition(3);
 		q.eventName(INVCHECKACCESS_START);
 		q.addVarArg(t);

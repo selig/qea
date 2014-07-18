@@ -18,13 +18,13 @@ public class OutputDoEval extends DoEval {
 
 		eval.set_runs(1);
 
-		eval.run_eval("GrantCancel", "GrantCancel", new int[] { 1000, 1000,
-				1000000 }, 0);
+		//eval.run_eval("GrantCancel", "GrantCancel", new int[] { 1000, 1000,
+		//		1000000 }, 0);
 
 		// eval.run_eval("ResourceLifecycle", "ResourceLifecycle", new int[] {
 		// 5000, 1000000 }, 0);
 
-		// eval.run_eval("ExistsLeader", "ExistsLeader", new int[] { 100 }, 0);
+		 eval.run_eval("ExistsLeader", "ExistsLeader", new int[] { 100 }, 0);
 
 		// eval.run_eval("RespectConflicts","RespectConflicts",new int[]{5,
 		// 1000, 1000},0);
@@ -44,7 +44,7 @@ public class OutputDoEval extends DoEval {
 				out = new PrintWriter(new BufferedWriter(new FileWriter(traces
 						+ "/" + name + ".trace")));
 			} catch (IOException e) {
-				System.err.println("Oh dear");
+				System.err.println("Oh dear: "+e);
 				System.exit(0);
 			}
 			dowork(name, args);
@@ -60,7 +60,7 @@ public class OutputDoEval extends DoEval {
 			// CSV
 			out.print(name);
 			for (int i = 0; i < args.length; i++) {
-				out.print(",arg" + i + "=" + args[i]);
+				out.print(", arg" + i + " = " + args[i]);
 			}
 			out.println();
 			out.flush();

@@ -274,7 +274,7 @@ public class MonPoly implements PropertyMaker {
 		q.addVarArg(u);
 		q.addVarArg(a);
 		q.addVarArg(ts);
-		q.addAssignment(Assignment.store(s, a));
+		q.addAssignment(Assignment.storeVar(s, a));
 		q.endTransition(1);
 
 		q.startTransition(1);
@@ -282,7 +282,7 @@ public class MonPoly implements PropertyMaker {
 		q.addVarArg(u);
 		q.addVarArg(a);
 		q.addVarArg(ts);
-		q.addAssignment(Assignment.store(s, a));
+		q.addAssignment(Assignment.storeVar(s, a));
 		q.endTransition(2);
 
 		q.startTransition(2);

@@ -30,6 +30,8 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 
 	// Not final as step(int) might replace it
 	private Map<QBindingImpl, Integer> mapping;
+	
+	public Map<QBindingImpl, Integer> get_map(){ return mapping;}
 
 	public Incr_QVarN_NoFVar_Det_QEAMonitor(RestartMode restart,
 			GarbageMode garbage, QVarN_Det_QEA qea) {

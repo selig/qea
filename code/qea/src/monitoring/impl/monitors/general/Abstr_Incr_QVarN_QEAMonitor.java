@@ -271,12 +271,14 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
-		if (rep++ % 1000 == 0) {
-			DEBUG = true;
-		} else {
-			DEBUG = false;
-		}
+		//if (rep++ % 1000 == 0) {
+		//	DEBUG = true;
+		//} else {
+		//	DEBUG = false;
+		//}
 
+		printEvent(eventName,args);
+		
 		if (DEBUG) {
 			System.err
 					.println("********************\n\n********************\n=======> "
