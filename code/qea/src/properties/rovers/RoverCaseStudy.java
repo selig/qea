@@ -825,13 +825,13 @@ public class RoverCaseStudy {
 		int R2 = -2;
 
 		q.addQuantification(EXISTS, R1);
-		q.addQuantification(FORALL, R2,Guard.isNotEqual(R1, R2));
+		q.addQuantification(FORALL, R2, Guard.isNotEqual(R1, R2));
 
 		q.addTransition(1, PING, new int[] { R1, R2 }, 2);
 		q.addTransition(2, ACK, new int[] { R2, R1 }, 3);
 
 		// Add to alphabet
-		q.addTransition(4, PING, new int[] { R2, R1 }, 4);
+		q.addTransition(1, PING, new int[] { R2, R1 }, 1);
 
 		q.addFinalStates(3);
 		q.setSkipStates(1, 2, 3);
