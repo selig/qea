@@ -31,9 +31,9 @@ public class Soloist {
 			ParserConfigurationException, SAXException {
 
 		// runOne();
-		// runTwo();
+		 runTwo();
 		// runThree();
-		runFour();
+		//runFour();
 
 	}
 
@@ -81,7 +81,7 @@ public class Soloist {
 		System.err.println("Using monitor "
 				+ MonitorFactory.create(qea).getClass());
 		long beforeMonitoring = System.currentTimeMillis();
-		// traces = new String[] { traces[0] };
+		 traces = new String[] { traces[2] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];

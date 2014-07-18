@@ -510,7 +510,7 @@ public abstract class DoWork<S> {
 		for (int res = 0; res < r; res++) {
 			Queue<Integer> o_res = new LinkedList<Integer>();
 			for (int i = 0; i < r; i++) {
-				if (rand.nextBoolean()) {
+				if (i!=res && rand.nextBoolean()) {
 					o_res.add(i);
 				}
 			}
@@ -523,8 +523,10 @@ public abstract class DoWork<S> {
 		int leader = rand.nextInt(r);
 		Queue<Integer> leader_res = new LinkedList<Integer>();
 		for (int i = 0; i < r; i++) {
-			leader_res.add(i);
+			if(i!=leader)
+				leader_res.add(i);
 		}
+		System.err.println("Leader is "+ System.identityHashCode(ros[leader]));
 		map_ping.put(leader, leader_res);
 
 		// maps resources into the resources it should acknowledge
@@ -591,7 +593,7 @@ public abstract class DoWork<S> {
 
 				int rr = resq.remove();
 
-				ack(ros[rr], ros[res]);
+				ack(ros[res], ros[rr]);
 
 				if (resq.isEmpty()) {
 					map_ack.remove(res);

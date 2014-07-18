@@ -440,6 +440,8 @@ public abstract class IncrementalChecker {
 
 	public static class OneAlternationChecker extends IncrementalChecker {
 
+		boolean DEBUG = false;
+		
 		private final boolean q1;
 		private final boolean q2;
 		private final boolean negated1;
@@ -536,7 +538,7 @@ public abstract class IncrementalChecker {
 			if (g1 != null && !g1.check(binding)) {
 				return false;
 			}
-			if (g2 != null && g2.check(binding)) {
+			if (g2 != null && !g2.check(binding)) {
 				return false;
 			}
 			return true;
@@ -549,8 +551,10 @@ public abstract class IncrementalChecker {
 				// Object two = binding.getValue(-2); Not needed?!
 				boolean isfinal = finalStates[state];
 				int add = q2 ? isfinal ? 0 : 1 : isfinal ? 1 : 0;
+				if(DEBUG) System.err.println("Add "+binding+" with "+state);
 				process(one, add);
 			}
+			else if(DEBUG) System.err.println("Not added "+binding+" as guard false");
 		}
 
 		@Override
@@ -574,7 +578,7 @@ public abstract class IncrementalChecker {
 		public void update(QBindingImpl binding, int last_state, int next_state) {
 			if (checkGuards(binding)) {
 				Object one = binding.getValue(-1);
-				Object two = binding.getValue(-2);
+				//Object two = binding.getValue(-2);
 
 				boolean last_final = finalStates[last_state];
 				boolean next_final = finalStates[next_state];
@@ -583,6 +587,7 @@ public abstract class IncrementalChecker {
 						&& next_final ? 1 : 0;
 
 				int add = q2 ? -inc_final : inc_final;
+				if(DEBUG) System.err.println("Update "+binding+" for "+last_state+" -> "+next_state);
 				process(one, add);
 			}
 		}
@@ -592,7 +597,7 @@ public abstract class IncrementalChecker {
 				int[] next_states) {
 			if (checkGuards(binding)) {
 				Object one = binding.getValue(-1);
-				Object two = binding.getValue(-2);
+				//Object two = binding.getValue(-2);
 
 				boolean last_final = false;
 				boolean next_final = false;
@@ -611,7 +616,7 @@ public abstract class IncrementalChecker {
 
 				int inc_final = last_final && !next_final ? -1 : !last_final
 						&& next_final ? 1 : 0;
-
+				
 				int add = q2 ? -inc_final : inc_final;
 				process(one, add);
 			}
@@ -655,6 +660,7 @@ public abstract class IncrementalChecker {
 				no_q1_count += direction;
 			}
 
+			if(DEBUG) System.err.println("Add "+one+" as "+next+" add was "+add);
 			q2_map.put(one, next);
 		}
 

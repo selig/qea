@@ -54,14 +54,14 @@ public class JavaMOP implements PropertyMaker {
 		q.addQuantification(FORALL, lock);
 
 		q.addTransition(1, LOCK, new int[] { thread, lock },
-				Assignment.set(count, 1), 2);
+				Assignment.setVal(count, 1), 2);
 		q.addTransition(2, LOCK, new int[] { thread, lock },
 				Assignment.increment(count), 2);
 		q.addTransition(2, UNLOCK, new int[] { thread, lock },
 				Guard.isGreaterThanConstant(count, 1),
 				Assignment.decrement(count), 2);
 		q.addTransition(2, UNLOCK, new int[] { thread, lock },
-				Guard.isSemEqualToConstant(count, 1), Assignment.set(count, 0),
+				Guard.isSemEqualToConstant(count, 1), Assignment.setVal(count, 0),
 				1);
 
 		q.addFinalStates(1);
@@ -84,7 +84,7 @@ public class JavaMOP implements PropertyMaker {
 
 		q.startTransition(1);
 		q.eventName(A);
-		q.addAssignment(Assignment.set(a, 1));
+		q.addAssignment(Assignment.setVal(a, 1));
 		q.endTransition(2);
 
 		q.startTransition(2);
@@ -94,7 +94,7 @@ public class JavaMOP implements PropertyMaker {
 
 		q.startTransition(2);
 		q.eventName(B);
-		q.addAssignment(Assignment.set(b, 1));
+		q.addAssignment(Assignment.setVal(b, 1));
 		q.endTransition(3);
 
 		q.startTransition(3);
@@ -130,7 +130,7 @@ public class JavaMOP implements PropertyMaker {
 		return qea;
 	}
 
-	public QEA makeThree() {
+	public QEA makeThreeComplex() {
 
 		QEABuilder q = new QEABuilder("JAVAMOP_THREE");
 
@@ -146,17 +146,17 @@ public class JavaMOP implements PropertyMaker {
 
 		q.startTransition(1);
 		q.eventName(A);
-		q.addAssignment(Assignment.store(a, 1));
+		q.addAssignment(Assignment.setVal(a, 1));
 		q.endTransition(2);
 
 		q.startTransition(1);
 		q.eventName(B);
-		q.addAssignment(Assignment.store(b, 1));
+		q.addAssignment(Assignment.setVal(b, 1));
 		q.endTransition(3);
 
 		q.startTransition(1);
 		q.eventName(C);
-		q.addAssignment(Assignment.store(c, 1));
+		q.addAssignment(Assignment.setVal(c, 1));
 		q.endTransition(4);
 
 		// Second level of transitions - From state 2 (A)
@@ -168,19 +168,19 @@ public class JavaMOP implements PropertyMaker {
 
 		q.startTransition(2);
 		q.eventName(B);
-		q.addAssignment(Assignment.store(b, 1));
+		q.addAssignment(Assignment.setVal(b, 1));
 		q.endTransition(5);
 
 		q.startTransition(2);
 		q.eventName(C);
-		q.addAssignment(Assignment.store(c, 1));
+		q.addAssignment(Assignment.setVal(c, 1));
 		q.endTransition(6);
 
 		// Second level of transitions - From state 3 (B)
 
 		q.startTransition(3);
 		q.eventName(A);
-		q.addAssignment(Assignment.store(a, 1));
+		q.addAssignment(Assignment.setVal(a, 1));
 		q.endTransition(5);
 
 		q.startTransition(3);
@@ -190,19 +190,19 @@ public class JavaMOP implements PropertyMaker {
 
 		q.startTransition(3);
 		q.eventName(C);
-		q.addAssignment(Assignment.store(c, 1));
+		q.addAssignment(Assignment.setVal(c, 1));
 		q.endTransition(7);
 
 		// Second level of transitions - From state 4 (C)
 
 		q.startTransition(4);
 		q.eventName(A);
-		q.addAssignment(Assignment.store(a, 1));
+		q.addAssignment(Assignment.setVal(a, 1));
 		q.endTransition(6);
 
 		q.startTransition(4);
 		q.eventName(B);
-		q.addAssignment(Assignment.store(b, 1));
+		q.addAssignment(Assignment.setVal(b, 1));
 		q.endTransition(7);
 
 		q.startTransition(4);
@@ -226,13 +226,13 @@ public class JavaMOP implements PropertyMaker {
 		q.eventName(C);
 		q.addGuard(Guard.or(Guard.varIsNotEqualSemToVal(a, 1),
 				Guard.varIsNotEqualSemToVal(b, 1)));
-		q.addAssignment(Assignment.store(c, 1));
+		q.addAssignment(Assignment.setVal(c, 1));
 		q.endTransition(8);
 
 		q.startTransition(5);
 		q.eventName(C);
 		q.addGuard(Guard.and(Guard.isEqualSem(a, 1), Guard.isEqualSem(b, 1)));
-		q.addAssignment(Assignment.store(c, 1));
+		q.addAssignment(Assignment.setVal(c, 1));
 		q.endTransition(9);
 
 		// Third level of transitions - From state 6 (AC)
@@ -246,13 +246,13 @@ public class JavaMOP implements PropertyMaker {
 		q.eventName(B);
 		q.addGuard(Guard.or(Guard.varIsNotEqualSemToVal(a, 1),
 				Guard.varIsNotEqualSemToVal(c, 1)));
-		q.addAssignment(Assignment.store(b, 1));
+		q.addAssignment(Assignment.setVal(b, 1));
 		q.endTransition(8);
 
 		q.startTransition(6);
 		q.eventName(B);
 		q.addGuard(Guard.and(Guard.isEqualSem(a, 1), Guard.isEqualSem(c, 1)));
-		q.addAssignment(Assignment.store(b, 1));
+		q.addAssignment(Assignment.setVal(b, 1));
 		q.endTransition(9);
 
 		q.startTransition(6);
@@ -266,13 +266,13 @@ public class JavaMOP implements PropertyMaker {
 		q.eventName(A);
 		q.addGuard(Guard.or(Guard.varIsNotEqualSemToVal(b, 1),
 				Guard.varIsNotEqualSemToVal(c, 1)));
-		q.addAssignment(Assignment.store(a, 1));
+		q.addAssignment(Assignment.setVal(a, 1));
 		q.endTransition(8);
 
 		q.startTransition(7);
 		q.eventName(A);
 		q.addGuard(Guard.and(Guard.isEqualSem(b, 1), Guard.isEqualSem(c, 1)));
-		q.addAssignment(Assignment.store(a, 1));
+		q.addAssignment(Assignment.setVal(a, 1));
 		q.endTransition(9);
 
 		q.startTransition(7);
@@ -413,6 +413,61 @@ public class JavaMOP implements PropertyMaker {
 		};
 	}
 
+	public QEA makeThree() {
+
+		QEABuilder q = new QEABuilder("JAVAMOP_THREE");
+
+		int A = 1;
+		int B = 2;
+		int C = 3;
+		int a = 1;
+		int b = 2;
+		int c = 3;
+
+		// If we move away from state 1 they are no longer equal
+		q.addTransition(1,A,Assignment.list(Assignment.incrementOrSet(a),
+											Assignment.ensure(b,0),
+											Assignment.ensure(c,0)),2);
+		q.addTransition(1,B,Assignment.list(Assignment.incrementOrSet(b),
+											Assignment.ensure(a,0),
+											Assignment.ensure(c,0)),2);
+		q.addTransition(1,C,Assignment.list(Assignment.incrementOrSet(c),
+											Assignment.ensure(a,0),
+											Assignment.ensure(b,0)),2);
+
+		//If we are one less than the two others then we go to state 1
+		q.addTransition(2,A,Guard.and(Guard.differenceEqualToVal(b,a,1),
+									  Guard.differenceEqualToVal(c,a,1)),
+									  Assignment.increment(a),1);
+		q.addTransition(2,B,Guard.and(Guard.differenceEqualToVal(a,b,1),
+				  					  Guard.differenceEqualToVal(c,b,1)),
+				  					  Assignment.increment(a),1);
+		q.addTransition(2,C,Guard.and(Guard.differenceEqualToVal(a,c,1),
+				  					  Guard.differenceEqualToVal(b,c,1)),
+				  					  Assignment.increment(a),1);
+
+		//Otherwise we stay still and increment
+		q.addTransition(2,A,Guard.or(Guard.differenceNotEqualToVal(b,a,1),
+				  					  Guard.differenceNotEqualToVal(c,a,1)),
+				  					  Assignment.increment(a),2);
+		q.addTransition(2,B,Guard.or(Guard.differenceNotEqualToVal(a,b,1),
+				  					  Guard.differenceNotEqualToVal(c,b,1)),
+				  					  Assignment.increment(a),2);
+		q.addTransition(2,C,Guard.or(Guard.differenceNotEqualToVal(a,c,1),
+				  					  Guard.differenceNotEqualToVal(b,c,1)),
+				  					  Assignment.increment(a),2);
+		
+		q.addFinalStates(1);
+
+		QEA qea = q.make();
+		qea.record_event_name("a", A);
+		qea.record_event_name("b", B);
+		qea.record_event_name("c", C);
+
+		return qea;
+	}
+	
+	
 	public QEA makeFour() {
 		QEA qea = DaCapo.makeUnsafeMapIter();
 		qea.setName("JAVAMOP_FOUR");

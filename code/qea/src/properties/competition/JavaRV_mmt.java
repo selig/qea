@@ -73,7 +73,7 @@ public class JavaRV_mmt implements PropertyMaker {
 				return counterNewVal == counterOldVal + 1;
 			}
 		});
-		q.addAssignment(Assignment.store(counterOld, counterNew));
+		q.addAssignment(Assignment.storeVar(counterOld, counterNew));
 		q.endTransition(2);
 
 		q.addFinalStates(1, 2);

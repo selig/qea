@@ -24,6 +24,7 @@ public abstract class Assignment {
 	public abstract int[] vars();
 
 	private final String name;
+	public String toString(){ return name; }
 
 	public Assignment(String name) {
 		this.name = name;
@@ -43,7 +44,7 @@ public abstract class Assignment {
 	 * 
 	 * @ returns an assignment for this property
 	 */
-	public static Assignment store(final int var0, final int var1) {
+	public static Assignment storeVar(final int var0, final int var1) {
 		return new Assignment("store(x_" + var0 + ", x_" + var1 + ")") {
 			@Override
 			public Binding apply(Binding binding, boolean copy) {
@@ -174,7 +175,7 @@ public abstract class Assignment {
 		};
 	}
 
-	public static Assignment set(final int var0, final Object value) {
+	public static Assignment setVal(final int var0, final Object value) {
 		return new Assignment("x_" + var0 + "=" + value) {
 			@Override
 			public Binding apply(Binding binding, boolean copy) {
@@ -192,6 +193,27 @@ public abstract class Assignment {
 			}
 		};
 	}
+	public static Assignment ensure(final int var0, final Object value) {
+		return new Assignment("x_" + var0 + "=" + value) {
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+				Object old_value = binding.getValue(var0);				
+				Binding newBinding = binding;
+				if(old_value==null){
+					if (copy) {
+						newBinding = binding.copy();
+					}
+					newBinding.setValue(var0, value);
+				}
+				return newBinding;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0 };
+			}
+		};
+	}	
 
 	public static Assignment increment(final int var0) {
 		return new Assignment("x_" + var0 + "++") {
@@ -213,6 +235,28 @@ public abstract class Assignment {
 		};
 	}
 
+	public static Assignment incrementOrSet(final int var0) {
+		return new Assignment("x_" + var0 + "++") {
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+				Object val0_obj = binding.getValue(var0);
+				if(val0_obj == null) val0_obj = 0;
+				Integer val0 = (Integer) val0_obj;
+				Binding newBinding = binding;
+				if (copy) {
+					newBinding = binding.copy();
+				}
+				newBinding.setValue(var0, val0 + 1);
+				return newBinding;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0 };
+			}
+		};
+	}	
+	
 	public static Assignment add(final int var0, final int var1) {
 		return new Assignment("x_" + var0 + "+= x_"+var1) {
 			@Override

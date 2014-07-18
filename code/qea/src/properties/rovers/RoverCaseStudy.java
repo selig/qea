@@ -582,7 +582,7 @@ public class RoverCaseStudy {
 		q.eventName(COM);
 		q.addVarArg(C2);
 		q.addGuard(Guard.isGreaterThan(C2, C1));
-		q.addAssignment(Assignment.store(C1, C2));
+		q.addAssignment(Assignment.storeVar(C1, C2));
 		q.endTransition(2);
 
 		q.addFinalStates(1, 2);
@@ -825,7 +825,7 @@ public class RoverCaseStudy {
 		int R2 = -2;
 
 		q.addQuantification(EXISTS, R1);
-		q.addQuantification(FORALL, R2);
+		q.addQuantification(FORALL, R2,Guard.isNotEqual(R1, R2));
 
 		q.addTransition(1, PING, new int[] { R1, R2 }, 2);
 		q.addTransition(2, ACK, new int[] { R2, R1 }, 3);
