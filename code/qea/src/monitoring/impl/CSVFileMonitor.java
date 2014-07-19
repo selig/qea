@@ -52,33 +52,12 @@ public class CSVFileMonitor extends FileMonitor {
 			}
 		}
 		System.err.println(events + " events");
-		
-		Incr_QVarN_NoFVar_Det_QEAMonitor m = (Incr_QVarN_NoFVar_Det_QEAMonitor) translator.getMonitor();
-		
-		Map<Object,Integer> done = new HashMap<Object,Integer>();
-		for(Map.Entry<QBindingImpl, Integer> entry : m.get_map().entrySet()){
-			if(entry.getValue()==3){
-				Object leader = entry.getKey().getForced(-1);
-				Object rover = entry.getKey().getForced(-2);
-				//System.err.println(leader+"\t"+rover+"\t\t"+entry.getValue());
-				Integer last = done.get(leader);
-				if(last==null) last = 0;
-				done.put(leader,last+1);
-			}
-		}
-		for(Map.Entry<Object, Integer> entry : done.entrySet()){
-			//if(entry.getValue()>30)
-				System.err.println(entry.getKey()+"\t\t"+entry.getValue()+"\t\t"+System.identityHashCode(entry.getKey()));
-		}		
-		
-		//System.err.println(m);
-		
 		return translator.getMonitor().end();
 	}
 
 	private Verdict step(String line) {
 
-		String[] parts = line.split(",|= ");
+		String[] parts = line.split(",\\s?|\\s?=\\s?");
 		// int name = translate(parts[0]);
 		if (parts.length == 3) {
 			return translator.translateAndStep(parts[0],
