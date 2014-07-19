@@ -45,13 +45,13 @@ public class Soloist {
 		long startTime = System.currentTimeMillis();
 		QEA qea = s.makeOneNegatedLimitN();
 		OfflineTranslator t = tm.makeOne();
+		long beforeMonitoring = System.currentTimeMillis();
 		// traces = new String[] { traces[0] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];
 			XMLFileMonitorSAX fm = new XMLFileMonitorSAX(trace, qea, t);
 			System.err.println("Running with " + fm.getMonitorClass());
-			long beforeMonitoring = System.currentTimeMillis();
 
 			try {
 				Verdict v = fm.monitor();
@@ -80,13 +80,13 @@ public class Soloist {
 		long startTime = System.currentTimeMillis();
 		QEA qea = s.makeTwo();
 		OfflineTranslator t = tm.makeTwo();
+		long beforeMonitoring = System.currentTimeMillis();
 		// traces = new String[] { traces[0] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];
 			XMLFileMonitorSAX fm = new XMLFileMonitorSAX(trace, qea, t);
 			System.err.println("Running with " + fm.getMonitorClass());
-			long beforeMonitoring = System.currentTimeMillis();
 
 			try {
 				Verdict v = fm.monitor();
@@ -115,13 +115,13 @@ public class Soloist {
 		long startTime = System.currentTimeMillis();
 		QEA qea = s.makeThree();
 		OfflineTranslator t = tm.makeThree();
+		long beforeMonitoring = System.currentTimeMillis();
 		// traces = new String[] { traces[0] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];
 			XMLFileMonitorSAX fm = new XMLFileMonitorSAX(trace, qea, t);
 			System.err.println("Running with " + fm.getMonitorClass());
-			long beforeMonitoring = System.currentTimeMillis();
 
 			try {
 				Verdict v = fm.monitor();
@@ -150,13 +150,13 @@ public class Soloist {
 		long startTime = System.currentTimeMillis();
 		QEA qea = s.makeFour();
 		OfflineTranslator t = tm.makeFour();
+		long beforeMonitoring = System.currentTimeMillis();
 		// traces = new String[] { traces[0] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];
 			XMLFileMonitorSAX fm = new XMLFileMonitorSAX(trace, qea, t);
 			System.err.println("Running with " + fm.getMonitorClass());
-			long beforeMonitoring = System.currentTimeMillis();
 
 			try {
 				Verdict v = fm.monitor();
