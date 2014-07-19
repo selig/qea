@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import monitoring.impl.MonitorFactory;
 import monitoring.impl.XMLFileMonitorSAX;
 import monitoring.impl.translators.OfflineTranslator;
 
@@ -16,14 +15,17 @@ import exceptions.XMLFailureException;
 
 public class Soloist {
 
-	static String[] traces = new String[]{
-		"/Users/giles/git/csrv14/OFFLINE/Team1/Bench1/B1.xml",
-		"/Users/giles/git/csrv14/OFFLINE/Team1/Bench2/B2.xml",
-		"/Users/giles/git/csrv14/OFFLINE/Team1/Bench3/B3.xml",
-		"/Users/giles/git/csrv14/OFFLINE/Team1/Bench4/B4.xml",
-		"/Users/giles/git/csrv14/OFFLINE/Team1/Bench5/B5.xml"
-	};
-	
+	static String[] traces = new String[] {
+			"/Users/giles/git/csrv14/OFFLINE/Team1/Bench1/B1.xml",
+			"/Users/giles/git/csrv14/OFFLINE/Team1/Bench2/B2.xml",
+			"/Users/giles/git/csrv14/OFFLINE/Team1/Bench3/B3.xml",
+			"/Users/giles/git/csrv14/OFFLINE/Team1/Bench4/B4.xml",
+			"/Users/giles/git/csrv14/OFFLINE/Team1/Bench5/B5.xml" };
+
+	// static String[] traces = new String[] { "traces/Team1/B1.xml",
+	// "traces/Team1/B2.xml", "traces/Team1/B3.xml",
+	// "traces/Team1/B4.xml", "traces/Team1/B5.xml" };
+
 	static properties.competition.Soloist s = new properties.competition.Soloist();
 	static properties.competition.translators.SoloistTranslators tm = new properties.competition.translators.SoloistTranslators();
 
@@ -31,9 +33,9 @@ public class Soloist {
 			ParserConfigurationException, SAXException {
 
 		// runOne();
-		 runTwo();
+		runTwo();
 		// runThree();
-		//runFour();
+		// runFour();
 
 	}
 
@@ -43,14 +45,14 @@ public class Soloist {
 		long startTime = System.currentTimeMillis();
 		QEA qea = s.makeOneNegatedLimitN();
 		OfflineTranslator t = tm.makeOne();
-		System.err.println("Using monitor "
-				+ MonitorFactory.create(qea).getClass());
-		long beforeMonitoring = System.currentTimeMillis();
 		// traces = new String[] { traces[0] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];
 			XMLFileMonitorSAX fm = new XMLFileMonitorSAX(trace, qea, t);
+			System.err.println("Running with " + fm.getMonitorClass());
+			long beforeMonitoring = System.currentTimeMillis();
+
 			try {
 				Verdict v = fm.monitor();
 				System.err.println("Soloist 1 - Trace " + (i + 1)
@@ -78,14 +80,14 @@ public class Soloist {
 		long startTime = System.currentTimeMillis();
 		QEA qea = s.makeTwo();
 		OfflineTranslator t = tm.makeTwo();
-		System.err.println("Using monitor "
-				+ MonitorFactory.create(qea).getClass());
-		long beforeMonitoring = System.currentTimeMillis();
-		 traces = new String[] { traces[2] };
+		// traces = new String[] { traces[0] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];
 			XMLFileMonitorSAX fm = new XMLFileMonitorSAX(trace, qea, t);
+			System.err.println("Running with " + fm.getMonitorClass());
+			long beforeMonitoring = System.currentTimeMillis();
+
 			try {
 				Verdict v = fm.monitor();
 				System.err.println("Soloist 2 - Trace " + (i + 1)
@@ -113,14 +115,14 @@ public class Soloist {
 		long startTime = System.currentTimeMillis();
 		QEA qea = s.makeThree();
 		OfflineTranslator t = tm.makeThree();
-		System.err.println("Using monitor "
-				+ MonitorFactory.create(qea).getClass());
-		long beforeMonitoring = System.currentTimeMillis();
 		// traces = new String[] { traces[0] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];
 			XMLFileMonitorSAX fm = new XMLFileMonitorSAX(trace, qea, t);
+			System.err.println("Running with " + fm.getMonitorClass());
+			long beforeMonitoring = System.currentTimeMillis();
+
 			try {
 				Verdict v = fm.monitor();
 				System.err.println("Soloist 3 - Trace " + (i + 1)
@@ -148,14 +150,14 @@ public class Soloist {
 		long startTime = System.currentTimeMillis();
 		QEA qea = s.makeFour();
 		OfflineTranslator t = tm.makeFour();
-		System.err.println("Using monitor "
-				+ MonitorFactory.create(qea).getClass());
-		long beforeMonitoring = System.currentTimeMillis();
 		// traces = new String[] { traces[0] };
 
 		for (int i = 0; i < traces.length; i++) {
 			String trace = traces[i];
 			XMLFileMonitorSAX fm = new XMLFileMonitorSAX(trace, qea, t);
+			System.err.println("Running with " + fm.getMonitorClass());
+			long beforeMonitoring = System.currentTimeMillis();
+
 			try {
 				Verdict v = fm.monitor();
 				System.err.println("Soloist 4 - Trace " + (i + 1)
