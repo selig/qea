@@ -187,6 +187,8 @@ public class MonPolyTranslators implements TranslatorMaker {
 			private static final int INSERT_DB3 = 2;
 
 			private static final String INSERT_STR = "insert";
+			private static final String DB_DB2_STR = "db2";
+			private static final String DB_DB3_STR = "db3";
 
 			@Override
 			public Verdict translateAndStep(String eventName,
@@ -195,10 +197,21 @@ public class MonPolyTranslators implements TranslatorMaker {
 
 				case INSERT_STR:
 
-					// TODO Check in the trace how events are reported
-					return monitor.step(INSERT_DB2, new Object[] {
-							paramValues[2], Integer.valueOf(paramValues[3]),
-							Integer.valueOf(paramValues[1]) });
+					switch (paramValues[3]) {
+					case DB_DB2_STR:
+						return monitor.step(
+								INSERT_DB2,
+								new Object[] { paramValues[5],
+										Integer.valueOf(paramValues[1]) });
+
+					case DB_DB3_STR:
+						return monitor.step(
+								INSERT_DB3,
+								new Object[] { paramValues[5],
+										Integer.valueOf(paramValues[1]) });
+					default:
+						return null;
+					}
 				default:
 					return null;
 				}
