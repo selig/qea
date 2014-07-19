@@ -2,15 +2,11 @@ package monitoring.impl;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import monitoring.impl.monitors.general.Incr_QVarN_NoFVar_Det_QEAMonitor;
 import monitoring.impl.translators.OfflineTranslator;
 import properties.Property;
 import properties.competition.QEAOffline;
 import properties.competition.translators.QEAOfflineTranslators;
-import structure.impl.other.QBindingImpl;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 
