@@ -831,7 +831,7 @@ public class RoverCaseStudy {
 		q.addTransition(2, ACK, new int[] { R2, R1 }, 3);
 
 		// Add to alphabet
-		q.addTransition(1, PING, new int[] { R2, R1 }, 1);
+		q.addTransition(4, PING, new int[] { R2, R1 }, 4);
 
 		q.addFinalStates(3);
 		q.setSkipStates(1, 2, 3);
