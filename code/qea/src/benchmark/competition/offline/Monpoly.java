@@ -94,7 +94,7 @@ public class Monpoly {
 	
 	public static void runFive() throws IOException {
 		long startTime = System.currentTimeMillis();
-		String trace = "traces/Team4/B5_trace.csv";
+		String trace = "/Users/giles/git/csrv14/OFFLINE/Team4/Bench5/ldcc/ldcc.csv";
 		QEA qea = (new properties.competition.MonPoly()).makeFive();
 		System.err.println("Using monitor "
 				+ MonitorFactory.create(qea).getClass());
