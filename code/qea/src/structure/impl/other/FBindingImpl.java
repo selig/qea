@@ -80,7 +80,7 @@ public class FBindingImpl extends Binding {
 			if (values[i] == null) {
 				out[i] = "-";
 			} else {
-				if(values[i] instanceof Integer){
+				if(values[i] instanceof Long){
 					out[i] = "" + values[i];
 				}
 				else{

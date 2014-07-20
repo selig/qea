@@ -41,10 +41,11 @@ public class CSVFileMonitor extends FileMonitor {
 		while (not_failed && (line = trace.readLine()) != null) {
 			events++;
 			
-			 if (events % 1000 == 0) {
-			 System.err.println(events);
+			 //if (events % 10000 == 0) {
+				 
+			 //System.err.println(events/10000+" x 10k");
 			// System.err.println(translator.getMonitor());
-			 }
+			 //}
 			// System.err.println(events+":"+line);
 			Verdict verdict = step(line);
 			if (verdict == Verdict.FAILURE) {
