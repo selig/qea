@@ -131,4 +131,8 @@ public abstract class FileMonitor {
 
 	public abstract Verdict monitor() throws Exception;
 
+	public Class getMonitorClass() {
+		return translator.getMonitor().getClass();
+	}
+
 }

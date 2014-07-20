@@ -140,6 +140,7 @@ public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
 		xmlReader.parse(new InputSource(trace));
 		
 		//System.err.println(translator.getMonitor());
+		System.err.println(eventCount + " events");
 		
 		return translator.getMonitor().end();
 	}
