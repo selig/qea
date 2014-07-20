@@ -17,13 +17,14 @@ public class Stepr {
 
 	public static void main(String[] args) throws IOException,
 			ParserConfigurationException, SAXException {
-		// runOne();
+		 runOne();
 		// runTwo();
-		runThree();
+		//runThree();
 		// runFour();
 	}
 
-	static String trace = "traces/Team6/log.xml";
+	//static String trace = "/Users/giles/git/csrv14/OFFLINE/Team6/log.xml";
+	static String trace  = "/traces/log.xml";
 
 	public static void runOne() throws IOException,
 			ParserConfigurationException, SAXException {

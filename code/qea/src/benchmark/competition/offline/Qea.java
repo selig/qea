@@ -24,9 +24,9 @@ public class Qea {
 	public static void main(String[] args) throws IOException,
 			ParserConfigurationException, SAXException {
 
-		 runOne();
+		 //runOne();
 		// runTwo();
-		// runThree();
+		 runThree();
 		//runFour();
 
 	}
@@ -63,7 +63,8 @@ public class Qea {
 		System.err.println("Using monitor "
 				+ MonitorFactory.create(qea).getClass());
 		long beforeMonitoring = System.currentTimeMillis();
-		String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench2/GrantCancel.csv";
+		//String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench2/GrantCancel.csv";
+		String trace = "traces/GrantCancel.csv";
 
 		CSVFileMonitor fm = new CSVFileMonitor(trace,qea,t);
 
@@ -85,7 +86,8 @@ public class Qea {
 				+ MonitorFactory.create(qea).getClass());
 		long beforeMonitoring = System.currentTimeMillis();
 
-		String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench3/NestedCommands.csv";
+		//String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench3/NestedCommands.csv";
+		String trace = "traces/NestedCommands.csv";
 
 		CSVFileMonitor fm = new CSVFileMonitor(trace,qea,t);
 
@@ -107,7 +109,8 @@ public class Qea {
 				+ MonitorFactory.create(qea).getClass());
 		long beforeMonitoring = System.currentTimeMillis();
 
-		String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench4/ResourceLifecycle.csv";
+		//String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench4/ResourceLifecycle.csv";
+		String trace = "traces/ResourceLifecycle.csv";
 
 		CSVFileMonitor fm = new CSVFileMonitor(trace,qea,t);
 
@@ -129,7 +132,8 @@ public class Qea {
 				+ MonitorFactory.create(qea).getClass());
 		long beforeMonitoring = System.currentTimeMillis();
 
-		String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench4/RespectConflicts.csv";
+		//String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench4/RespectConflicts.csv";
+		String trace = "traces/RespectConflicts.csv";
 
 		CSVFileMonitor fm = new CSVFileMonitor(trace,qea,t);
 

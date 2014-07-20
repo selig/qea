@@ -277,7 +277,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		//	DEBUG = false;
 		//}
 
-		printEvent(eventName,args);
+		//printEvent(eventName,args);
 		
 		if (DEBUG) {
 			System.err
