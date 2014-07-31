@@ -4,9 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import monitoring.impl.translators.OfflineTranslator;
-import properties.Property;
-import properties.competition.Stepr;
-import properties.competition.translators.SteprTranslators;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import util.ArrayUtil;
@@ -47,18 +44,6 @@ import exceptions.XMLFailureException;
  * @author Giles Reger
  */
 public class XMLFileMonitorManual extends FileMonitor {
-
-	public static void main(String[] args) throws Exception {
-
-		Property property = Property.STEPR_TWO;
-
-		XMLFileMonitorManual fileMonitor = new XMLFileMonitorManual(
-				"traces/Team6/log.xml", new Stepr().make(property),
-				new SteprTranslators().make(property));
-		long start = System.currentTimeMillis();
-		System.out.println(fileMonitor.monitor());
-		System.out.println("Took: " + (System.currentTimeMillis() - start));
-	}
 
 	/**
 	 * Number of events processed

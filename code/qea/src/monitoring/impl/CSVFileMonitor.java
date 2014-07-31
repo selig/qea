@@ -4,9 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import monitoring.impl.translators.OfflineTranslator;
-import properties.Property;
-import properties.competition.QEAOffline;
-import properties.competition.translators.QEAOfflineTranslators;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 
@@ -76,21 +73,4 @@ public class CSVFileMonitor extends FileMonitor {
 			return translator.translateAndStep(parts[0], argNames, args);
 		}
 	}
-
-	// A test
-	public static void main(String[] args) throws IOException {
-
-		Property property = Property.QEA_OFFLINE_TWO;
-
-		CSVFileMonitor f = new CSVFileMonitor(
-				"traces/Team8/B2_GrantCancel.csv",
-				new QEAOffline().make(property),
-				new QEAOfflineTranslators().make(property));
-
-		long start = System.currentTimeMillis();
-		System.err.println(f.monitor());
-		System.err.println("Took: " + (System.currentTimeMillis() - start));
-
-	}
-
 }
