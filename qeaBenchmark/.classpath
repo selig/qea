@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="benchmark/competition/java/javaMOP/JavaMOPThreeAspect.aj|benchmark/competition/java/javaMOP/monitoring/JavaMOPFourAspect.aj|benchmark/competition/java/javaMOP/monitoring/JavaMOPTwoAspect.aj|benchmark/competition/java/jUnitRV_MMT/monitoring/JUnitRV_MMTFiveAspect.aj|benchmark/competition/java/jUnitRV_MMT/monitoring/JUnitRV_MMTFourAspect.aj|benchmark/competition/java/jUnitRV_MMT/monitoring/JUnitRV_MMTOneAspect.aj|benchmark/competition/java/jUnitRV_MMT/monitoring/JUnitRV_MMTThreeAspect.aj|benchmark/competition/java/jUnitRV_MMT/monitoring/JUnitRV_MMTTwoAspect.aj|benchmark/competition/java/larva/monitoring/LarvaEightAspect.aj|benchmark/competition/java/larva/monitoring/LarvaFiveAspect.aj|benchmark/competition/java/larva/monitoring/LarvaFourAspect.aj|benchmark/competition/java/larva/monitoring/LarvaNineAspect.aj|benchmark/competition/java/larva/monitoring/LarvaOneAspect.aj|benchmark/competition/java/larva/monitoring/LarvaSevenAspect.aj|benchmark/competition/java/larva/monitoring/LarvaSixAspect.aj|benchmark/competition/java/larva/monitoring/LarvaTenAspect.aj|benchmark/competition/java/larva/monitoring/LarvaThreeAspect.aj|benchmark/competition/java/larva/monitoring/LarvaTwoAspect.aj" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="src" path="/qea"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/qeaProperties"/>
+	<classpathentry kind="con" path="org.eclipse.ajdt.core.ASPECTJRT_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/RVLib-0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/JUnitRV-0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/jUnitRV.jar"/>
+	<classpathentry kind="lib" path="lib/JavaMonitorInjection-0.2-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/javamoprt.jar"/>
+	<classpathentry kind="lib" path="lib/rulerrt.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
