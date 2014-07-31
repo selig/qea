@@ -4,7 +4,7 @@ import monitoring.impl.translators.OfflineTranslator;
 import properties.Property;
 import properties.TranslatorMaker;
 
-public class CSRVTranslatorMaker implements TranslatorMaker {
+public class CSRV14TranslatorMaker implements TranslatorMaker {
 
 	private static SoloistTranslators soloist = new SoloistTranslators();
 	private static RiTHMTranslators rithm = new RiTHMTranslators();
