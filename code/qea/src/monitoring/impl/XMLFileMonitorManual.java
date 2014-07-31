@@ -94,7 +94,7 @@ public class XMLFileMonitorManual extends FileMonitor {
 	}
 
 	@Override
-	public Verdict monitor() throws Exception {
+	public Verdict monitor() throws IOException {
 
 		// Read <log>
 		boolean logStartTagFound = false;

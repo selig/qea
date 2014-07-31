@@ -3,7 +3,12 @@ package monitoring.impl;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import monitoring.impl.translators.OfflineTranslator;
 import structure.impl.other.Verdict;
@@ -129,7 +134,8 @@ public abstract class FileMonitor {
 		return arg.intern();
 	}
 
-	public abstract Verdict monitor() throws Exception;
+	public abstract Verdict monitor() throws IOException,
+			ParserConfigurationException, SAXException;
 
 	public Class getMonitorClass() {
 		return translator.getMonitor().getClass();
