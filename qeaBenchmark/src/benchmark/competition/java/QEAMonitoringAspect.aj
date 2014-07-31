@@ -1,6 +1,7 @@
-package monitoring.intf;
+package benchmark.competition.java;
 
 import monitoring.impl.MonitorFactory;
+import monitoring.intf.Monitor;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 
