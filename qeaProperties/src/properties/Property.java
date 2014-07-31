@@ -44,7 +44,6 @@ public enum Property {
 	PRM4J_THREE,
 	PRM4J_FOUR,
 	PRM4J_FIVE,
-	PRM4J_SIX,
 
 	// QEA Java
 	QEA_JAVA_ONE,
