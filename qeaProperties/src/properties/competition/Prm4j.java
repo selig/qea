@@ -27,8 +27,6 @@ public class Prm4j implements PropertyMaker {
 			return makeFour();
 		case PRM4J_FIVE:
 			return makeFive();
-		case PRM4J_SIX:
-			return makeSix();
 		default:
 			return null;
 		}
@@ -276,11 +274,6 @@ public class Prm4j implements PropertyMaker {
 	public QEA makeFive() {
 		// Similar to Giles' thesis A.17
 		return DaCapo.makeUnsafeMapIter();
-	}
-
-	public QEA makeSix() {
-		// TODO Auto-generated method stub - HasNext_UnsafeIterator
-		return null;
 	}
 
 }
