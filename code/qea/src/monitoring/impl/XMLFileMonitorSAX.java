@@ -16,9 +16,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import properties.Property;
-import properties.competition.Stepr;
-import properties.competition.translators.SteprTranslators;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import util.ArrayUtil;
@@ -52,19 +49,6 @@ import exceptions.XMLFailureException;
  * @author Giles Reger
  */
 public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
-
-	public static void main(String[] args) throws IOException,
-			ParserConfigurationException, SAXException {
-
-		Property property = Property.STEPR_TWO;
-
-		XMLFileMonitorSAX fileMonitor = new XMLFileMonitorSAX(
-				"traces/Team6/log.xml", new Stepr().make(property),
-				new SteprTranslators().make(property));
-		long start = System.currentTimeMillis();
-		System.out.println(fileMonitor.monitor());
-		System.out.println("Took: " + (System.currentTimeMillis() - start));
-	}
 
 	/**
 	 * Name of the event that is being processed
@@ -138,10 +122,10 @@ public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
 		XMLReader xmlReader = saxParser.getXMLReader();
 		xmlReader.setContentHandler(this);
 		xmlReader.parse(new InputSource(trace));
-		
-		//System.err.println(translator.getMonitor());
+
+		// System.err.println(translator.getMonitor());
 		System.err.println(eventCount + " events");
-		
+
 		return translator.getMonitor().end();
 	}
 
