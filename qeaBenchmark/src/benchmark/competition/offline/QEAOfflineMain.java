@@ -45,22 +45,16 @@ public class QEAOfflineMain {
 
 			try {
 
-				Verdict v;
-				FileMonitor m;
-
 				// Create monitor according to the format
-				if (format.equals(CSV)) { // CSV format
-					m = new CSVFileMonitor(trace, qea, trans);
-				} else { // XML format
-					m = new XMLFileMonitorSAX(trace, qea, trans);
-				}
+				FileMonitor m = format.equals(CSV) ? new CSVFileMonitor(trace,
+						qea, trans) : new XMLFileMonitorSAX(trace, qea, trans);
 
 				// Print monitor class
 				System.err.println("Running with " + m.getMonitorClass());
 				beforeMonitoring = System.currentTimeMillis();
 
 				// Monitor trace
-				v = m.monitor();
+				Verdict v = m.monitor();
 
 				// Print verdict and time
 				System.err.println(property + ": Verdict was " + v);
