@@ -14,7 +14,7 @@ import org.xml.sax.SAXException;
 
 import properties.Property;
 import properties.competition.CSRV14PropertyMaker;
-import properties.competition.translators.CSRVTranslatorMaker;
+import properties.competition.translators.CSRV14TranslatorMaker;
 import structure.impl.other.Verdict;
 import structure.intf.QEA;
 import exceptions.XMLFailureException;
@@ -25,7 +25,7 @@ public class QEAOfflineMain {
 	private static final String CSV = "CSV";
 
 	private static CSRV14PropertyMaker propMaker = new CSRV14PropertyMaker();
-	private static CSRVTranslatorMaker transMaker = new CSRVTranslatorMaker();
+	private static CSRV14TranslatorMaker transMaker = new CSRV14TranslatorMaker();
 
 	public static void main(String[] args) throws IOException,
 			ParserConfigurationException, SAXException {
@@ -34,11 +34,11 @@ public class QEAOfflineMain {
 		String format = checkArgsAndGetTraceFormat(args);
 		if (format != null) {
 
-			// Obtain trace and property
+			// Get trace and property
 			String trace = args[0];
 			Property property = Property.valueOf(args[1]);
 
-			// Create property and offline translator
+			// Create QEA property and offline translator
 			QEA qea = propMaker.make(property);
 			OfflineTranslator trans = transMaker.make(property);
 			long beforeMonitoring = 0;
@@ -58,26 +58,27 @@ public class QEAOfflineMain {
 
 				// Print verdict and time
 				System.err.println(property + ": Verdict was " + v);
-				long endTime = System.currentTimeMillis();
-				System.err.println(">>Execution time without creation: "
-						+ (endTime - beforeMonitoring));
-				System.err.println(">>Total execution time : "
-						+ (endTime - startTime));
+				printTime(startTime, beforeMonitoring);
 
 			} catch (XMLFailureException e) {
 
 				// In case of failure in an XML, print verdict and time
-				System.err.println(property + ": " + e.getMessage());
-				long endTime = System.currentTimeMillis();
-				System.err.println(">>Execution time without creation: "
-						+ (endTime - beforeMonitoring));
-				System.err.println(">>Total execution time : "
-						+ (endTime - startTime));
+				System.err.println(property + ": Verdict was FAILURE");
+				System.err.println(e.getMessage());
+				printTime(startTime, beforeMonitoring);
 
 			} catch (FileNotFoundException e) {
 				System.err.println("File not found: " + trace);
 			}
 		}
+	}
+
+	public static void printTime(long startTime, long beforeMonitoring) {
+
+		long endTime = System.currentTimeMillis();
+		System.err.println(">> Execution time without creation: "
+				+ (endTime - beforeMonitoring));
+		System.err.println(">> Total execution time: " + (endTime - startTime));
 	}
 
 	public static String checkArgsAndGetTraceFormat(String[] args) {
