@@ -2,10 +2,10 @@ package benchmark.competition.java.javaMOP.monitoring;
 
 import java.util.concurrent.locks.Lock;
 
-import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.JavaMOP;
 import structure.impl.other.Verdict;
+import benchmark.competition.java.QEAMonitoringAspect;
 
 public aspect JavaMOPTwoAspect extends QEAMonitoringAspect {
 

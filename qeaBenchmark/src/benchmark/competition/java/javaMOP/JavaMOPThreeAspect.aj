@@ -1,9 +1,9 @@
 package benchmark.competition.java.javaMOP;
 
-import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.JavaMOP;
 import structure.impl.other.Verdict;
+import benchmark.competition.java.QEAMonitoringAspect;
 
 public aspect JavaMOPThreeAspect extends QEAMonitoringAspect {
 
