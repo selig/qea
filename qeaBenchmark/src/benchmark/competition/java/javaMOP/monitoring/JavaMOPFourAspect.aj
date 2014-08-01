@@ -5,10 +5,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import monitoring.intf.QEAMonitoringAspect;
 import properties.Property;
 import properties.competition.JavaMOP;
 import structure.impl.other.Verdict;
+import benchmark.competition.java.QEAMonitoringAspect;
 import benchmark.competition.java.javaMOP.MapIteratorTest;
 
 @SuppressWarnings("rawtypes")
