@@ -1,5 +1,3 @@
-
-
 import properties.Property;
 import properties.competition.JavaMOP;
 import structure.impl.other.Verdict;
@@ -17,11 +15,11 @@ public aspect JavaMOPThreeAspect extends QEAMonitoringAspect {
 		violationMsg = "Property JavaMOP 3 violated. The functions A(), B(), C() must be called equal times";
 	}
 
-	pointcut A() : call(void CThread2.A());
+	pointcut A() : call(void CThread.A());
 
-	pointcut B() : call(void CThread2.B());
+	pointcut B() : call(void CThread.B());
 
-	pointcut C() : call(void CThread2.C());
+	pointcut C() : call(void CThread.C());
 
 	before() : A() {
 		Verdict verdict;
