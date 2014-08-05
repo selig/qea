@@ -2,9 +2,9 @@ package benchmark.competition.java.jUnitRV_MMT.monitoring;
 
 import properties.Property;
 import properties.competition.JavaRV_mmt;
+import rvcomp.ExampleVelocity;
 import structure.impl.other.Verdict;
 import benchmark.competition.java.QEAMonitoringAspect;
-import benchmark.competition.java.jUnitRV_MMT.ExampleVelocity;
 
 public aspect JUnitRV_MMTFourAspect extends QEAMonitoringAspect {
 

@@ -9,7 +9,6 @@ import properties.Property;
 import properties.competition.JavaMOP;
 import structure.impl.other.Verdict;
 import benchmark.competition.java.QEAMonitoringAspect;
-import benchmark.competition.java.javaMOP.MapIteratorTest;
 
 @SuppressWarnings("rawtypes")
 public aspect JavaMOPFourAspect extends QEAMonitoringAspect {

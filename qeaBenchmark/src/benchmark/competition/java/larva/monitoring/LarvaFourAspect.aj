@@ -3,8 +3,8 @@ package benchmark.competition.java.larva.monitoring;
 import properties.Property;
 import properties.competition.Larva;
 import structure.impl.other.Verdict;
+import transactionsystem.Interface;
 import benchmark.competition.java.QEAMonitoringAspect;
-import benchmark.competition.java.larva.transactionsystem.Interface;
 
 public aspect LarvaFourAspect extends QEAMonitoringAspect {
 
