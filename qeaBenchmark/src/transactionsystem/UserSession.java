@@ -1,4 +1,4 @@
-package benchmark.competition.java.larva.transactionsystem;
+package transactionsystem;
 
 public class UserSession {
 	protected Integer sid;

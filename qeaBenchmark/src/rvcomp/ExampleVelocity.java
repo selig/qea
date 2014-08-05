@@ -1,4 +1,4 @@
-package benchmark.competition.java.jUnitRV_MMT;
+package rvcomp;
 
 import java.util.Random;
 

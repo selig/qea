@@ -1,4 +1,4 @@
-package benchmark.competition.java.larva.transactionsystem;
+package transactionsystem;
 
 // The methods called by the user interface for (i) the ADMINistrator; and (ii) normal USERs
 public class Interface {
@@ -73,7 +73,7 @@ public class Interface {
 		UserInfo u = ts.getUserInfo(uid);
 
 		if (u.isActive()) {
-			return u.openSession();
+			return (u.openSession());
 		} else {
 			return -1;
 		}
@@ -111,7 +111,7 @@ public class Interface {
 		UserSession s = u.getSession(sid);
 		String account_number = u.createAccount(sid);
 		s.log("Request new account with number <" + account_number + ">");
-		return account_number;
+		return (account_number);
 	}
 
 	// * Close an existing money account
@@ -138,9 +138,8 @@ public class Interface {
 		UserInfo u = ts.getUserInfo(uid);
 		UserSession s = u.getSession(sid);
 
-		if (s == null) {
+		if (s == null)
 			return false;
-		}
 
 		double total_amount = amount + ts.charges(uid, amount);
 		if (u.getAccount(from_account_number).getBalance() >= amount) {
@@ -161,9 +160,8 @@ public class Interface {
 		UserInfo from_u = ts.getUserInfo(from_uid);
 		UserSession s = from_u.getSession(sid);
 
-		if (s == null) {
+		if (s == null)
 			return false;
-		}
 
 		double total_amount = amount + ts.charges(from_uid, amount);
 

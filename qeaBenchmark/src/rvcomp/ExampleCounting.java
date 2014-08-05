@@ -1,4 +1,4 @@
-package benchmark.competition.java.jUnitRV_MMT;
+package rvcomp;
 
 // Java - Team3 - Bench1
 

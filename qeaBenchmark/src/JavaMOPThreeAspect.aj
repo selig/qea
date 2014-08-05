@@ -1,4 +1,4 @@
-package benchmark.competition.java.javaMOP;
+
 
 import properties.Property;
 import properties.competition.JavaMOP;

@@ -1,4 +1,4 @@
-package benchmark.competition.java.jUnitRV_MMT;
+package rvcomp;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -151,20 +151,20 @@ public class ExampleRoutes {
 			int hash = 7;
 			hash = 47
 					* hash
-					+ (int) (Double.doubleToLongBits(fromX) ^ Double
-							.doubleToLongBits(fromX) >>> 32);
+					+ (int) (Double.doubleToLongBits(this.fromX) ^ (Double
+							.doubleToLongBits(this.fromX) >>> 32));
 			hash = 47
 					* hash
-					+ (int) (Double.doubleToLongBits(fromY) ^ Double
-							.doubleToLongBits(fromY) >>> 32);
+					+ (int) (Double.doubleToLongBits(this.fromY) ^ (Double
+							.doubleToLongBits(this.fromY) >>> 32));
 			hash = 47
 					* hash
-					+ (int) (Double.doubleToLongBits(toX) ^ Double
-							.doubleToLongBits(toX) >>> 32);
+					+ (int) (Double.doubleToLongBits(this.toX) ^ (Double
+							.doubleToLongBits(this.toX) >>> 32));
 			hash = 47
 					* hash
-					+ (int) (Double.doubleToLongBits(toY) ^ Double
-							.doubleToLongBits(toY) >>> 32);
+					+ (int) (Double.doubleToLongBits(this.toY) ^ (Double
+							.doubleToLongBits(this.toY) >>> 32));
 			return hash;
 		}
 
@@ -177,19 +177,19 @@ public class ExampleRoutes {
 				return false;
 			}
 			final Route other = (Route) obj;
-			if (Double.doubleToLongBits(fromX) != Double
+			if (Double.doubleToLongBits(this.fromX) != Double
 					.doubleToLongBits(other.fromX)) {
 				return false;
 			}
-			if (Double.doubleToLongBits(fromY) != Double
+			if (Double.doubleToLongBits(this.fromY) != Double
 					.doubleToLongBits(other.fromY)) {
 				return false;
 			}
-			if (Double.doubleToLongBits(toX) != Double
+			if (Double.doubleToLongBits(this.toX) != Double
 					.doubleToLongBits(other.toX)) {
 				return false;
 			}
-			if (Double.doubleToLongBits(toY) != Double
+			if (Double.doubleToLongBits(this.toY) != Double
 					.doubleToLongBits(other.toY)) {
 				return false;
 			}

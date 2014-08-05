@@ -2,10 +2,10 @@ package benchmark.competition.java.jUnitRV_MMT.monitoring;
 
 import properties.Property;
 import properties.competition.JavaRV_mmt;
+import rvcomp.ExampleRoutes;
+import rvcomp.ExampleRoutes.Route;
 import structure.impl.other.Verdict;
 import benchmark.competition.java.QEAMonitoringAspect;
-import benchmark.competition.java.jUnitRV_MMT.ExampleRoutes;
-import benchmark.competition.java.jUnitRV_MMT.ExampleRoutes.Route;
 
 public aspect JUnitRV_MMTFiveAspect extends QEAMonitoringAspect {
 

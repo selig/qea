@@ -1,4 +1,4 @@
-package benchmark.competition.java.jUnitRV_MMT;
+package rvcomp;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;

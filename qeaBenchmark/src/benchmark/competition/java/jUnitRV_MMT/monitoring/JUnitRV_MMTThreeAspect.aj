@@ -4,9 +4,9 @@ import java.util.concurrent.locks.Lock;
 
 import properties.Property;
 import properties.competition.JavaRV_mmt;
+import rvcomp.ExampleLocking;
 import structure.impl.other.Verdict;
 import benchmark.competition.java.QEAMonitoringAspect;
-import benchmark.competition.java.jUnitRV_MMT.ExampleLocking;
 
 public aspect JUnitRV_MMTThreeAspect extends QEAMonitoringAspect {
 
