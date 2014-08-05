@@ -86,7 +86,7 @@ public class QEAOfflineMain {
 		// Check the number of arguments is correct
 		if (args.length != 2 && args.length != 3) {
 			System.err
-					.println("Usage: QEAOfflineTrace tracePath propertyName [fileFormat (CSV or XML)]");
+					.println("Usage: QEAOfflineMain tracePath propertyName [fileFormat (CSV or XML)]");
 			return null;
 		}
 
