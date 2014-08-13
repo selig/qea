@@ -1,0 +1,37 @@
+ruler ExistsLeader{
+  observes
+    ping(obj,obj), ack(obj,obj), dummy;
+
+  always Start(){ 
+    // if r pings s and r has not already communicated with s then record the ping
+    ping(r:obj,s:obj), !A(r,s) -> P(r,s);
+    // if r or s have not been seen before then record them, and add NL (no leader)
+    // if NL has been removed, this is the only time it needs to be re-added
+    ping(r:obj,s:obj), !R(r) -> R(r), NL;
+    ping(r:obj,s:obj), !R(s) -> R(s), NL;
+  }  
+  // the NL (no leader) rule fires on every ack and re-adds itself if there is no leader
+  state NL(){
+    ack(s:obj,r:obj), R(t:obj), t!=s, !A(r,t) -> NL;
+    ack(s:obj,r:obj) -> Ok;
+  }
+  // Stores the fact that r is a rover
+  always R(r:obj){
+    dummy -> Ok;
+  } 
+  // P and A are the two step process to recording A(r,s) i.e. r has communicated with s
+  state P(r:obj,s:obj){
+    ack(s,r) -> A(r,s);
+  }
+  always A(r:obj,s:obj){
+    dummy -> Ok;
+  }
+
+  initials Start, NL;
+  forbidden NL;
+}
+
+monitor{
+  uses M : ExistsLeader;
+  run M .
+}
