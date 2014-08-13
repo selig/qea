@@ -1,0 +1,37 @@
+package qea.benchmark.rovers.mop;
+
+ReleaseResourceMOP(Object t, Object c, Object r) {
+
+       String last_event;
+
+       event schedule after(Object t,Object c) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.schedule(Object,Object)) && args(t,c){last_event="schedule";}
+       event grant after(Object t, Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.grant_rr(Object,Object)) && args(t,r){last_event="grant";}
+       event cancel after(Object t,Object r) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.cancel_rr(Object,Object)) && args(t,r){last_event="cancel";}
+       event finish after(Object c) :  execution(void benchmark.rovers.mop.MopDoEval$MopDoWork.finish(Object)) && args(c){last_event="finish";}
+
+       fsm:
+       start [
+        schedule -> scheduled
+       ]
+       scheduled [
+	grant -> granted
+	finish -> end
+       ]
+       granted [
+	cancel -> scheduled
+	finish -> error
+       ]
+       error [
+       
+       ]
+       end [
+       
+       ]
+
+       @fail{
+               System.err.println("error in ReleaseResource with "+last_event);
+       }
+       @error{
+               System.err.println("finished with resource granted");
+       }
+}

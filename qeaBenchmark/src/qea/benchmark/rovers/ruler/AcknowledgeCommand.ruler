@@ -1,0 +1,24 @@
+ruler AcknowledgeCommand{
+  observes
+    set_ack_timeout(int), command(obj,obj,obj,int),
+    ack(obj,int);
+
+  step Start(){ 
+    set_ack_timeout(t:int) -> T(t);
+  }  
+  always T(t:int){
+    command(c:obj,n:obj,p:obj,st:int) -> A(c,n,p,st+t);
+  }
+  state A(c:obj,n:obj,p:obj,t:int){
+    ack(c,rt:int), rt < t -> Ok;
+    command(c2:obj,n,p,st:int), st > t -> Ok;  
+  }  
+
+  initials Start;
+  forbidden A;
+}
+
+monitor{
+  uses M : AcknowledgeCommand;
+  run M .
+}

@@ -1,0 +1,22 @@
+ruler ExactlyOneSuccess{
+  observes 
+    command(obj),  succeed(obj),  fail(obj);
+
+  always Start(){ 
+    command(x:obj) -> A(x);
+  }  
+  state A(x:obj){
+    succeed(x) -> D(x);
+    fail(x) -> Fail;
+  }
+  state D(x:obj){
+    succeed(x) -> Fail;
+  }
+  initials Start;
+  forbidden A;
+}
+
+monitor{
+  uses M : ExactlyOneSuccess;
+  run M .
+}
