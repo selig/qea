@@ -93,6 +93,13 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 			// If the global guard is false then we can return now
 			// as we can ignore this binding
 			if(!qea.checkGlobalGuard(param1)) return computeVerdict(false);			
+
+			// If we're using the IGNORE restart strategy make sure we're not ignoring
+			if(restart_mode==RestartMode.IGNORE){
+				if(((IgnoreWrapper) bindings).isIgnored(param1)){
+					return computeVerdict(false);
+				}
+			}
 			
 			startState = empty_state;
 		}
@@ -156,7 +163,12 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 	protected int removeStrongBindings() {
 		int removed = 0;
 		for (Object o : strong) {
-			int state = bindings.get(o);
+			Integer state = bindings.get(o);
+			if(state==null){
+				System.err.println(o);
+				System.err.println(strong);
+				System.err.println(getStatus());
+			}
 			if (qea.isStateFinal(state) == finalStrongState) {
 				removed++;
 				bindings.remove(o);
@@ -185,7 +197,13 @@ public class Incr_QVar1_NoFVar_Det_QEAMonitor extends
 	protected int ignoreStrongBindings() {
 		int ignored = 0;
 		for (Object o : strong) {
-			int state = bindings.get(o);
+			Integer state = bindings.get(o);
+			if(state==null){
+				System.err.println("ISSUE ISSUE ISSUE");
+				System.err.println(o);
+                                System.err.println(strong);
+                                System.err.println(getStatus());
+			}
 			if (qea.isStateFinal(state) == finalStrongState) {
 				((IgnoreWrapper) bindings).ignore(o);
 				ignored++;

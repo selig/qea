@@ -92,6 +92,15 @@ public class EagerGarbageHashMap<V> implements Map<Object, V>,
 		return store.get(id);
 	}
 
+        @Override
+        public boolean isIgnored(Object key) {
+                Integer id = getId(key);
+                if (ignored_ids.contains(id)) {
+                        return true;
+                }
+                return false;
+        }
+
 	@Override
 	public V remove(Object key) {
 		Integer id = getId(key);

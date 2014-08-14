@@ -60,6 +60,18 @@ public class IgnoreIdentityWrapper<K, V> implements Map<K, V>, IgnoreWrapper<K> 
 		return inner.get(key);
 	}
 
+        /**
+         * Returns true if the key is ignored
+         */
+        @Override
+        public boolean isIgnored(Object key) {
+                int id = System.identityHashCode(key);
+                if (ignored_ids.contains(id)) {
+                        return true;
+                }
+                return false;
+        }
+
 	@Override
 	public boolean isEmpty() {
 		return inner.isEmpty();

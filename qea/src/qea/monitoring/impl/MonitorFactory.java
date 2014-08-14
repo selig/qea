@@ -60,8 +60,8 @@ public class MonitorFactory {
 	public static Monitor create(QEA qea, RestartMode restart,
 			GarbageMode garbage) {
 
-		if (restart == RestartMode.IGNORE) {
-			throw new RuntimeException("Ignore restart mode currently unsafe");
+		if (restart == RestartMode.IGNORE && qea.getLambda().length > 1) {
+			throw new RuntimeException("Ignore restart mode currently unsafe for more than one quantified variable");
 		}
 
 		if (qea.getLambda().length == 0) {
