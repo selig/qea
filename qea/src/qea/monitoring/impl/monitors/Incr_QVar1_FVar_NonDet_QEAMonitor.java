@@ -256,6 +256,13 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			// as we can ignore this binding
 			if(!qea.checkGlobalGuard(qVarValue)) return;		
 			
+			// If we're using the IGNORE restart strategy make sure we're not ignoring
+			if(restart_mode==RestartMode.IGNORE){
+				if(((IgnoreWrapper) bindings).isIgnored(qVarValue)){
+					return;
+				}
+			}			
+			
 			// Create new configuration with a copy of the propositional conf.
 			config = emptyBindingConfig.copy();
 		}
