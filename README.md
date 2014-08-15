@@ -7,13 +7,12 @@ The project is still in the development phase. For any queries contact Giles on 
 
 At the moment we assume the reader is familiar with runtime monitoring concepts. Instructions for the less experienced user will appear later.
 
-See also <a href=“http://www.cs.man.ac.uk/~david/sm.html”> here </a> for related papers and <a href=“https://www.escholar.manchester.ac.uk/uk-ac-man-scw:225931”> here </a> for Giles’ thesis. For the RV competition mentioned see <a href=“http://rv2014.imag.fr/monitoring-competition”> here </a>.
-
+See also [here][1] </a> for related papers and [here][2] for Giles’ thesis. For the RV competition mentioned see [here][3].
 ##QEA Creation
 
 We provide a builder to construct QEA’s, found in qea.creation.QEABuilder. In the future we plan to include an external language and a parser that uses this builder.
 
-We will use the canonical <a href=‘http://en.wikipedia.org/wiki/Runtime_verification#HasNext”>HasNext property</a> as an example throughout this text. This is how you could specify this property.
+We will use the canonical [HasNext property][4] as an example throughout this text. This is how you could specify this property.
 
 ```java
 QEABuilder b = new QEABuilder("HasNext");       
@@ -91,6 +90,11 @@ The garbage mode makes certain data structures use weak references - which is on
 <li> UNSAFE_LAZY - the same as lazy but don’t carry out checks to make sure the binding won’t be necessary in the future</li>
 </ul>
 
+To use a monitor you just need to submit an event name and some parameters, for example
+```
+monitor.step(HASNEXT,iterator,return_value);
+```
+we don’t currently do number of argument of type checks and using events not in the alphabet is invalid.
 
 ##Online Monitoring
 
@@ -118,7 +122,7 @@ public aspect HasNextAspect {
 
         //The monitor
         Monitor monitor;
-	// Required if multithreaded as monitor not thread-safe
+        // Required if multithreaded as monitor not thread-safe
         private Object LOCK = new Object();
 
 
@@ -145,8 +149,8 @@ public aspect HasNextAspect {
         }
 
         public HasNextAspect(){
-		QEA qea = qea.properties.papers.HasNextQEA;
-		monitor = MonitorFactory.create(qea);
+                QEA qea = qea.properties.papers.HasNextQEA;
+                monitor = MonitorFactory.create(qea);
         }
 }
 ```
@@ -157,7 +161,7 @@ The normal commands would be required to compile and run with Aspectj - make sur
 
 ##Online Monitoring - DaCapo
 
-It is common to use the <a href=“http://dacapobench.org/“>DaCapo benchmarks</a> for benchmarking in runtime monitoring. A useful <a href=“https://github.com/parzonka/prm4j-eval”>framework </a> has been built for load-time weaving and benchmarking with DaCapo. We have extended this so that QEA can be used in this <a href=“https://github.com/selig/prm4j-eval”>fork</a>.
+It is common to use the [DaCapo benchmarks][5] for benchmarking in runtime monitoring. A useful [framework][6] has been built for load-time weaving and benchmarking with DaCapo. We have extended this so that QEA can be used in this [fork][7].
 
 
 
@@ -220,3 +224,12 @@ The developers are not very experienced with Maven, but you can add QEA to your 
                         <scope>compile</scope>
                 </dependency>
 ```
+This is what we did in our [fork][7] of the DaCapo evaluation framework.
+
+[1]: http://www.cs.man.ac.uk/~david/sm.html
+[2]: https://www.escholar.manchester.ac.uk/uk-ac-man-scw:225931
+[3]: http://rv2014.imag.fr/monitoring-competition
+[4]: http://en.wikipedia.org/wiki/Runtime_verification#HasNext
+[5]: http://dacapobench.org/
+[6]: https://github.com/parzonka/prm4j-eval
+[7]: https://github.com/selig/prm4j-eval
