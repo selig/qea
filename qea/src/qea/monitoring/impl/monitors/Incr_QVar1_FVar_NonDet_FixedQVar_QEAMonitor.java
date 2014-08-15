@@ -86,6 +86,13 @@ public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 			// as we can ignore this binding
 			if(!qea.checkGlobalGuard(qVarValue)) return computeVerdict(false);
 			
+			// If we're using the IGNORE restart strategy make sure we're not ignoring
+			if(restart_mode==RestartMode.IGNORE){
+				if(((IgnoreWrapper) bindings).isIgnored(qVarValue)){
+					return computeVerdict(false);
+				}
+			}			
+			
 			// Create configuration for the new binding
 			config = new NonDetConfig(qea.getInitialState(), qea.newBinding());
 		}
