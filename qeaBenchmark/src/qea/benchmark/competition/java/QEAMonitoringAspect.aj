@@ -17,7 +17,7 @@ public abstract aspect QEAMonitoringAspect {
 		System.err.println("Using "+monitor.getClass());
 	}
 
-	pointcut main() : execution(void *.main(String[])) ||
+	pointcut main() : execution(void qea.benchmark.java.*.main(String[])) ||
 		execution(void *.main(String...));
 
 	before() : main() {
