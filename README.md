@@ -184,7 +184,7 @@ The program takes 3 parameters:
 </ul>
 For example:
 
-java -cp qeaOfflineMonitor-1.0.jar;qea-1.0.jar;qeaProperties-1.0.jar benchmark.competition.offline.QEAOfflineMain ExistsLeader.csv QEA_OFFLINE_ONE
+java -cp qeaBenchmark-1.0.jar;qea-1.0.jar;qeaProperties-1.0.jar qea.benchmark.competition.offline.QEAOfflineMain ExistsLeader.csv QEA_OFFLINE_ONE
 
 The following properties from the competition are available and related to the numbered properties in the competition:
 <ul>
