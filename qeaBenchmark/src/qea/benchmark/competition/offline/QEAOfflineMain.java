@@ -70,6 +70,11 @@ public class QEAOfflineMain {
 			} catch (FileNotFoundException e) {
 				System.err.println("File not found: " + trace);
 			}
+			catch(Exception e){
+				System.err.println("There was an error in monitoring - please report to giles.reger@manchester.ac.uk");
+				System.err.println("To help us please include the following stack trace and trace files used");
+				e.printStackTrace();
+			}
 		}
 	}
 

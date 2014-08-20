@@ -137,6 +137,8 @@ public class XMLFileMonitorSAX extends FileMonitor implements ContentHandler {
 
 		case "log":
 			break;
+		case "trace":
+			break;			
 
 		case "field":
 			status = Status.INSIDE_FIELD;
