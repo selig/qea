@@ -18,7 +18,7 @@ public abstract aspect QEAMonitoringAspect {
 	}
 
 	pointcut main() : execution(void qea.benchmark.java.*.main(String[])) ||
-		execution(void *.main(String...));
+		execution(void qea.benchmark.java.*.main(String...));
 
 	before() : main() {
 		startTime = System.currentTimeMillis();
