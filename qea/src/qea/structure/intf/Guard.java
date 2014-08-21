@@ -719,8 +719,8 @@ public abstract class Guard {
 		return new Guard("x_" + var0 + " <= x_" + var1) {
 			@Override
 			public boolean check(Binding binding) {
-				Object val0 = binding.getForcedAsInteger(var0);
-				Object val1 = binding.getForcedAsInteger(var1);
+				Object val0 = binding.getForced(var0);
+				Object val1 = binding.getForced(var1);
 				return System.identityHashCode(val0) < System
 						.identityHashCode(val1);
 			}
