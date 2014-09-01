@@ -172,6 +172,7 @@ public class QEAJava implements PropertyMaker {
 		q.endTransition(2);
 
 		q.addFinalStates(1, 2);
+		q.setSkipStates(1);
 
 		QEA qea = q.make();
 
