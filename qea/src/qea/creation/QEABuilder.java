@@ -281,7 +281,7 @@ public class QEABuilder {
 			qqs[i] = q.universal ? FORALL : EXISTS;
 		}
 		boolean ggs = usesGlobalGuards();
-		Guard sg = quants.get(0).g;
+		Guard sg = quants.size() > 0 ? quants.get(0).g : null;
 
 		switch (type) {
 		case QVAR01_FVAR_DET_QEA:
