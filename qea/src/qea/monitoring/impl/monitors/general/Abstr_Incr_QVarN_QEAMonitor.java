@@ -671,10 +671,10 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		void removeIndexes(List<Integer> indexes) {
 			if (DEBUG) {
 				System.err.println("remove " + indexes + " from " + this);
+			
+				System.err.println("Removing " + indexes.size()+ " garbage in record");
 			}
-			System.err.println("Removing " + indexes.size()
-					+ " garbage in record");
-
+	
 			int removed = 0;
 			int ep = num_bindings - 1;
 			// iterate backwards as order is backwards

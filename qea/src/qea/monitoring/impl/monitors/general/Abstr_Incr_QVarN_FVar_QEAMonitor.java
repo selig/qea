@@ -57,11 +57,16 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 				return saved;
 			}
 		}
+		Map<QBindingImpl,C> updates = new HashMap<QBindingImpl,C>();
 		for (Map.Entry<QBindingImpl, C> entry : mapping.entrySet()) {
 			QBindingImpl binding = entry.getKey();
 			C config = entry.getValue();
-			processPropositionalBinding(eventName, binding, config);
+			// to stop ConcurrentModificationException we store the updates
+			// to mapping and do them at the end
+			C next_config = processPropositionalBindingUpdate(eventName, binding, config);
+			if (next_config!=null) updates.put(binding,next_config);
 		}
+		mapping.putAll(updates);
 		Verdict v = checker.verdict(false);
 		if (v.isStrong()) {
 			saved = v;
@@ -69,9 +74,13 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		return v;
 	}
 
+
 	protected abstract void processPropositionalBinding(int eventName,
 			QBindingImpl binding, C config);
 
+	protected abstract C processPropositionalBindingUpdate(int eventName,
+			QBindingImpl binding, C config);	
+	
 	@Override
 	public String getStatus() {
 		String ret = "mapping\n";
