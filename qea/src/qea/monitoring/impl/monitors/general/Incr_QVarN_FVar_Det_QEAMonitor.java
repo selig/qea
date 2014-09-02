@@ -120,6 +120,14 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends
 	}
 
 	@Override
+	protected DetConfig processPropositionalBindingUpdate(int eventName,
+			QBindingImpl binding, DetConfig config) {
+		// config is updated in-place!
+		processPropositionalBinding(eventName,binding,config);
+		return null;
+	}	
+
+	@Override
 	protected Transition[] getTransitions(int s, int e) {
 		return new Transition[] { qea.getDelta()[s][e] };
 	}

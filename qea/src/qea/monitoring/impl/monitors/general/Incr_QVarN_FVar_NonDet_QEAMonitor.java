@@ -117,22 +117,33 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 
 	}
 
+	
+	protected NonDetConfig processPropositionalBindingUpdate(int eventName,
+			QBindingImpl binding, NonDetConfig config) {
+		int[] previous_states = config.getStates();
+
+		
+		 try{ 
+			 NonDetConfig next_config= qea.getNextConfig(binding, config,eventName, dummyArgs); 
+			 //mapping.put(binding,next_config);
+			 if(binding.isTotal()){ 
+				 checker.update(binding, previous_states,next_config.getStates()); 
+			 } 
+			 return next_config;
+		 } 
+		 catch(NotRelevantException e){ 
+			 //That'sokay 
+			 return null;
+		 }
+		 
+
+	}
+
 	@Override
 	protected void processPropositionalBinding(int eventName,
 			QBindingImpl binding, NonDetConfig config) {
-		int[] previous_states = config.getStates();
-		// TODO: this is called whilst iterating over mapping!
-		// Fix will be to do what we do in NoFvar step i.e. copy mapping
-		throw new RuntimeException(
-				"Will cause a ConcurrentModificationException-- fix");
-		/*
-		 * try{ NonDetConfig next_config= qea.getNextConfig(binding, config,
-		 * eventName, dummyArgs); mapping.put(binding,next_config);
-		 * if(binding.isTotal()){ checker.update(binding, previous_states,
-		 * next_config.getStates()); } } catch(NotRelevantException e){ //That's
-		 * okay }
-		 */
-
+		throw new RuntimeException("Not implemented for this - use processPropositionalBindingUpdate");
+		
 	}
 
 }
