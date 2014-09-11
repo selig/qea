@@ -239,7 +239,8 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 	protected void checkArgParamLength(int argsLength, int paramLength) {
 		if (argsLength != paramLength) {
 			throw new ShouldNotHappenException(
-					"The number of variables defined for this event doesn't match the number of arguments");
+					"The number of variables defined for this event doesn't match the number of arguments "+
+					"there are "+argsLength+" arguments and "+paramLength+" parameters");
 		}
 	}
 

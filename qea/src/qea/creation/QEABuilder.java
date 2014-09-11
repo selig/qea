@@ -283,7 +283,7 @@ public class QEABuilder {
 		boolean ggs = usesGlobalGuards();
 		Guard sg = quants.size() > 0 ? quants.get(0).g : null;
 
-		switch (type) {
+		switch (type) {	
 		case QVAR01_FVAR_DET_QEA:
 			if (qs == 0 && det && !ggs) {
 				return makePropFreeDet(states, events, strong);
