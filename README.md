@@ -239,5 +239,5 @@ This is what we did in our [fork][7] of the DaCapo evaluation framework.
 [5]: http://dacapobench.org/
 [6]: https://github.com/parzonka/prm4j-eval
 [7]: https://github.com/selig/prm4j-eval
-[8]: https://github.com/selig/qea/examples/offline
-[9]: https://github.com/selig/qea/examples/online
+[8]: https://github.com/selig/qea/tree/master/examples/offline
+[9]: https://github.com/selig/qea/tree/master/examples/online
