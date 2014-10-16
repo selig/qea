@@ -14,8 +14,8 @@ wget --no-check-certificate https://github.com/selig/qea/blob/master/qea/lib/asp
 wget --no-check-certificate https://github.com/selig/qea/blob/master/qea/lib/aspectjtools.jar?raw=true -O lib/aspectjtools.jar
 
 #Get example elements
-wget --no-check-certificate https://github.com/selig/qea/blob/master/example/offline/Program.java
-wget --no-check-certificate https://github.com/selig/qea/blob/master/example/offline/SafeIteratorAspect.java
+wget --no-check-certificate https://github.com/selig/qea/blob/master/examples/online/Program.java?raw=true -O Program.java
+wget --no-check-certificate https://github.com/selig/qea/blob/master/examples/online/SafeIteratorAspect.java?raw=true -O SafeIteratorAspect.java
 
 #Compile program without instrumentation 
 javac Program.java
