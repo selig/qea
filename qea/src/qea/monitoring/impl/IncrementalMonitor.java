@@ -272,7 +272,8 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 			//if(o instanceof Integer){
 			//	System.err.print(o+" ");
 			//}else{
-				System.err.print(System.identityHashCode(o)+" ");
+				String name = o.getClass()+"@"+System.identityHashCode(o);
+				System.err.print(name+" ");
 			//}
 		}
 		System.err.println("]");

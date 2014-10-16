@@ -1,6 +1,7 @@
 package qea.structure.impl.qeas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -107,6 +108,9 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements
 							end_states = new int[1];
 							end_bindings = new Binding[1];
 						}
+						//TODO we might need to expand end_states and end_bindings
+						// can cause an exception!
+						
 						end_states[end_count] = next_state;
 						end_bindings[end_count] = next_binding;
 						end_count++;

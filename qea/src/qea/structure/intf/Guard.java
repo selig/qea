@@ -655,6 +655,36 @@ public abstract class Guard {
 		};	
 	}	
 	
+	public static Guard differenceGreaterThanVal(final int var0, final int var1, final int val) {
+		return new Guard("x_" + var0 + " - x_" + var1+" < " + val) {
+			@Override
+			public boolean check(Binding binding) {
+				Integer val0 = binding.getForcedAsInteger(var0);
+				Integer val1 = binding.getForcedAsInteger(var1);
+				return (val0 - val1) > val;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				Integer val1 = (Integer) (var1 == qvar ? firstQval : binding
+						.getForced(var1));
+				return (val0 - val1) > val;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};	
+	}		
+	
 	public static Guard sumLessThanOrEqualToVal(final int var0, final int var1, final int val) {
 		return new Guard("x_" + var0 + " - x_" + var1+" <= " + val) {
 			@Override

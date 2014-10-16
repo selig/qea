@@ -18,10 +18,8 @@ public class Monpoly {
 		// runOne();
 		// runTwo();
 		// runThree();
-		// runFour();
+		 runFour();
 		
-		System.err.println((new File(".")));
-		System.err.println("running");
 		
 		//runFive();
 	}
@@ -84,8 +82,8 @@ public class Monpoly {
 	public static void runFour() throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		// String trace = "/Users/giles/git/csrv14/OFFLINE/Team4/Bench4/trace.csv";
-		String trace = "traces/Team4/B4_trace.csv";
+		 String trace = "/Users/giles/git/csrv14/OFFLINE/Team4/Bench4/trace.csv";
+		//String trace = "traces/Team4/B4_trace.csv";
 		QEA qea = m.makeFour();
 		OfflineTranslator t = tm.makeFour();
 		CSVFileMonitor m = new CSVFileMonitor(trace, qea, t);

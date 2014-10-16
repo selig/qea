@@ -10,6 +10,8 @@ import qea.structure.intf.Guard;
 import qea.structure.intf.QEA;
 import qea.creation.QEABuilder;
 
+import static qea.structure.intf.Guard.*;
+
 public class MonPoly implements PropertyMaker {
 
 	@Override
@@ -48,7 +50,7 @@ public class MonPoly implements PropertyMaker {
 		q.addVarArg(t);
 		q.addVarArg(a);
 		q.addVarArg(t1);
-		q.addGuard(Guard.varIsGreaterThanVal(a, 2000));
+		q.addGuard(varIsGreaterThanVal(a, 2000));
 		q.endTransition(2);
 
 		q.startTransition(2);
@@ -318,6 +320,54 @@ public class MonPoly implements PropertyMaker {
 		return qea;
 	}
 
+	public QEA makeFour_withTwo() {
+
+		QEABuilder q = new QEABuilder("MONPOLY_FOUR_with_two_quants");
+		
+
+		final int WITHDRAW = 1;
+
+		final int u = -1;
+		final int start = -2;
+		
+		final int a = 1;
+		final int t = 2;
+		final int sum = 3;
+
+		q.addQuantification(FORALL, u);
+		q.addQuantification(FORALL, start);
+
+		q.addTransition(1,WITHDRAW,new int[]{u,sum,start},2);
+		
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(u);
+		q.addVarArg(a);
+		q.addVarArg(t);
+		//q.addGuard(and(sumLessThanOrEqualToVal(sum,a,10000),differenceLessThanOrEqualToVal(t,start,6912000)));
+		q.addGuard(sumLessThanOrEqualToVal(sum,a,10000));
+		q.addAssignment(Assignment.add(sum, a));				
+		q.endTransition(2);
+
+		q.startTransition(2);
+		q.eventName(WITHDRAW);
+		q.addVarArg(u);
+		q.addVarArg(a);
+		q.addVarArg(t);
+		q.addGuard(differenceGreaterThanVal(t,start,6912000));		
+		q.endTransition(3);
+
+		q.addFinalStates(1,2,3);
+		q.setSkipStates(1, 3);
+
+		QEA qea = q.make();
+
+		qea.record_event_name("withdraw", 1);
+
+		return qea;
+	}	
+	
 	public QEA makeFive() {
 
 		QEABuilder q = new QEABuilder("MONPOLY_FIVE");

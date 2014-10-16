@@ -8,6 +8,12 @@ The project is still in the development phase. For any queries contact Giles on 
 At the moment we assume the reader is familiar with runtime monitoring concepts. Instructions for the less experienced user will appear later.
 
 See also [here][1] </a> for related papers and [here][2] for Giles’ thesis. For the RV competition mentioned see [here][3].
+
+##Quick Start
+For a complete example of how to monitor a property offline see [here][8] and for a complete example of how to monitor a property online see [here][9].
+
+These two examples are a good place to start when using the tool for the first time.
+
 ##QEA Creation
 
 We provide a builder to construct QEA’s, found in qea.creation.QEABuilder. In the future we plan to include an external language and a parser that uses this builder.
@@ -233,3 +239,5 @@ This is what we did in our [fork][7] of the DaCapo evaluation framework.
 [5]: http://dacapobench.org/
 [6]: https://github.com/parzonka/prm4j-eval
 [7]: https://github.com/selig/prm4j-eval
+[8]: https://github.com/selig/qea/examples/offline
+[9]: https://github.com/selig/qea/examples/online

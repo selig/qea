@@ -21,9 +21,9 @@ public class Qea {
 			ParserConfigurationException, SAXException {
 
 
-		runOne();
-		// runTwo();
-		 runThree();
+		//runOne();
+		 runTwo();
+		 //runThree();
 		//runFour();
 		// runFive();
 	}
@@ -31,8 +31,8 @@ public class Qea {
 	public static void runOne() throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		// String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench1/ExistsLeader.csv";
-		String trace = "traces/ExistsLeader.trace";
+		 String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench1/ExistsLeader.csv";
+		//String trace = "traces/ExistsLeader.trace";
 		QEA qea = qc.makeOne();
 		OfflineTranslator t = tm.makeOne();
 		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, t);
@@ -50,8 +50,8 @@ public class Qea {
 	public static void runTwo() throws IOException {
 
 		long startTime = System.currentTimeMillis();
-		//String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench2/GrantCancel.csv";
-		String trace = "traces/GrantCancel.csv";
+		String trace = "/Users/giles/git/csrv14/OFFLINE/Team8/Bench2/GrantCancel.csv";
+		//String trace = "traces/GrantCancel.csv";
 		QEA qea = qc.makeTwo();
 		OfflineTranslator t = tm.makeTwo();
 		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, t);

@@ -374,6 +374,8 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 			System.err.println("*******************************\n");
 		}
 
+		//System.err.println("done");
+		
 		return result;
 	}
 
