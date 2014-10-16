@@ -1,3 +1,3 @@
 The run.sh script runs this complete example. It will download everything required so it is not necessary to checkout the qea repository. Just save the script locally and run it.
 
-The Instrumentation.aj file contains comments explaining how the tool is being used.
+The SafeIteratorAspect.java file contains comments explaining how the tool is being used.
