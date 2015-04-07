@@ -28,7 +28,7 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 		super(restart, garbage, qea);
 
 		// Set initial state
-		config = new NonDetConfig(qea.getInitialState());
+		config = new NonDetConfig(qea.getInitialState(),null);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class Incr_QVar0_NoFVar_NonDet_QEAMonitor extends
 
 	@Override
 	protected int rollbackStrongBindings() {
-		config = new NonDetConfig(qea.getInitialState());
+		config = new NonDetConfig(qea.getInitialState(),null);
 		return 1;
 	}
 

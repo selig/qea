@@ -15,4 +15,7 @@ package qea.monitoring.intf;
  */
 public interface Configuration {
 
+	abstract boolean hasReturned();
+	abstract boolean isZero();
+	
 }

@@ -31,13 +31,16 @@ public abstract class FileMonitor {
 	public FileMonitor(String tracename, QEA qea, OfflineTranslator translator)
 			throws FileNotFoundException {
 
-		translator.setMonitor(MonitorFactory.create(qea));
+		//System.err.println("\n\n\n\n\nWARNING USING NAIVE\n\n\n\n\n");
+		if(translator.useNaive()) translator.setMonitor(MonitorFactory.createNaive(qea));
+		else translator.setMonitor(MonitorFactory.create(qea));
 		this.translator = translator;
 		trace = new BufferedReader(new FileReader(tracename));
 	}
 
 	
-	public abstract Verdict monitor() throws IOException;
+	public abstract Verdict monitor() throws IOException,
+			ParserConfigurationException, SAXException;
 
 	public Class getMonitorClass() {
 		return translator.getMonitor().getClass();

@@ -75,13 +75,24 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 	public boolean isNormal() {
 
 		// System.err.println(Arrays.toString(lambda));
-		if (lambda.length == 1) {
+		if (lambda.length == 2) {
 			normal = true;
 		} else {
-			boolean innermost_universal = lambda[lambda.length - 1].quantification
-					.isUniversal();
-			normal = innermost_universal == isStateFinal(initialState);
+			boolean is_pure = true;
+			for(int i=2;i<lambda.length;i++){
+				if(lambda[i].quantification!=lambda[i-1].quantification) is_pure=false;
+			}
+			//System.err.println("ispure "+is_pure);
+			if(is_pure){
+				boolean innermost_universal = lambda[lambda.length - 1].quantification
+						.isUniversal();
+				normal = innermost_universal == isStateFinal(initialState);
+			}
+			else{
+				normal=false;
+			}
 		}
+		//System.err.println("normal: "+normal);
 		return normal;
 	}
 

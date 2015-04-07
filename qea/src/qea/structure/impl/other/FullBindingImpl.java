@@ -101,4 +101,20 @@ public class FullBindingImpl extends Binding {
 				&& quantBinding.update(vars, args);
 	}
 
+	@Override
+	public boolean equals(Object other) {
+		if(other instanceof FullBindingImpl){
+			FullBindingImpl ob = (FullBindingImpl) other;
+			return freeBinding.equals(ob.freeBinding) &&
+					quantBinding.equals(ob.quantBinding);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

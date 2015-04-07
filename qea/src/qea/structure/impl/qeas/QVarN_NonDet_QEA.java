@@ -207,7 +207,7 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements
 		// have been relevant *or* all transitions have failed
 		if (end_count == 0) {
 			if (failures > 0) {
-				return new NonDetConfig(0, newFBinding());
+				return new NonDetConfig(0, newFBinding(),config.extending);
 			} else {
 				throw new NotRelevantException();
 			}
@@ -216,7 +216,7 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements
 		end_states = ArrayUtil.resize(end_states, end_count);
 		end_bindings = ArrayUtil.resize(end_bindings, end_count);
 
-		NonDetConfig next_config = new NonDetConfig(end_states, end_bindings);
+		NonDetConfig next_config = new NonDetConfig(end_states, end_bindings,config.extending);
 
 		// System.err.println(config+" --"+eventName+Arrays.toString(args)+"--> "+next_config+" for "+qbinding);
 

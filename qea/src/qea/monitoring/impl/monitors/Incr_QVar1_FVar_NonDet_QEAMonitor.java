@@ -1,5 +1,6 @@
 package qea.monitoring.impl.monitors;
 
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			bindings = new IgnoreIdentityWrapper<Object,NonDetConfig>(bindings);
 		}
 		emptyBindingConfig = new NonDetConfig(qea.getInitialState(),
-				qea.newBinding());
+				qea.newBinding(),null);
 		buildEventsIndices();
 	}
 
@@ -146,6 +147,45 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		}
 	}
 
+	/*
+	 * This just removes a binding if it cannot make a move, this is very conservative atm
+	 * We remember garbage and try and clear it later
+	 */
+	private Set<Object> garbage = new HashSet<Object>();
+	private Set<Object> garbageToRemove = new HashSet<Object>();
+	private boolean inside_bindings =false;
+	@Override
+	public void garbage_event(Object param){
+		NonDetConfig config = bindings.get(param);
+		if(config!=null){
+			// expensive check for now, replace
+			int[] states = config.getStates();
+			int[] events = qea.getEventsAlphabet();
+			Transition[][][] delta = qea.getDelta();
+			for(int state : states){
+				for(int event : events){					
+					if(delta[state][event]!=null){
+						boolean okay=false;
+						for(Transition t : delta[state][event]){
+							for(int v :t.getVariableNames()){
+								if(v == -1) okay = true;
+							}
+						}
+						if(!okay){
+							// cannot remove now, but maybe later!
+							garbage.add(param);
+							return;
+						}
+					}
+					
+				}
+			}
+			if(inside_bindings) garbageToRemove.add(param);
+			else bindings.remove(param);
+			garbage.remove(param);
+		}
+	}
+	
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
@@ -160,6 +200,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		boolean eventProcessedForAllExistingBindings = false;
 
 		if (onlyFVarSignature[eventName]) {
+			inside_bindings=true;
 
 			// System.out.println(">>>"+eventName+" has onlyFVar signature");
 
@@ -176,6 +217,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 				}
 			}
 			eventProcessedForAllExistingBindings = true;
+			inside_bindings=false;
 		}
 
 		if (numQVarPositions[eventName] == 1) { // Only one value for the QVar
@@ -199,6 +241,10 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			}
 		}
 
+		if(!garbageToRemove.isEmpty()){
+			for(Object o : garbageToRemove) bindings.remove(o);
+		}
+		
 		return computeVerdict(false);
 	}
 
@@ -211,6 +257,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 				return saved;
 			}
 		}
+		
 		for (Object bound_object : bindings.keySet()) {
 			stepNoVerdict(eventName, emptyArgs, bound_object);
 		}
@@ -233,7 +280,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		boolean existingBinding = false;
 		boolean startConfigFinal = false;
 		NonDetConfig config;
-
+		
 		// Determine if the value received corresponds to an existing binding
 		if (bindings.containsKey(qVarValue)) { // Existing quantified
 												// variable binding
@@ -264,20 +311,28 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			}			
 			
 			// Create new configuration with a copy of the propositional conf.
-			config = emptyBindingConfig.copy();
+			config = emptyBindingConfig.copyForExtension();
 		}
 
 		// Compute next configuration
 		config = qea.getNextConfig(config, eventName, args, qVarValue, true);
 
-		// Update/add configuration for the binding
-		bindings.put(qVarValue, config);
-
-		// Determine if there is a final/non-final strong state
-		boolean endConfigFinal = checkFinalAndStrongStates(config, qVarValue);
-
-		// Update counters
-		updateCounters(existingBinding, startConfigFinal, endConfigFinal);
+		if(garbage.contains(qVarValue)){
+			garbage_event(qVarValue);
+		}
+		
+		if(existingBinding || !config.equals(emptyBindingConfig)){
+			
+			// Update/add configuration for the binding
+			bindings.put(qVarValue, config);
+	
+			// Determine if there is a final/non-final strong state
+			boolean endConfigFinal = checkFinalAndStrongStates(config, qVarValue);
+	
+			// Update counters
+			updateCounters(existingBinding, startConfigFinal, endConfigFinal);
+		
+		}
 	}
 
 	@Override
@@ -290,7 +345,10 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			entryset = bindings.entrySet();
 		}
 		for (Map.Entry<Object, NonDetConfig> entry : entryset) {
-			ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
+			int[] states = entry.getValue().getStates();
+			for(int i=0;i<states.length;i++)
+				if(states[i]==0)
+					ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;
 	}
@@ -323,7 +381,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 				is_final |= qea.isStateFinal(s);
 			}
 			if (is_final == finalStrongState) {
-				bindings.put(o, emptyBindingConfig.copy());
+				bindings.put(o, emptyBindingConfig.copyForExtension());
 				rolled++;
 			}
 		}

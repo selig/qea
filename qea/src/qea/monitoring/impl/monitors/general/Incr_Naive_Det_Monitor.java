@@ -1,5 +1,6 @@
 package qea.monitoring.impl.monitors.general;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,6 +32,10 @@ public class Incr_Naive_Det_Monitor extends
 	@Override
 	protected void innerStep(int eventName, QBindingImpl[] qbindings,
 			Object[] args) {
+		
+		
+		//System.err.println("CONSIDER "+Arrays.toString(qbindings));
+		
 		TreeSet<QBindingImpl> B_ = new TreeSet<QBindingImpl>(
 				new QBindingImpl.QBindingImplComparator());
 		for (QBindingImpl b : B) {

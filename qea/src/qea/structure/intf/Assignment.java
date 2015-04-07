@@ -16,6 +16,10 @@ public abstract class Assignment {
 	 */
 	public abstract Binding apply(Binding binding, boolean copy);
 
+	public Binding apply(Binding binding, boolean copy, int qvar, Object firstQval){
+		throw new RuntimeException("Quantified variables have not been implemented for this assignement");
+	}
+	
 	/**
 	 * Get all variables used in this assignment
 	 * 
@@ -55,6 +59,18 @@ public abstract class Assignment {
 				}
 				newBinding.setValue(var0, val1);
 				return newBinding;
+			}
+			public Binding apply(Binding binding, boolean copy, int qvar, Object firstQval){
+				if(var1==qvar){
+					Object val1 = firstQval;
+					Binding newBinding = binding;
+					if(copy){ newBinding = binding.copy(); }
+					newBinding.setValue(var0,val1);
+					return newBinding;
+				}else{
+					if(var0==qvar) throw new RuntimeException("Cannot store to quantified variable");
+					return apply(binding,copy);
+				}
 			}
 
 			@Override

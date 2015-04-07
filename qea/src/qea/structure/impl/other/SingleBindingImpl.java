@@ -85,4 +85,20 @@ public class SingleBindingImpl extends Binding {
 		return true;
 	}
 
+	@Override
+	public boolean equals(Object other) {
+		if(other instanceof SingleBindingImpl){			
+			return ((SingleBindingImpl) other).index == index && ((SingleBindingImpl) other).value == value;
+		}
+		if(other instanceof FullBindingImpl){
+			return ((FullBindingImpl) other).getValue(index)==value;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {		
+		return value.hashCode()*(1+index);
+	}
+
 }

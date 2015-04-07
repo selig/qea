@@ -94,7 +94,7 @@ public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 			}			
 			
 			// Create configuration for the new binding
-			config = new NonDetConfig(qea.getInitialState(), qea.newBinding());
+			config = new NonDetConfig(qea.getInitialState(), qea.newBinding(),null);
 		}
 
 		// Compute next configuration
@@ -167,7 +167,7 @@ public class Incr_QVar1_FVar_NonDet_FixedQVar_QEAMonitor extends
 				bindings.put(
 						o,
 						new NonDetConfig(qea.getInitialState(), qea
-								.newBinding()));
+								.newBinding(),null));
 				rolled++;
 			}
 		}

@@ -10,6 +10,9 @@ import qea.structure.impl.qeas.Abstr_QVarN_QEA;
 public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		extends IncrementalMonitor<Q> {
 
+	protected final boolean DEBUG = true;
+	
+			
 	protected final QBindingImpl bottom;
 	protected final QBindingImpl[] dummyEmptyBinding = new QBindingImpl[1];
 	protected final Object[] emptyArgs = new Object[0];
@@ -22,7 +25,7 @@ public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		qea.isNormal(); // set normal
 		bottom = qea.newQBinding();
 		dummyEmptyBinding[0] = bottom;
-		checker = IncrementalChecker.make(qea.getFullLambda(),
+		checker = IncrementalChecker.make(qea.getFullLambda(),qea.isNegated(),
 				qea.getFinalStates(), qea.getStrongStates());
 		if (bottom.isTotal()) {
 			checker.newBinding(bottom, qea.getInitialState());
@@ -31,6 +34,9 @@ public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_QEA>
 
 	@Override
 	public Verdict step(int eventName, Object[] args) {
+		
+		if(DEBUG) printEvent(eventName,args);
+		
 		QBindingImpl[] qbindings = qea.makeBindings(eventName, args);
 		innerStep(eventName, qbindings, args);
 		Verdict result = checker.verdict(false);

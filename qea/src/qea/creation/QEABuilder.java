@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import qea.exceptions.ShouldNotHappenException;
 import qea.structure.impl.other.Quantification;
 import qea.structure.impl.other.Transition;
 import qea.structure.impl.qeas.Abstr_QVarN_QEA;
@@ -31,7 +33,6 @@ import qea.structure.intf.QEA;
 import qea.structure.intf.QEA_det_free;
 import qea.structure.intf.QEA_nondet_free;
 import qea.structure.intf.QEA_single;
-import qea.exceptions.ShouldNotHappenException;
 
 /*
  * The general idea of this class is to allow us to build a QEA without knowing which
@@ -1260,6 +1261,11 @@ public class QEABuilder {
 		addTransition(start, propname, vargs, null, null, end);
 	}
 
+	public void addTransition(int start, int propname, int arg,
+			Guard guard, int end) {
+		addTransition(start, propname, new int[]{arg}, guard, null, end);
+	}	
+	
 	public void addTransition(int start, int propname, int[] vargs,
 			Guard guard, int end) {
 		addTransition(start, propname, vargs, guard, null, end);
@@ -1273,9 +1279,21 @@ public class QEABuilder {
 			Assignment ass, int end) {
 		addTransition(start, propname, null, gu, ass, end);
 	}
+	public void addTransition(int start, int propname, Guard gu,
+			int end) {
+		addTransition(start, propname, null, gu, null, end);
+	}	
 	public void addTransition(int start, int propname,
 			Assignment ass, int end) {
 		addTransition(start, propname, null, null, ass, end);
+	}
+	public void addTransition(int start, int propname, int varname,
+			Assignment ass, int end) {
+		addTransition(start, propname, new int[]{varname}, null, ass, end);
+	}
+	public void addTransition(int start, int propname, int varname, Guard gu,
+			Assignment ass, int end) {
+		addTransition(start, propname, new int[]{varname}, gu, ass, end);
 	}	
 
 	// incremental transition adding
@@ -1555,4 +1573,116 @@ public class QEABuilder {
 	}
 
 
+	/* Output everything required to rebuild this stuff
+	Set<TempTransition> transitions = new HashSet<TempTransition>();
+	Set<Integer> finalstates = new HashSet<Integer>();
+	Set<Integer> skipstates = new HashSet<Integer>();
+	List<Quant> quants = new ArrayList<Quant>();
+	String name
+	*/
+	
+	HashMap<String,Map<Integer,String>> namings = new HashMap<String,Map<Integer,String>>();
+	{
+		namings.put("states", new HashMap<Integer,String>());
+		namings.put("events", new HashMap<Integer,String>());
+		namings.put("vars", new HashMap<Integer,String>());
+	}
+	public void nameSomething(String kind,int id, String name){
+		Map<Integer,String> map = namings.get(kind);
+		if(map==null){ throw new RuntimeException(kind+" is not a naming kind"); }
+		map.put(id,kind.substring(0,1)+"_"+name);
+	}
+	public String getName(String kind, int id){
+		Map<Integer,String> map = namings.get(kind);
+		if(map==null){ throw new RuntimeException(kind+" is not a naming kind"); }
+		String name = map.get(id);
+		if(name==null) return ""+id;
+		return name;
+	}
+	
+	public String toString(){
+		String res = "";
+		
+		// create builder
+		res += "QEABuilder builder = new QEABuilder(\""+name+"\");\n\n";
+		
+		// Name things
+		for(String kind : new String[]{"states","events","vars"}){
+			if(!namings.get(kind).isEmpty()){
+				res += "// Naming "+kind+"\n";
+				for(Map.Entry<Integer,String> entry : namings.get(kind).entrySet()){
+					res += "int "+entry.getValue()+" = "+entry.getKey()+";\n";
+				}
+				res+= "\n";
+			}			
+		}
+		
+		// Quantifications
+		for(Quant q : quants){
+			if(q.g!=null) throw new RuntimeException("TODO implement toString for global guards");
+			res += "builder.addQuantification("+(q.universal ? "FORALL" : "EXISTS")+","+getName("vars",q.var)+");\n";
+		}
+		res +="\n";
+		
+		// Add transitions
+		for(TempTransition t : transitions){
+			if(t.g==null && t.a==null){
+				if(t.event_args.length==0){
+					res += "builder.addTransition("+getName("states",t.start)+","+getName("events",t.event_name)+","+getName("states",t.end)+");\n";
+				}else{
+					res += "builder.addTransition("+getName("states",t.start)+","+getName("events",t.event_name)+",new int[]";
+					String[] args = new String[t.var_args().length];
+					for(int i=0;i<args.length;i++) args[i] = getName("vars",t.var_args()[i]);
+					res += Arrays.toString(args).replace('[', '{').replace(']','}')+","+getName("states",t.end)+");\n";
+				}
+			}else{
+				throw new RuntimeException("TODO imlement toString for guards and assignments");
+			}
+		}
+		res += "\n";
+		// Skip states
+		if(! skipstates.isEmpty()){
+			res += "builder.setSkipStates(";
+			Iterator<Integer> it = skipstates.iterator();
+			while(it.hasNext()){
+				res += getName("vars",it.next());
+				if(it.hasNext()) res+=",";
+			}
+			res += ");\n";
+		}
+		// Final states
+		res += "builder.addFinalStates(";
+		Iterator<Integer> it = finalstates.iterator();
+		while(it.hasNext()){
+			res += getName("vars",it.next());
+			if(it.hasNext()) res+=",";
+		}
+		res += ");\n";
+		
+		return res;
+	}
+	
+	public static void main(String[] args){
+		
+		QEABuilder builder = new QEABuilder("one");
+
+		// Naming states
+		int one = 1;
+		int two = 2;
+
+		// Naming events
+		int a = 1;
+
+		// Naming vars
+		int y = 1;
+		int x = -1;
+
+		builder.addQuantification(FORALL,x);
+
+		builder.addTransition(one,1,new int[]{-1, 1},two);
+
+		builder.setSkipStates(2);
+		builder.addFinalStates(1);
+		
+	}
 }

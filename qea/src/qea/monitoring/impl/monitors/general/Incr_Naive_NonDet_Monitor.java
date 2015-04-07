@@ -22,7 +22,7 @@ public class Incr_Naive_NonDet_Monitor extends
 		super(qea);
 
 		NonDetConfig initialConfig = new NonDetConfig(qea.getInitialState(),
-				qea.newFBinding());
+				qea.newFBinding(), null);
 		;
 		mapping.put(bottom, initialConfig);
 		B.add(bottom);
@@ -35,14 +35,18 @@ public class Incr_Naive_NonDet_Monitor extends
 		TreeSet<QBindingImpl> B_ = new TreeSet<QBindingImpl>(
 				new QBindingImpl.QBindingImplComparator());
 		for (QBindingImpl b : B) {
+			//if(DEBUG) System.err.println("Consider extending "+b);
 			Set<QBindingImpl> consistent = null;
 			for (QBindingImpl other : qbindings) {
 				if (b.consistentWith(other)) {
 					if (consistent == null) {
 						consistent = new HashSet<QBindingImpl>();
 					}
-					consistent.add(other.updateWith(b));
+					QBindingImpl updated = other.updateWith(b);
+					//if(DEBUG) System.err.println("Add "+updated+" to consistent from"+other);
+					consistent.add(updated);
 				}
+				//else if(DEBUG) System.err.println("Not consistent: "+other);
 			}
 
 			if (consistent != null) {
@@ -55,9 +59,11 @@ public class Incr_Naive_NonDet_Monitor extends
 						// The qea updates the config, so we should copy if
 						// extending
 						if (config == null) {
-							config = mapping.get(b).copy();
+							config = mapping.get(b).copyForExtension();
 							B_.add(b_extended);
-							checker.newBinding(b_extended, config.getStates());
+							if(b_extended.isTotal()){
+								checker.newBinding(b_extended, config.getStates());
+							}
 						}
 
 						int[] previous_states = config.getStates();// safe as
@@ -69,9 +75,11 @@ public class Incr_Naive_NonDet_Monitor extends
 									b_extended, config, eventName, args);
 							mapping.put(b_extended, next_config);
 
+							//System.err.println("For "+b_extended+" : "+config+" -> "+next_config);
+							
 							if (b_extended.isTotal()) {
 								checker.update(b_extended, previous_states,
-										config.getStates());
+										next_config.getStates());
 							}
 						} catch (NotRelevantException e) {
 							if (!qea.isNormal()) {
@@ -94,12 +102,15 @@ public class Incr_Naive_NonDet_Monitor extends
 
 	@Override
 	public String getStatus() {
+		return checker.toString();
+		/*
 		String ret = "mapping:\n";
 		for (Map.Entry<QBindingImpl, NonDetConfig> entry : mapping.entrySet()) {
 			ret += entry.getKey() + "\t" + entry.getValue() + "\n";
 		}
-
+		ret += checker;
 		return ret;
+		*/
 	}
 
 }

@@ -50,7 +50,7 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends
 				// TODO - no redundancy checking here!!
 				if (!mapping.containsKey(ext)) {
 					if (DEBUG) {
-						System.err.println("Adding new " + ext);
+						System.err.println("Adding new " + ext+" from "+binding);
 					}
 					DetConfig next_config = config.copy();
 					try {

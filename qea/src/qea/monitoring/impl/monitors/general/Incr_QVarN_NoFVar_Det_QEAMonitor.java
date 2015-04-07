@@ -112,7 +112,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 	@Override
 	protected void processBinding(int eventName, Object[] args,
 			boolean has_q_blanks, QBindingImpl binding) {
-
+		
 		Integer previous_state = mapping.get(binding);
 
 		if (DEBUG) {
@@ -157,7 +157,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 					if (DEBUG) {
 						System.err.println("Checking " + ext);
 					}
-					if (!mapping.containsKey(ext)) {
+					if (!mapping.containsKey(ext) && (!ext.isTotal() || checker.relevantBinding(ext))) {
 						Integer next_state = qea.getNextConfig(ext,
 								previous_state, eventName, args);
 						if (DEBUG) {
@@ -261,8 +261,10 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 	public String getStatus() {
 		String ret = "mapping\n";
 		for (Map.Entry<QBindingImpl, Integer> entry : mapping.entrySet()) {
+			//if(entry.getValue()==0)
 			ret += entry.getKey() + "\t" + entry.getValue() + "\n";
 		}
+		/*
 		ret += "maps\n";
 		for (int e = 1; e < maps.length; e++) {
 			Map<String, BindingRecord> m = maps[e];
@@ -272,6 +274,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 			}
 		}
 		ret += "\n" + checker;
+		*/
 		return ret;
 	}
 

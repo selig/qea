@@ -1,5 +1,6 @@
 package qea.structure.impl.other;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import qea.structure.intf.Binding;
@@ -165,6 +166,8 @@ public class QBindingImpl extends FBindingImpl {
 
 	}
 
+	// not including the empty binding or itself
+	// IMPORTANT, needs to be in order of size, from big to small
 	public QBindingImpl[] submaps() {
 		// first get boolean map of contained values
 		boolean[] contains = new boolean[values.length];
@@ -175,6 +178,7 @@ public class QBindingImpl extends FBindingImpl {
 				contains_count++;
 			}
 		}
+		
 		// if we are singleton then there's only one sub
 		if (contains_count == 1) {
 			return new QBindingImpl[] {};
@@ -193,9 +197,52 @@ public class QBindingImpl extends FBindingImpl {
 
 			return ret;
 		}
-		// do the rest when we need them!!
-		throw new RuntimeException(
-				"Not implemented yet - only required for non-normal qeas");
+		
+		if(contains_count>30) throw new RuntimeException("Cannot support subsets of bindings with >30 elements");
+		
+		// General case
+		int submap_count = ((int)Math.pow(2,(contains_count)))-2;
+		QBindingImpl[] ret = new QBindingImpl[submap_count];
+		
+		// i is used as a mask to tell us whether to include that element
+		for(int i=1;i<submap_count+1;i++){
+			ret[i-1] = new QBindingImpl(values.length);
+			int used=0;
+			for(int j=0;j<values.length;j++){						
+				boolean use = contains[j] && (1<<used)==(i & (1 << used));
+				if(contains[j]) used++;
+				if(use){
+					ret[i-1].values[j]=values[j];						
+				}
+			}
+		}
+		Comparator<QBindingImpl> comparesize = new Comparator<QBindingImpl>(){
+
+			@Override
+			public int compare(QBindingImpl o1, QBindingImpl o2) {
+				int o1c=0;int o2c=0;
+				for(int i=0;i<o1.values.length;i++) if(o1.values[i]!=null) o1c++;
+				for(int i=0;i<o2.values.length;i++) if(o2.values[i]!=null) o2c++;
+				return o2c - o1c;
+			}
+			
+		};
+		
+		Arrays.sort(ret,comparesize);
+		return ret;
+		
+		
 	}
 
+	public static void main(String[] args){
+		QBindingImpl b = new QBindingImpl(4);
+		b.values[0]=10;
+		b.values[1]=20;
+		b.values[2]=30;
+		b.values[3]=40;
+		
+		QBindingImpl[] subs = b.submaps();
+		for(QBindingImpl sub : subs) System.out.println(sub);
+	}
+	
 }

@@ -1,14 +1,15 @@
 package qea.monitoring.impl.monitors.general;
 
-import static qea.structure.impl.other.Quantification.EXISTS;
-import static qea.structure.impl.other.Quantification.FORALL;
+import static qea.structure.impl.other.Quantification.*;
 import static qea.structure.impl.other.Verdict.FAILURE;
 import static qea.structure.impl.other.Verdict.SUCCESS;
 import static qea.structure.impl.other.Verdict.WEAK_FAILURE;
 import static qea.structure.impl.other.Verdict.WEAK_SUCCESS;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +22,8 @@ import qea.util.OurWeakHashMap;
 
 public abstract class IncrementalChecker {
 
+	boolean DEBUG = false;
+	
 	protected final boolean[] finalStates;
 	protected final boolean[] strongStates;
 
@@ -46,13 +49,19 @@ public abstract class IncrementalChecker {
 	// if quantification is all universal then a state is active
 	// iff it is non-final
 	public abstract boolean isActive(int state);
+	
+	public boolean isActive(int[] states){
+		for(int i=0;i<states.length;i++)
+			if(!isActive(states[i])) return false;
+		return true;
+	}
 
-	public static IncrementalChecker make(QEntry[] lambda,
+	public static IncrementalChecker make(QEntry[] lambda, boolean negated,
 			boolean[] finalStates, boolean[] strongStates) {
 
 		// zeroth place is always empty
 		if (lambda.length == 0 || lambda.length == 1) {
-			return new EmptyChecker(finalStates, strongStates);
+			return new EmptyChecker(negated,finalStates, strongStates);
 		}
 
 		Quantification q = lambda[1].quantification;
@@ -72,31 +81,31 @@ public abstract class IncrementalChecker {
 		}
 
 		if (q == FORALL) {
-			return new AllUniversalChecker(false, finalStates, strongStates,
+			return new AllUniversalChecker(negated,finalStates, strongStates,
 					all_guards);
 		}
-		// if(q==NOT_FORALL) // TODO Fix negated quantification
-		// return new
-		// AllUniversalChecker(true,finalStates,strongStates,all_guards);
 		if (q == EXISTS) {
-			return new AllExistentialChecker(false, finalStates, strongStates,
+			return new AllExistentialChecker(negated,finalStates, strongStates,
 					all_guards);
-			// if(q==NOT_EXISTS) // TODO Fix negated quantification
-			// return new
-			// AllExistentialChecker(true,finalStates,strongStates,all_guards);
 		}
 
 		if (lambda.length == 3) {
 			return new OneAlternationChecker(finalStates, strongStates,
-					lambda[1], lambda[2]);
+					lambda[1], lambda[2],negated);
 		}
 
-		throw new RuntimeException("Not implemented for general lambda "
-				+ Arrays.toString(lambda));
+		//System.out.println(Arrays.toString(lambda));
+		
+		return new GeneralChecker(negated,lambda,finalStates,strongStates);
+		
+		//throw new RuntimeException("Not implemented for general lambda "
+		//		+ Arrays.toString(lambda));
 	}
 
 	public abstract Verdict verdict(boolean at_end);
 
+	public abstract boolean relevantBinding(QBindingImpl binding);
+	
 	public abstract void newBinding(QBindingImpl binding, int start_state);
 
 	public abstract void newBinding(QBindingImpl binding, int[] start_states);
@@ -112,9 +121,11 @@ public abstract class IncrementalChecker {
 
 		boolean currently_final = false;
 		boolean currently_strong = false;
+		private final boolean negated;
 
-		public EmptyChecker(boolean[] finalStates, boolean[] strongStates) {
+		public EmptyChecker(boolean negated, boolean[] finalStates, boolean[] strongStates) {
 			super(finalStates, strongStates);
+			this.negated=negated;
 		}
 
 		@Override
@@ -162,17 +173,25 @@ public abstract class IncrementalChecker {
 
 		@Override
 		public Verdict verdict(boolean at_end) {
+			Verdict v;
 			if (!currently_final) {
 				if (at_end || currently_strong) {
-					return FAILURE;
+					v= FAILURE;
 				} else {
-					return WEAK_FAILURE;
+					v= WEAK_FAILURE;
 				}
 			}
-			if (at_end || currently_strong) {
-				return SUCCESS;
+			else{ 
+				if (at_end || currently_strong) {
+					v= SUCCESS;
+				}
+				else{
+					v= WEAK_SUCCESS;
+				}
 			}
-			return WEAK_SUCCESS;
+			
+			if(negated) return v.negated();
+			else return v;
 		}
 
 		@Override
@@ -182,6 +201,11 @@ public abstract class IncrementalChecker {
 
 		@Override
 		public boolean isActive(int state) {
+			return false;
+		}
+
+		@Override
+		public boolean relevantBinding(QBindingImpl binding) {
 			return false;
 		}
 
@@ -313,6 +337,11 @@ public abstract class IncrementalChecker {
 			return !finalStates[state];
 		}
 
+		@Override
+		public boolean relevantBinding(QBindingImpl binding) {
+			return guard==null || guard.check(binding);
+		}
+
 	}
 
 	public static class AllExistentialChecker extends IncrementalChecker {
@@ -436,35 +465,33 @@ public abstract class IncrementalChecker {
 			return finalStates[state];
 		}
 
+		@Override
+		public boolean relevantBinding(QBindingImpl binding) {
+			return guard==null || guard.check(binding);
+		}		
+		
 	}
 
 	public static class OneAlternationChecker extends IncrementalChecker {
-
-		boolean DEBUG = false;
 		
+		// qx is true if qx is universal
 		private final boolean q1;
 		private final boolean q2;
-		private final boolean negated1;
-		private final boolean negated2;
+		private final boolean negated;
 		private final Guard g1;
 		private final Guard g2;
 
 		public OneAlternationChecker(boolean[] finalStates,
-				boolean[] strongStates, QEntry one, QEntry two) {
+				boolean[] strongStates, QEntry one, QEntry two, boolean negated) {
 			super(finalStates, strongStates);
+			this.negated=negated;
 			switch (one.quantification) {
 			case FORALL:
 				q1 = true;
-				negated1 = false;
 				break;
-			// case NOT_FORALL : q1=true;negated1=true;break; // TODO Fix
-			// negated quantification
 			case EXISTS:
 				q1 = false;
-				negated1 = false;
 				break;
-			// case NOT_EXISTS: q1=false;negated1=true;break; // TODO Fix
-			// negated quantification
 			default:
 				throw new RuntimeException("Unexpected quantification "
 						+ one.quantification);
@@ -472,16 +499,10 @@ public abstract class IncrementalChecker {
 			switch (two.quantification) {
 			case FORALL:
 				q2 = true;
-				negated2 = false;
 				break;
-			// case NOT_FORALL : q2=true;negated2=true;break; // TODO Fix
-			// negated quantification
 			case EXISTS:
 				q2 = false;
-				negated2 = false;
 				break;
-			// case NOT_EXISTS: q2=false;negated2=true;break; // TODO Fix
-			// negated quantification
 			default:
 				throw new RuntimeException("Unexpected quantification "
 						+ two.quantification);
@@ -528,7 +549,7 @@ public abstract class IncrementalChecker {
 				result = WEAK_SUCCESS;
 			}
 
-			if (negated1) {
+			if (negated) {
 				return result.negated();
 			}
 			return result;
@@ -685,6 +706,326 @@ public abstract class IncrementalChecker {
 			return true;
 		}
 
+		@Override
+		public boolean relevantBinding(QBindingImpl binding) {
+			if(g1==null && g2==null) return true;
+			throw new RuntimeException("not implemented");
+		}
+
 	}
 
+	private static class Record{
+		
+		public void setQuantification(Quantification q){
+			this.this_quantification=q;
+		}
+		
+		public Quantification this_quantification; 
+		public final Record parent;
+		
+		private ArrayList<Object> bound_so_far = new ArrayList<Object>();
+		public int index(){
+			return bound_so_far.size(); 
+		}
+		
+		public Record(Record parent){
+			this.parent=parent;
+		}
+		
+		public void add(Object o){
+			if(o==null) throw new RuntimeException("Object in total binding should not be null");
+			//System.err.println("add: "+o);
+			bound_so_far.add(o);
+		}
+		@Override
+		public boolean equals(Object other){
+			if(other instanceof Record){
+				return ((Record) other).bound_so_far.equals(bound_so_far);
+			}
+			return false;
+		}
+		@Override
+		public int hashCode(){ return bound_so_far.hashCode(); }
+		
+		@Override
+		public String toString(){ 
+			return bound_so_far+" with "+this_quantification;
+		}
+		
+	}
+	
+	public static class GeneralChecker extends IncrementalChecker {
+
+		private final boolean negated;
+		private final QEntry[] lambda;
+		
+		
+		// count is of non_final if top universal
+		// and of final if top existential
+		private final Record top;
+		private final boolean top_forall;
+		private final boolean innner_forall;
+		
+		public GeneralChecker(boolean n, QEntry[] l,
+				boolean[] finalStates, boolean[] strongStates) {
+			super(finalStates, strongStates);
+		
+			lambda = new QEntry[l.length-1];
+			System.arraycopy(l, 1, lambda, 0, lambda.length);
+			negated=n;
+			top_forall = lambda[0].quantification == FORALL;
+			innner_forall = lambda[lambda.length-1].quantification == FORALL;
+			
+			top = new Record(null);
+			top.setQuantification(lambda[0].quantification);
+			record_map.put(top,0);
+		}
+
+		@Override
+		public Verdict verdict(boolean at_end) {
+			Verdict result = null;
+
+			// Note, similar to OneAlternation, consider generalisation
+			int top_count = record_map.get(top);
+			
+			if(DEBUG) System.err.println("verdict: "+top_count);
+			
+			boolean failing = top_forall ? top_count > 0 : top_count == 0;
+			if (failing) {
+				if (at_end) {
+					result = FAILURE;
+				} else {
+					result = WEAK_FAILURE;
+				}
+			} else if (at_end) {
+				result = SUCCESS;
+			} else {
+				result = WEAK_SUCCESS;
+			}
+
+			if (negated) {
+				return result.negated();
+			}
+			return result;
+		}
+
+		private boolean checkGuards(QBindingImpl binding) {
+			for(int i=0;i<lambda.length;i++){
+				if(lambda[i].guard!=null){
+					if(!lambda[i].guard.check(binding))
+						return false;
+				}
+			}
+			return true;
+		}		
+		
+		private Map<Record,Integer> record_map = new HashMap<>();
+		public Record getNext(Record from, QBindingImpl binding){
+			
+			//System.err.println("index: "+from.index());
+			if(from.index()==lambda.length) return null;
+			
+			Record r = null;
+			Quantification q = null;
+			r = new Record(from);
+			for(int i = 0; i<lambda.length;i++){
+				if(i >= from.index()){
+					if(q==null){
+						q = lambda[i].quantification;							
+					}
+					else{
+						if(lambda[i].quantification!=q){
+							r.setQuantification(lambda[i].quantification);
+							break;				
+						}
+					}
+				}
+				//System.err.println(i+":"+binding.getValue(-(i+1)));
+				r.add(binding.getValue(-(i+1)));
+			}
+			return r;
+		}
+		
+		// In this case 
+		private int process(Record record, int add, QBindingImpl binding){
+			
+			if(DEBUG) System.err.println("process "+record+", and add="+add);
+			
+			Integer last = record_map.get(record);
+			boolean first = false;
+			if (last==null) {
+				last=0;
+				first=true;
+				record_map.put(record,last);
+				// this is the first one so we need to
+				// update the parent's count, we do this below on first
+				// in all cases letting last=0
+				// means that we assume that one has been counted				
+			}			
+			
+			
+			Record next_rec = getNext(record,binding);
+			int next;
+			if(next_rec.index()!=lambda.length){
+				next = process(next_rec,add,binding);
+			}else{
+				next = last + add;
+			}
+
+			// 0 if value for one not changed
+			// -1 if it has gone from true to false
+			// 1 if it has gone from false to true
+			int direction = 0;
+			if (record.this_quantification==FORALL) {
+				if (last > 0 && next == 0) {
+					direction = 1;
+				} else if (last == 0 && next > 0) {
+					direction = -1;
+				}
+			} else {
+				if (last > 0 && next == 0) {
+					direction = -1;
+				} else if (last == 0 && next > 0) {
+					direction = 1;
+				}
+			}
+			if(DEBUG) System.err.println("direction is "+direction);
+			int parent_count = record_map.get(record.parent); // assume will be there
+			if(first) parent_count++;
+			if(direction!=0){								
+				if (record.parent.this_quantification==FORALL) {
+					parent_count -= direction;
+				} else {
+					parent_count += direction;
+				}				
+			}
+			record_map.put(record.parent,parent_count);
+
+			//if(DEBUG) System.err.println("Add "+record+" as "+next+" add was "+add);
+			if(DEBUG) System.err.println("setting this to "+next);
+			if(next!=last){
+				record_map.put(record, next);
+			}
+			if(DEBUG) System.err.println("Process return "+parent_count);
+			return parent_count;
+		}
+		
+		@Override
+		public void newBinding(QBindingImpl binding, int state) {
+			
+			if(DEBUG) System.err.println("new "+binding+" "+state);
+			
+			if (checkGuards(binding)) {
+				Record r = getNext(top,binding);
+				boolean isfinal = finalStates[state];
+				int add = innner_forall ? isfinal ? 0 : 1 : isfinal ? 1 : 0;
+				//if(DEBUG) System.err.println("Add "+binding+" with "+state);
+				process(r, add,binding);
+			}
+			else if(DEBUG) System.err.println("Not added "+binding+" as guard false");
+		}
+
+		@Override
+		public void newBinding(QBindingImpl binding, int[] states) {
+			if(DEBUG) System.err.println("newBinding "+binding+" "+Arrays.toString(states));
+			if (checkGuards(binding)) {
+				Record r = getNext(top,binding);
+				boolean isfinal = false;
+				for (int s : states) {
+					if (finalStates[s]) {
+						isfinal = true;
+						break;
+					}
+				}
+				int add = innner_forall ? isfinal ? 0 : 1 : isfinal ? 1 : 0;
+				process(r,add,binding);
+			}
+		}
+
+		@Override
+		public void update(QBindingImpl binding, int last_state, int next_state) {
+			if (checkGuards(binding)) {
+				
+				if(DEBUG) System.err.println("update "+binding+" with "+last_state+","+next_state);
+				
+				Record r = getNext(top,binding);
+
+				boolean last_final = finalStates[last_state];
+				boolean next_final = finalStates[next_state];
+
+				int inc_final = last_final && !next_final ? -1 : !last_final
+						&& next_final ? 1 : 0;
+
+				int add = innner_forall ? -inc_final : inc_final;
+				
+				if(DEBUG) System.err.println("Update "+binding+" for "+last_state+" -> "+next_state);
+				process(r, add,binding);
+			}
+		}
+
+		@Override
+		public void update(QBindingImpl binding, int[] last_states,
+				int[] next_states) {
+			if (checkGuards(binding)) {
+				
+				if(DEBUG) System.err.println("update "+binding+" with "+Arrays.toString(last_states)+","+Arrays.toString(next_states));
+				
+				Record r = getNext(top,binding);
+
+				boolean last_final = false;
+				boolean next_final = false;
+				for (int s : last_states) {
+					if (finalStates[s]) {
+						last_final = true;
+						break;
+					}
+				}
+				for (int s : next_states) {
+					if (finalStates[s]) {
+						next_final = true;
+						break;
+					}
+				}
+
+				int inc_final = last_final && !next_final ? -1 : !last_final
+						&& next_final ? 1 : 0;
+				
+				int add = innner_forall ? -inc_final : inc_final;
+				process(r, add,binding);
+			}
+			
+		}		
+		
+		
+		/*
+		 * Optimisation helper methods below
+		 */
+		
+		@Override
+		public void removeStrong(QBindingImpl binding) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean isActive(int state) {
+			// TODO Auto-generated method stub
+			return true;
+		}		
+		@Override
+		public boolean relevantBinding(QBindingImpl binding) {
+			// TODO Auto-generated method stub
+			return true;
+		}
+
+		@Override public String toString(){
+			String ret="RECORD MAP\n";
+			for(Map.Entry<Record,Integer> entry : record_map.entrySet()){
+				ret += entry.toString()+"\n";
+			}
+			return ret;
+		}
+		
+	}
+	
 }

@@ -45,7 +45,7 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 		if (restart == RestartMode.IGNORE && garbage != GarbageMode.EAGER) {
 			bindings = new IgnoreIdentityWrapper<Object,NonDetConfig>(bindings);
 		}
-		empty_config = new NonDetConfig(qea.getInitialState());
+		empty_config = new NonDetConfig(qea.getInitialState(),null);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 			}			
 			
 			// Create configuration for the new binding
-			config = empty_config.copy();
+			config = empty_config.copyForExtension();
 		}
 
 		// Compute next configuration
@@ -162,7 +162,7 @@ public class Incr_QVar1_NoFVar_NonDet_QEAMonitor extends
 				is_final |= qea.isStateFinal(s);
 			}
 			if (is_final == finalStrongState) {
-				bindings.put(o, empty_config.copy());
+				bindings.put(o, empty_config.copyForExtension());
 				rolled++;
 			}
 		}

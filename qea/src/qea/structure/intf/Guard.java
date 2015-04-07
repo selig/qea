@@ -833,6 +833,33 @@ public abstract class Guard {
 			}
 		};
 	}
+	
+	public static Guard isEqualToConstant(final int var0, final int val1) {
+		return new Guard("x_" + var0 + " > " + val1) {
+			@Override
+			public boolean check(Binding binding) {
+				Integer val0 = binding.getForcedAsInteger(var0);
+				return val0 == val1;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				return val0 == val1;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0 };
+			}
+		};
+	}	
 
 	public static Guard setContainsElement(final int varElement,
 			final int varSet) {

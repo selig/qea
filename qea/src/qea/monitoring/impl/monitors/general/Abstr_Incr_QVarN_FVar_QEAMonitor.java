@@ -85,16 +85,21 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 	public String getStatus() {
 		String ret = "mapping\n";
 		for (Map.Entry<QBindingImpl, C> entry : mapping.entrySet()) {
+			//if(entry.getValue().isZero())
 			ret += entry.getKey() + "\t" + entry.getValue() + "\n";
 		}
-		ret += "maps\n";
+		
+		ret += "maps\n";		
 		for (int e = 1; e < maps.length; e++) {
+			BindingRecord r = empty_paths[e];
 			Map<String, BindingRecord> m = maps[e];
 			ret += e + "\n";
+			ret += "\t empty \t"+r+"\n";
 			for (Map.Entry<String, BindingRecord> entry : m.entrySet()) {
 				ret += "\t" + entry.getKey() + "\t" + entry.getValue() + "\n";
 			}
 		}
+		
 		ret += "\n" + checker;
 		return ret;
 	}

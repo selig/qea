@@ -71,4 +71,13 @@ public abstract class OfflineTranslator {
 	public Monitor getMonitor() {
 		return monitor;
 	}
+
+	/*
+	 * Until we fully debug the symbol-based version sometimes we need to use naive
+	 */
+	private boolean use_naive=false;
+	public void setNaive(){ use_naive=true;}
+	public boolean useNaive() {
+		return use_naive;
+	}
 }

@@ -57,4 +57,15 @@ public class DetConfig implements Configuration {
 		return "(" + state + "," + binding + ")";
 	}
 
+	@Override
+	public boolean hasReturned() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isZero() {
+		return state==0;
+	}
+
 }

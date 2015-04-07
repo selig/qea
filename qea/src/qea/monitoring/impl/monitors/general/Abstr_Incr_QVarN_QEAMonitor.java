@@ -28,7 +28,7 @@ import qea.util.OurWeakHashMap;
 public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		extends IncrementalMonitor<Q> {
 
-	protected static boolean DEBUG = false;
+	protected static boolean DEBUG = true;
 
 	protected final IncrementalChecker checker;
 	protected final Map<Object, QBindingImpl> support_bindings;
@@ -55,11 +55,20 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 	// leave state
 	//
 	protected final boolean could_leave[][];
+	
+	protected boolean could_leave(int[] states,int eventName){
+		for(int i=0;i<states.length;i++){
+			if(could_leave[states[i]][eventName]){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public Abstr_Incr_QVarN_QEAMonitor(RestartMode restart,
 			GarbageMode garbage, Q qea) {
 		super(restart, garbage, qea);
-		checker = IncrementalChecker.make(qea.getFullLambda(),
+		checker = IncrementalChecker.make(qea.getFullLambda(),qea.isNegated(),
 				qea.getFinalStates(), qea.getStrongStates());
 		qea.setupMatching();
 		qea.isNormal(); // make sure normal is set
@@ -249,7 +258,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 
 		if (level == 0) {
 			List<Integer> l = new ArrayList<Integer>();
-			for (int x : args) {
+			for (int i=0;i<args.length;i++) {
 				l.add(0); // replace x by 0
 			}
 			this_level.add(l);
@@ -315,8 +324,9 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		if (!map.isEmpty()) {
 			int[][] eventMasks = masks[eventName];
 
-			for (int i = 0; i < eventMasks.length; i++) {
+			for (int i = 0; i < eventMasks.length; i++) {				
 				int[] mask = eventMasks[i];
+				//System.err.println("mask "+Arrays.toString(mask));
 				StringBuilder b = new StringBuilder();
 				boolean has_q_blanks = false;
 				for (int j = 0; j < mask.length; j++) {
@@ -334,7 +344,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 				BindingRecord record = map.get(query);
 
 				if (DEBUG) {
-					System.err.println("Query " + query);
+					System.err.println("Query " + query+"\t=>\t"+record);
 				}
 
 				if (record != null) {
@@ -489,8 +499,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 					if (add && support_queries != null) {
 						support_queries.put(ext, q);
 					}
-					BindingRecord record = empty ? empty_paths[e] : maps[e]
-							.get(q);
+					BindingRecord record = empty ? empty_paths[e] : maps[e].get(q);
 					if (add && record == null) { // empty must be false
 						record = BindingRecord.make(ext, use_weak);
 						maps[e].put(q, record);

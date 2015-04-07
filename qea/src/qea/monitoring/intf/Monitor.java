@@ -171,6 +171,12 @@ public abstract class Monitor<Q extends QEA> {
 		return step(eventName, new Object[] { param1, param2, param3, param4,
 				param5 });
 	}
+	
+	public void garbage_event(Object param){
+		// Default is to ignore
+		//TODO make abstract then get everybody to implement
+	}
+	
 	/**
 	 * Computes the final verdict of the monitoring process. This method should
 	 * be called after invoking the method <code>step</code> for all the events

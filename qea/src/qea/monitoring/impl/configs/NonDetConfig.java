@@ -16,29 +16,43 @@ public class NonDetConfig implements Configuration {
 	private int[] states;
 
 	private Binding[] bindings;
+	
+	public final NonDetConfig extending;
 
 	/**
 	 * Creates a non-deterministic configuration with the initial state
 	 */
-	public NonDetConfig(int initialState) {
+	public NonDetConfig(int initialState,NonDetConfig extending) {
 		states = new int[1];
 		states[0] = initialState;
+		//System.err.println("Created with "+extending);
+		if(extending==null) this.extending = new NonDetConfig(initialState,this); 
+		else this.extending = extending;
 	}
 
-	public NonDetConfig(int initialState, Binding binding) {
+	public NonDetConfig(int initialState, Binding binding, NonDetConfig extending) {
 		states = new int[1];
 		states[0] = initialState;
 
 		bindings = new FBindingImpl[1];
 		bindings[0] = binding;
+		//System.err.println("Created with "+extending);
+		if(extending==null) this.extending = new NonDetConfig(initialState,binding,this); 
+		else this.extending = extending;
 	}
 
-	public NonDetConfig(int[] states, Binding[] bindings) {
+	public NonDetConfig(int[] states, Binding[] bindings, NonDetConfig extending) {
 		this.states = states;
 		this.bindings = bindings;
+		//System.err.println("Created with "+extending);
+		if(extending==null) this.extending = new NonDetConfig(states,bindings,this); 
+		else this.extending = extending;
 	}
 
-	public NonDetConfig copy() {
+	public NonDetConfig copyForExtension(){ return copy(this);}
+	public NonDetConfig copyForLocal(){ return copy(extending);}
+	
+	private NonDetConfig copy(NonDetConfig use_extending) {
 
 		int[] statesCopy = new int[states.length];
 		System.arraycopy(states, 0, statesCopy, 0, states.length);
@@ -51,7 +65,9 @@ public class NonDetConfig implements Configuration {
 			}
 		}
 
-		return new NonDetConfig(statesCopy, bindingsCopy);
+		NonDetConfig c = new NonDetConfig(statesCopy, bindingsCopy,use_extending);
+		//System.err.println("Created "+c+" as a copy of "+this);
+		return c;
 	}
 
 	public int[] getStates() {
@@ -107,6 +123,51 @@ public class NonDetConfig implements Configuration {
 			}
 			out[i] = "(" + states[i] + "," + b + ")";
 		}
-		return Arrays.toString(out);
+		return Arrays.toString(out);//+" @"+System.identityHashCode(this);
+	}
+	
+	/**
+	 * Override equals
+	 */
+	@Override
+	public boolean equals(Object other){
+		if(other instanceof NonDetConfig){
+			NonDetConfig other_config = (NonDetConfig) other;
+			if(other_config.states.length!=states.length) return false;
+			for(int i=0;i<states.length;i++) if(states[i]!=other_config.states[i]) return false;
+			for(int i=0;i<bindings.length;i++){
+				if(bindings[i]==null){
+					if(other_config.bindings[i]!=null) return false;
+				}
+				else if(other_config.bindings[i]==null){
+					if(bindings[i]!=null) return false;
+				}
+				else if(!bindings[i].equals(other_config.bindings[i])) return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * Override hash
+	 */
+	@Override
+	public int hashCode(){
+		int code = 0;
+		for(int i=0;i<states.length;i++) code += 100*states[i];
+		for(int i=0;i<bindings.length;i++) if(bindings[i]!=null) code += bindings[i].hashCode();
+		return code;
+	}
+
+	public boolean hasReturned() {		
+		boolean result = this.equals(extending);
+		//if(result) System.err.println("hasReturned true with "+this+" and "+extending+" note that "+(this==extending));
+		return result;
+	}
+
+	@Override
+	public boolean isZero() {
+		// This is probably assuming a lot about how NonDetConfig works
+		return states[0]==0;
 	}
 }

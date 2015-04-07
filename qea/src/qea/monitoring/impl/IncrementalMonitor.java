@@ -22,6 +22,9 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	 * currently only used in Incr_QVarN_NoFVar_Det_QEAMonitor
 	 */
 	public static boolean use_red = true;
+	
+	// Check this with the Queue property, the other maps are not updating properly
+	public static boolean remove_red = false;
 
 	/**
 	 * Number of bindings for this monitor that are in a final state

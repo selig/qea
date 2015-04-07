@@ -166,7 +166,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 	private NonDetConfig getNextConfig1StartState1Transition(
 			NonDetConfig config, Object[] args, Transition transition,
 			Object qVarValue, boolean isQVarValue) {
-
+		
 		// Update binding for free variables
 		Binding binding = config.getBindings()[0];
 		updateBinding(binding, args, transition);
@@ -186,8 +186,18 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 
 		// If there is an assignment, execute it
 		if (transition.getAssignment() != null) {
-			config.setBinding(0,
+			boolean use_q = false;
+			int[] vused = transition.getAssignment().vars();
+			for(int i=0;i<vused.length;i++) use_q |= vused[i]<0;
+			if(use_q && !isQVarValue) throw new RuntimeException("qvar exepcted");
+			if(use_q){
+				  config.setBinding(0,
+							transition.getAssignment().apply(binding, false,-1,qVarValue));				
+			}
+			else{
+			  config.setBinding(0,
 					transition.getAssignment().apply(binding, false));
+			}
 		}
 
 		// Set the end state
@@ -199,7 +209,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 	private NonDetConfig getNextConfig1StartStateMultTransitions(
 			NonDetConfig config, Object[] args, Transition[] transitions,
 			Object qVarValue, boolean isQVarValue) {
-
+		
 		// Create as many states and bindings as there are transitions
 		int[] endStates = new int[transitions.length];
 		FBindingImpl[] bindings = new FBindingImpl[transitions.length];
@@ -232,8 +242,16 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 
 					// If there is an assignment, execute it
 					if (transition.getAssignment() != null) {
-						binding = (FBindingImpl) transition.getAssignment()
+						int[] avars = transition.getAssignment().vars();
+						boolean useq = false;
+						for(int i=0;i<avars.length;i++) useq |= avars[i]<0;
+						if(useq){
+							binding = (FBindingImpl) transition.getAssignment()
+									.apply(binding, true, -1, qVarValue);
+						}else{
+							binding = (FBindingImpl) transition.getAssignment()
 								.apply(binding, true);
+						}
 					}
 
 					// Copy end state and binding in the arrays
@@ -268,6 +286,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 			NonDetConfig config, int event, Object[] args, Object qVarValue,
 			boolean isQVarValue) {
 
+		
 		int[] startStates = config.getStates();
 		int maxEndStates = 0;
 		boolean argsNumberChecked = false;
@@ -312,7 +331,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 			if (transitions[i] != null) {
 				boolean taken_transition = false;
 				for (Transition transition : transitions[i]) {
-
+					
 					// Check if strong failure state
 					// TODO: add option to not remove these
 					int end_state = transition.getEndState();
@@ -321,6 +340,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 					// Check the transition matches the value of the QVar
 					if (!isQVarValue
 							|| qVarMatchesBinding(qVarValue, args, transition)) {
+						
 
 						// Copy the initial binding
 						FBindingImpl binding = (FBindingImpl) config
@@ -358,6 +378,8 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 							taken_transition = true;
 						}
 					}
+					}else{
+						taken_transition = true;// transition was taken to failure
 					}
 				}
 				if (!taken_transition) {

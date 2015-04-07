@@ -84,7 +84,9 @@ public class FBindingImpl extends Binding {
 					out[i] = "" + values[i];
 				}
 				else{
-					out[i] = "o_" + System.identityHashCode(values[i]);// values[i].toString();
+					//String s = System.identityHashCode(values[i]);
+					String s = values[i].toString();
+					out[i] = "o_" + s;
 				}
 			}
 		}

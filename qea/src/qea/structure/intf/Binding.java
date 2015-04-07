@@ -103,4 +103,9 @@ public abstract class Binding {
 		return binding;
 	}
 
+
+	@Override
+	public abstract boolean equals(Object other);
+	@Override
+	public abstract int hashCode();
 }

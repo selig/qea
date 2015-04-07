@@ -29,58 +29,81 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 		return result;
 	}
 
+	private static NonDetConfig initial_config=null;
 	@Override
 	protected NonDetConfig initialConfig() {
-		return new NonDetConfig(qea.getInitialState(), qea.newFBinding());
+		if(initial_config==null){
+			initial_config = new NonDetConfig(qea.getInitialState(), qea.newFBinding(),null);
+		}
+		return initial_config;
 	}
 
 	@Override
 	protected void processBinding(int eventName, Object[] args,
 			boolean has_q_blanks, QBindingImpl binding) {
 
+		//printEvent(eventName,args);
+		//System.err.println("QB: "+binding);
+		
 		NonDetConfig config = mapping.get(binding);
 		if (config == null) {
 			return; // the binding is gone!
 		}
 		int[] previous_states = config.getStates();
+		boolean this_use_red = use_red && !checker.isActive(previous_states);		
+		
+		if (!this_use_red || could_leave(previous_states,eventName)){ 
 
-		// Attempt extensions
-		QBindingImpl[] bs = qea.makeBindings(eventName, args);
-		for (QBindingImpl from_binding : bs) {
-			// are binding and from_binding guaranteed to be consistent?
-			// - no!
-			if (binding.consistentWith(from_binding)) {
-				QBindingImpl ext = binding.updateWith(from_binding);
-				if (!mapping.containsKey(ext)) {
-					if (DEBUG) {
-						System.err.println("Adding new " + ext);
-					}
-					NonDetConfig next_config = config.copy();
-					try {
-						next_config = qea.getNextConfig(ext, next_config,
-								eventName, args);
+			// Attempt extensions
+			QBindingImpl[] bs = qea.makeBindings(eventName, args);
+			for (QBindingImpl from_binding : bs) {
+				// are binding and from_binding guaranteed to be consistent?
+				// - no!
+				if (binding.consistentWith(from_binding)) {
+					QBindingImpl ext = binding.updateWith(from_binding);
+					if (!mapping.containsKey(ext) && (!ext.isTotal() || checker.relevantBinding(ext))) {
 						if (DEBUG) {
-							System.err
-									.println("New has configs " + next_config);
+							System.err.println("Adding new " + ext+" from "+binding);
 						}
-						addSupport(ext);
-						mapping.put(ext, next_config);
-						add_to_maps(ext);
-						if (ext.isTotal()) {
-							checker.newBinding(ext, previous_states);
-							checker.update(ext, previous_states,
-									next_config.getStates());
-						}
-					} catch (NotRelevantException e) {
-						if (!qea.isNormal()) {
-							// Carry on with next_config unchanged
-							addSupport(ext);
-							mapping.put(ext, next_config);
-							add_to_maps(ext);
-							if (ext.isTotal()) {
-								checker.newBinding(ext, previous_states);
-								checker.update(ext, previous_states,
-										next_config.getStates());
+						NonDetConfig next_config = config.copyForExtension();					
+						try {
+							next_config = qea.getNextConfig(ext, next_config,
+									eventName, args);				
+							
+							// Redundancy thing
+							if(!this_use_red || !next_config.equals(config)){
+							
+								if (DEBUG) {
+									System.err
+											.println("New has configs " + next_config);
+								}
+								addSupport(ext);
+								mapping.put(ext, next_config);
+								add_to_maps(ext);
+								if (ext.isTotal()) {
+									checker.newBinding(ext, previous_states);
+									checker.update(ext, previous_states,
+											next_config.getStates());
+								}
+							}else{
+								if(DEBUG) System.err.println("Ignore "+ext);
+							}
+							
+						} catch (NotRelevantException e) {
+							if(DEBUG) System.err.println("Not relevant");
+							if (!qea.isNormal()) {
+								if(DEBUG) System.err.println("QEA not normal, keeping");
+								// Carry on with next_config unchanged
+								addSupport(ext);
+								mapping.put(ext, next_config);
+								add_to_maps(ext);
+								if (ext.isTotal()) {
+									checker.newBinding(ext, previous_states);
+									checker.update(ext, previous_states,
+											next_config.getStates());
+								}
+							}else{
+								if(DEBUG) System.err.println("QEA normal, skipping");
 							}
 						}
 					}
@@ -97,16 +120,25 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 			try {
 				NonDetConfig next_config = qea.getNextConfig(binding, config,
 						eventName, args);
-				if (DEBUG) {
-					System.err.println("New configs are " + next_config);
-				}
-				mapping.put(binding, next_config);
-				if (binding.isTotal()) {
-					checker.update(binding, previous_states,
-							next_config.getStates());
+				
+				
+				if(remove_red && next_config.hasReturned()){
+					if(DEBUG){ System.err.println("Remove "+binding+" in "+next_config); }
+					mapping.remove(binding);
+					add_to_maps(binding,false);
+				}else{
+				
+					if (DEBUG) {
+						System.err.println("New configs are " + next_config);
+					}
+					mapping.put(binding, next_config);
+					if (binding.isTotal()) {
+						checker.update(binding, previous_states,
+								next_config.getStates());
+					}
 				}
 			} catch (NotRelevantException e) {
-				NonDetConfig next_config = config.copy();
+				NonDetConfig next_config = config.copyForLocal();
 				mapping.put(binding, next_config);
 				if (binding.isTotal()) {
 					checker.update(binding, previous_states,
