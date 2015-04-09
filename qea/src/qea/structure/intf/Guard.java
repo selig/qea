@@ -901,6 +901,43 @@ public abstract class Guard {
 		};
 	}
 
+	public static Guard setisEmpty(final int varSet) {
+		return new Guard("set_" + varSet + "_isEmpty") {
+
+			@Override
+			public boolean usesQvars() {
+				return varSet < 0;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Object oset = binding.getValue(varSet);
+				if (oset == null) {
+					return false;
+				}
+				HashSet<Object> set = (HashSet<Object>) (varSet == qvar ? firstQval
+						: oset);
+				return set.size() == 0;
+			}
+
+			@Override
+			public boolean check(Binding binding) {
+				Object oset = binding.getValue(varSet);
+				if (oset == null) {
+					return false;
+				}
+				HashSet<Object> set = (HashSet<Object>) oset;
+				return set.size() == 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { varSet };
+			}
+		};
+	}
+
+	
 	public static Guard setNotContainsElement(final int varElement,
 			final int varSet) {
 		return not(setContainsElement(varElement, varSet));
