@@ -1,5 +1,6 @@
 package qea.structure.intf;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -337,6 +338,76 @@ public abstract class Assignment {
 			}
 		};
 	}
+	
+	public Assignment createEmptyList(final int varList){
+		return new Assignment("createEmptyList_"+varList){
+
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+				ArrayList<Object> list = new ArrayList<Object>();
+				Binding newBinding = binding;
+				if(copy){
+					newBinding = binding.copy();
+				}
+				newBinding.setValue(varList, list);
+				return newBinding;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[]{varList};
+			}
+			
+		};
+	}
+	
+	public static Assignment createListFromElement(final int varList,
+			final int varElement) {
+		return new Assignment("createList_" + varList + "_FromElement_"
+				+ varElement) {
+
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+				ArrayList<Object> list = new ArrayList<Object>();
+				list.add(binding.getForced(varElement));
+				Binding newBinding = binding;
+				if (copy) {
+					newBinding = binding.copy();
+				}
+				newBinding.setValue(varList, list);
+				return newBinding;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { varList, varElement };
+			}
+		};
+	}
+	public static Assignment storeListIndexVal(final int varList,
+			final int indexVal, final int varOutput) {
+		return new Assignment("storeList_" + varList + "_atIndexVal_"
+				+ indexVal+"_into_"+varOutput) {
+
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+				ArrayList<Object> list = (ArrayList<Object>) binding.getForced(varList);
+				
+				Binding newBinding = binding;
+				if (copy) {
+					newBinding = binding.copy();
+				}
+				
+				newBinding.setValue(varList, list);
+				return newBinding;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { varList, varOutput };
+			}
+		};
+	}	
 	
 	public static Assignment then(final Assignment one, final Assignment two){
 		return new Assignment(one+" then "+two){
