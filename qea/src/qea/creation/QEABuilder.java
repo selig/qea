@@ -1388,6 +1388,11 @@ public class QEABuilder {
 		 */
 
 	}
+	public void setAllSkipStates() {
+		for(int s : getStates()){
+			skipstates.add(s);
+		}
+	}	
 
 	private boolean usesGuards(int state) {
 		for (TempTransition trans : transitions) {
@@ -1431,6 +1436,16 @@ public class QEABuilder {
 
 		return events;
 	}
+	private Set<Integer> getStates() {
+		Set<Integer> states = new HashSet<Integer>();
+
+		for (TempTransition trans : transitions) {
+			states.add(trans.start);
+			states.add(trans.end);
+		}
+
+		return states;
+	}	
 
 	/*
 	 * Should only be called after all transitions are created.
@@ -1685,4 +1700,6 @@ public class QEABuilder {
 		builder.addFinalStates(1);
 		
 	}
+
+
 }

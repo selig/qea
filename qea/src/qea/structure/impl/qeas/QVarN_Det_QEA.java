@@ -1,6 +1,7 @@
 package qea.structure.impl.qeas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,25 +94,42 @@ public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free {
 		// Remember we're deterministic - this means that we can update the
 		// DetConfig
 
+		//System.err.println("getNextConfig");
+		
 		int start_state = config.getState();
 		Binding binding = config.getBinding();
 		Transition transition = delta[start_state][eventName];
 
+		//boolean no_transitions=false;
 		if (transition == null) {
 			// no transition - fail if not a skip state
 			if (!skipStates[start_state]) {
 				config.setState(0);
 			}
+			//Should check for relevance here
+			// not relevant if there is no transition anywhere such that the below relevance check would pass
+			boolean relevant_transition = false;
+			for(int s=0;s<delta.length;s++){
+				transition = delta[s][eventName];
+				if(transition!=null){
+					Binding extend_with = qbinding.extend(transition.getVariableNames(),args);
+					if(!(extend_with == null || !qbinding.equals(extend_with))){
+						//System.err.println(transition+" is relevant "+extend_with);
+						relevant_transition=true;
+					}
+				}
+			}
+			if(!relevant_transition) throw new NotRelevantException();
+			
 			return;
 		}
 
 		// if we bind new qvariables or clash with bindings in qbinding
 		// then we return without making an update, as we are not relevant
-		Binding extend_with = qbinding.extend(transition.getVariableNames(),
-				args);
+		Binding extend_with = qbinding.extend(transition.getVariableNames(),args);
 		if (extend_with == null || !qbinding.equals(extend_with)) {
 			// not relevant, just return
-			// System.err.println("Not relevant: "+qbinding+" for "+eventName+Arrays.toString(args));
+			 //System.err.println("Not relevant: "+qbinding+" for "+eventName+Arrays.toString(args));
 			throw new NotRelevantException();
 		}
 

@@ -117,4 +117,9 @@ public class FullBindingImpl extends Binding {
 		return 0;
 	}
 
+	@Override
+	public int size() {
+		return freeBinding.size() + quantBinding.size();
+	}
+
 }

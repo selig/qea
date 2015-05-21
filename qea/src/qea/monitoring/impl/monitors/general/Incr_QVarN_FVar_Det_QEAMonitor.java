@@ -1,5 +1,9 @@
 package qea.monitoring.impl.monitors.general;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import qea.exceptions.NotRelevantException;
 import qea.monitoring.impl.GarbageMode;
 import qea.monitoring.impl.RestartMode;
 import qea.monitoring.impl.configs.DetConfig;
@@ -7,7 +11,6 @@ import qea.structure.impl.other.QBindingImpl;
 import qea.structure.impl.other.Transition;
 import qea.structure.impl.qeas.QEAType;
 import qea.structure.impl.qeas.QVarN_Det_QEA;
-import qea.exceptions.NotRelevantException;
 
 /**
  * A small-step monitor for the most general *deterministic* QEA
@@ -33,7 +36,7 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends
 
 	@Override
 	protected void processBinding(int eventName, Object[] args,
-			boolean has_q_blanks, QBindingImpl binding) {
+			boolean has_q_blanks, QBindingImpl binding,Set<QBindingImpl> created) {
 		DetConfig config = mapping.get(binding);
 		if (config == null) {
 			return; // The binding has gone!
@@ -48,16 +51,20 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends
 			if (binding.consistentWith(from_binding)) {
 				QBindingImpl ext = binding.updateWith(from_binding);
 				// TODO - no redundancy checking here!!
-				if (!mapping.containsKey(ext)) {
-					if (DEBUG) {
-						System.err.println("Adding new " + ext+" from "+binding);
-					}
+				if (!mapping.containsKey(ext) && !created.contains(ext)) {
+
 					DetConfig next_config = config.copy();
 					try {
+						created.add(ext);
 						qea.getNextConfig(ext, next_config, eventName, args);
 						addSupport(ext);
 						mapping.put(ext, next_config);
 						add_to_maps(ext);
+						
+						if (DEBUG) {
+							System.err.println("X Adding new " + ext+" from "+binding+" with "+next_config);
+						}
+						
 						if (ext.isTotal()) {
 							checker.newBinding(ext, previous_state);
 							checker.update(ext, previous_state,
@@ -66,9 +73,14 @@ public class Incr_QVarN_FVar_Det_QEAMonitor extends
 						// TODO - how common is this exception? Exceptions are
 						// bad!
 					} catch (NotRelevantException e) {
-						if (!qea.isNormal()) {
+						// we mark this as created as it could have been, but was marked non-relevant
+						created.add(ext);
+						if (!qea.isNormal() && requiredForCompleteness(ext,binding)) {							
 							addSupport(ext);
 							mapping.put(ext, next_config);
+							if (DEBUG) {
+								System.err.println("Y Adding new " + ext+" from "+binding+" with "+next_config);
+							}
 							add_to_maps(ext);
 							if (ext.isTotal()) {
 								checker.newBinding(ext, previous_state);

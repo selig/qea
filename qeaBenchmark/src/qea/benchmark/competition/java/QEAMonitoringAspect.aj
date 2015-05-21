@@ -17,7 +17,7 @@ public abstract aspect QEAMonitoringAspect {
 		System.err.println("Using "+monitor.getClass());
 	}
 
-	pointcut main() : execution(void qea.benchmark.java.*.main(String[])) ||
+	pointcut main() : execution(void qea.*.main(String[])) ||
 		execution(void qea.benchmark.java.*.main(String...));
 
 	before() : main() {
@@ -33,7 +33,7 @@ public abstract aspect QEAMonitoringAspect {
 			System.err.println(violationMsg);
 		}
 		long totalTime = System.currentTimeMillis() - startTime;
-		System.err.println(">>Execution time: " + totalTime);
+		System.err.println(">>Execution time: " + totalTime+"ms");
 	}
 
 	protected void printTimeAndExit() {

@@ -28,7 +28,7 @@ import qea.util.OurWeakHashMap;
 public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		extends IncrementalMonitor<Q> {
 
-	protected static boolean DEBUG = true;
+	protected static boolean DEBUG = false;
 
 	protected final IncrementalChecker checker;
 	protected final Map<Object, QBindingImpl> support_bindings;
@@ -343,7 +343,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 
 				BindingRecord record = map.get(query);
 
-				if (DEBUG) {
+				if (DEBUG && record!=null) {
 					System.err.println("Query " + query+"\t=>\t"+record);
 				}
 
@@ -437,7 +437,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 
 				// It should be an invariant that binding is in mapping, check
 				// this
-				processBinding(eventName, args, has_q_blanks, binding);
+				processBinding(eventName, args, has_q_blanks, binding,used);
 			}
 		}
 		// remove null_indexes if they exist
@@ -448,7 +448,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 	}
 
 	protected abstract void processBinding(int eventName, Object[] args,
-			boolean has_q_blanks, QBindingImpl binding);
+			boolean has_q_blanks, QBindingImpl binding, Set<QBindingImpl> used);
 
 	/*
 	 * addSupport for binding b maps v to b in support_bindings for all (x->v)

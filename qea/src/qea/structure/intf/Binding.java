@@ -104,6 +104,9 @@ public abstract class Binding {
 	}
 
 
+	abstract public int size();
+	
+
 	@Override
 	public abstract boolean equals(Object other);
 	@Override

@@ -26,19 +26,19 @@ public aspect JavaMOPFourAspect extends QEAMonitoringAspect {
 
 	// create(m,c)
 	pointcut create(Map map) : call(Set Map.keySet()) && target(map)
-		&& within(MapIteratorTest);
+		&& within(*.MapIteratorTest);
 
 	// iterator(c,i)
 	pointcut iterator(Collection col) : call(Iterator Collection.iterator())
-		&& target(col) && within(MapIteratorTest);
+		&& target(col) && within(*.MapIteratorTest);
 
 	// update(m)
 	pointcut update(Map map) : call(* Map.put(*, *)) && target(map)
-		&& within(MapIteratorTest);
+		&& within(*.MapIteratorTest);
 
 	// use(i)
 	pointcut use(Iterator iter) : call(* Iterator.*(..)) && target(iter)
-		&& within(MapIteratorTest);
+		&& within(*.MapIteratorTest);
 
 	after(Map map) returning (Collection col) : create(map) {
 		Verdict verdict = monitor.step(CREATE, map, col);

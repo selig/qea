@@ -1,5 +1,9 @@
 package qea.monitoring.impl.monitors.general;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import qea.exceptions.NotRelevantException;
 import qea.monitoring.impl.GarbageMode;
 import qea.monitoring.impl.RestartMode;
 import qea.monitoring.impl.configs.NonDetConfig;
@@ -7,7 +11,6 @@ import qea.structure.impl.other.QBindingImpl;
 import qea.structure.impl.other.Transition;
 import qea.structure.impl.qeas.QEAType;
 import qea.structure.impl.qeas.QVarN_NonDet_QEA;
-import qea.exceptions.NotRelevantException;
 
 public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 		Abstr_Incr_QVarN_FVar_QEAMonitor<QVarN_NonDet_QEA, NonDetConfig> {
@@ -40,10 +43,11 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 
 	@Override
 	protected void processBinding(int eventName, Object[] args,
-			boolean has_q_blanks, QBindingImpl binding) {
+			boolean has_q_blanks, QBindingImpl binding,Set<QBindingImpl> created) {
 
 		//printEvent(eventName,args);
 		//System.err.println("QB: "+binding);
+		
 		
 		NonDetConfig config = mapping.get(binding);
 		if (config == null) {
@@ -61,7 +65,7 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 				// - no!
 				if (binding.consistentWith(from_binding)) {
 					QBindingImpl ext = binding.updateWith(from_binding);
-					if (!mapping.containsKey(ext) && (!ext.isTotal() || checker.relevantBinding(ext))) {
+					if (!mapping.containsKey(ext) && !created.contains(ext) && (!ext.isTotal() || checker.relevantBinding(ext))) {
 						if (DEBUG) {
 							System.err.println("Adding new " + ext+" from "+binding);
 						}
@@ -77,6 +81,7 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 									System.err
 											.println("New has configs " + next_config);
 								}
+								created.add(ext);
 								addSupport(ext);
 								mapping.put(ext, next_config);
 								add_to_maps(ext);
@@ -94,6 +99,7 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 							if (!qea.isNormal()) {
 								if(DEBUG) System.err.println("QEA not normal, keeping");
 								// Carry on with next_config unchanged
+								created.add(ext);
 								addSupport(ext);
 								mapping.put(ext, next_config);
 								add_to_maps(ext);

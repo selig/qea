@@ -101,4 +101,9 @@ public class SingleBindingImpl extends Binding {
 		return value.hashCode()*(1+index);
 	}
 
+	@Override
+	public int size() {
+		return (value==null) ? 0 : 1;
+	}
+
 }

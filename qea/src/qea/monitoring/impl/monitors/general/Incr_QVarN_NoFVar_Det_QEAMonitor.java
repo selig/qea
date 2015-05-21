@@ -2,6 +2,7 @@ package qea.monitoring.impl.monitors.general;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -111,7 +112,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 
 	@Override
 	protected void processBinding(int eventName, Object[] args,
-			boolean has_q_blanks, QBindingImpl binding) {
+			boolean has_q_blanks, QBindingImpl binding,Set<QBindingImpl> created) {
 		
 		Integer previous_state = mapping.get(binding);
 
@@ -119,7 +120,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 			System.err.println("Processing " + binding + " with "
 					+ previous_state);
 		}
-
+		
 		// can previous_state be null?
 		// Shouldn't be!!
 		if (previous_state == null) {
@@ -157,7 +158,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 					if (DEBUG) {
 						System.err.println("Checking " + ext);
 					}
-					if (!mapping.containsKey(ext) && (!ext.isTotal() || checker.relevantBinding(ext))) {
+					if (!mapping.containsKey(ext) && !created.contains(ext) && (!ext.isTotal() || checker.relevantBinding(ext))) {
 						Integer next_state = qea.getNextConfig(ext,
 								previous_state, eventName, args);
 						if (DEBUG) {
@@ -168,6 +169,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 							// If next_state loops then it's trivial
 							// if in red_mode we ignore it
 							if (!this_use_red || next_state != previous_state) {
+								created.add(ext);
 								addSupport(ext);
 								mapping.put(ext, next_state);
 								add_to_maps(ext);
@@ -179,6 +181,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 							}
 						} else {
 							if (!qea.isNormal()) {
+								created.add(ext);
 								addSupport(ext);
 								mapping.put(ext, previous_state);
 								add_to_maps(ext);
@@ -191,7 +194,7 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 						}
 					}
 				}
-			}
+			}			
 		}
 
 		// Update configurations - check relevance first

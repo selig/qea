@@ -73,6 +73,13 @@ public class FBindingImpl extends Binding {
 		}
 	}
 
+
+	public int size() {
+		int not_null = 0;
+		for(int i=0;i<values.length;i++) if(values[i]!=null) not_null++;
+		return not_null;
+	}	
+	
 	@Override
 	public String toString() {
 		String[] out = new String[values.length];

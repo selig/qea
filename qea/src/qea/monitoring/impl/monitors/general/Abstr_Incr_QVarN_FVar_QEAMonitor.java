@@ -48,6 +48,31 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 
 	protected abstract C initialConfig();
 
+	/*
+	 * A binding ext that is being introduced extending from 
+	 * is required for completeness if there is no existing binding B such that
+	 *  i) |B| >= |from|
+	 *  ii) ext subsumes B
+	 * Note that this depends on the bindings being traversed in a certain way
+	 */
+	protected boolean requiredForCompleteness(QBindingImpl ext,QBindingImpl from){
+		// Search using submaps of ext that are at least |from| large
+		System.err.println("Checking if "+ext+" required for completeness");
+		QBindingImpl[] smaller = ext.submaps();
+		for(int i=0;i<smaller.length;i++){
+			QBindingImpl B = smaller[i];
+			System.err.println("Consider "+B);
+			if(B.size() < from.size()) return true;
+			// the B exists if it is in the mapping
+			if(mapping.containsKey(B) && ext.contains(B)){
+				System.err.println("not okay");
+				return false;
+			}
+			System.err.println("okay");
+		}
+		return true;
+	}
+	
 	protected static final Object[] dummyArgs = new Object[] {};
 
 	@Override
