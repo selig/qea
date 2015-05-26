@@ -129,5 +129,22 @@ public class TranslatorFactory {
 		
 		return t;
 	}
+	public static SelectingWrapperTranslator<DefaultTranslator> makeSelectingDefaultTranslatorWithIgnore(EventDescriptor... events){
+		SelectingWrapperTranslator<DefaultTranslator> t = makeSelectingDefaultTranslator(events);
+		t.allowUnknown();
+		return t;
+	}
+	public static SelectingWrapperTranslator<DefaultTranslator> makeSelectingDefaultTranslator(String... names){
+		EventDescriptor[] events = new EventDescriptor[names.length];
+		for(int i=0;i<names.length;i++){
+			events[i] = event(names[i]);
+		}
+		return makeSelectingDefaultTranslator(events);
+	}	
+	public static SelectingWrapperTranslator<DefaultTranslator> makeSelectingDefaultTranslatorWithIgnore(String... names){
+		SelectingWrapperTranslator<DefaultTranslator> t = makeSelectingDefaultTranslator(names);
+		t.allowUnknown();
+		return t;
+	}	
 	
 }
