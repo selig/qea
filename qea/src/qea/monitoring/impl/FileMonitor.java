@@ -26,6 +26,7 @@ public abstract class FileMonitor {
 
 	protected BufferedReader trace;
 	protected OfflineTranslator translator;
+	protected boolean hasHeader = false;
 
 
 	public FileMonitor(String tracename, QEA qea, OfflineTranslator translator)
@@ -48,6 +49,11 @@ public abstract class FileMonitor {
 
 	protected String format(String arg) {
 		return arg.intern();
+	}
+
+
+	public void ignoreHeader() {
+		hasHeader=true;
 	}	
 	
 }

@@ -1,5 +1,17 @@
 package qea.benchmark.crv15;
 
+import static qea.properties.crv15.c.QEA_C.makeQueue;
+import static qea.properties.crv15.c.QEA_C.makeStack;
+import static qea.properties.crv15.java.QEA_Java.makeExamSystem;
+import static qea.properties.crv15.java.QEA_Java.makeGraphics;
+import static qea.properties.crv15.java.QEA_Java.makeResource;
+import static qea.properties.crv15.java.QEA_Java.makeSQLInjection;
+import static qea.properties.crv15.java.QEA_Java.makeSingleGrant;
+import static qea.properties.crv15.offline.QEA_Offline.makeAuctionBidding;
+import static qea.properties.crv15.offline.QEA_Offline.makeCallReturn;
+import static qea.properties.crv15.offline.QEA_Offline.makeCandidateSelection;
+import static qea.properties.crv15.offline.QEA_Offline.makeClientManagers;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +23,9 @@ import org.xml.sax.SAXException;
 import qea.monitoring.impl.CSVFileMonitor;
 import qea.monitoring.impl.translators.DefaultTranslator;
 import qea.monitoring.impl.translators.OfflineTranslator;
-import static qea.properties.crv15.offline.QEA_Offline.*;
-import static qea.properties.crv15.c.QEA_C.*;
-import static qea.properties.crv15.java.QEA_Java.*;
+import qea.monitoring.impl.translators.TranslatorFactory;
+import static qea.monitoring.impl.translators.TranslatorFactory.*;
+import static qea.monitoring.impl.translators.TranslatorFactory.PType.*;
 import qea.structure.impl.other.Verdict;
 import qea.structure.intf.QEA;
 
@@ -27,7 +39,7 @@ public class QEArun{
 		//runAuctionBidding();
 		//runSQLInjection();
 		//runClientManagers();
-		runExamSystem();
+		//runExamSystem();
 		
 		//runStack();
 		//runQueue();
@@ -316,7 +328,10 @@ public static void runQueue() throws IOException {
 	long startTime = System.currentTimeMillis();
 	String trace = "/Users/giles/git/crv15/C/minisat/simp/queue_trace";
 	QEA qea = makeQueue();
-	OfflineTranslator t = makeQueueTranslator();
+	OfflineTranslator t = TranslatorFactory.makeParsingTranslator(
+			event("insert",OBJ,QINT),
+			event("peek",OBJ,QINT));
+			
 	CSVFileMonitor fm = new CSVFileMonitor(trace, qea, t);
 	System.err.println("Running with " + fm.getMonitorClass());
 	long beforeMonitoring = System.currentTimeMillis();

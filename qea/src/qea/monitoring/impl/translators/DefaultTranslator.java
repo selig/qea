@@ -32,19 +32,27 @@ public class DefaultTranslator extends OfflineTranslator {
 		eventLookupInit(map);
 	}
 	
+	protected boolean ignoreUnknown = false;
+	public void allowUnknown(){ ignoreUnknown = true; }
+	
 	@Override
 	public Verdict translateAndStep(String eventName, String[] paramNames,
 			String[] paramValues) {
-		
-		return monitor.step(translate(eventName),paramValues);
+		int event = translate(eventName);
+		if(event==-1) return lastVerdict;
+		lastVerdict = monitor.step(event,paramValues);
+		return lastVerdict;
 	}
 
 	@Override
 	public Verdict translateAndStep(String eventName) {
-		return monitor.step(translate(eventName));
+		int event = translate(eventName);
+		if(event==-1) return lastVerdict;
+		lastVerdict =  monitor.step(event);
+		return lastVerdict;
 	}
 
-	
+	protected Verdict lastVerdict = null;
 	private int[] event_lookup;
 
 	// position 0 not used
@@ -128,11 +136,16 @@ public class DefaultTranslator extends OfflineTranslator {
 			return event_id;
 		}
 		String[] strlookup = expansions_str[-event_id];
+		if(strlookup == null){
+			if(ignoreUnknown) return -1;
+			throw new RuntimeException("Could not translate event name " + name);
+		}
 		for (int i = 0; i < strlookup.length; i++) {
 			if (strlookup[i].equals(name)) {
 				return expansions_int[-event_id][i];
 			}
 		}
+		if(ignoreUnknown) return -1;
 		throw new RuntimeException("Could not translate event name " + name);
 	}
 
