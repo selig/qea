@@ -72,6 +72,11 @@ public abstract class OfflineTranslator {
 		return monitor;
 	}
 
+	/**
+	 * Should only be called on creation
+	 */
+	public void allowUnknown(){ throw new RuntimeException("Not implemented"); }
+	
 	/*
 	 * Until we fully debug the symbol-based version sometimes we need to use naive
 	 */

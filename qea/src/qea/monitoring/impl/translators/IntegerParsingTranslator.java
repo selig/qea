@@ -72,7 +72,9 @@ public class IntegerParsingTranslator extends DefaultTranslator {
 		
 		if(mask != null){
 		
-			Object[] parsed_values = new Object[paramValues.length];
+			//IMPORTANT - if the mask is shorter than paramValues we will drop the end ones
+			//				if it is longer than we will have an ArrayOutOfBounds
+			Object[] parsed_values = new Object[mask.length];
 			System.arraycopy(paramValues, 0, parsed_values, 0, paramValues.length);
 			
 			for(int i=0;i<parsed_values.length;i++){
@@ -86,11 +88,14 @@ public class IntegerParsingTranslator extends DefaultTranslator {
 					throw new ShouldNotHappenException(
 							"Event was expecting an integer. Bad event = "+eventName+Arrays.toString(paramValues));
 				}
+				catch(ArrayIndexOutOfBoundsException ex){
+					throw new ShouldNotHappenException(
+							"Event had mask that was too long. Bad event = "+eventName+Arrays.toString(paramValues));
+				}
 			}			
-			
 			lastVerdict = monitor.step(e,parsed_values);
 			return lastVerdict;
-		}
+		}	
 		lastVerdict = monitor.step(e,paramValues);
 		return lastVerdict;
 	}	

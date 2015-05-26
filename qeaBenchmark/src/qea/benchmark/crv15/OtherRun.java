@@ -16,15 +16,18 @@ public class OtherRun {
 
 	public static void main(String[] args) throws IOException{
 		
-		run_oclr_1();
+		run_oclr();
 		
 		
 	}
 	
-	public static void run_oclr_1() throws IOException{
-		String trace = "/Users/giles/git/crv15_local/Offline/OCLR/bm1_1000000_globally.csv";
-		QEA qea = OCLR_3.make_one();
-		OfflineTranslator t = TranslatorFactory.makeParsingTranslatorWithIgnore(event("c",INT),event("d",INT));
+	public static void run_oclr() throws IOException{
+		//String trace = "/Users/giles/git/crv15_local/Offline/OCLR/bm1_1000000_globally.csv";
+		String trace = "/Users/giles/git/crv15_local/Offline/OCLR/bm3_1000000_after.csv";
+		//QEA qea = OCLR_3.make_one();
+		QEA qea = OCLR_3.make_three();
+		//OfflineTranslator t = TranslatorFactory.makeParsingTranslatorWithIgnore(event("c",INT),event("d",INT));
+		OfflineTranslator t = TranslatorFactory.makeSelectingDefaultTranslator(event("a"),event("b"),event("c"));
 		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, t);
 		fm.ignoreHeader();
 		Verdict v = fm.monitor();
