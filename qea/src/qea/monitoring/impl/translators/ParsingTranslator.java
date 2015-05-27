@@ -5,45 +5,44 @@ import java.util.HashMap;
 import java.util.Map;
 
 import qea.exceptions.ShouldNotHappenException;
+import qea.monitoring.impl.translators.TranslatorFactory.PType;
 import qea.structure.impl.other.Verdict;
 import qea.structure.intf.QEA;
 
-public class IntegerParsingTranslator extends DefaultTranslator {
+public class ParsingTranslator extends DefaultTranslator {
 
 	// parsing_mask[e] = null means no parsing
 	// parsing_mask[e][i] = 0 means do not parse ith parameter
 	// parsing_mask[e][i] = 1 means parse ith parameter
 	// parsing_mask[e][i] = 2 means parse ith parameter and intern
-	private int[][] parsing_mask;
+	private PType[][] parsing_mask;
 	
-	public void setParse(int event, int p){ setParseStatus(event,p,1);}
-	public void setParseInterned(int event, int p){ setParseStatus(event,p,2);}
-	public void setParseStatus(int event, int parameter, int status){
+	public void setParseStatus(int event, int parameter, PType parsing_type){
 		if(parsing_mask[event]==null){
-			parsing_mask[event] = new int[parameter+2];
+			parsing_mask[event] = new PType[parameter+1];
 		}
 		else if(parsing_mask[event].length <= parameter){
-			int[] temp = new int[parameter+2];
+			PType[] temp = new PType[parameter+1];
 			System.arraycopy(parsing_mask[event], 0, temp, 0, parsing_mask[event].length);
 			parsing_mask[event]=temp;
 		}
-		parsing_mask[event][parameter]=status;
+		parsing_mask[event][parameter]=parsing_type;
 	}
 	
-	public IntegerParsingTranslator(QEA qea){
+	public ParsingTranslator(QEA qea){
 		super(qea);
-		parsing_mask = new int[qea.getEventsAlphabet().length+1][];
+		parsing_mask = new PType[qea.getEventsAlphabet().length+1][];
 	}
 	
-	public IntegerParsingTranslator(String... names){
+	public ParsingTranslator(String... names){
 		super(names);
-		parsing_mask = new int[names.length+1][];
+		parsing_mask = new PType[names.length+1][];
 	}	
 	
 	
-	public IntegerParsingTranslator(String[] names, int[] codes){
+	public ParsingTranslator(String[] names, int[] codes){
 		super(names,codes);
-		parsing_mask = new int[names.length+1][];
+		parsing_mask = new PType[names.length+1][];
 	}
 	
 	/*
@@ -68,22 +67,30 @@ public class IntegerParsingTranslator extends DefaultTranslator {
 			return lastVerdict;
 		}
 		
-		int[] mask = parsing_mask[e];
+		PType[] mask = parsing_mask[e];
 		
 		if(mask != null){
 		
+			if(mask.length==0){
+				lastVerdict = monitor.step(e);
+				return lastVerdict;
+			}
+			
 			//IMPORTANT - if the mask is shorter than paramValues we will drop the end ones
 			//				if it is longer than we will have an ArrayOutOfBounds
 			Object[] parsed_values = new Object[mask.length];
-			System.arraycopy(paramValues, 0, parsed_values, 0, paramValues.length);
+			System.arraycopy(paramValues, 0, parsed_values, 0, mask.length);
 			
 			for(int i=0;i<parsed_values.length;i++){
-				try{				
-					if(mask[i]==1){
-						parsed_values[i]= Integer.parseInt(paramValues[i].trim());						
-					}else if(mask[i]==2){ 
-						parsed_values[i] = getInternedInt(paramValues[i].trim()); 
-					}
+				try{			
+					switch(mask[i]){
+					  case INT : parsed_values[i]= Integer.parseInt(paramValues[i].trim()); break;
+					  case QINT : parsed_values[i] = getInternedInt(paramValues[i].trim()); break;
+					  case BOOL : 
+						  parsed_values[i] = Boolean.parseBoolean(paramValues[i].trim());
+						  break;
+					  default : // skip OBJ
+					}					
 				}catch(NumberFormatException ex){
 					throw new ShouldNotHappenException(
 							"Event was expecting an integer. Bad event = "+eventName+Arrays.toString(paramValues));
@@ -92,7 +99,8 @@ public class IntegerParsingTranslator extends DefaultTranslator {
 					throw new ShouldNotHappenException(
 							"Event had mask that was too long. Bad event = "+eventName+Arrays.toString(paramValues));
 				}
-			}			
+			}	
+			//System.err.println(e+Arrays.toString(parsed_values));
 			lastVerdict = monitor.step(e,parsed_values);
 			return lastVerdict;
 		}	

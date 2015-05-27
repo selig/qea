@@ -1,6 +1,7 @@
 package qea.monitoring.impl.translators;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TranslatorFactory {
@@ -18,7 +19,8 @@ public class TranslatorFactory {
 	public static enum PType {
 		OBJ,
 		INT,
-		QINT
+		QINT,
+		BOOL
 	}
 	public static class Parameter{
 		public final int original_place;
@@ -63,23 +65,18 @@ public class TranslatorFactory {
 		String[] names = new String[events.length];
 		for(int i=0;i<events.length;i++){ names[i] = events[i].name;}
 		
-		IntegerParsingTranslator t = new IntegerParsingTranslator(names);
+		ParsingTranslator t = new ParsingTranslator(names);
 		
 		boolean is_reordered=false;
 		for(int i=0;i<events.length;i++){
 			if(events[i].is_reordered) is_reordered=true;
 			for(int j=0;j<events[i].ps.size();j++){
 				int status = 0;
-				switch(events[i].ps.get(j).parsing_type){
-					case OBJ: status=0; break;
-					case INT: status=1; break;
-					case QINT: status=2; break;
-				}
-				t.setParseStatus(i+1, j, status);
+				t.setParseStatus(i+1, j, events[i].ps.get(j).parsing_type);
 			}
 		}
 		if(is_reordered){
-			SelectingWrapperTranslator<IntegerParsingTranslator> tt = new SelectingWrapperTranslator<IntegerParsingTranslator>(t);
+			SelectingWrapperTranslator<ParsingTranslator> tt = new SelectingWrapperTranslator<ParsingTranslator>(t);
 			for(int i=0;i<events.length;i++){
 				if(events[i].is_reordered){
 					Integer[] order = new Integer[events[i].ps.size()]; 						
@@ -97,14 +94,14 @@ public class TranslatorFactory {
 		return t;
 	}
 
-	public static IntegerParsingTranslator makeParsingTranslator(String[] names, PType[] mask){
+	public static ParsingTranslator makeParsingTranslator(String[] names, PType[] mask){
 		EventDescriptor[] events = new EventDescriptor[names.length];
 		for(int i=0;i<names.length;i++){
 			events[i] = event(names[i],mask);
 		}
 		return makeParsingTranslator(names,mask);
 	}	
-	public static IntegerParsingTranslator makeParsingTranslatorWithIgnore(String[] names, PType[] mask){
+	public static ParsingTranslator makeParsingTranslatorWithIgnore(String[] names, PType[] mask){
 		EventDescriptor[] events = new EventDescriptor[names.length];
 		for(int i=0;i<names.length;i++){
 			events[i] = event(names[i],mask);
@@ -123,7 +120,10 @@ public class TranslatorFactory {
 		
 		for(int i=0;i<events.length;i++){
 				Integer[] order = new Integer[events[i].ps.size()]; 						
-				events[i].ps.toArray(order);
+				for(int j=0;j<events[i].ps.size();j++){
+					order[j] = events[i].ps.get(j).original_place;
+				}
+				//System.err.println("Setting "+names[i]+" "+Arrays.toString(order));
 				t.setOrder(names[i], order);
 		}		
 		

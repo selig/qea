@@ -34,6 +34,7 @@ public class CSVFileMonitor extends FileMonitor {
 		if(hasHeader){ line=trace.readLine();}
 		
 		while (not_stopped && (line = trace.readLine()) != null) {
+			if(line.isEmpty()) continue;
 			events++;
 			
 			//System.err.println(events+":"+line);

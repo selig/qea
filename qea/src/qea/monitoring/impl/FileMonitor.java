@@ -48,7 +48,7 @@ public abstract class FileMonitor {
 	}
 
 	protected String format(String arg) {
-		return arg.intern();
+		return arg.trim().intern();
 	}
 
 
