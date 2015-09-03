@@ -9,6 +9,7 @@ import qea.monitoring.impl.CSVFileMonitor;
 import qea.monitoring.impl.translators.DefaultTranslator;
 import qea.monitoring.impl.translators.OfflineTranslator;
 import qea.monitoring.impl.translators.TranslatorFactory;
+import qea.properties.crv15.offline.LogFire_8;
 import qea.properties.crv15.offline.OCLR_3;
 import qea.properties.crv15.offline.RVMonitor_4;
 import qea.structure.impl.other.Verdict;
@@ -20,7 +21,7 @@ public class OtherRun {
 		
 		//run_oclr();
 		run_rvmonitor_5();
-		
+		//run_logfire_4();
 	}
 	
 	public static void run_oclr() throws IOException{
@@ -78,7 +79,8 @@ public class OtherRun {
 		System.out.println("Verdict :"+v);		
 	}	
 	public static void run_rvmonitor_5() throws IOException{
-		String trace = "/Users/giles/git/crv15_local/Offline/RVMonitor/Bench5/valid3.csv";
+		//String trace = "/Users/giles/git/crv15_local/Offline/RVMonitor/Benchmark5/trace5_invalid.csv";
+		String trace = "/Users/giles/git/crv15_local/Java/3_Java-MOP/Benchmark1/out";
 		QEA qea = RVMonitor_4.make_five();
 		OfflineTranslator translator = TranslatorFactory.makeSelectingDefaultTranslator(
 				event("acquire",OBJ,OBJ),
@@ -86,8 +88,22 @@ public class OtherRun {
 				event("begin",param(1,OBJ)),
 				event("end",param(1,OBJ)));	
 		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, translator);
-		fm.ignoreHeader();
+		System.err.println("Running with " + fm.getMonitorClass());
+		//fm.ignoreHeader();
 		Verdict v = fm.monitor();
 		System.out.println("Verdict :"+v);		
+	}
+	public static void run_logfire_4() throws IOException{
+		String trace = "/Users/giles/git/crv15_local/Offline/8_LogFire/Benchmark4/log4.csv";
+		QEA qea = LogFire_8.make_four();
+		OfflineTranslator translator = TranslatorFactory.makeSelectingDefaultTranslator(
+                event("conflict",param(0,OBJ),param(1,OBJ)),
+                event("grant",param(1,OBJ)),
+                event("release",param(1,OBJ)));
+		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, translator);
+		fm.ignoreHeader();
+		Verdict v = fm.monitor();
+		System.out.println("Verdict :"+v);	
+		System.out.println(translator.getMonitor());
 	}		
 }

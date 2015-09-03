@@ -3,8 +3,6 @@ package qea.properties.crv15.offline;
 import qea.creation.QEABuilder;
 import static qea.structure.intf.Guard.*;
 import static qea.structure.intf.Assignment.*;
-import qea.structure.intf.Assignment;
-import qea.structure.intf.Guard;
 import qea.structure.intf.QEA;
 import static qea.structure.impl.other.Quantification.*;
 
@@ -143,7 +141,8 @@ public class RVMonitor_4 {
 		// Events
 		int LOCK = 1; int UNLOCK = 2; int BEGIN = 3; int END = 4;
 		// Free variable
-		int count = 1;
+		int countInside = 1;
+		int countOutside = 3;
 		int depth = 2;
 		// Quantifications
 		int thread = -1; int lock = -2;
@@ -159,32 +158,42 @@ public class RVMonitor_4 {
 		int finished = 5;
 		int failed = 6;
 		
+		//b.addTransition(outside, BEGIN, thread, list(setVal(depth,1),setVal(countOutside,0)), inside);
 		b.addTransition(outside, BEGIN, thread, setVal(depth,1), inside);
 		b.addTransition(outside, BEGIN, thread, outside);
-		b.addTransition(outside, LOCK, new int[]{lock,thread}, setVal(count,1), lockedOutside);
-		b.addTransition(outside, UNLOCK, new int[]{lock,thread}, failed);
+		//b.addTransition(outside, LOCK, new int[]{lock,thread}, setVal(countOutside,1), lockedOutside);
+		//b.addTransition(outside, UNLOCK, new int[]{lock,thread}, failed);
 		
-		b.addTransition(lockedOutside, BEGIN, thread, setVal(depth,1), lockedInside);
-		b.addTransition(lockedOutside, BEGIN, thread, lockedOutside);		
-		b.addTransition(lockedOutside, LOCK, new int[]{lock,thread}, increment(count), lockedOutside);
-		b.addTransition(lockedOutside, UNLOCK, new int[]{lock,thread},isGreaterThanConstant(count,1),decrement(count),lockedOutside);
-		b.addTransition(lockedOutside, UNLOCK, new int[]{lock,thread},isEqualToConstant(count,1),setVal(count,0),outside);
+		//b.addTransition(lockedOutside, BEGIN, thread, setVal(depth,1), inside);
+		//b.addTransition(lockedOutside, BEGIN, thread, lockedOutside);		
+		//b.addTransition(lockedOutside, LOCK, new int[]{lock,thread}, increment(countOutside), lockedOutside);
+		//b.addTransition(lockedOutside, UNLOCK, new int[]{lock,thread},isGreaterThanConstant(countOutside,1),decrement(countOutside),lockedOutside);
+		//b.addTransition(lockedOutside, UNLOCK, new int[]{lock,thread},isEqualToConstant(countOutside,1),setVal(countOutside,0),outside);
 		
 		b.addTransition(inside, BEGIN, thread, increment(depth), inside);
+		//b.addTransition(inside, END, thread, and(isEqualToConstant(depth, 1),isEqualToConstant(countOutside,0)), setVal(depth,0), finished);
 		b.addTransition(inside, END, thread, isEqualToConstant(depth, 1), setVal(depth,0), finished);
+		//b.addTransition(inside, END, thread, and(isEqualToConstant(depth, 1),isGreaterThanConstant(countOutside,0)), setVal(depth,0), lockedOutside);
 		b.addTransition(inside, END, thread, isGreaterThanConstant(depth,1), decrement(depth), inside);
-		b.addTransition(inside, LOCK, new int[]{lock,thread}, setVal(count,1), lockedInside);
+		b.addTransition(inside, LOCK, new int[]{lock,thread}, setVal(countInside,1), lockedInside);
 		b.addTransition(inside, UNLOCK, new int[]{lock,thread}, failed);
 		
-		b.addTransition(lockedInside, LOCK, new int[]{lock,thread}, increment(count), lockedInside);
-		b.addTransition(lockedInside, UNLOCK, new int[]{lock,thread}, isEqualToConstant(count,1), setVal(count,0),inside);
-		b.addTransition(lockedInside, UNLOCK, new int[]{lock,thread}, isGreaterThanConstant(count,1), decrement(count),lockedInside);
+		b.addTransition(lockedInside, LOCK, new int[]{lock,thread}, increment(countInside), lockedInside);
+		b.addTransition(lockedInside, UNLOCK, new int[]{lock,thread}, isEqualToConstant(countInside,1), setVal(countInside,0),inside);
+		b.addTransition(lockedInside, UNLOCK, new int[]{lock,thread}, isGreaterThanConstant(countInside,1), decrement(countInside),lockedInside);
 		b.addTransition(lockedInside, BEGIN, thread, increment(depth), lockedInside);
 		b.addTransition(lockedInside, END, thread, isGreaterThanConstant(depth,1), decrement(depth),lockedInside);
 		b.addTransition(lockedInside, END, thread, isEqualToConstant(depth,1), failed);
 		
 		b.addFinalStates(inside,lockedInside,lockedOutside,failed);
 		b.setAllSkipStates();
-		return b.make();
+		QEA qea = b.make();
+		
+		qea.record_event_name("acquire", LOCK);
+		qea.record_event_name("release", UNLOCK);
+		qea.record_event_name("begin", BEGIN);
+		qea.record_event_name("end", END);
+		
+		return qea;
 	}
 }

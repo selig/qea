@@ -45,12 +45,13 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 	protected void processBinding(int eventName, Object[] args,
 			boolean has_q_blanks, QBindingImpl binding,Set<QBindingImpl> created) {
 
-		//printEvent(eventName,args);
-		//System.err.println("QB: "+binding);
+	//	printEvent(eventName,args);
+	//	System.err.println("QB: "+binding);
 		
 		
 		NonDetConfig config = mapping.get(binding);
 		if (config == null) {
+			System.err.println("QB not there "+binding);
 			return; // the binding is gone!
 		}
 		int[] previous_states = config.getStates();
@@ -115,6 +116,9 @@ public class Incr_QVarN_FVar_NonDet_QEAMonitor extends
 					}
 				}
 			}
+		}
+		else{
+			if(DEBUG) System.err.println("Red skipped "+binding);
 		}
 
 		// Update configurations - check relevance first

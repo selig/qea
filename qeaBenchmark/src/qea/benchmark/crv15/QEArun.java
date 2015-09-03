@@ -38,8 +38,9 @@ public class QEArun{
 		//runResource();
 		//runAuctionBidding();
 		//runSQLInjection();
-		//runClientManagers();
+		runClientManagers();
 		//runExamSystem();
+		//runCallReturn();
 		
 		//runStack();
 		//runQueue();
@@ -197,10 +198,11 @@ public static void runClientManagers() throws IOException {
 	public static void runCallReturn() throws IOException {
 	
 		long startTime = System.currentTimeMillis();
-		String trace = "/Users/giles/git/crv15/Offline/call_trace_invalid";
+		String trace = "/Users/giles/git/crv15_local/Offline/MarQ/Benchmark2/call_trace_invalid";
 		QEA qea = makeCallReturn();
 		OfflineTranslator t = new DefaultTranslator("call","return");
 		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, t);
+		fm.ignoreHeader();
 		System.err.println("Running with " + fm.getMonitorClass());
 		long beforeMonitoring = System.currentTimeMillis();
 	

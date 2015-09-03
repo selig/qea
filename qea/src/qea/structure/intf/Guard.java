@@ -861,7 +861,7 @@ public abstract class Guard {
 	}	
 	
 	public static Guard isEqualToConstant(final int var0, final int val1) {
-		return new Guard("x_" + var0 + " > " + val1) {
+		return new Guard("x_" + var0 + " = " + val1) {
 			@Override
 			public boolean check(Binding binding) {
 				Integer val0 = binding.getForcedAsInteger(var0);

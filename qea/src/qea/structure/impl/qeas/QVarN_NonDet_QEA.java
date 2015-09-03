@@ -26,6 +26,8 @@ import qea.exceptions.NotRelevantException;
 public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements
 		QEA_nondet_free {
 
+	private final boolean DEBUG = false;
+	
 	private final Transition[][][] delta;
 
 	public QVarN_NonDet_QEA(int numStates, int numEvents, int initialState,
@@ -82,9 +84,10 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements
 		Binding[] end_bindings = null;
 		int end_count = 0;
 
-		for (int si = 0; si < start_states.length; si++) {
+		for (int si = 0; si < start_states.length; si++) {			
 			int start_state = start_states[si];
 			Binding binding = start_bindings[si];
+			if(DEBUG) System.err.println("Start: "+start_state+", "+binding);
 
 			Transition[] transitions = delta[start_state][eventName];
 
@@ -111,6 +114,10 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements
 						//TODO we might need to expand end_states and end_bindings
 						// can cause an exception!
 						
+						end_states = ArrayUtil.resize(end_states, end_count+1);
+						end_bindings = ArrayUtil.resize(end_bindings, end_count+1);
+						
+						if(DEBUG) System.err.println("\t\trecord "+next_state+","+next_binding);
 						end_states[end_count] = next_state;
 						end_bindings[end_count] = next_binding;
 						end_count++;
@@ -132,7 +139,7 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements
 			}
 			boolean transition_taken = false;
 			for (Transition transition : transitions) {
-
+				if(DEBUG) System.err.println("\tTransition: "+transition);
 				// if we bind new qvariables or clash with bindings in qbinding
 				// we are not relevant
 				Binding extend_with = qbinding.extend(
@@ -162,19 +169,29 @@ public class QVarN_NonDet_QEA extends Abstr_QVarN_QEA implements
 					if (assignment != null) {
 						assignment.apply(next_binding, false);
 					}
+					// do this even if we detect repeated, as we are just moving to the repeated one
+					transition_taken = true;  
 					boolean repeated = false;
-					for (int i = 0; i < end_states.length; i++) {
-						if (end_states[i] == next_state
-								&& end_bindings[i].equals(next_binding)) {
+					for (int i = 0; i < end_count; i++) {
+						if (end_states[i] == next_state && end_bindings[i].equals(next_binding)) {
+							if(DEBUG){
+								System.err.println("\t\trepetition at "+i);
+								System.err.println("\t\t\tignore: "+next_state+","+next_binding);
+								System.err.println("\t\t\tobserved: "+end_states[i]+","+end_bindings[i]);
+							}
 							repeated = true;
 						}
 					}
 					if (!repeated) {
-						transition_taken = true;
+						if(DEBUG) System.err.println("\t\trecord "+next_state+","+next_binding);						
 						end_states[end_count] = next_state;
 						end_bindings[end_count] = next_binding;
 						end_count++;
+					}else{
+						if(DEBUG) System.err.println("\t\trepeated,ignored");
 					}
+				}else{
+					if(DEBUG && guard!=null) System.err.println("\t\tguard failed");
 				}
 			}
 			if (!transition_taken) {

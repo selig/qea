@@ -3,7 +3,6 @@ package qea.properties.crv15.offline;
 import qea.creation.QEABuilder;
 import static qea.structure.intf.Guard.*;
 import static qea.structure.intf.Assignment.*;
-import qea.structure.intf.Guard;
 import qea.structure.intf.QEA;
 
 public class OCLR_3 {

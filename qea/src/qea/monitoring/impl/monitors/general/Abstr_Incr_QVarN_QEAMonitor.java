@@ -285,9 +285,11 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		//} else {
 		//	DEBUG = false;
 		//}
-
-		//printEvent(eventName,args);
-		
+		//if(rep++ == 200){
+		//	DEBUG=true;
+		//	printEvent(eventName,args);
+		//	printMaps();
+		//}
 		if (DEBUG) {
 			System.err
 					.println("********************\n\n********************\n=======> "
@@ -295,7 +297,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 							+ Arrays.toString(args));
 		}
 		if (DEBUG) {
-			printMaps();
+			//printMaps();
 		}
 
 		if (saved != null) {
@@ -343,13 +345,13 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 
 				BindingRecord record = map.get(query);
 
-				if (DEBUG && record!=null) {
+				if (DEBUG){// && record!=null) {
 					System.err.println("Query " + query+"\t=>\t"+record);
 				}
 
 				if (record != null) {
 					process_record(record, eventName, args, used, has_q_blanks);
-					if (i == 0 && freevars == 0) {
+					if (i == 0 && freevars == 0 && !use_red) {
 						// use_full not always viable
 						// only allow it if we have no free variables
 						// this is oversafe

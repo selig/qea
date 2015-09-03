@@ -43,10 +43,10 @@ public class Transition {
 	public String toString() {
 		String res = Arrays.toString(variableNames);
 		if (guard != null) {
-			res += "-" + guard;
+			res += "-(" + guard+")";
 		}
 		if (assignment != null) {
-			res += "-" + assignment;
+			res += "-(" + assignment+")";
 		}
 		return res + "->" + endState;
 	}

@@ -139,8 +139,7 @@ public abstract class Assignment {
 			@Override
 			public Binding apply(Binding binding, boolean copy) {
 				if (binding.getValue(varSet) != null) {
-					HashSet<Object> set = (HashSet<Object>) binding
-							.getForced(varSet);
+					HashSet<Object> set = (HashSet<Object>) binding.getForced(varSet);
 					set.add(binding.getForced(varElement));
 					Binding newBinding = binding;
 					if (copy) {
@@ -166,6 +165,39 @@ public abstract class Assignment {
 		};
 	}
 
+	public static Assignment addElementToCopiedSet(final int varSet,
+			final int varElement) {
+		return new Assignment("addElement_" + varElement + "ToSet_" + varSet) {
+
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+				if (binding.getValue(varSet) != null) {
+					HashSet<Object> set = new HashSet<Object>((HashSet<Object>) binding.getForced(varSet));
+					set.add(binding.getForced(varElement));
+					Binding newBinding = binding;
+					if (copy) {
+						newBinding = binding.copy();
+					}
+					newBinding.setValue(varSet, set);
+					return newBinding;
+				}
+				HashSet<Object> set = new HashSet<Object>();
+				set.add(binding.getForced(varElement));
+				Binding newBinding = binding;
+				if (copy) {
+					newBinding = binding.copy();
+				}
+				newBinding.setValue(varSet, set);
+				return newBinding;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { varSet, varElement };
+			}
+		};
+	}	
+	
 	public static Assignment removeElementFromSet(final int varSet,
 			final int varElement) {
 		return new Assignment("removeElement_" + varElement + "_FromSet_"

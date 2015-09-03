@@ -113,7 +113,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 			//if(entry.getValue().isZero())
 			ret += entry.getKey() + "\t" + entry.getValue() + "\n";
 		}
-		
+		/*
 		ret += "maps\n";		
 		for (int e = 1; e < maps.length; e++) {
 			BindingRecord r = empty_paths[e];
@@ -126,6 +126,7 @@ public abstract class Abstr_Incr_QVarN_FVar_QEAMonitor<Q extends Abstr_QVarN_QEA
 		}
 		
 		ret += "\n" + checker;
+		*/
 		return ret;
 	}
 
