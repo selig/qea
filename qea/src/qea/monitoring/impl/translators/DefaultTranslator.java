@@ -130,6 +130,7 @@ public class DefaultTranslator extends OfflineTranslator {
 	}
 
 	protected int translate(String name) {
+		if(singleEvent!=null) return 1;
 		char c = name.charAt(0);
 		int event_id = event_lookup[c - 97];
 		if (event_id >= 1) {

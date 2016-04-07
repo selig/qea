@@ -84,16 +84,26 @@ public class ParsingTranslator extends DefaultTranslator {
 			for(int i=0;i<parsed_values.length;i++){
 				try{			
 					switch(mask[i]){
-					  case INT : parsed_values[i]= Integer.parseInt(paramValues[i].trim()); break;
-					  case QINT : parsed_values[i] = getInternedInt(paramValues[i].trim()); break;
+					  case INT : 
+						  parsed_values[i]= Integer.parseInt(paramValues[i].trim()); 
+						  break;
+					  case QINT : 
+						  parsed_values[i] = getInternedInt(paramValues[i].trim()); 
+						  break;
 					  case BOOL : 
 						  parsed_values[i] = Boolean.parseBoolean(paramValues[i].trim());
+						  break;
+					  case DOUBLE : 
+						  parsed_values[i] = Double.parseDouble(paramValues[i].trim()); 
 						  break;
 					  default : // skip OBJ
 					}					
 				}catch(NumberFormatException ex){
 					throw new ShouldNotHappenException(
-							"Event was expecting an integer. Bad event = "+eventName+Arrays.toString(paramValues));
+							"Event was expecting an value or a different type.\n"+
+							"Kind of param type expected = "+mask[i]+"\n"+
+							"Bad index = "+i+"\n"+
+							"Bad event = "+eventName+Arrays.toString(paramValues));
 				}
 				catch(ArrayIndexOutOfBoundsException ex){
 					throw new ShouldNotHappenException(

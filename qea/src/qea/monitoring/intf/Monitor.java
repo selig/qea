@@ -18,6 +18,8 @@ import qea.structure.intf.QEA;
  */
 public abstract class Monitor<Q extends QEA> {
 
+	public boolean DEBUG = false;
+	
 	/**
 	 * QEA property
 	 */

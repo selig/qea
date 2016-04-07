@@ -20,7 +20,8 @@ public class TranslatorFactory {
 		OBJ,
 		INT,
 		QINT,
-		BOOL
+		BOOL,
+		DOUBLE
 	}
 	public static class Parameter{
 		public final int original_place;
@@ -79,7 +80,7 @@ public class TranslatorFactory {
 			SelectingWrapperTranslator<ParsingTranslator> tt = new SelectingWrapperTranslator<ParsingTranslator>(t);
 			for(int i=0;i<events.length;i++){
 				if(events[i].is_reordered){
-					Integer[] order = new Integer[events[i].ps.size()]; 						
+					Parameter[] order = new Parameter[events[i].ps.size()]; 	
 					events[i].ps.toArray(order);
 					tt.setOrder(names[i], order);
 				}
@@ -147,4 +148,9 @@ public class TranslatorFactory {
 		return t;
 	}	
 	
+	public static OfflineTranslator makeSelectingParsingTranslatorWithSingleEvent(EventDescriptor event){
+		OfflineTranslator t = makeParsingTranslator(event);
+		t.setEmptyEventName(event.name);
+		return t;
+	}
 }

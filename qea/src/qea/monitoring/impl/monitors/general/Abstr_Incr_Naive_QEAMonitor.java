@@ -10,8 +10,6 @@ import qea.structure.impl.qeas.Abstr_QVarN_QEA;
 public abstract class Abstr_Incr_Naive_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		extends IncrementalMonitor<Q> {
 
-	protected final boolean DEBUG = false;
-	
 			
 	protected final QBindingImpl bottom;
 	protected final QBindingImpl[] dummyEmptyBinding = new QBindingImpl[1];

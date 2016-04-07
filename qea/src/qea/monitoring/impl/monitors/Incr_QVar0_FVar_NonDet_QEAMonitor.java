@@ -17,7 +17,6 @@ import qea.structure.impl.qeas.QVar01_FVar_NonDet_QEA;
 public class Incr_QVar0_FVar_NonDet_QEAMonitor extends
 		IncrementalMonitor<QVar01_FVar_NonDet_QEA> {
 
-	private static boolean DEBUG = false;		
 			
 	/**
 	 * Contains the current configuration (set of states) for the monitor

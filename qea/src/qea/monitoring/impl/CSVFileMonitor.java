@@ -75,6 +75,10 @@ public class CSVFileMonitor extends FileMonitor {
 			translator.getMonitor().garbage_event(format(parts[1]));
 			return null;
 		}
+		if(translator.hasSingleEvent()){
+			return translator.translateAndStep(translator.getSingleEvent(),null,parts);
+		}
+		
 		if(parts.length == 1){
 			return translator.translateAndStep(format(parts[0]));
 		}

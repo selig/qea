@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import qea.monitoring.impl.translators.TranslatorFactory.Parameter;
 import qea.monitoring.intf.Monitor;
 import qea.structure.impl.other.Verdict;
 
@@ -19,6 +20,12 @@ public class SelectingWrapperTranslator<Inner extends OfflineTranslator> extends
 		reordering_list.put(e, orderAL);
 		for(Integer i : order) orderAL.add(i);
 	}
+
+	public void setOrder(String e, Parameter... order){ 
+		ArrayList<Integer> orderAL = new ArrayList<Integer>();
+		reordering_list.put(e, orderAL);
+		for(Parameter p : order) orderAL.add(p.original_place);
+	}	
 	
 	private final Inner inner;	
 	public SelectingWrapperTranslator(Inner inner){ this.inner = inner; }

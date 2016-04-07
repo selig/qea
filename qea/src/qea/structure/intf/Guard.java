@@ -1,6 +1,9 @@
 package qea.structure.intf;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import qea.exceptions.ShouldNotHappenException;
 
@@ -625,6 +628,40 @@ public abstract class Guard {
 		};	
 	}	
 	
+	public static Guard absoluteDifferenceGreaterThanOrEqualToVal(final int var0, final int var1, final int val) {
+		return new Guard("|x_" + var0 + " - x_" + var1+"| >= " + val) {
+			@Override
+			public boolean check(Binding binding) {
+				Integer val0 = binding.getForcedAsInteger(var0);
+				Integer val1 = binding.getForcedAsInteger(var1);
+				int abs = (val0 - val1);
+				if(abs<0) abs=-abs;
+				return abs >= val;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				Integer val1 = (Integer) (var1 == qvar ? firstQval : binding
+						.getForced(var1));
+				int abs = (val0 - val1);
+				if(abs<0) abs=-abs;
+				return abs >= val;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};	
+	}	
+	
 	public static Guard differenceGreaterThanOrEqualToVal(final int var0, final int var1, final int val) {
 		return new Guard("x_" + var0 + " - x_" + var1+" < " + val) {
 			@Override
@@ -833,6 +870,32 @@ public abstract class Guard {
 			}
 		};
 	}
+	public static Guard isGreaterThanConstant(final int var0, final double val1) {
+		return new Guard("x_" + var0 + " > " + val1) {
+			@Override
+			public boolean check(Binding binding) {
+				Double val0 = binding.getForcedAsDouble(var0);
+				return val0 > val1;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Double val0 = (Double) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				return val0 > val1;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0 };
+			}
+		};
+	}	
 	public static Guard isLessThanConstant(final int var0, final int val1) {
 		return new Guard("x_" + var0 + " < " + val1) {
 			@Override
@@ -859,6 +922,58 @@ public abstract class Guard {
 			}
 		};
 	}	
+	public static Guard isLessThanConstant(final int var0, final double val1) {
+		return new Guard("x_" + var0 + " < " + val1) {
+			@Override
+			public boolean check(Binding binding) {
+				Double val0 = binding.getForcedAsDouble(var0);
+				return val0 < val1;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Double val0 = (Double) (var0 == qvar ? firstQval : binding.getForced(var0));
+				return val0 < val1;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0 };
+			}
+		};
+	}	
+	
+	public static Guard isLessThanOrEqualToConstant(final int var0, final int val1) {
+		return new Guard("x_" + var0 + " < " + val1) {
+			@Override
+			public boolean check(Binding binding) {
+				Integer val0 = binding.getForcedAsInteger(var0);
+				return val0 <= val1;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Integer val0 = (Integer) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				return val0 <= val1;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0 };
+			}
+		};
+	}		
 	
 	public static Guard isEqualToConstant(final int var0, final int val1) {
 		return new Guard("x_" + var0 + " = " + val1) {
@@ -1115,6 +1230,49 @@ public abstract class Guard {
 			}
 		};
 	}
+	public static Guard or(final Guard... gs) {
+		return new Guard("or "+Arrays.toString(gs)) {
+
+			@Override
+			public boolean check(Binding binding) {
+				for(int i=0;i<gs.length;i++){
+					if(gs[i].check(binding)) return true;
+				}
+				return false;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object qval) {
+				for(int i=0;i<gs.length;i++){
+					if(gs[i].check(binding,qvar,qval)) return true;
+				}
+				return false;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				for(int i=0;i<gs.length;i++){
+					if(gs[i].usesQvars()) return true;
+				}
+				return false;
+			}
+
+			@Override
+			public int[] vars() {
+				Set<Integer> vars = new HashSet<Integer>();
+				for(int i=0;i<gs.length;i++){
+					for(int j=0;j<gs[i].vars().length;j++){
+						vars.add(gs[i].vars()[j]);
+					}
+				}
+				Integer[] ret = new Integer[vars.size()];
+				vars.toArray(ret);
+				int[] r = new int[ret.length];
+				for(int i=0;i<ret.length;i++) r[i]=ret[i];
+				return r;
+			}
+		};
+	}	
 
 	public static Guard not(final Guard g1) {
 		return new Guard("not " + g1) {

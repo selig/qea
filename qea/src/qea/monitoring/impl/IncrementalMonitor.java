@@ -271,12 +271,12 @@ public abstract class IncrementalMonitor<Q extends QEA> extends Monitor<Q> {
 	public void printEvent(int eventName, Object[] args){
 		System.err.print(">>> "+eventName +"[");
 		for(Object o : args){
-			//if(o instanceof Integer){
-			//	System.err.print(o+" ");
-			//}else{
+			if(o instanceof Integer || o instanceof Double){
+				System.err.print(o+" ");
+			}else{
 				String name = o.getClass()+"@"+System.identityHashCode(o);
 				System.err.print(name+" ");
-			//}
+			}
 		}
 		System.err.println("]");
 	}

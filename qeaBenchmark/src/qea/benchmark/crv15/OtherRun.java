@@ -1,12 +1,13 @@
 package qea.benchmark.crv15;
 
-import static qea.monitoring.impl.translators.TranslatorFactory.*;
+import static qea.monitoring.impl.translators.TranslatorFactory.event;
+import static qea.monitoring.impl.translators.TranslatorFactory.param;
 import static qea.monitoring.impl.translators.TranslatorFactory.PType.*;
 
 import java.io.IOException;
 
+import qea.creation.QEABuilder;
 import qea.monitoring.impl.CSVFileMonitor;
-import qea.monitoring.impl.translators.DefaultTranslator;
 import qea.monitoring.impl.translators.OfflineTranslator;
 import qea.monitoring.impl.translators.TranslatorFactory;
 import qea.properties.crv15.offline.LogFire_8;
@@ -14,14 +15,17 @@ import qea.properties.crv15.offline.OCLR_3;
 import qea.properties.crv15.offline.RVMonitor_4;
 import qea.structure.impl.other.Verdict;
 import qea.structure.intf.QEA;
+import static qea.structure.intf.Guard.*;
 
 public class OtherRun {
 
 	public static void main(String[] args) throws IOException{
 		
 		//run_oclr();
-		run_rvmonitor_5();
+		//run_rvmonitor_1();
 		//run_logfire_4();
+		
+		run_breach_2_and_3();
 	}
 	
 	public static void run_oclr() throws IOException{
@@ -37,7 +41,7 @@ public class OtherRun {
 		System.out.println("Verdict :"+v);
 	}
 	public static void run_rvmonitor_1() throws IOException{
-		String trace = "/Users/giles/git/crv15_local/Offline/RVMonitor/Bench1/valid1.csv";
+		String trace = "/Users/giles/git/crv15_local/DataMill/Offline/traces/rvmonitor/trace1_invalid.csv";
 		QEA qea = RVMonitor_4.make_one();
 		OfflineTranslator translator = TranslatorFactory.makeSelectingDefaultTranslator(
 				event("createColl",param(0,OBJ),param(1,OBJ)),
@@ -46,6 +50,7 @@ public class OtherRun {
 				event("updateMap",param(0,OBJ)));
 		
 		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, translator);
+		
 		fm.ignoreHeader();
 		Verdict v = fm.monitor();
 		System.out.println("Verdict :"+v);		
@@ -106,4 +111,93 @@ public class OtherRun {
 		System.out.println("Verdict :"+v);	
 		System.out.println(translator.getMonitor());
 	}		
+	
+	public static void run_breach_1() throws IOException {
+		String trace = "/Users/giles/git/crv15_local/DataMill/Offline/traces/breach/simple_false.csv";
+		OfflineTranslator translator = TranslatorFactory.makeSelectingParsingTranslatorWithSingleEvent(
+				event("z",param(0,DOUBLE),param(3,DOUBLE)));
+        QEA qea = make_offline_seven_one();
+		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, translator);
+		fm.ignoreHeader();
+		Verdict v = fm.monitor();
+		System.out.println("Verdict :"+v);	
+		System.out.println(translator.getMonitor());        
+	}
+    public static QEA make_offline_seven_one(){
+        QEABuilder b = new QEABuilder("breachOne");
+        //Event
+        int z = 1;
+        // Free variables
+        int time = 1; int value = 2;
+
+        b.addTransition(1,z,new int[]{time,value}, isLessThanConstant(value,0.3),1);
+        b.addTransition(1,z,new int[]{time,value}, isGreaterThanConstant(time,50.0),2);
+
+        b.addFinalStates(1,2);
+        return b.make();
+    }	
+	public static void run_breach_2_and_3() throws IOException {
+		String trace = "/Users/giles/git/crv15_local/DataMill/Offline/traces/breach/what_hill_false.csv";    
+    OfflineTranslator translator = TranslatorFactory.makeSelectingParsingTranslatorWithSingleEvent(event("event",
+            param(0,DOUBLE),param(21,INT),param(22,INT),param(17,DOUBLE),param(20,DOUBLE),param(18,DOUBLE),param(19,DOUBLE)));
+       QEA qea = make_offline_seven_two();
+       
+		CSVFileMonitor fm = new CSVFileMonitor(trace, qea, translator);
+		fm.ignoreHeader();
+		translator.getMonitor().DEBUG=true;
+		Verdict v = fm.monitor();
+		System.out.println("Verdict :"+v);	
+		System.out.println(translator.getMonitor());        
+	}       
+
+    public static QEA make_offline_seven_two(){
+        QEABuilder b = new QEABuilder("breachTwo");
+        //Events
+        int e = 1;
+        //States
+        int start = 1;
+        int error = 2;
+        int leftUbad = 3;
+        int success = 4;
+        // Free variables
+        int time = 1;
+        int lws = 2;
+        int rws = 3;
+        int cliff_l = 4;
+        int cliff_r = 5;
+        int cliff_fl = 6;
+        int cliff_fr = 7;
+
+        b.addTransition(start,e,new int[]{time,lws,rws,cliff_l,cliff_r,cliff_fl,cliff_fr},
+                        isGreaterThanConstant(time,100.0),error);
+        b.addTransition(leftUbad,e,new int[]{time,lws,rws,cliff_l,cliff_r,cliff_fl,cliff_fr},
+                        isGreaterThanConstant(time,50.0),error);
+
+        b.addTransition(start,e,new int[]{time,lws,rws,cliff_l,cliff_r,cliff_fl,cliff_fr},
+                        or(
+                           isLessThanOrEqualToConstant(lws,10),
+                           absoluteDifferenceGreaterThanOrEqualToVal(lws,rws,1)
+                           ),
+                        leftUbad);
+
+        b.addTransition(start,e,new int[]{time,lws,rws,cliff_l,cliff_r,cliff_fl,cliff_fr},
+                        or(
+                           isGreaterThanConstant(cliff_l,0.5),
+                           isGreaterThanConstant(cliff_r,0.5),
+                           isGreaterThanConstant(cliff_fl,0.5),
+                           isGreaterThanConstant(cliff_fr,0.5)
+                           ),success);
+
+        b.addTransition(leftUbad,e,new int[]{time,lws,rws,cliff_l,cliff_r,cliff_fl,cliff_fr},
+                        or(
+                           isGreaterThanConstant(cliff_l,0.5),
+                           isGreaterThanConstant(cliff_r,0.5),
+                           isGreaterThanConstant(cliff_fl,0.5),
+                           isGreaterThanConstant(cliff_fr,0.5)
+                           ),success);
+
+        b.setAllSkipStates();
+        b.addFinalStates(start,success);
+        return b.make();
+    }	
 }

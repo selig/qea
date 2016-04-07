@@ -69,6 +69,19 @@ public abstract class Binding {
 
 		return (Integer) val;
 	}
+	public Double getForcedAsDouble(int var) {
+		Object val = getValue(var);
+		if (val == null) {
+			throw new BindingException("Variable x_" + var + " expected in "
+					+ this);
+		}
+		if (!(val instanceof Double)) {
+			throw new BindingException("Variable x_" + var
+					+ " expected as integer in " + this);
+		}
+
+		return (Double) val;
+	}	
 
 	/**
 	 * Helper method to perform matching update In the free variable case we
@@ -111,4 +124,5 @@ public abstract class Binding {
 	public abstract boolean equals(Object other);
 	@Override
 	public abstract int hashCode();
+
 }

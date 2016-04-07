@@ -85,4 +85,12 @@ public abstract class OfflineTranslator {
 	public boolean useNaive() {
 		return use_naive;
 	}
+
+	/**
+	 * Should only be called on creation
+	 */
+	 protected String singleEvent = null;
+	 public void setEmptyEventName(String name){ singleEvent = name; }
+	 public boolean hasSingleEvent(){ return singleEvent!=null;}
+	 public String getSingleEvent(){ return singleEvent;}
 }
