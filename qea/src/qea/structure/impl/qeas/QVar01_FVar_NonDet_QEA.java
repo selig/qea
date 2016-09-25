@@ -126,7 +126,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 
 		// TODO This method is very similar to getNextConfig in
 		// QVar01_FVar_NonDet_FixedQVar_QEA
-
+		
 		if (config.getStates().length == 1) { // Only one start state
 
 			Transition[] transitions = delta[config.getStates()[0]][event];
@@ -166,6 +166,18 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 	private NonDetConfig getNextConfig1StartState1Transition(
 			NonDetConfig config, Object[] args, Transition transition,
 			Object qVarValue, boolean isQVarValue) {
+		
+		if(!isQVarValue){
+			boolean hasq = false; 
+			int[] ps = transition.getVariableNames();
+			for(int p : ps){
+				if(p<0) hasq=true;
+			}
+			if(hasq) return config;
+		}		
+		else if(!qVarMatchesBinding(qVarValue,args,transition)){
+			return config;
+		}
 		
 		// Update binding for free variables
 		Binding binding = config.getBindings()[0];
@@ -209,7 +221,7 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 	private NonDetConfig getNextConfig1StartStateMultTransitions(
 			NonDetConfig config, Object[] args, Transition[] transitions,
 			Object qVarValue, boolean isQVarValue) {
-		
+				
 		// Create as many states and bindings as there are transitions
 		int[] endStates = new int[transitions.length];
 		FBindingImpl[] bindings = new FBindingImpl[transitions.length];
@@ -219,15 +231,23 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 
 		// Iterate over the transitions
 		for (Transition transition : transitions) {
-
+			
+			if(!isQVarValue){
+				boolean hasq = false; 
+				int[] ps = transition.getVariableNames();
+				for(int p : ps){
+					if(p<0) hasq=true;
+				}
+				if(hasq) continue;
+			}
+			else if(!qVarMatchesBinding(qVarValue,args,transition)){
+				continue;
+			}			
+			
 			//Check if state is a strong failure state
 			// TODO : add an option to keep them
 			int end_state = transition.getEndState();
-			if(!(strongStates[end_state] && !finalStates[end_state])){
-			
-			// Check the transition matches the value of the QVar
-			if (!isQVarValue || qVarMatchesBinding(qVarValue, args, transition)) {
-
+					
 				// Copy the binding of the start state
 				FBindingImpl binding = (FBindingImpl) config.getBindings()[0]
 						.copy();
@@ -236,10 +256,12 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 				updateBinding(binding, args, transition);
 
 				// If there is a guard, check it is satisfied
-				if (transition.getGuard() == null || isQVarValue
-						&& transition.getGuard().check(binding, -1, qVarValue)
-						|| !isQVarValue && transition.getGuard().check(binding)) {
+				if (transition.getGuard() == null || 
+						(isQVarValue && transition.getGuard().check(binding, -1, qVarValue))
+						|| 
+						(!isQVarValue && transition.getGuard().check(binding))) {
 
+					
 					// If there is an assignment, execute it
 					if (transition.getAssignment() != null) {
 						int[] avars = transition.getAssignment().vars();
@@ -259,9 +281,10 @@ public class QVar01_FVar_NonDet_QEA extends Abstr_QVar01_FVar_QEA implements
 					bindings[endStatesCount] = binding;
 
 					endStatesCount++;
+				}else{
+				//	System.out.println("Guard fails");
 				}
-			}
-			}
+
 		}
 
 		if (endStatesCount == 0) { // All end states are failing

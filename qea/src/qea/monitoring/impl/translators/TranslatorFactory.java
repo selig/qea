@@ -17,11 +17,13 @@ public class TranslatorFactory {
 	}
 	
 	public static enum PType {
-		OBJ,
+		OBJ,  // A string
 		INT,
-		QINT,
+		QINT, // if the Int is quantified, ensured == works
 		BOOL,
-		DOUBLE
+		DOUBLE,
+		LONG,
+		LIST
 	}
 	public static class Parameter{
 		public final int original_place;
@@ -146,7 +148,8 @@ public class TranslatorFactory {
 		SelectingWrapperTranslator<DefaultTranslator> t = makeSelectingDefaultTranslator(names);
 		t.allowUnknown();
 		return t;
-	}	
+	}
+	
 	
 	public static OfflineTranslator makeSelectingParsingTranslatorWithSingleEvent(EventDescriptor event){
 		OfflineTranslator t = makeParsingTranslator(event);

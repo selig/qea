@@ -1,7 +1,9 @@
 package qea.monitoring.impl.translators;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import qea.exceptions.ShouldNotHappenException;
@@ -96,6 +98,23 @@ public class ParsingTranslator extends DefaultTranslator {
 					  case DOUBLE : 
 						  parsed_values[i] = Double.parseDouble(paramValues[i].trim()); 
 						  break;
+					  case LONG :
+						  parsed_values[i] = Long.parseLong(paramValues[i].trim());
+						  break;
+					  case LIST:
+					  {
+						  String s = paramValues[i].trim();
+						  List list = new ArrayList();
+						  // We assume list is of the form [1;2;3] with skippable whitespace
+						  if(s.charAt(0)!='[' || s.charAt(s.length()-1) != ']'){
+							  throw new RuntimeException(s+" is not a LIST");
+						  }
+						  s = s.substring(1,s.length()-2);
+						  String[] parts = s.split(";");
+						  for(String p : parts){ list.add(s.trim());}
+						  parsed_values[i] = list;
+						  break;
+					  }
 					  default : // skip OBJ
 					}					
 				}catch(NumberFormatException ex){

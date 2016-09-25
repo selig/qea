@@ -219,6 +219,7 @@ public abstract class Abstr_QVar01_FVar_QEA extends QEA implements QEA_single {
 				if (args[i] == qVarValue) {
 					return true;
 				}
+				//System.out.println("Failed as "+args[i]+" != "+qVarValue);
 				return false;
 			}
 		}

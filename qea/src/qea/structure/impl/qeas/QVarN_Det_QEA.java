@@ -176,6 +176,7 @@ public class QVarN_Det_QEA extends Abstr_QVarN_QEA implements QEA_det_free {
 					sigset.add(itargs);
 				}
 			}
+			
 			e_sigs[e] = new int[sigset.size()][];
 			int i = 0;
 			for (ArrayList<Integer> siglist : sigset) {

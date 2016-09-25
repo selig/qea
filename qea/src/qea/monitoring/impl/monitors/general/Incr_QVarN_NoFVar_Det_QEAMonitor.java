@@ -267,17 +267,19 @@ public class Incr_QVarN_NoFVar_Det_QEAMonitor extends
 			//if(entry.getValue()==0)
 			ret += entry.getKey() + "\t" + entry.getValue() + "\n";
 		}
-		/*
+		
 		ret += "maps\n";
 		for (int e = 1; e < maps.length; e++) {
+			ret += e + "\n";			
+			ret+="\tempty\t"+empty_paths[e]+"\n";
 			Map<String, BindingRecord> m = maps[e];
-			ret += e + "\n";
 			for (Map.Entry<String, BindingRecord> entry : m.entrySet()) {
 				ret += "\t" + entry.getKey() + "\t" + entry.getValue() + "\n";
 			}
-		}
+		}		
+		
 		ret += "\n" + checker;
-		*/
+		
 		return ret;
 	}
 

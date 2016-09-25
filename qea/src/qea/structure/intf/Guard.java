@@ -43,6 +43,31 @@ public abstract class Guard {
 		return name;
 	}
 
+	public static Guard notDefined(final int var0) {
+		return new Guard("x_" + var0 + " undefined") {
+			@Override
+			public boolean check(Binding binding) {
+				return binding.getValue(var0)==null;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				if(var0 == qvar) return false;
+				return binding.getValue(var0)==null;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0 };
+			}
+		};
+	}	
+	
 	public static Guard isTrue(final int var0) {
 		return new Guard("x_" + var0 + "== true") {
 			@Override
@@ -330,6 +355,36 @@ public abstract class Guard {
 		};
 	}
 
+	public static Guard isGreaterThanLong(final int var0, final int var1) {
+		return new Guard("x_" + var0 + " > x_" + var1) {
+			@Override
+			public boolean check(Binding binding) {
+				Long val0 = binding.getForcedAsLong(var0);
+				Long val1 = binding.getForcedAsLong(var1);
+				return val0 > val1;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Long val0 = (Long) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				Long val1 = (Long) (var1 == qvar ? firstQval : binding
+						.getForced(var1));
+				return val0 > val1;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};
+	}	
+	
 	public static Guard varIsLessThanVal(final int var, final int val) {
 		return new Guard("x_" + var + " < " + val) {
 
@@ -597,6 +652,71 @@ public abstract class Guard {
 			}
 		};	
 	}
+		
+	public static Guard absoluteDifferenceLessThanValDouble(final int var0, final int var1, final double val) {
+		return new Guard("x_" + var0 + " - x_" + var1+" < " + val) {
+			@Override
+			public boolean check(Binding binding) {
+				Double val0 = binding.getForcedAsDouble(var0);
+				Double val1 = binding.getForcedAsDouble(var1);
+				Double difference = val0-val1;
+				if(difference<0) difference= -difference;
+				return difference < val;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Double val0 = (Double) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				Double val1 = (Double) (var1 == qvar ? firstQval : binding
+						.getForced(var1));
+				Double difference = val0-val1;
+				if(difference<0) difference= -difference;
+				return difference < val;
+
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};	
+	}	
+	
+	public static Guard differenceLessThanValDouble(final int var0, final int var1, final double val) {
+		return new Guard("x_" + var0 + " - x_" + var1+" < " + val) {
+			@Override
+			public boolean check(Binding binding) {
+				Double val0 = binding.getForcedAsDouble(var0);
+				Double val1 = binding.getForcedAsDouble(var1);
+				return (val0 - val1) < val;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Double val0 = (Double) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				Double val1 = (Double) (var1 == qvar ? firstQval : binding
+						.getForced(var1));
+				return (val0 - val1) < val;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};	
+	}		
 	
 	public static Guard differenceLessThanOrEqualToVal(final int var0, final int var1, final int val) {
 		return new Guard("x_" + var0 + " - x_" + var1+" <= " + val) {
@@ -768,6 +888,36 @@ public abstract class Guard {
 				Integer val1 = (Integer) (var1 == qvar ? firstQval : binding
 						.getForced(var1));
 				return (val0 + val1) > val;
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0 || var1 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};	
+	}			
+	
+	public static Guard productLessThanValDouble(final int var0, final int var1, final double val) {
+		return new Guard("x_" + var0 + " * x_" + var1+" < " + val) {
+			@Override
+			public boolean check(Binding binding) {
+				Double val0 = binding.getForcedAsDouble(var0);
+				Double val1 = binding.getForcedAsDouble(var1);
+				return (val0 * val1) < val;
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {
+				Double val0 = (Double) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				Double val1 = (Double) (var1 == qvar ? firstQval : binding
+						.getForced(var1));
+				return (val0 * val1) < val;
 			}
 
 			@Override
@@ -1002,6 +1152,33 @@ public abstract class Guard {
 		};
 	}	
 
+	public static Guard isEqualToStringConstant(final int var0, final String val1) {
+		return new Guard("x_" + var0 + " = " + val1) {
+			@Override
+			public boolean check(Binding binding) {
+				String val0 = (String) binding.getForced(var0);
+				return val0.equals(val1);
+			}
+
+			@Override
+			public boolean check(Binding binding, int qvar, Object firstQval) {				
+				String val0 = (String) (var0 == qvar ? firstQval : binding
+						.getForced(var0));
+				return val0.equals(val1);
+			}
+
+			@Override
+			public boolean usesQvars() {
+				return var0 < 0;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0 };
+			}
+		};
+	}	
+	
 	public static Guard setContainsElement(final int varElement,
 			final int varSet) {
 		return new Guard("set_" + varSet + "_ContainsElement_" + varElement) {

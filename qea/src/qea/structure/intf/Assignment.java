@@ -326,6 +326,27 @@ public abstract class Assignment {
 				return new int[] { var0, var1 };
 			}
 		};
+	}
+	public static Assignment addDouble(final int var0, final int var1) {
+		return new Assignment("x_" + var0 + "+= x_"+var1) {
+			@Override
+			public Binding apply(Binding binding, boolean copy) {
+				Double val0 = (Double) binding.getForced(var0);
+				Double val1 = (Double) binding.getForced(var1);
+				
+				Binding newBinding = binding;
+				if (copy) {
+					newBinding = binding.copy();
+				}
+				newBinding.setValue(var0, val0 + val1);
+				return newBinding;
+			}
+
+			@Override
+			public int[] vars() {
+				return new int[] { var0, var1 };
+			}
+		};
 	}		
 	
 	public static Assignment addDifference(final int var0, final int var1, final int var2) {

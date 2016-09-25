@@ -77,11 +77,24 @@ public abstract class Binding {
 		}
 		if (!(val instanceof Double)) {
 			throw new BindingException("Variable x_" + var
-					+ " expected as integer in " + this);
+					+ " expected as double in " + this+" type was "+val.getClass());
 		}
 
 		return (Double) val;
 	}	
+	public Long getForcedAsLong(int var) {
+		Object val = getValue(var);
+		if (val == null) {
+			throw new BindingException("Variable x_" + var + " expected in "
+					+ this);
+		}
+		if (!(val instanceof Long)) {
+			throw new BindingException("Variable x_" + var
+					+ " expected as long in " + this+" type was "+val.getClass());
+		}
+
+		return (Long) val;
+	}		
 
 	/**
 	 * Helper method to perform matching update In the free variable case we

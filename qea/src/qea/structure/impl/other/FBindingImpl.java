@@ -88,8 +88,14 @@ public class FBindingImpl extends Binding {
 				out[i] = "-";
 			} else {
 				if(values[i] instanceof Long){
-					out[i] = "" + values[i];
+					out[i] = "l_" + values[i];
 				}
+				else if(values[i] instanceof Integer){
+					out[i] = "i_" + values[i];
+				}
+				else if(values[i] instanceof Double){
+					out[i] = "d_" + values[i];
+				}				
 				else{
 					//String s = System.identityHashCode(values[i]);
 					String s = values[i].toString();

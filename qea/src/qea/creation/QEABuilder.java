@@ -192,9 +192,13 @@ public class QEABuilder {
 	}
 
 	public static class Quant {
-		boolean universal;
-		int var = 1;
-		Guard g;
+		public final boolean universal;
+		public final int var;
+		
+		Quant(boolean u, int v){ universal=u; var=v; }
+		
+		Guard g = null;
+		boolean partial = false;
 
 		@Override
 		public String toString() {
@@ -276,14 +280,23 @@ public class QEABuilder {
 		boolean det = isEventDeterministic();
 		boolean nofree = fvars == 0;
 		int qs = quants.size();
+		boolean hasPartial = false;
 		Quantification[] qqs = new Quantification[qs];
 		for (int i = 0; i < qs; i++) {
 			Quant q = quants.get(i);
 			qqs[i] = q.universal ? FORALL : EXISTS;
+			if(q.partial){ hasPartial=true; }
 		}
 		boolean ggs = usesGlobalGuards();
 		Guard sg = quants.size() > 0 ? quants.get(0).g : null;
 
+		// currently only support partial quantifiers in certain types
+		if(hasPartial && 
+				type != QEAType.QVARN_FVAR_NONDET_QEA && 
+				type != QEAType.QVARN_FVAR_NONDET_QEA){
+			throw new ShouldNotHappenException("Partial quantifiers only supported for >1 quantifiers");
+		}
+		
 		switch (type) {	
 		case QVAR01_FVAR_DET_QEA:
 			if (qs == 0 && det && !ggs) {
@@ -457,8 +470,11 @@ public class QEABuilder {
 			try {
 				QEntry[] entry = ((Abstr_QVarN_QEA) qea).getFullLambda();
 				for (int i = 1; i < entry.length; i++) {
-					q.addQuantification(entry[i].quantification, -i,
-							entry[i].guard);
+					if(entry[i].partial){
+						q.addPartialQuantification(entry[i].quantification, -i,entry[i].guard);
+					}else{
+						q.addQuantification(entry[i].quantification, -i,entry[i].guard);
+					}
 				}
 			} catch (ClassCastException e) {
 				throw new ShouldNotHappenException(
@@ -472,6 +488,7 @@ public class QEABuilder {
 
 		return q;
 	}
+
 
 	private void addTransition(TempTransition tt) {
 		transitions.add(tt);
@@ -943,7 +960,7 @@ public class QEABuilder {
 
 		// Add quantifications
 		for (Quant q : quants) {
-			qea.addQuantification(q.var, q.universal ? FORALL : EXISTS, q.g);
+			qea.addQuantification(q.var, q.universal ? FORALL : EXISTS, q.g,q.partial);
 		}
 
 		Map<Integer, Set<Transition>>[] actual_trans = new Map[states + 1];
@@ -1001,7 +1018,7 @@ public class QEABuilder {
 
 		// Add quantifications
 		for (Quant q : quants) {
-			qea.addQuantification(q.var, q.universal ? FORALL : EXISTS, q.g);
+			qea.addQuantification(q.var, q.universal ? FORALL : EXISTS, q.g, q.partial);
 		}
 
 		for (TempTransition t : transitions) {
@@ -1341,19 +1358,27 @@ public class QEABuilder {
 	}
 
 	public void addQuantification(Quantification q, int var) {
-		Quant quant = new Quant();
-		quant.universal = q == FORALL;
-		quant.var = var;
+		Quant quant = new Quant(q == FORALL,var);
 		quants.add(quant);
 	}
-
+	
+	public void addPartialQuantification(Quantification q, int var) {
+		Quant quant = new Quant(q == FORALL,var);
+		quant.partial = true;
+		quants.add(quant);
+	}	
+	
 	public void addQuantification(Quantification q, int var, Guard g) {
-		Quant quant = new Quant();
-		quant.universal = q == FORALL;
-		quant.var = var;
+		Quant quant = new Quant(q==FORALL,var);
 		quant.g = g;
 		quants.add(quant);
 	}
+	
+	public void addPartialQuantification(Quantification q, int var, Guard g) {
+		Quant quant = new Quant(q==FORALL,var);
+		quant.g = g;
+		quants.add(quant);
+	}		
 
 	public void addFinalStates(int... states) {
 		for (int state : states) {

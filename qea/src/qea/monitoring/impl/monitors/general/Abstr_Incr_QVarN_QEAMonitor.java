@@ -45,11 +45,15 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 	protected final Map<String, BindingRecord>[] maps;
 
 	protected static final String BLANK = "_";
-	// 0 for value, 1 for qblank (only qvars), 2 for fblank (some fvars)
-	// Important - when creating masks if we have a choice between 1 and 2, pick
-	// 2
+	// 0 for value
+	// 1 for qblank (only qvars)
+	// 2 for fblank (some fvars)
+	// 3 for nblank (no qvars, only fvars)
+	// Important - when creating masks if we have a choice between 1 and 2, pick 2
+	// 			   if we have a choice between 2 and 3, pick 3
 	// masks should be ordered from specific to general
-	protected int[][][] masks;
+	public enum Mask { VALUE, QBLANK, FBLANK, NBLANK };
+	protected Mask[][][] masks;
 
 	// could_leave[state][eventname] is true if an event with eventname could
 	// leave state
@@ -121,7 +125,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 			empty_paths[i] = BindingRecord.make(bottom, use_weak);
 		}
 
-		masks = new int[num_events][][];
+		masks = new Mask[num_events][][];
 
 		// generate masks
 		int num_states = qea.getStates().length + 1;
@@ -129,8 +133,9 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		for (int e = 0; e < num_events; e++) {
 
 			// get the most general signature
-			int[] general_args = null;
+			Mask[] general_args = null;
 			boolean every_sig_has_qs = true;
+			boolean[] has_q_ever = null;
 			for (int s = 1; s < num_states; s++) {
 				for (Transition t : getTransitions(s, e)) {
 					if (t != null) {
@@ -143,13 +148,15 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 						}
 						every_sig_has_qs &= some_q;
 						if (general_args == null) {
-							general_args = new int[targs.length];
+							general_args = new Mask[targs.length];
+							has_q_ever = new boolean[targs.length];
 							for (int i = 0; i < targs.length; i++) {
 								// Update when we can have values here
 								if (targs[i] < 0) {
-									general_args[i] = 1;
+									general_args[i] = Mask.QBLANK;
+									has_q_ever[i] = true;
 								} else {
-									general_args[i] = 2;
+									general_args[i] = Mask.FBLANK;
 								}
 							}
 						} else {
@@ -159,7 +166,10 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 								// At the moment only need to set to 2
 								// if required
 								if (targs[i] > 0) {
-									general_args[i] = 2;
+									general_args[i] = Mask.FBLANK;
+								}
+								else{
+									has_q_ever[i] = true;
 								}
 							}
 						}
@@ -168,7 +178,14 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 				}
 			}
 			if (general_args == null) {
-				general_args = new int[] {};
+				general_args = new Mask[] {};
+			}
+			else{
+				for(int i=0;i<has_q_ever.length;i++){
+					if(!has_q_ever[i]){
+						general_args[i] = Mask.NBLANK;
+					}
+				}
 			}
 
 			empty_has_q_blanks[e] = every_sig_has_qs;
@@ -183,10 +200,10 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 			// masks is 2^args.length -1 (don't consider empty)
 			// but will will use a recursive function with lists and then turn
 			// it into an array!
-			List<List<Integer>> emasks_lists = makeMasks(e, general_args, 0);
-			int[][] emasks = new int[emasks_lists.size()][general_args.length];
+			List<List<Mask>> emasks_lists = makeMasks(e, general_args, 0);
+			Mask[][] emasks = new Mask[emasks_lists.size()][general_args.length];
 			for (int i = 0; i < emasks.length; i++) {
-				List<Integer> emasks_list = emasks_lists.get(i);
+				List<Mask> emasks_list = emasks_lists.get(i);
 				for (int j = 0; j < general_args.length; j++) {
 					emasks[i][j] = emasks_list.get(j);
 				}
@@ -217,22 +234,25 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 	 */
 	protected abstract Transition[] getTransitions(int s, int e);
 
-	private void makeMasksLevel(int[] args, boolean[] used, int level,
-			List<List<Integer>> masks, int taken) {
+	private void makeMasksLevel(Mask[] args, boolean[] used, int level,
+			List<List<Mask>> masks, int taken) {
 		if (taken == level) {
 			// make the mask
-			List<Integer> mask = new ArrayList<Integer>();
+			List<Mask> mask = new ArrayList<Mask>();
 			boolean all_not_zero = true;
 			for (int i = 0; i < args.length; i++) {
 				if (used[i]) {
 					mask.add(args[i]);
 				} else {
-					mask.add(0);
-					all_not_zero = false;
+					if(args[i] != Mask.NBLANK){
+						mask.add(Mask.VALUE);
+						all_not_zero = false;
+					}
+					else{ mask.add(args[i]); }
 				}
 			}
 			// if the mask is empty i.e all 0s
-			if (!all_not_zero) {
+			if (!all_not_zero && !masks.contains(mask)) {				
 				masks.add(mask);
 			}
 			return;
@@ -249,19 +269,25 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 	// level indicates the number of replacements we should make
 	// The organisation is somewhat complicated as we want to do breadth-first
 	// rather than depth-first
-	private List<List<Integer>> makeMasks(int e, int[] args, int level) {
-		List<List<Integer>> this_level = new ArrayList<List<Integer>>();
+	private List<List<Mask>> makeMasks(int e, Mask[] args, int level) {
+		List<List<Mask>> this_level = new ArrayList<List<Mask>>();
 
 		if (args == null || args.length == 0) {
 			return this_level;
 		}
 
 		if (level == 0) {
-			List<Integer> l = new ArrayList<Integer>();
+			List<Mask> l = new ArrayList<Mask>();
 			for (int i=0;i<args.length;i++) {
-				l.add(0); // replace x by 0
+				if(args[i]!=Mask.NBLANK){
+					l.add(Mask.VALUE); // replace x by 0
+				}else{
+					l.add(args[i]);
+				}
 			}
-			this_level.add(l);
+			if(!this_level.contains(l)){
+				this_level.add(l);
+			}
 		} else {
 			boolean[] used = new boolean[args.length];
 			makeMasksLevel(args, used, level, this_level, 0);
@@ -269,8 +295,12 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 
 		// Stop when level = args.length-1
 		if (level < args.length) {
-			List<List<Integer>> next_level = makeMasks(e, args, level + 1);
-			this_level.addAll(next_level); // always append
+			List<List<Mask>> next_level = makeMasks(e, args, level + 1);
+			for(List<Mask> l : next_level){
+				if(!this_level.contains(l)){
+					this_level.add(l); // append
+				}
+			}
 		}
 		return this_level;
 	}
@@ -307,11 +337,14 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		}
 
 		/*
-		 * for(int e = 1; e<masks.length;e++){ System.err.println(e); for(int[]
-		 * m : masks[e]) System.err.println(Arrays.toString(m)); }
-		 * System.err.println(Arrays.toString(empty_has_q_blanks));
-		 * System.exit(0);
-		 */
+		  for(int e = 1; e<masks.length;e++){ 
+			  System.err.println(e); 
+			  for(int[] m : masks[e]) System.err.println(Arrays.toString(m)); 
+		  }
+		  System.err.println(Arrays.toString(empty_has_q_blanks));
+		  System.exit(0);
+		*/
+		 
 
 		// retrieve consistent bindings in order of informativeness
 		// do updates and extensions in-place
@@ -324,18 +357,18 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 		Map<String, BindingRecord> map = maps[eventName];
 		boolean used_full = false;
 		if (!map.isEmpty()) {
-			int[][] eventMasks = masks[eventName];
+			Mask[][] eventMasks = masks[eventName];
 
 			for (int i = 0; i < eventMasks.length; i++) {				
-				int[] mask = eventMasks[i];
+				Mask[] mask = eventMasks[i];
 				//System.err.println("mask "+Arrays.toString(mask));
 				StringBuilder b = new StringBuilder();
 				boolean has_q_blanks = false;
 				for (int j = 0; j < mask.length; j++) {
-					if (mask[j] == 0) {
+					if (mask[j] == Mask.VALUE) {
 						b.append(System.identityHashCode(args[j]));
 					} else {
-						if (mask[j] == 1) {
+						if (mask[j] == Mask.QBLANK) {
 							has_q_blanks = true;
 						}
 						b.append(BLANK);
@@ -478,12 +511,17 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 	}
 
 	protected void add_to_maps(QBindingImpl ext, boolean add) {
+		if(DEBUG){
+			System.err.println("Adding to maps "+ext);
+		}
+		
 		int[][][] sigs = qea.getSigs();
 		for (int e = 1; e < sigs.length; e++) {
 			Set<String> qs = new HashSet<String>();
 			int[][] es = sigs[e];
 			for (int s = 0; s < es.length; s++) {
 				int[] sig = es[s];
+				if(DEBUG){ System.err.println(">> using sig "+Arrays.toString(sig)); }
 				StringBuilder b = new StringBuilder();
 				boolean empty = true;
 				for (int j = 0; j < sig.length; j++) {
@@ -497,6 +535,7 @@ public abstract class Abstr_Incr_QVarN_QEAMonitor<Q extends Abstr_QVarN_QEA>
 					}
 				}
 				String q = b.toString();
+				if(DEBUG){ System.err.println(">> using query "+q); }
 				if (qs.add(q)) {
 					if (add && support_queries != null) {
 						support_queries.put(ext, q);

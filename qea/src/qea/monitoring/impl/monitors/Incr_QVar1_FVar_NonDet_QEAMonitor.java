@@ -1,5 +1,6 @@
 package qea.monitoring.impl.monitors;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -189,7 +190,10 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 	@Override
 	public Verdict step(int eventName, Object[] args) {
 
-		// System.out.println(">>>"+eventName+Arrays.toString(args));
+		if(DEBUG){ 
+			System.out.println(getStatus());
+			System.out.println(">>>"+eventName+Arrays.toString(args));
+		}
 
 		if (saved != null) {
 			if (!restart()) {
@@ -202,12 +206,14 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		if (onlyFVarSignature[eventName]) {
 			inside_bindings=true;
 
-			// System.out.println(">>>"+eventName+" has onlyFVar signature");
+			//if(DEBUG){System.out.println(">>>"+eventName+" has onlyFVar signature");}
 
 			// Update propositional configuration
 			emptyBindingConfig = qea.getNextConfig(emptyBindingConfig,
 					eventName, args, null, false);
 
+			//if(DEBUG){ System.out.println("New empty is "+emptyBindingConfig); }
+			
 			// Apply event to all existing bindings
 			for (Object binding : bindings.keySet()) {
 				stepNoVerdict(eventName, args, binding);
@@ -222,6 +228,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 
 		if (numQVarPositions[eventName] == 1) { // Only one value for the QVar
 
+			//if(DEBUG){System.out.println(">>>"+eventName+" has only one value for QVar");}
+			
 			Object qVarBinding = getFirstQVarBinding(eventsMasks[eventName],
 					args);
 			if (!eventProcessedForAllExistingBindings
@@ -298,7 +306,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			startConfigFinal = qea.containsFinalState(config);
 
 		} else { // New quantified variable binding
-
+			
 			// If the global guard is false then we can return now
 			// as we can ignore this binding
 			if(!qea.checkGlobalGuard(qVarValue)) return;		
@@ -321,7 +329,7 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 			garbage_event(qVarValue);
 		}
 		
-		if(existingBinding || !config.equals(emptyBindingConfig)){
+		if(existingBinding || !config.equals(emptyBindingConfig)){			
 			
 			// Update/add configuration for the binding
 			bindings.put(qVarValue, config);
@@ -337,7 +345,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 
 	@Override
 	public String getStatus() {
-		String ret = "Map:\n";
+		String ret = "Empty: " + emptyBindingConfig +"\n";
+		ret += "Map ("+bindings.size()+"):\n";
 		Set<Map.Entry<Object, NonDetConfig>> entryset = null;
 		if (bindings instanceof EagerGarbageHashMap) {
 			entryset = ((EagerGarbageHashMap) bindings).storeEntrySet();
@@ -346,8 +355,8 @@ public class Incr_QVar1_FVar_NonDet_QEAMonitor extends
 		}
 		for (Map.Entry<Object, NonDetConfig> entry : entryset) {
 			int[] states = entry.getValue().getStates();
-			for(int i=0;i<states.length;i++)
-				if(states[i]==0)
+			//for(int i=0;i<states.length;i++)
+			//	if(states[i]==0)
 					ret += entry.getKey() + "\t->\t" + entry.getValue() + "\n";
 		}
 		return ret;

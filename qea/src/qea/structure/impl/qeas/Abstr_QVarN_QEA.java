@@ -1,5 +1,7 @@
 package qea.structure.impl.qeas;
 
+import java.util.Arrays;
+
 import qea.structure.impl.other.FBindingImpl;
 import qea.structure.impl.other.QBindingImpl;
 import qea.structure.impl.other.Quantification;
@@ -41,15 +43,17 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 	protected boolean normal;
 
 	public static class QEntry {
-		public QEntry(Quantification quantification, int variable, Guard guard) {
+		public QEntry(Quantification quantification, int variable, Guard guard, boolean partial) {
 			this.quantification = quantification;
 			this.variable = variable;
 			this.guard = guard;
+			this.partial = partial;
 		}
 
 		public final Quantification quantification;
 		public final int variable;
 		public final Guard guard;
+		public final boolean partial;
 
 		@Override
 		public String toString() {
@@ -75,7 +79,7 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 	public boolean isNormal() {
 
 		// System.err.println(Arrays.toString(lambda));
-		if (lambda.length == 2) {
+		if (lambda.length == 2) { // 2 because first position is empty i.e. index from 1
 			normal = true;
 		} else {
 			boolean is_pure = true;
@@ -129,9 +133,9 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 
 	// guard can be null
 	public void addQuantification(int var, Quantification quantification,
-			Guard guard) {
+			Guard guard, boolean partial) {
 		assert var < 0 && -var <= lambda.length;
-		lambda[-var] = new QEntry(quantification, var, guard);
+		lambda[-var] = new QEntry(quantification, var, guard, partial);
 	}
 
 	/*
@@ -222,12 +226,13 @@ public abstract class Abstr_QVarN_QEA extends QEA {
 		 * m : e_sigs[e]) System.out.println(Arrays.toString(m)); }
 		 * System.out.println(eventName); System.exit(0);
 		 */
+		//System.err.println("HERE with "+eventName+" "+ Arrays.toString(args));
 
 		int[][] sigs = e_sigs[eventName];
 
 		QBindingImpl[] bs = new QBindingImpl[sigs.length];
 
-		if (sigs.length == 1) {
+		if (sigs.length == 1 && normal) {
 			int sig[] = sigs[0];
 			QBindingImpl qbinding = newQBinding();
 			for (int j = 0; j < sig.length; j++) {
