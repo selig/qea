@@ -48,8 +48,6 @@ public class SelectingWrapperTranslator<Inner extends OfflineTranslator> extends
 		for(int i=0;i<order.size();i++){
 			newPv[p++] = paramValues[order.get(i)];
 		}
-
-		//System.err.println(eventName);
 		
 		if(newPv.length==0) return inner.translateAndStep(eventName);
 		return inner.translateAndStep(eventName,null,newPv);
@@ -70,4 +68,9 @@ public class SelectingWrapperTranslator<Inner extends OfflineTranslator> extends
 	}	
 	@Override
 	public Monitor getMonitor(){ return inner.getMonitor(); }
+	
+	public void printEvents(){ 
+		printEvents=true;
+		inner.printEvents();
+	}
 }

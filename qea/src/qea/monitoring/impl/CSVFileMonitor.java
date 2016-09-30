@@ -36,13 +36,13 @@ public class CSVFileMonitor extends FileMonitor {
 		while (not_stopped && (line = trace.readLine()) != null) {
 			if(line.isEmpty()) continue;
 			events++;
-			
+						
 			//System.err.println(events+":"+line);
 			//System.err.println(translator.getMonitor());
-			 if (events % 100 == 0) {				 
-				 System.err.println(events);
+			 //if (events % 100 == 0) {				 
+			//	 System.err.println(events);
 			 //System.err.println(translator.getMonitor()); //System.exit(0);
-			 }			
+			// }			
 			 if (events % 10000 == 0) {				 
 				 System.err.println(events/10000+" x 10k");
 			 //System.err.println(translator.getMonitor()); //System.exit(0);

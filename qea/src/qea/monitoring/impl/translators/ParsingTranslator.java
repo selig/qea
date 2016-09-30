@@ -133,6 +133,9 @@ public class ParsingTranslator extends DefaultTranslator {
 			lastVerdict = monitor.step(e,parsed_values);
 			return lastVerdict;
 		}	
+		if(printEvents){
+			System.err.println(eventName+Arrays.toString(paramValues));
+		}
 		lastVerdict = monitor.step(e,paramValues);
 		return lastVerdict;
 	}	

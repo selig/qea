@@ -1,5 +1,6 @@
 package qea.monitoring.impl.translators;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ public class DefaultTranslator extends OfflineTranslator {
 			String[] paramValues) {
 		int event = translate(eventName);
 		if(event==-1) return lastVerdict;
+		if(printEvents){System.err.println(eventName+Arrays.toString(paramValues)); }
 		lastVerdict = monitor.step(event,paramValues);
 		return lastVerdict;
 	}
@@ -47,7 +49,8 @@ public class DefaultTranslator extends OfflineTranslator {
 	@Override
 	public Verdict translateAndStep(String eventName) {
 		int event = translate(eventName);
-		if(event==-1) return lastVerdict;
+		if(event==-1) return lastVerdict;		
+		if(printEvents){System.err.println(eventName); }
 		lastVerdict =  monitor.step(event);
 		return lastVerdict;
 	}

@@ -86,6 +86,10 @@ public abstract class OfflineTranslator {
 		return use_naive;
 	}
 
+	protected boolean printEvents = false;
+	public void printEvents(){ printEvents=true;}
+	
+	
 	/**
 	 * Should only be called on creation
 	 */

@@ -51,6 +51,13 @@ public class TranslatorFactory {
 		}
 		return e;
 	}
+	public static EventDescriptor event(String name, int... places) {
+		EventDescriptor e = new EventDescriptor(name);
+		for(int i=0;i<places.length;i++){
+			e.ps.add(new Parameter(places[i],PType.OBJ));
+		}
+		return e;
+	}
 	public static Parameter param(Integer place, PType ty){ return new Parameter(place,ty); }
 	public static EventDescriptor event(String name, Parameter... ps){
 		EventDescriptor e = new EventDescriptor(name);

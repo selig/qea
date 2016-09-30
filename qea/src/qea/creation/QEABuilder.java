@@ -1725,6 +1725,8 @@ public class QEABuilder {
 		builder.addFinalStates(1);
 		
 	}
-
+	public void negate() {
+		this.negated = true;
+	}			
 
 }

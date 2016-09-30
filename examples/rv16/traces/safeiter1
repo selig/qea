@@ -1,0 +1,14 @@
+iterator,A,5
+next,A
+next,A
+iterator,B,3
+iterator,C,1
+next,A
+next,B
+next,C
+next,A
+next,B
+next,C
+next,A
+next,B
+next,C
