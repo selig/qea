@@ -1,4 +1,4 @@
-#QEA
+# QEA
 
 
 Quantified Event Automata (QEA) is a specification formalism developed for runtime monitoring. This project is a reimplementation and extension of QEA monitoring techniques (explored in Giles Reger’s PhD work) by Master’s student Helena Cuenca.
@@ -9,61 +9,79 @@ At the moment we assume the reader is familiar with runtime monitoring concepts.
 
 See also [here][1] </a> for related papers and [here][2] for Giles’ thesis. For the RV competition mentioned see [here][3].
 
-##Quick Start
+## Quick Start
 For a complete example of how to monitor a property offline see [here][8] and for a complete example of how to monitor a property online see [here][9].
 
 These two examples are a good place to start when using the tool for the first time.
 
-##QEA Creation
+## QEA Creation
 
 We provide a builder to construct QEA’s, found in qea.creation.QEABuilder. In the future we plan to include an external language and a parser that uses this builder.
 
 We will use the canonical [HasNext property][4] as an example throughout this text. This is how you could specify this property.
 
 ```java
-QEABuilder b = new QEABuilder("HasNext");       
-                
-int i = -1;
-b.addQuantification(FORALL,i);
-        
-int HASNEXT_TRUE = 1;
-int HASNEXT_FALSE = 2;
-int NEXT = 3;
+import qea.creation.QEABuilder;
+import qea.structure.intf.QEA;
+import static qea.structure.impl.other.Quantification.FORALL;
 
-b.addTransition(1,HASNEXT_TRUE,i,2);
-b.addTransition(2,HASNEXT_TRUE,i,2);
-b.addTransition(2,NEXT,i,1);
+public class Main {
+    public void main(String[] args) {
+        QEABuilder builder = new QEABuilder("HasNext");
 
-b.addTransition(2,HASNEXT_FALSE,i,3);
-b.addTransition(3,HASNEXT_FALSE,i,3);
+        int i = -1;
+        builder.addQuantification(FORALL, i);
 
-b.addFinalStates(1,2,3);
+        int HASNEXT_TRUE = 1;
+        int HASNEXT_FALSE = 2;
+        int NEXT = 3;
 
-QEA qea = b.make();
+        builder.addTransition(1, HASNEXT_TRUE, i, 2);
+        builder.addTransition(2, HASNEXT_TRUE, i, 2);
+        builder.addTransition(2, NEXT, i, 1);
+
+        builder.addTransition(2, HASNEXT_FALSE, i, 3);
+        builder.addTransition(3, HASNEXT_FALSE, i, 3);
+
+        builder.addFinalStates(1, 2, 3);
+
+        QEA qea = builder.make();
+    }
+}
 ```
 
 If you didn’t want to have to create separate events for true and false return values with hasNext you could also write
 
 ```java
-QEABuilder b = new QEABuilder("HasNext");       
-                
-int i = -1;
-int b = 1;
-b.addQuantification(FORALL,i);
-        
-int HASNEXT = 1;
-int NEXT = 2;
+import qea.creation.QEABuilder;
+import qea.structure.intf.QEA;
+import static qea.structure.impl.other.Quantification.FORALL;
+import qea.structure.intf.Guard;
 
-b.addTransition(1,HASNEXT,new int[]{i,b}, Guard.isTrue(b),2);
-b.addTransition(2,HASNEXT,new int[]{i,b}, Guard.isTrue(b),2);
-b.addTransition(2,NEXT,i,1);
+public class Main {
+    public void main(String[] args) {
+        QEABuilder builder = new QEABuilder("HasNext");
 
-b.addTransition(1,HASNEXT,new int[]{i,b}, Guard.not(Guard.isTrue(b)),3);
-b.addTransition(3,HASNEXT,new int[]{i,b}, Guard.not(Guard.isTrue(b)),3);
+        int i = -1;
+        int b = 1;
 
-b.addFinalStates(1,2,3);
+        builder.addQuantification(FORALL, i);
 
-QEA qea = b.make();
+        int HASNEXT = 1;
+        int NEXT = 2;
+
+        builder.addTransition(1, HASNEXT, new int[]{i, b},  Guard.isTrue(b), 2);
+        builder.addTransition(2, HASNEXT, new int[]{i, b},  Guard.isTrue(b), 2);
+        builder.addTransition(2, NEXT, i, 1);
+
+        builder.addTransition(1, HASNEXT, new int[]{i, b},  Guard.not(Guard.isTrue(b)), 3);
+        builder.addTransition(3, HASNEXT, new int[]{i, b},  Guard.not(Guard.isTrue(b)), 3);
+
+        builder.addFinalStates(1, 2, 3);
+
+        QEA qea = builder.make();
+    }
+}
 ```
 
 However, in general the more features that you use in the specification, the more complex monitoring is. We therefore usually aim to use the simplest features in specification. Future work will look at automated methods for simplification (wrt features).
@@ -71,13 +89,13 @@ However, in general the more features that you use in the specification, the mor
 There are lots of other things we can do when creating QEAs. For more examples see the qeaProperties project. Note that by default states have a next semantics. To make a state a skip state you need to include setSkipStates(state,…).
 
 
-##Monitor Creation
+## Monitor Creation
 
 Creating a monitor is straightforward using qea.monitoring.impl.MonitorFactory:
 
 ```java
 MonitorFactory.create(qea)
-MonitorFactory.create(qea,RestartMode.IGNORE,GarbageMode.LAZY);
+MonitorFactory.create(qea, RestartMode.IGNORE, GarbageMode.LAZY);
 ```
 
 You can either create a basic monitor or add restart and garbage modes - these are still experimental features but are usually required for pragmatic monitoring.
@@ -98,11 +116,11 @@ The garbage mode makes certain data structures use weak references - which is on
 
 To use a monitor you just need to submit an event name and some parameters, for example
 ```
-monitor.step(HASNEXT,iterator,return_value);
+monitor.step(HASNEXT, iterator, return_value);
 ```
 we don’t currently do number of argument of type checks and using events not in the alphabet is invalid.
 
-##Online Monitoring
+## Online Monitoring
 
 We assume in online monitoring instrumentation is achieved using AspectJ. We don’t produce aspects automatically. The following is an example of an aspect that would monitor the HasNext property. Scoping might be required on pointcuts depending on exact usage.
 
@@ -137,24 +155,24 @@ public aspect HasNextAspect {
                 
         after(Iterator i) returning(boolean b): hasNext(i) {
                 synchronized(LOCK){
-                        if(b){ check(monitor.step(HASNEXT_TRUE,i)); }
-                        else { check(monitor.step(HASNEXT_FALSE,i)); }
+                        if (b) { check(monitor.step(HASNEXT_TRUE, i)); }
+                        else   { check(monitor.step(HASNEXT_FALSE, i)); }
                 }
         }
 
         before(Iterator i) : next(i) {
-                synchronized(LOCK){
-                        check(monitor.step(NEXT,i));
+                synchronized(LOCK) {
+                        check(monitor.step(NEXT, i));
                 }
         }
 
-        private static void check(Verdict verdict){
-                if(verdict==Verdict.FAILURE){
+        private static void check(Verdict verdict) {
+                if (verdict == Verdict.FAILURE) {
                         // Put match detection code here
                 }
         }
 
-        public HasNextAspect(){
+        public HasNextAspect() {
                 QEA qea = qea.properties.papers.HasNextQEA;
                 monitor = MonitorFactory.create(qea);
         }
@@ -165,29 +183,32 @@ Note that event names (integers) used here need to match with those used in the 
 
 The normal commands would be required to compile and run with Aspectj - make sure qea-1.0.jar is on the classpath (and qeaProperties if you use those).
 
-##Online Monitoring - DaCapo
+## Online Monitoring - DaCapo
 
 It is common to use the [DaCapo benchmarks][5] for benchmarking in runtime monitoring. A useful [framework][6] has been built for load-time weaving and benchmarking with DaCapo. We have extended this so that QEA can be used in this [fork][7].
 
 
 
-##Offline Monitoring (for the Competition)
+## Offline Monitoring (for the Competition)
 
 The benchmark project contains everything required to perform the benchmarking needed in the OFFLINE track of the RV14 monitoring competition, and other stuff useful for benchmarking. In general, to monitor offline you just need to construct a monitor and manually submit events to it. These extra classes allow for parsing of log files as specified in the RV competition guidelines.
 
 In order to monitor a trace file with the QEA offline monitor, run the class benchmark.competition.offline.QEAOfflineMain specifying in the classpath the following jar files (found in /jars):
+
 <ul>
     <li>qea-1.0.jar</li>
     <li>qeaOfflineMonitor-1.0.jar</li>
-    <li>qeaProperties-1.0.jar<\li>
+    <li>qeaProperties-1.0.jar</li>
 </ul>
 
 The program takes 3 parameters:
+
 <ul>
     <li>tracePath: Location of the trace file </li>
     <li>propertyName: Name of the property to monitor. For a list of the available properties </li>
     <li>fileFormat (Optional): The possible values are: CSV and XML. Required when the extension of the trace file is not CSV or XML </li>
 </ul>
+
 For example:
 
 java -cp qeaBenchmark-1.0.jar;qea-1.0.jar;qeaProperties-1.0.jar qea.benchmark.competition.offline.QEAOfflineMain ExistsLeader.csv QEA_OFFLINE_ONE
@@ -218,6 +239,7 @@ The following properties from the competition are available and related to the n
  <li>QEA_OFFLINE_FOUR</li>
  <li>QEA_OFFLINE_FIVE</li>
 </ul>
+
 ## Maven
 
 The developers are not very experienced with Maven, but you can add QEA to your project using
